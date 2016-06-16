@@ -4,4 +4,4 @@ var t = function() {
         this.x = t;
         this.y = e;
     }
-}
+};

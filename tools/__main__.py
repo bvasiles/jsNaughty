@@ -97,7 +97,7 @@ def processFile(js_file_path):
 # manager = multiprocessing.Manager()
 # ns = manager.Namespace()
 
-js_file_paths = ['test_file.js']
+js_file_paths = ['test_file1.js']
 
 
 pool = multiprocessing.Pool(processes=4)
