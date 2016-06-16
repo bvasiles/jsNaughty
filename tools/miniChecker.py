@@ -5,6 +5,8 @@ from pygments.lexers import get_lexer_for_filename
 from pygments.token import Token
 from pygments.token import is_token_subtype
 from uglifyJS import Uglifier
+from preprocessor import Preprocessor
+from uglifyJS import Beautifier
 
 
 class MiniChecker:
@@ -58,6 +60,12 @@ class MiniChecker:
                         if idx not in same]
         ugly_names_n = [token for (idx,token) in enumerate(ugly_names)
                         if idx not in same]
+
+        if not clean_names_n:
+            if not keep_mini:
+                os.remove(mini_js_path)
+            return False
+        
         if sum([len(v) for v in clean_names_n]) <= \
                 sum([len(v) for v in ugly_names_n]):
             if not keep_mini:
@@ -74,11 +82,29 @@ if __name__ == "__main__":
     def check(f, keep_mini):
         mc = MiniChecker(f)
         try:
-            print 'is_minified(%s):' % f, mc.compare(keep_mini=keep_mini)
+            return mc.compare(keep_mini=keep_mini)
         except Exception as e:
-            print e
+            return e
 
-    check('../test_file1.js', False)
-    check('../node_scoper/test_input.js', False)
-    check('../test_file2.js', False)
+    print 'is_minified(../test_file1.js):', check('../test_file1.js', False)
+    print 'is_minified(../node_scoper/test_input.js):', check('../node_scoper/test_input.js', False)
+    print 'is_minified(../test_file2.js):', check('../test_file2.js', False)
 
+    print
+    from folderManager import Folder
+    for js_file in sorted(Folder('../data/js_files.sample').fullFileNames("*.js"),
+                          key=lambda f:int(os.path.basename(f).split('.')[0])):
+        
+        prepro = Preprocessor(js_file)
+        prepro.write_temp_file('tmp.js')
+        
+        beauty = Beautifier()
+        ok = beauty.run('tmp.js', 'tmp.b.js')
+        os.remove('tmp.js')
+        
+        if ok:
+            print 'is_minified(%s):' % os.path.basename(js_file), check('tmp.b.js', False)
+            os.remove('tmp.b.js')
+
+    
+    

@@ -6,7 +6,7 @@ from pygments.lexers import get_lexer_for_filename
 
 import re
 scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
-def __replaceSciNotNum(text):
+def replaceSciNotNum(text):
     """
     The JS parser from UglifyJS fails on scientific notation
     Use this to replace all scinot numbers (currently by 1)
@@ -15,7 +15,7 @@ def __replaceSciNotNum(text):
     return scinot.sub('1', text)
 
 
-def __tokensExceptTokenType(tokens, 
+def tokensExceptTokenType(tokens, 
                           tokenType, 
                           ignoreSubtypes = False):
     """
@@ -46,7 +46,7 @@ def __tokensExceptTokenType(tokens,
     return rt
 
 
-def __tokensReplaceTokenOfType(tokens, 
+def tokensReplaceTokenOfType(tokens, 
                              tokenType, 
                              replacementValue, 
                              ignoreSubtypes = False):
@@ -71,7 +71,7 @@ def __tokensReplaceTokenOfType(tokens,
 
 from kmp import KnuthMorrisPratt
 from copy import deepcopy
-def __fixIncompleteDecimals(tokenList):
+def fixIncompleteDecimals(tokenList):
     """
     Replaces .NUMBER by 0.NUMBER (otherwise the JS parser fails)
     """
@@ -97,7 +97,7 @@ def __fixIncompleteDecimals(tokenList):
 
 
 
-def __formatTokens(tokenList):
+def formatTokens(tokenList):
     lines = []
     line = []
     for (token_type, token) in tokenList:
@@ -109,7 +109,7 @@ def __formatTokens(tokenList):
     return lines
 
 
-def __writeTmpLines(lines, out_file_path):
+def writeTmpLines(lines, out_file_path):
     js_tmp = open(out_file_path, 'w')
     js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
                             for line in lines]).encode('utf8'))
@@ -126,29 +126,29 @@ class Preprocessor:
     
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
-        programText = __replaceSciNotNum(open(js_file_path, 'r').read())
+        programText = replaceSciNotNum(open(js_file_path, 'r').read())
     
         # Tokenize input
         self.tokenList = list(lex(programText, lexer))
 
         # Remove comments
-        self.tokenList = __tokensExceptTokenType(self.tokenList, Token.Comment)
+        self.tokenList = tokensExceptTokenType(self.tokenList, Token.Comment)
     
         # Replace .1 by 0.1
-        self.tokenList = __fixIncompleteDecimals(self.tokenList)
+        self.tokenList = fixIncompleteDecimals(self.tokenList)
         
         # Strip annotations and literals
-        self.tokenList = __tokensExceptTokenType(self.tokenList, String.Doc)
+        self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
 
-        self.tokenList = __tokensReplaceTokenOfType(self.tokenList, String, 
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, String, 
                                           'TOKEN_LITERAL_STRING')
-        self.tokenList = __tokensReplaceTokenOfType(self.tokenList, Number, 
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
                                           'TOKEN_LITERAL_NUMBER')
 
 
     def write_temp_file(self, out_file_path):
-        lines = __formatTokens(self.tokenList)
-        __writeTmpLines(lines, out_file_path)
+        lines = formatTokens(self.tokenList)
+        writeTmpLines(lines, out_file_path)
     
 
 
