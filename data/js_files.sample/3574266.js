@@ -1,0 +1,1 @@
+(function(){typeof console!="undefined"&&console!==null&&console.log("Scripts loaded")}).call(this);
