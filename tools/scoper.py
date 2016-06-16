@@ -93,14 +93,14 @@ def join_ref_key(keys):
 class ScopeAnalyst:
     def __init__(self, in_file_path, scoper_js_path=None):
         if scoper_js_path is None:
-            scoper_dir = '/Users/bogdanv/workspace2/deobfuscation/scoper'
+            scoper_dir = 'node_scoper'
         else:
             scoper_dir = scoper_js_path
         
         # This is a hack at the moment. I wrote a simple JS script
         # that uses node.js to export the AST produced and used by 
         # UglifyJS internally to JSON format
-        command = ['node', 'scoper.js', in_file_path]
+        command = ['node', 'nodeScoper.js', in_file_path]
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, cwd=scoper_dir)
         out, _err = proc.communicate()
     
