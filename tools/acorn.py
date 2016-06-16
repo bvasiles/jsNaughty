@@ -15,7 +15,7 @@ class Acorn:
             self.path = path
     
         
-    def run(self, in_file_path, out_file_path):
+    def run(self, in_file_path, out_file_path=None):
         acorn_ok = False
         stdout = None
         

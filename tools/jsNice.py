@@ -16,7 +16,7 @@ class JSNice:
             self.path = path
     
         
-    def run(self, in_file_path, out_file_path):
+    def run(self, in_file_path, out_file_path=None):
         unuglifyjs_ok = False
         
         command = [self.path] + \
@@ -27,8 +27,9 @@ class JSNice:
     
         if not proc.returncode:
             unuglifyjs_ok = True
-            with open(out_file_path, 'w') as f:
-                f.write(out)
+            if out_file_path is not None:
+                with open(out_file_path, 'w') as f:
+                    f.write(out)
     
         return (unuglifyjs_ok, out, err)
         
