@@ -1,5 +1,10 @@
 import os
+
+import sys
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import sourcemap
+
 from pygments import lex
 from pygments.lexers import get_lexer_for_filename
 from pygments.token import Token
