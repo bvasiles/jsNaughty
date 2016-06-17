@@ -5,6 +5,7 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import sourcemap
 
+import multiprocessing
 from pygments import lex
 from pygments.lexers import get_lexer_for_filename
 from pygments.token import Token
@@ -24,6 +25,8 @@ class MiniChecker:
         self.js_path = js_path
         
     def compare(self, mini_js_path=None, keep_mini=True):
+        pid = int(multiprocessing.current_process().ident)
+        
         lexer = get_lexer_for_filename(self.js_path)
         
         # before
@@ -39,7 +42,7 @@ class MiniChecker:
         # after
         if mini_js_path is None:
             uglifier = Uglifier()
-            mini_js_path = os.path.abspath('tmp.u.js')
+            mini_js_path = os.path.abspath('tmp_%d.u.js' % pid)
             uglifyjs_ok = uglifier.run(self.js_path, mini_js_path)
             if not uglifyjs_ok:
                 raise Exception, 'Uglifier failed'
