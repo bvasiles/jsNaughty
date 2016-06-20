@@ -20,6 +20,22 @@ import signal
 signal.signal(signal.SIGALRM, timeout)
 
 
+def cleanup(pid):
+    try:
+        os.remove('tmp_%d.js' % pid)
+    except OSError:
+        pass
+    
+    try:
+        os.remove('tmp_%d.u.js' % pid)
+    except OSError:
+        pass
+    
+    try:
+        os.remove('tmp_%d.b.js' % pid)
+    except OSError:
+        pass
+
 
 def processFile(js_file_path):
     
@@ -33,8 +49,7 @@ def processFile(js_file_path):
             
         beauty = Beautifier()
         ok = beauty.run('tmp_%d.js' % pid, 'tmp_%d.b.js' % pid)
-        os.remove('tmp_%d.js' % pid)
-            
+        
         if ok:
             mc = MiniChecker('tmp_%d.b.js' % pid)
             try:
@@ -42,15 +57,16 @@ def processFile(js_file_path):
             except Exception as e:
                 isMini = str(e)
                 
-            os.remove('tmp_%d.b.js' % pid)
+            cleanup(pid)
             return [os.path.basename(js_file_path), isMini]
         
         else:
+            cleanup(pid)
             return [os.path.basename(js_file_path), 'Beautifier failed']
         
     except TimeExceededError:
-        os.remove('tmp_%d.js' % pid)
-        os.remove('tmp_%d.b.js' % pid)
+        
+        cleanup(pid)
         return [os.path.basename(js_file_path), 'Timeout']
         
 

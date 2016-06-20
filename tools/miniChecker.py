@@ -15,6 +15,13 @@ from preprocessor import Preprocessor
 from uglifyJS import Beautifier
 
 
+def remove_file(mini_js_path):
+    try:
+        os.remove(mini_js_path)
+    except OSError:
+        pass
+    
+
 class MiniChecker:
     '''
     Check if JS file is minified by comparing the 
@@ -52,7 +59,7 @@ class MiniChecker:
 
         if not len(tokens_b) == len(tokens_u):
             if not keep_mini:
-                os.remove(mini_js_path)
+                remove_file(mini_js_path)
             raise Exception, 'Different number of tokens'
 
         clean_names = [token for (token_type, token) in tokens_b 
@@ -71,17 +78,17 @@ class MiniChecker:
 
         if not clean_names_n:
             if not keep_mini:
-                os.remove(mini_js_path)
+                remove_file(mini_js_path)
             return False
         
         if sum([len(v) for v in clean_names_n]) <= \
                 sum([len(v) for v in ugly_names_n]):
             if not keep_mini:
-                os.remove(mini_js_path)
+                remove_file(mini_js_path)
             return True
         
         if not keep_mini:
-            os.remove(mini_js_path)
+            remove_file(mini_js_path)
         return False
 
 
