@@ -5,17 +5,23 @@ class IndexBuilder:
 
     def __init__(self, lexed_input):
         # Build some helper data structures:
+        
         # - bidimensional list of tokens
         self.tokens = []
+        
         # - map from (line,col) position to name
         self.charPosition2Name = {}
+        
         # - map from name to list of (line,col) positions
         self.name2CharPositions = {}
+        
         # - map from (line,col) position to flat position
         self.flatMap = {}
+        
         # - map from (token_line, token_column) position in the 
         # bidimensional list of tokens to (line,col) text position
         self.tokMap = {}
+        
         # - map from (line,col) position to (token_line, token_column)
         # position in the bidimensional list of tokens
         self.revTokMap = {}

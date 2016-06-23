@@ -34,9 +34,9 @@ def processFile(js_file_path):
     tokens = indexBuilder.tokens
     print 'RUNNING IndexBuilder:', len(tokens)>0
     
-    nice1 = JSNice()
-    (ok, _out, _err) = nice1.run(js_file_path)
-    print 'RUNNING JSNice:', ok
+#     nice1 = JSNice()
+#     (ok, _out, _err) = nice1.run(js_file_path)
+#     print 'RUNNING JSNice:', ok
     
     nice2 = UnuglifyJS()
     (ok, _out, _err) = nice2.run(js_file_path)
@@ -56,7 +56,8 @@ def processFile(js_file_path):
     # Discover the path to the source map
     map_path = sourcemap.discover(minified)
     # Read and parse our sourcemap
-    sourcemapIndex = sourcemap.load(open(map_path))
+#     sourcemapIndex = sourcemap.load(open(map_path))
+    
     
     # Cluster names by scope 
     nameScope2Positions = {}
@@ -77,11 +78,11 @@ def processFile(js_file_path):
         tt = []
         line_tok_idxs = set([])
         for (l,c) in pos:
-            orig = sourcemapIndex.lookup(line=l, column=c).name
+#             orig = sourcemapIndex.lookup(line=l, column=c).name
             (tl,tc) = indexBuilder.revTokMap[(l,c)]
             line_tok_idxs.add(tl)
             tt.append((tl,tc))
-            t.append(orig)
+#             t.append(orig)
 
         if token == 'n':
             print '\nNAME:', token
@@ -97,7 +98,7 @@ def processFile(js_file_path):
 # manager = multiprocessing.Manager()
 # ns = manager.Namespace()
 
-js_file_paths = ['test_file1.js']
+js_file_paths = ['test_file3.js']
 
 
 pool = multiprocessing.Pool(processes=4)
