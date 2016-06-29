@@ -7,8 +7,7 @@ from unicodeManager import UnicodeReader
 from tools import Uglifier, Preprocessor, IndexBuilder, \
                     Beautifier, Lexer, Aligner, ScopeAnalyst
 
-from pygments.token import Token, is_token_subtype
-import hashlib
+from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec
 
 
 class TimeExceededError(Exception): pass
@@ -50,15 +49,6 @@ def cleanup(pid):
     except OSError:
         pass
 
-
-def generateScopeIds(num_scopes, except_ids):
-    ids = []
-    idx = 0
-    while len(ids) < num_scopes:
-        if idx not in except_ids:
-            ids.append(idx)
-        idx += 1
-    return ids
 
 
 def processFile(l):
@@ -139,176 +129,26 @@ def processFile(l):
         # not a (line_chr_idx, col_chr_idx) index.
         try:
             scopeAnalyst = ScopeAnalyst(os.path.join(os.path.dirname(os.path.realpath(__file__)), path_tmp_u_a))
-            name2defScope = scopeAnalyst.resolve_scope()
-            isGlobal = scopeAnalyst.isGlobal
-            name2useScope = scopeAnalyst.resolve_use_scope()
+            _name2defScope = scopeAnalyst.resolve_scope()
+            _isGlobal = scopeAnalyst.isGlobal
+            _name2useScope = scopeAnalyst.resolve_use_scope()
         except:
             cleanup(pid)
             return (None, 'ScopeAnalyst fail')
         
-        # Figure out which _scope_idx suffixes are illegal
-        except_ids = map(int, [name.split('_')[-1] 
-                        for name in scopeAnalyst.nameScopes.keys()
-                        if name.split('_')[-1].isdigit()])
-        
-        # Compute shorter def_scope identifiers
-        scopes = set(name2defScope.values())
-        scope2id = dict(zip(scopes, generateScopeIds(len(scopes), except_ids)))
-
         orig = []
         no_renaming = []
-        basic_renaming = []
-        
-        # Simple renaming: disambiguate overloaded names 
-        # with indices: n -> n_1, n_2, n_3.
-        # The index is the def_scope id.
         for line_idx, line in enumerate(iBuilder_ugly.tokens):
-            
             orig.append(' '.join([t for (_tt,t) in iBuilder_clear.tokens[line_idx]]) + "\n")
             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
             
-            new_line = []
-            for token_idx, (token_type, token) in enumerate(line):
-                try:
-                    (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
-                    pos = iBuilder_ugly.flatMap[(l,c)]
-                    def_scope = name2defScope[(token, pos)]
-                except KeyError:
-                    new_line.append(token)
-                    continue
-
-                if is_token_subtype(token_type, Token.Name) and \
-                        scopeAnalyst.is_overloaded(token) and \
-                        not isGlobal[(token, pos)]:
-                    # Must rename token to something else
-                    # Append def_scope id to name
-                    new_line.append('%s_%d' % (token, scope2id[def_scope]))
-                else:
-                    new_line.append(token)
-            
-            basic_renaming.append(' '.join(new_line) + "\n")
-        
+        # Simple renaming: disambiguate overloaded names using scope id
+        basic_renaming = renameUsingScopeId(scopeAnalyst, iBuilder_ugly)
         
         # More complicated renaming: collect the context around  
         # each name (global variables, API calls, punctuation)
         # and build a hash of the concatenation.
-        
-        hash_renaming = []
-        
-        
-        def isValidContextToken((token_type, token)):
-            # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
-            # Token.Operator
-            # Token.Punctuation
-            # Token.Keyword.*
-            if token != u'TOKEN_LITERAL_NUMBER' and \
-                    token != u'TOKEN_LITERAL_STRING':
-#                  and \
-#                     (is_token_subtype(token_type, Token.Name) or \
-#                     is_token_subtype(token_type, Token.Punctuation) or \
-#                     is_token_subtype(token_type, Token.Operator)):
-                return True
-            return False
-        
-        
-        def sha(concat_str, debug=False):
-            if not debug:
-                return '_' + hashlib.sha1(concat_str).hexdigest()[:8]
-            else:
-                return '<<' + concat_str + '>>'
-        
-                
-        context = {}
-        
-        for line_idx, line in enumerate(iBuilder_ugly.tokens):
-            
-            # Which minified names are on this line?
-            mini_names = []
-            line_context = []
-            
-            for token_idx, (token_type, token) in enumerate(line):
-                try:
-                    (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
-                    pos = iBuilder_ugly.flatMap[(l,c)]
-                    # flatMap only exists for tokens of type Token.Name
-                    
-                    if not isGlobal[(token, pos)]:
-                        mini_names.append((token, pos))
-                        
-                        def_scope = name2defScope[(token, pos)]
-                        
-                        where_before = [tix \
-                                        for tix, (tt, t) in enumerate(line) \
-                                        if t == token and \
-                                        tt == token_type and \
-                                        tix < token_idx and \
-                                        name2defScope[(t, iBuilder_ugly.flatMap[iBuilder_ugly.tokMap[(line_idx,tix)]])] == def_scope]
-
-                        left = max(where_before) if len(where_before) else 0
-                        context_tokens = [t \
-                                        for (t, p) in line_context \
-                                        if p >= left and \
-                                        p < pos]
-                            
-                        context.setdefault((token, def_scope), [])
-                        context[(token, def_scope)] += context_tokens
-                            
-                    else:
-                        if isValidContextToken((token_type, token)):
-#                             line_context.append(token)
-                            line_context.append((token, pos))
-
-                except KeyError:
-                    if isValidContextToken((token_type, token)):
-#                         line_context.append(token)
-                        line_context.append((token, pos))
-                        
-        shas = {}
-        reverse_shas = {}
-        
-        for line_idx, line in enumerate(iBuilder_ugly.tokens):
-            
-            new_line = []
-            for token_idx, (token_type, token) in enumerate(line):
-                try:
-                    (l,c) = iBuilder_ugly.tokMap[(line_idx, token_idx)]
-                    
-                    # flatMap only exists for tokens of type Token.Name
-                    pos = iBuilder_ugly.flatMap[(l,c)]
-                    def_scope = name2defScope[(token, pos)]
-                    use_scope = name2useScope[(token, pos)]
-                    
-                    # context only exists for non-global names
-                    concat_str = ''.join(context[(token, def_scope)])
-                    
-                    # Compute SHA1 hash of the context tokens
-                    sha_str = sha(concat_str, debug=False)
-                    
-                    # Replace name by SHA1 hash
-                    new_token = shas.setdefault(concat_str, sha_str)
-                    
-                    # Compute reverse mapping
-                    reverse_shas.setdefault((sha_str, use_scope), set([]))
-                    reverse_shas[(sha_str, use_scope)].add(token)
-                    
-                    # Detect collisions
-                    if len(reverse_shas[(sha_str, use_scope)]) > 1:
-#                         print (sha_str, use_scope)
-#                         print reverse_shas[(sha_str, use_scope)]
-#                         print 
-                        # Two different names from the same use_scope
-                        # have the same hash. Rename one by prepending
-                        # the variable/function name to the hash
-                        sha_str = token + sha_str
-                        new_token = sha_str
-                    
-                    new_line.append(new_token)
-                    
-                except KeyError:
-                    # Everything except non-global names stays the same
-                    new_line.append(token)
-           
-            hash_renaming.append(' '.join(new_line) + "\n")
+        hash_renaming = renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly)
 
         cleanup(pid)
         return (orig, no_renaming, basic_renaming, hash_renaming)

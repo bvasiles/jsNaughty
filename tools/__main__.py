@@ -55,19 +55,17 @@ def processFile(js_file_path):
     print 'RUNNING ScopeAnalyst:', len(name2defScope)>0
 
     name2useScope = scopeAnalyst.name2useScope
-    scopes = set(name2useScope.values())
-    for scope in scopes:
-        print scope
-        lc_list = [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]] 
-                   for (t,pos) in name2useScope.keys() 
-                   if name2useScope[(t,pos)] == scope]
-        highlight(tokens, lc_list)
-         
-#         print sorted(keys, key=lambda (t,pos):(t,pos))
-        print
+#     scopes = set(name2useScope.values())
+#     for scope in scopes:
+#         print scope
+#         lc_list = [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]] 
+#                    for (t,pos) in name2useScope.keys() 
+#                    if name2useScope[(t,pos)] == scope]
+#         highlight(tokens, lc_list)
+#         print
     
     # Discover the path to the source map
-    map_path = sourcemap.discover(minified)
+    _map_path = sourcemap.discover(minified)
     # Read and parse our sourcemap
 #     sourcemapIndex = sourcemap.load(open(map_path))
     
@@ -83,6 +81,13 @@ def processFile(js_file_path):
                 nameScope2Positions.setdefault((token,scope,glb), [])
                 nameScope2Positions[(token,scope,glb)].append((line,col))
 
+                use_scope = name2useScope[(token, indexBuilder.flatMap[(line,col)])]
+                print token
+                print scope
+                print use_scope
+                print
+#                     print token, line, col
+                
     
     for (token,scope,glb), positions in sorted(nameScope2Positions.iteritems(), \
                                            key=lambda (x,y):x[0]):
@@ -97,15 +102,18 @@ def processFile(js_file_path):
             tt.append((tl,tc))
 #             t.append(orig)
 
-# #         if token == 'n':
-#         print '\nNAME:', token, glb
-# #         print scope
-#  
-#         for tl in sorted(set([tli for (tli,tci) in tt])):
-#             l = list(tokens[tl])
-#             for tc in [tci for (tli,tci) in tt if tli==tl]:
-#                 l[tc] = (l[tc][0], unichr(0x2588))
-#             print '  ', '%d:'%tl, ' '.join([x[1] for x in l])
+#         if token == 'n':
+        print '\nNAME:', token, glb
+#         print scope
+  
+        for tl in sorted(set([tli for (tli,tci) in tt])):
+            l = list(tokens[tl])
+            for tc in [tci for (tli,tci) in tt if tli==tl]:
+                l[tc] = (l[tc][0], unichr(0x2588))
+                
+#                 pos = indexBuilder.flatMap[(line,col)]
+            
+            print '  ', '%d:'%tl, ' '.join([x[1] for x in l])
 
     return
 
