@@ -17,6 +17,7 @@ class IndexBuilder:
         
         # - map from (line,col) position to flat position
         self.flatMap = {}
+        self.revFlatMat = {}
         
         # - map from (token_line, token_column) position in the 
         # bidimensional list of tokens to (line,col) text position
@@ -40,7 +41,7 @@ class IndexBuilder:
         # Populate the helper data structures.
         for (token_type, token) in lexed_input:
     #         print token_type, len(token), '"%s"' % token
-            p = (line_chr_idx,col_chr_idx)
+            p = (line_chr_idx, col_chr_idx)
             
             if is_token_subtype(token_type, Token.Name):
                 
@@ -52,6 +53,8 @@ class IndexBuilder:
                 
                 # Map (line_chr_idx, col_chr_idx) index to unidimensional index 
                 self.flatMap[p] = flat_chr_idx
+                
+                self.revFlatMat[flat_chr_idx] = p
             
             # Build bidimensional token list (lines, columns)
             if not is_token_subtype(token_type, String.Doc) and \

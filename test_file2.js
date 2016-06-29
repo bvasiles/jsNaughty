@@ -1,6 +1,7 @@
 var geom2d = function() {
     var sum = numeric.sum, numberEquals = numeric.numberEquals;
     var a = 10;
+    var b = 20;
     function Vector2d(x, y) {
         this.x = x;
         this.y = y;

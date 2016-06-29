@@ -23,21 +23,23 @@ def scopepaths(nested, root_pth):
         # encounter it) its root path, in the same format as the 
         # pointers: '$["body"][0]["definitions"][0]...'
         # `join_ref_key` converts a list of nodes in this format.
-        if key == 'scope':
-            v = join_ref_key(root_pth)
-            value['pth'] = v
-        
+#         if key == 'scope':
+#             v = join_ref_key(root_pth)
+#             value['pth'] = v
+
         # AST nodes are either dictionaries or lists. Each is 
         # unpacked differently. Descend in the tree until reaching 
         # leaves, which cannot be dictionaries or lists.
         if isinstance(value, dict):
             root_pth.append(key)
+            value['pth'] = join_ref_key(root_pth)
             scopepaths(value, root_pth)
         
         elif isinstance(value, list):
             root_pth.append(key)
             for idx, subdict in enumerate(value):
                 root_pth.append(idx)
+                subdict['pth'] = join_ref_key(root_pth)
                 scopepaths(subdict, root_pth)
             root_pth.pop()
     
@@ -116,10 +118,13 @@ class ScopeAnalyst:
         
         # For each (name, start position) tuple, record its scope 
         # identifier (which will be a path in the AST above)
-        self.name2scope = {}
+        self.name2defScope = {}
+        self.name2useScope = {}
         
         # For each name, record its scopes
         self.nameScopes = {}
+        
+        self.isGlobal = {}
         
         # Annotate scope nodes with depth
         scopepaths(self.ast, [])
@@ -144,16 +149,21 @@ class ScopeAnalyst:
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start'])
                     
-                    # Retrieve scope identifier
-                    scope = self.__get_thedef_scope(parent['thedef'])
+                    use_scope = self.__get_use_scope(parent['scope'])
+                    self.name2useScope[(key, start)] = use_scope
                     
-                    # Store
-                    self.name2scope[(key, start)] = scope
+                    # Retrieve scope identifier
+                    def_scope = self.__get_def_scope(parent['thedef'])
+                    self.name2defScope[(key, start)] = def_scope
+                    
+                    # Is name global (defined outside of this file)?
+                    glb = self.__get_def_global(parent['thedef'])
+                    self.isGlobal[(key, start)] = glb
                     
                     # Keep track of each name's scopes to figure 
                     # out which names are overloaded
                     self.nameScopes.setdefault(key, set([]))
-                    self.nameScopes[key].add(scope)
+                    self.nameScopes[key].add(def_scope)
                     
 
     '''Descend in the tree given a list of nodes'''
@@ -171,9 +181,13 @@ class ScopeAnalyst:
         if d.has_key('$ref'):
             return self.__get_ref_key(split_ref_key(d['$ref']))
         return d
+
+
+    def __get_use_scope(self, d):
+        return d.get('$ref', d.get('pth', None))
+                
             
-            
-    def __get_thedef_scope(self, d):
+    def __get_def_scope(self, d):
         thedefref = d.get('$ref', None)
         if thedefref:
             return self.__get_ref_key(split_ref_key(thedefref)).get('scope', {}).get('pth', None)
@@ -181,6 +195,15 @@ class ScopeAnalyst:
             return d.get('scope', {}).get('pth', None)
         return None
         
+        
+    def __get_def_global(self, d):
+        thedefref = d.get('$ref', None)
+        if thedefref:
+            return self.__get_ref_key(split_ref_key(thedefref)).get('global', False)
+        else:
+            return d.get('global', False)
+        return None
+            
             
     def __get_start(self, d):
         return self.__ref_or_not(d).get('pos', None)
@@ -190,7 +213,11 @@ class ScopeAnalyst:
     
     
     def resolve_scope(self):
-        return self.name2scope
+        return self.name2defScope
+
+
+    def resolve_use_scope(self):
+        return self.name2useScope
 
 
     def is_overloaded(self, v):
