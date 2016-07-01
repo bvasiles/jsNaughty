@@ -7,7 +7,8 @@ from unicodeManager import UnicodeReader
 from tools import Uglifier, Preprocessor, IndexBuilder, \
                     Beautifier, Lexer, Aligner, ScopeAnalyst
 
-from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec
+from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec, \
+                                renameUsingHashDefLine
 
 
 class TimeExceededError(Exception): pass
@@ -149,9 +150,15 @@ def processFile(l):
         # each name (global variables, API calls, punctuation)
         # and build a hash of the concatenation.
         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly)
+        
+        hash_def_renaming = renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly)
 
         cleanup(pid)
-        return (orig, no_renaming, basic_renaming, hash_renaming)
+        return (orig, 
+                no_renaming, 
+                basic_renaming, 
+                hash_renaming,
+                hash_def_renaming)
         
          
     except TimeExceededError:
@@ -173,16 +180,21 @@ with open(training_sample_path, 'r') as f:
 
     for result in pool.imap(processFile, reader):
         if result[0] is not None:
-            (orig, no_renaming, basic_renaming, hash_renaming) = result
+            (orig, 
+             no_renaming, 
+             basic_renaming, 
+             hash_renaming,
+             hash_def_renaming) = result
           
             with open('corpus.orig.js', 'w') as f_orig, \
                     open('corpus.no_renaming.js', 'w') as f_no_renaming, \
                     open('corpus.basic_renaming.js', 'w') as f_basic_renaming, \
-                    open('corpus.hash_renaming.js', 'w') as f_hash_renaming:
+                    open('corpus.hash_renaming.js', 'w') as f_hash_renaming, \
+                    open('corpus.hash_def_renaming.js', 'w') as f_hash_def_renaming:
                 f_orig.writelines(orig)
                 f_no_renaming.writelines(no_renaming)
                 f_basic_renaming.writelines(basic_renaming)
                 f_hash_renaming.writelines(hash_renaming)
-
+                f_hash_def_renaming.writelines(hash_def_renaming)
 
 

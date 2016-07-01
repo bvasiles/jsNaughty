@@ -73,6 +73,21 @@ def isValidContextToken((token_type, token)):
         return True
     return False
  
+
+
+# def isValidContextToken2((token_type, token)):
+#     # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
+#     # Token.Operator
+#     # Token.Punctuation
+#     # Token.Keyword.*
+#     if token != u'TOKEN_LITERAL_NUMBER' and \
+#             token != u'TOKEN_LITERAL_STRING' and \
+#            (is_token_subtype(token_type, Token.Name) or \
+#            is_token_subtype(token_type, Token.Punctuation) or \
+#            is_token_subtype(token_type, Token.Operator)):
+#         return True
+#     return False
+
  
 def sha(concat_str, debug=False):
     if not debug:
@@ -119,12 +134,23 @@ def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly):
                                         iBuilder_ugly.tokMap[(line_idx,tix)]])] 
                                         == def_scope]
      
-                    left = max(where_before) if len(where_before) else 0
+                    left_token_idx = max(where_before) \
+                                        if len(where_before) else 0
+                    left = iBuilder_ugly.flatMap[iBuilder_ugly.tokMap[(line_idx, left_token_idx)]]
+                                        
                     context_tokens = [t \
                                     for (t, p) in line_context \
                                     if p >= left and \
                                     p < pos]
                           
+#                     if token == 'r' and line_idx == 13:
+#                         print token, pos
+#                         print line_context
+#                         print where_before
+#                         print left
+#                         print context_tokens
+#                         print
+     
                     context.setdefault((token, def_scope), [])
                     context[(token, def_scope)] += context_tokens
                           
@@ -182,4 +208,172 @@ def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly):
         hash_renaming.append(' '.join(new_line) + "\n")
 
     return hash_renaming
+
+
+
+def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly):
+    '''
+    '''
+
+    name2defScope = scopeAnalyst.resolve_scope()
+    isGlobal = scopeAnalyst.isGlobal
+    name2useScope = scopeAnalyst.resolve_use_scope()
+    name2pth = scopeAnalyst.resolve_path()
+    nameOrigin = scopeAnalyst.nameOrigin
+    #origin = nameOrigin[(token, scope)] == pth = name2pth[(token, pos)]
+                    
+    hash_renaming = []
+                 
+#     for k in sorted(isGlobal.keys()):
+#         print k
+                 
+    context = {}
+    
+    seen_def = {}
+    seen = {}
+         
+    for line_idx, line in enumerate(iBuilder_ugly.tokens):
+        
+        for token_idx, (token_type, token) in enumerate(line):
+            (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
+            pos = iBuilder_ugly.flatMap[(l,c)]
+                
+            # isGlobal only exists for Token.Name tokens
+#             if not isGlobal.get((token, pos), True):
+            
+            try:
+                def_scope = name2defScope[(token, pos)]
+                pth = name2pth[(token, pos)]
+            except KeyError:
+                continue
+            
+            # If token is defined on the current line,
+            # count this line towards token's context.
+            if pth == nameOrigin.get((token, def_scope), None) and \
+                    not seen_def.get((token, def_scope), False):
+                
+                context_tokens = []
+                
+                for tidx, (tt, t) in enumerate(line):
+                    (tl,tc) = iBuilder_ugly.tokMap[(line_idx, tidx)]
+                    p = iBuilder_ugly.flatMap[(tl,tc)]
+                    
+#                     if t == 'sum':
+#                         print t, p, isGlobal[(t,p)] #isGlobal.get((t, p), False)
+                     
+                    if isGlobal.get((t, p), True) or \
+                            not is_token_subtype(tt, Token.Name):
+                        context_tokens.append(t)
+                     
+                    if t == token and p == pos and not isGlobal.get((t, p), True):
+                        context_tokens.append('#')
+                        
+# #                         if isValidContextToken((tt, t)):
+#                     if (is_token_subtype(tt, Token.Name) and \
+#                             isGlobal.get((t, p), True)) or \
+#                             not is_token_subtype(tt, Token.Name):
+#                         context_tokens.append(t)
+#                          
+#                     if (is_token_subtype(tt, Token.Name) and \
+#                                 not isGlobal[(t, p)]) and \
+#                                 t == token and p == pos:
+#                         context_tokens.append('here')
+#                         
+#                         if t == token and p == pos and isGlobal.get((t, p), False):
+#                             context_tokens.append('here')
+            
+            context.setdefault((token, def_scope), [])
+            context[(token, def_scope)] += context_tokens
+            
+            seen_def[(token, def_scope)] = True
+
+#     for line_idx, line in enumerate(iBuilder_ugly.tokens):
+#            
+#         for token_idx, (token_type, token) in enumerate(line):
+#             (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
+#             pos = iBuilder_ugly.flatMap[(l,c)]
+#                   
+#             # isGlobal only exists for Token.Name tokens
+# #             if not isGlobal.get((token, pos), True):
+#             
+#             try:
+#                 def_scope = name2defScope[(token, pos)]
+#                 pth = name2pth[(token, pos)]
+#                       
+#                 # Otherwise if this is the first non-def line
+#                 # for this token, count it towards its context.
+#                 if pth != nameOrigin[(token, def_scope)] and \
+#                         not seen.get((token, def_scope), False):
+#                       
+#                     context_tokens = []
+#                     for tidx, (tt, t) in enumerate(line):
+#                         (tl,tc) = iBuilder_ugly.tokMap[(line_idx, tidx)]
+#                         p = iBuilder_ugly.flatMap[(tl,tc)]
+#                           
+#                         if isValidContextToken((tt, t)):
+#                             if (is_token_subtype(tt, Token.Name) and \
+#                                     isGlobal.get((t, p), True)) or \
+#                                     (t == token and p == pos) or \
+#                                     not is_token_subtype(tt, Token.Name):
+#                                 context_tokens.append(t)
+#                         
+# #                         if t == token and p == pos and isGlobal.get((t, p), False):
+# #                             context_tokens.append('here')
+#                     
+#                     context.setdefault((token, def_scope), [])
+#                     context[(token, def_scope)] += context_tokens
+#                       
+#                     seen[(token, def_scope)] = True
+# 
+#             except KeyError:
+#                 pass
+                          
+                       
+    shas = {}
+    reverse_shas = {}
+        
+    for line_idx, line in enumerate(iBuilder_ugly.tokens):
+            
+        new_line = []
+        for token_idx, (token_type, token) in enumerate(line):
+  
+            (l,c) = iBuilder_ugly.tokMap[(line_idx, token_idx)]
+            pos = iBuilder_ugly.flatMap[(l,c)]
+                
+            try:
+                # name2scope only exists for Token.Name tokens
+                def_scope = name2defScope[(token, pos)]
+                use_scope = name2useScope[(token, pos)]
+                  
+                # context only exists for non-global names
+                concat_str = ''.join(context[(token, def_scope)])
+                    
+                # Compute SHA1 hash of the context tokens
+                sha_str = sha(concat_str, debug=True)
+                  
+                # Replace name by SHA1 hash
+                new_token = shas.setdefault(concat_str, sha_str)
+                    
+                # Compute reverse mapping
+                reverse_shas.setdefault((sha_str, use_scope), set([]))
+                reverse_shas[(sha_str, use_scope)].add(token)
+                    
+                # Detect collisions
+                if len(reverse_shas[(sha_str, use_scope)]) > 1:
+                    # Two different names from the same use_scope
+                    # have the same hash. Rename one by prepending
+                    # the variable/function name to the hash
+                    sha_str = token + sha_str
+                    new_token = sha_str
+                    
+                new_line.append(new_token)
+                    
+            except KeyError:
+                # Everything except non-global names stays the same
+                new_line.append(token)
+           
+        hash_renaming.append(' '.join(new_line) + "\n")
+
+    return hash_renaming
+
 

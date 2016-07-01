@@ -55,6 +55,9 @@ def processFile(js_file_path):
     print 'RUNNING ScopeAnalyst:', len(name2defScope)>0
 
     name2useScope = scopeAnalyst.name2useScope
+    name2pth = scopeAnalyst.name2pth
+    nameOrigin = scopeAnalyst.nameOrigin
+    
 #     scopes = set(name2useScope.values())
 #     for scope in scopes:
 #         print scope
@@ -75,22 +78,31 @@ def processFile(js_file_path):
     # Index data by (name,scope)
     for token, l in indexBuilder.name2CharPositions.iteritems():
         for (line,col) in sorted(l, key=lambda (a,b):(a,b)):
-            if name2defScope.has_key((token, indexBuilder.flatMap[(line,col)])):
-                scope = name2defScope[(token, indexBuilder.flatMap[(line,col)])]
-                glb = isGlobal[(token, indexBuilder.flatMap[(line,col)])]
+            pos = indexBuilder.flatMap[(line,col)]
+            if name2defScope.has_key((token, pos)):
+                scope = name2defScope[(token, pos)]
+                use_scope = name2useScope[(token, pos)]
+                pth = name2pth[(token, pos)]
+                
+                glb = isGlobal[(token, pos)]
+                
                 nameScope2Positions.setdefault((token,scope,glb), [])
                 nameScope2Positions[(token,scope,glb)].append((line,col))
-
-                use_scope = name2useScope[(token, indexBuilder.flatMap[(line,col)])]
-                print token
-                print scope
-                print use_scope
-                print
-#                     print token, line, col
+                
+#                 print token, pos
+#                 print 'def:', scope
+#                 print 'use:', use_scope
+#                 print 'pth:', pth
+#                 highlight(tokens, [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]]])
+#                 print
                 
     
     for (token,scope,glb), positions in sorted(nameScope2Positions.iteritems(), \
                                            key=lambda (x,y):x[0]):
+
+        if glb:
+            continue
+        
         pos = sorted(positions, key = lambda e:(e[0],e[1]))
 #         t = []
         tt = []
@@ -99,21 +111,37 @@ def processFile(js_file_path):
 #             orig = sourcemapIndex.lookup(line=l, column=c).name
             (tl,tc) = indexBuilder.revTokMap[(l,c)]
             line_tok_idxs.add(tl)
-            tt.append((tl,tc))
+            p = indexBuilder.flatMap[(l,c)]
+            tt.append(((tl,tc),p))
 #             t.append(orig)
 
 #         if token == 'n':
-        print '\nNAME:', token, glb
+        print '\nNAME:', token, 'isGlobal =', glb
 #         print scope
+#         highlight(tokens, [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]]])
+        
+        for ((tli,tci),p) in tt:
+            scope = name2defScope[(token, p)]
+            use_scope = name2useScope[(token, p)]
+            pth = name2pth[(token, p)]
+            origin = nameOrigin[(token, scope)]
+#             print token #, p, origin
+#             print
+#             print 'def:', scope
+#             print 'use:', use_scope
+#             print 'pth:', pth
+#             print
   
-        for tl in sorted(set([tli for (tli,tci) in tt])):
+        for tl in sorted(set([tli for ((tli,tci),p) in tt])):
             l = list(tokens[tl])
-            for tc in [tci for (tli,tci) in tt if tli==tl]:
-                l[tc] = (l[tc][0], unichr(0x2588))
+            for tc in [tci for ((tli,tci),p) in tt if tli==tl]:
+                l[tc] = (l[tc][0], unichr(0x2588) + token + unichr(0x2588))
                 
 #                 pos = indexBuilder.flatMap[(line,col)]
             
-            print '  ', '%d:'%tl, ' '.join([x[1] for x in l])
+            print '  ', '%d:' % (tl+1), ' '.join([x[1] for x in l])
+            
+        print
 
     return
 

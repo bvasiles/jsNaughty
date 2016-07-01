@@ -93,6 +93,16 @@ def join_ref_key(keys):
     return '$%s' % ''.join([pad(k) for k in keys])
 
 
+# def origin(self, depths):
+#     
+#     # ...["orig"][0]
+#     for depth in depths:
+#         if split_ref_key(depth)[-2] == 'orig':
+#             return depth
+#     
+#     # pth + ["thedef"]["scope"] = def_scope
+    
+
 
 class ScopeAnalyst:
     
@@ -120,11 +130,15 @@ class ScopeAnalyst:
         # identifier (which will be a path in the AST above)
         self.name2defScope = {}
         self.name2useScope = {}
+        self.name2pth = {}
+        self.nameScope2pth = {}
         
         # For each name, record its scopes
         self.nameScopes = {}
         
         self.isGlobal = {}
+        
+        self.nameOrigin = {}
         
         # Annotate scope nodes with depth
         scopepaths(self.ast, [])
@@ -165,6 +179,33 @@ class ScopeAnalyst:
                     self.nameScopes.setdefault(key, set([]))
                     self.nameScopes[key].add(def_scope)
                     
+                    depth = parent.get('pth', None)
+                    self.name2pth[(key, start)] = depth
+                    
+                    self.nameScope2pth.setdefault((key, def_scope), [])
+                    self.nameScope2pth[(key, def_scope)].append(depth)
+        
+        
+        for (name, def_scope), depths in self.nameScope2pth.iteritems():
+            
+            self.nameOrigin[(name, def_scope)] = depths[0]
+            found = False
+            
+            # ...["orig"][0]
+            for depth in depths:
+                if split_ref_key(depth)[-2] == 'orig':
+                    self.nameOrigin[(name, def_scope)] = depth
+                    found = True
+                    break
+    
+            if not found:
+                for depth in depths:
+                    # pth + ["thedef"]["scope"] = def_scope
+                    if depth + '["thedef"]["scope"]' == def_scope:
+                        self.nameOrigin[(name, def_scope)] = depth
+                        break
+            
+        
 
     '''Descend in the tree given a list of nodes'''
     def __get_ref_key(self, keys):
@@ -218,6 +259,10 @@ class ScopeAnalyst:
 
     def resolve_use_scope(self):
         return self.name2useScope
+    
+    
+    def resolve_path(self):
+        return self.name2pth
 
 
     def is_overloaded(self, v):
