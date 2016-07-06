@@ -13,8 +13,7 @@ from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec, \
 
 class TimeExceededError(Exception): pass
 def timeout(signum, frame):
-    pass
-#     raise TimeExceededError, "Timed Out"
+    raise TimeExceededError, "Timed Out"
 
 
 class ContinueError(Exception): pass
@@ -61,7 +60,7 @@ def processFile(l):
     
     try:
         # Timeout after 20 minutes
-        signal.alarm(1200)
+        signal.alarm(1)
         
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % pid
@@ -174,9 +173,9 @@ def processFile(l):
                 hash_def_two_renaming)
         
          
-    except TimeExceededError:
+    except TimeExceededError, e:
         cleanup(pid)
-        return (None, js_file_path, 'Timeout')
+        return (None, js_file_path, str(e))
 
     
     
@@ -198,8 +197,11 @@ with open(training_sample_path, 'r') as f, \
     f5 = 'corpus.hash_def_one_renaming.js'
     f6 = 'corpus.hash_def_two_renaming.js'
     
-    for f in [f1, f2, f3, f4, f5, f6]:
-        os.remove(f)
+    try:
+        for f in [f1, f2, f3, f4, f5, f6]:
+            os.remove(f)
+    except:
+        pass
 
     pool = multiprocessing.Pool(processes=8)
 
