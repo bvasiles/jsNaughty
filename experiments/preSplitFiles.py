@@ -13,8 +13,7 @@ corpus_dir = Folder(sys.argv[1])
 isMini = {}
 reader = UnicodeReader(open('isMinified.csv', 'r'))
 for row in reader:
-    isMini[row[0]] = bool(row[1])
-    print row[0], isMini[row[0]]
+    isMini[row[0]] = eval(row[1])
 
 eligible = [os.path.basename(f) for f in corpus_dir.fullFileNames("*.js")
             if not isMini.get(os.path.basename(f), False)]
