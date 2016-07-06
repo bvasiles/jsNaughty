@@ -15,6 +15,6 @@ out_dir = Folder(sys.argv[3]).create()
 corpus_sample = random.sample(corpus_dir.fullFileNames("*.js"), sample_size)
 
 for f in corpus_sample:
-    copyfile(f, os.path.join(out_dir.path(), os.path.basename(f)))
+    copyfile(f, os.path.join(out_dir.path(), os.path.basename(os.path.abspath(f))))
 
 
