@@ -60,7 +60,7 @@ def processFile(l):
     
     try:
         # Timeout after 20 minutes
-        signal.alarm(1)
+        signal.alarm(1200)
         
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % pid
