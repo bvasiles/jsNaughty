@@ -10,11 +10,15 @@ from unicodeManager import UnicodeReader, UnicodeWriter
 
 corpus_dir = Folder(sys.argv[1])
 
+def str_to_bool(s):
+    if s == 'True':
+        return True
+    return False
+     
 isMini = {}
 reader = UnicodeReader(open('isMinified.csv', 'r'))
 for row in reader:
-    isMini[row[0]] = eval(row[1])
-    print row[0], isMini[row[0]]
+    isMini[row[0]] = str_to_bool(row[1])
 
 # eligible = [os.path.basename(f) for f in corpus_dir.fullFileNames("*.js")
 #             if not isMini.get(os.path.basename(f), False)]
