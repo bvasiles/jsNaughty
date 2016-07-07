@@ -174,11 +174,14 @@ def processFile(l):
                 hash_def_two_renaming)
         
          
-    except:
+    except TimeExceededError, e:
         cleanup(pid)
         return (js_file_path, None, str(e))
 
-
+    except Exception, e:
+        cleanup(pid)
+        return (js_file_path, None, str(e))
+    
     
 corpus_root = os.path.abspath(sys.argv[1])
 training_sample_path = sys.argv[2]
