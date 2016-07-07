@@ -206,8 +206,8 @@ with open(training_sample_path, 'r') as f, \
 
     pool = multiprocessing.Pool(processes=8)
 
-    for result in pool.imap(processFile, reader):
-        try:
+    try:
+        for result in pool.imap(processFile, reader):
             (js_file_path,
              orig, 
              no_renaming, 
@@ -216,10 +216,6 @@ with open(training_sample_path, 'r') as f, \
              hash_def_one_renaming,
              hash_def_two_renaming) = result
           
-        except Exception, e:
-            writer.writerow(e)
-            continue
-
         try:
             with open(f1, 'a') as f_orig, \
                     open(f2, 'a') as f_no_renaming, \
@@ -239,3 +235,5 @@ with open(training_sample_path, 'r') as f, \
         except Exception, e:
             writer.writerow([js_file_path, str(e)])
 
+    except Exception, e:
+        writer.writerow(e)
