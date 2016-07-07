@@ -216,24 +216,25 @@ with open(training_sample_path, 'r') as f, \
              hash_def_one_renaming,
              hash_def_two_renaming) = result
           
-        try:
-            with open(f1, 'a') as f_orig, \
-                    open(f2, 'a') as f_no_renaming, \
-                    open(f3, 'a') as f_basic_renaming, \
-                    open(f4, 'a') as f_hash_renaming, \
-                    open(f5, 'a') as f_hash_def_one_renaming, \
-                    open(f6, 'a') as f_hash_def_two_renaming:
-                f_orig.writelines(orig)
-                f_no_renaming.writelines(no_renaming)
-                f_basic_renaming.writelines(basic_renaming)
-                f_hash_renaming.writelines(hash_renaming)
-                f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                f_hash_def_two_renaming.writelines(hash_def_two_renaming)
-                
-            writer.writerow([js_file_path, 'OK'])
-    
-        except Exception, e:
-            writer.writerow([js_file_path, str(e)])
+            try:
+                with open(f1, 'a') as f_orig, \
+                        open(f2, 'a') as f_no_renaming, \
+                        open(f3, 'a') as f_basic_renaming, \
+                        open(f4, 'a') as f_hash_renaming, \
+                        open(f5, 'a') as f_hash_def_one_renaming, \
+                        open(f6, 'a') as f_hash_def_two_renaming:
+                    f_orig.writelines(orig)
+                    f_no_renaming.writelines(no_renaming)
+                    f_basic_renaming.writelines(basic_renaming)
+                    f_hash_renaming.writelines(hash_renaming)
+                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                    
+                writer.writerow([js_file_path, 'OK'])
+        
+            except Exception, e:
+                writer.writerow([js_file_path, str(e)])
 
     except Exception, e:
         writer.writerow(e)
+
