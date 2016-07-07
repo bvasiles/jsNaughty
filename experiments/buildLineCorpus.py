@@ -75,7 +75,7 @@ def processFile(l):
             prepro.write_temp_file(path_tmp)
         except:
             cleanup(pid)
-            return (None, js_file_path, 'Preprocessor fail')
+            raise Exception, (js_file_path, 'Preprocessor fail')
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
@@ -83,7 +83,7 @@ def processFile(l):
          
         if not ok:
             cleanup(pid)
-            return (None, js_file_path, 'Beautifier fail')
+            raise Exception, (js_file_path, 'Beautifier fail')
         
         # Minify
         ugly = Uglifier()
@@ -91,7 +91,7 @@ def processFile(l):
         
         if not ok:
             cleanup(pid)
-            return (None, js_file_path, 'Uglifier fail')
+            raise Exception, (js_file_path, 'Uglifier fail')
         
         # Num tokens before vs after
         try:
@@ -99,13 +99,13 @@ def processFile(l):
             tok_ugly = Lexer(path_tmp_u).tokenList
         except:
             cleanup(pid)
-            return (None, js_file_path, 'Lexer fail')
+            raise Exception, (js_file_path, 'Lexer fail')
         
         # For now only work with minified files that have
         # the same number of tokens as the originals
         if not len(tok_clear) == len(tok_ugly):
             cleanup(pid)
-            return (None, js_file_path, 'Num tokens mismatch')
+            raise Exception, (js_file_path, 'Num tokens mismatch')
         
         # Align minified and clear files, in case the beautifier 
         # did something weird
@@ -115,14 +115,14 @@ def processFile(l):
             aligner.align(path_tmp_b, path_tmp_u)
         except:
             cleanup(pid)
-            return (None, js_file_path, 'Aligner fail')
+            raise Exception, (js_file_path, 'Aligner fail')
         
         try:
             iBuilder_clear = IndexBuilder(Lexer(path_tmp_b_a).tokenList)
             iBuilder_ugly = IndexBuilder(Lexer(path_tmp_u_a).tokenList)
         except:
             cleanup(pid)
-            return (None, js_file_path, 'IndexBuilder fail')
+            raise Exception, (js_file_path, 'IndexBuilder fail')
         
         # Compute scoping: name2scope is a dictionary where keys
         # are (name, start_index) tuples and values are scope identifiers. 
@@ -135,7 +135,7 @@ def processFile(l):
             _name2useScope = scopeAnalyst.resolve_use_scope()
         except:
             cleanup(pid)
-            return (None, js_file_path, 'ScopeAnalyst fail')
+            raise Exception, (js_file_path, 'ScopeAnalyst fail')
         
         orig = []
         no_renaming = []
@@ -165,7 +165,8 @@ def processFile(l):
                                                    debug=False)
 
         cleanup(pid)
-        return (orig, 
+        return (js_file_path,
+                orig, 
                 no_renaming, 
                 basic_renaming, 
                 hash_renaming,
@@ -175,7 +176,7 @@ def processFile(l):
          
     except TimeExceededError, e:
         cleanup(pid)
-        return (None, js_file_path, str(e))
+        raise Exception, (js_file_path, str(e))
 
     
     
@@ -208,7 +209,8 @@ with open(training_sample_path, 'r') as f, \
     for result in pool.imap(processFile, reader):
         try:
             if result[0] is not None:
-                (orig, 
+                (js_file_path,
+                 orig, 
                  no_renaming, 
                  basic_renaming, 
                  hash_renaming,
@@ -227,10 +229,16 @@ with open(training_sample_path, 'r') as f, \
                     f_hash_renaming.writelines(hash_renaming)
                     f_hash_def_one_renaming.writelines(hash_def_one_renaming)
                     f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                
+                writer.writerow([js_file_path, 'OK'])
     
             else:
                 writer.writerow(result[1:])
-        except:
-            print result
-            writer.writerow([result[1], 'Writing failed'])
+        except Exception, e:
+            print str(e)
+            print
+            for r in result:
+                print r
+            exit()
+#             writer.writerow([result[1], 'Writing failed'])
 
