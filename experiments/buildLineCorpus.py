@@ -178,6 +178,12 @@ def processFile(l):
         cleanup(pid)
         return (js_file_path, None, str(e))
 
+    except:
+        cleanup(pid)
+        print js_file_path
+        exit()
+#         return (js_file_path, None, 'Unknown error')
+    
     
     
 corpus_root = os.path.abspath(sys.argv[1])
