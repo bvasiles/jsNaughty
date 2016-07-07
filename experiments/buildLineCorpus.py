@@ -237,8 +237,6 @@ with open(training_sample_path, 'r') as f, \
             writer.writerow([js_file_path, 'OK'])
     
         except Exception, e:
-            print js_file_path
-            print str(e)
+            writer.writerow([js_file_path, str(e)])
             exit()
-#             writer.writerow([result[1], 'Writing failed'])
 
