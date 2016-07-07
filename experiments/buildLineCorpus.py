@@ -238,5 +238,4 @@ with open(training_sample_path, 'r') as f, \
     
         except Exception, e:
             writer.writerow([js_file_path, str(e)])
-            exit()
 
