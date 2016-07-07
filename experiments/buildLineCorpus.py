@@ -206,27 +206,30 @@ with open(training_sample_path, 'r') as f, \
     pool = multiprocessing.Pool(processes=8)
 
     for result in pool.imap(processFile, reader):
-        if result[0] is not None:
-            (orig, 
-             no_renaming, 
-             basic_renaming, 
-             hash_renaming,
-             hash_def_one_renaming,
-             hash_def_two_renaming) = result
-          
-            with open(f1, 'a') as f_orig, \
-                    open(f2, 'a') as f_no_renaming, \
-                    open(f3, 'a') as f_basic_renaming, \
-                    open(f4, 'a') as f_hash_renaming, \
-                    open(f5, 'a') as f_hash_def_one_renaming, \
-                    open(f6, 'a') as f_hash_def_two_renaming:
-                f_orig.writelines(orig)
-                f_no_renaming.writelines(no_renaming)
-                f_basic_renaming.writelines(basic_renaming)
-                f_hash_renaming.writelines(hash_renaming)
-                f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                f_hash_def_two_renaming.writelines(hash_def_two_renaming)
-
-        else:
-            writer.writerow(result[1:])
+        try:
+            if result[0] is not None:
+                (orig, 
+                 no_renaming, 
+                 basic_renaming, 
+                 hash_renaming,
+                 hash_def_one_renaming,
+                 hash_def_two_renaming) = result
+              
+                with open(f1, 'a') as f_orig, \
+                        open(f2, 'a') as f_no_renaming, \
+                        open(f3, 'a') as f_basic_renaming, \
+                        open(f4, 'a') as f_hash_renaming, \
+                        open(f5, 'a') as f_hash_def_one_renaming, \
+                        open(f6, 'a') as f_hash_def_two_renaming:
+                    f_orig.writelines(orig)
+                    f_no_renaming.writelines(no_renaming)
+                    f_basic_renaming.writelines(basic_renaming)
+                    f_hash_renaming.writelines(hash_renaming)
+                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+    
+            else:
+                writer.writerow(result[1:])
+        except:
+            writer.writerow([result[1], 'Writing failed'])
 
