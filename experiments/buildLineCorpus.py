@@ -75,7 +75,7 @@ def processFile(l):
             prepro.write_temp_file(path_tmp)
         except:
             cleanup(pid)
-            raise Exception, (js_file_path, 'Preprocessor fail')
+            return (js_file_path, None, 'Preprocessor fail')
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
@@ -83,7 +83,7 @@ def processFile(l):
          
         if not ok:
             cleanup(pid)
-            raise Exception, (js_file_path, 'Beautifier fail')
+            return (js_file_path, None, 'Beautifier fail')
         
         # Minify
         ugly = Uglifier()
@@ -91,7 +91,7 @@ def processFile(l):
         
         if not ok:
             cleanup(pid)
-            raise Exception, (js_file_path, 'Uglifier fail')
+            return (js_file_path, None, 'Uglifier fail')
         
         # Num tokens before vs after
         try:
@@ -99,13 +99,13 @@ def processFile(l):
             tok_ugly = Lexer(path_tmp_u).tokenList
         except:
             cleanup(pid)
-            raise Exception, (js_file_path, 'Lexer fail')
+            return (js_file_path, None, 'Lexer fail')
         
         # For now only work with minified files that have
         # the same number of tokens as the originals
         if not len(tok_clear) == len(tok_ugly):
             cleanup(pid)
-            raise Exception, (js_file_path, 'Num tokens mismatch')
+            return (js_file_path, None, 'Num tokens mismatch')
         
         # Align minified and clear files, in case the beautifier 
         # did something weird
@@ -115,14 +115,14 @@ def processFile(l):
             aligner.align(path_tmp_b, path_tmp_u)
         except:
             cleanup(pid)
-            raise Exception, (js_file_path, 'Aligner fail')
+            return (js_file_path, None, 'Aligner fail')
         
         try:
             iBuilder_clear = IndexBuilder(Lexer(path_tmp_b_a).tokenList)
             iBuilder_ugly = IndexBuilder(Lexer(path_tmp_u_a).tokenList)
         except:
             cleanup(pid)
-            raise Exception, (js_file_path, 'IndexBuilder fail')
+            return (js_file_path, None, 'IndexBuilder fail')
         
         # Compute scoping: name2scope is a dictionary where keys
         # are (name, start_index) tuples and values are scope identifiers. 
@@ -135,7 +135,7 @@ def processFile(l):
             _name2useScope = scopeAnalyst.resolve_use_scope()
         except:
             cleanup(pid)
-            raise Exception, (js_file_path, 'ScopeAnalyst fail')
+            return (js_file_path, None, 'ScopeAnalyst fail')
         
         orig = []
         no_renaming = []
@@ -176,20 +176,17 @@ def processFile(l):
          
     except TimeExceededError, e:
         cleanup(pid)
-        raise Exception, (js_file_path, str(e))
+        return (js_file_path, None, str(e))
 
     
     
 corpus_root = os.path.abspath(sys.argv[1])
 training_sample_path = sys.argv[2]
 
-training_sample = {}
 with open(training_sample_path, 'r') as f, \
         open(('log_' + os.path.basename(training_sample_path)), 'w') as g:
     reader = UnicodeReader(f)
     writer = UnicodeWriter(g)
-#     for row in reader:
-#         training_sample[row[0]] = True
 
     f1 = 'corpus.orig.js'
     f2 = 'corpus.no_renaming.js'
@@ -206,8 +203,9 @@ with open(training_sample_path, 'r') as f, \
 
     pool = multiprocessing.Pool(processes=8)
 
-    try:
-        for result in pool.imap(processFile, reader):
+    for result in pool.imap(processFile, reader):
+        
+        if result[1] is not None:
             (js_file_path,
              orig, 
              no_renaming, 
@@ -234,7 +232,7 @@ with open(training_sample_path, 'r') as f, \
         
             except Exception, e:
                 writer.writerow([js_file_path, str(e)])
-
-    except Exception, e:
-        writer.writerow(e)
+                
+        else:
+            writer.writerow([result[0], result[2]])
 
