@@ -231,5 +231,6 @@ with open(training_sample_path, 'r') as f, \
             else:
                 writer.writerow(result[1:])
         except:
+            print result
             writer.writerow([result[1], 'Writing failed'])
 
