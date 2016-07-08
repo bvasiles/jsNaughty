@@ -10,13 +10,12 @@ from tools import Uglifier, Preprocessor, IndexBuilder, \
 from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec, \
                                 renameUsingHashDefLine
 
+from folderManager import Folder
+
 
 class TimeExceededError(Exception): pass
 def timeout(signum, frame):
     raise TimeExceededError, "Timed Out"
-
-
-class ContinueError(Exception): pass
 
 
 import signal
@@ -129,7 +128,9 @@ def processFile(l):
         # Note: start_index is a flat (unidimensional) index, 
         # not a (line_chr_idx, col_chr_idx) index.
         try:
-            scopeAnalyst = ScopeAnalyst(os.path.join(os.path.dirname(os.path.realpath(__file__)), path_tmp_u_a))
+            scopeAnalyst = ScopeAnalyst(os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 path_tmp_u_a))
             _name2defScope = scopeAnalyst.resolve_scope()
             _isGlobal = scopeAnalyst.isGlobal
             _name2useScope = scopeAnalyst.resolve_use_scope()
@@ -186,8 +187,12 @@ def processFile(l):
 corpus_root = os.path.abspath(sys.argv[1])
 training_sample_path = sys.argv[2]
 
+output_path = Folder(sys.argv[3]).create()
+
+
 with open(training_sample_path, 'r') as f, \
-        open(('log_' + os.path.basename(training_sample_path)), 'w') as g:
+        open(os.path.join(output_path,
+               'log_' + os.path.basename(training_sample_path)), 'w') as g:
     reader = UnicodeReader(f)
     writer = UnicodeWriter(g)
 
@@ -200,7 +205,7 @@ with open(training_sample_path, 'r') as f, \
     
     try:
         for f in [f1, f2, f3, f4, f5, f6]:
-            os.remove(f)
+            os.remove(os.path.join(output_path, f))
     except:
         pass
 
@@ -218,12 +223,18 @@ with open(training_sample_path, 'r') as f, \
              hash_def_two_renaming) = result
           
             try:
-                with open(f1, 'a') as f_orig, \
-                        open(f2, 'a') as f_no_renaming, \
-                        open(f3, 'a') as f_basic_renaming, \
-                        open(f4, 'a') as f_hash_renaming, \
-                        open(f5, 'a') as f_hash_def_one_renaming, \
-                        open(f6, 'a') as f_hash_def_two_renaming:
+                with open(os.path.join(output_path, f1), 'a') \
+                            as f_orig, \
+                        open(os.path.join(output_path, f2), 'a') \
+                            as f_no_renaming, \
+                        open(os.path.join(output_path, f3), 'a') \
+                            as f_basic_renaming, \
+                        open(os.path.join(output_path, f4), 'a') \
+                            as f_hash_renaming, \
+                        open(os.path.join(output_path, f5), 'a') \
+                            as f_hash_def_one_renaming, \
+                        open(os.path.join(output_path, f6), 'a') \
+                            as f_hash_def_two_renaming:
                     f_orig.writelines(orig)
                     f_no_renaming.writelines(no_renaming)
                     f_basic_renaming.writelines(basic_renaming)
