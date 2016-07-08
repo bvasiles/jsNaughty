@@ -43,19 +43,14 @@ with open('trainingSample.csv', 'wb') as of:
         writer.writerow([f])
  
  
-tuning_sample = random.sample([f for f in eligible 
-                               if f not in training_sample], 
-                              tuning_size)
+tuning_sample = random.sample(set(eligible).difference(set(training_sample)))
 with open('tuningSample.csv', 'wb') as of:
     writer = UnicodeWriter(of)
     for f in tuning_sample:
         writer.writerow([f])
  
  
-testing_sample = random.sample([f for f in eligible 
-                               if f not in training_sample
-                               and f not in tuning_sample], 
-                              testing_size)
+testing_sample = random.sample(set(eligible).difference(set(training_sample)).difference(set(tuning_sample)))
 with open('testingSample.csv', 'wb') as of:
     writer = UnicodeWriter(of)
     for f in testing_sample:
