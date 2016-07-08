@@ -1,10 +1,10 @@
 import os
 import sys
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import random
 from unicodeManager import UnicodeReader, UnicodeWriter 
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 file_in = os.path.abspath(sys.argv[1])
 file_out = os.path.abspath(sys.argv[2])
