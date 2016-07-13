@@ -18,9 +18,9 @@ def processFile(js_file_path):
     
     print 'READING:', js_file_path
     
-    acorn = Acorn()
-    (_stdout, acorn_ok) = acorn.run(js_file_path)
-    print 'RUNNING Acorn:', acorn_ok
+#    acorn = Acorn()
+#    (_stdout, acorn_ok) = acorn.run(js_file_path)
+#    print 'RUNNING Acorn:', acorn_ok
     
     # Load in the minified file
     minified = open(js_file_path).read()
