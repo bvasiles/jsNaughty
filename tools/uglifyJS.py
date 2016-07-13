@@ -14,6 +14,7 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
+            print socket.gethostname()
             if socket.gethostname() == 'hpc1':
                 self.path = '/share/apps/node_modules/uglify-js/bin/uglifyjs'
             else:
