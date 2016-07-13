@@ -160,7 +160,7 @@ with open(training_sample_path, 'r') as f, \
     except:
         pass
 
-    pool = multiprocessing.Pool(processes=256)
+    pool = multiprocessing.Pool(processes=32)
 
     for result in pool.imap(processFile, reader):
         
