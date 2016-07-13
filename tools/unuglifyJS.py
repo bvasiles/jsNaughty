@@ -15,10 +15,11 @@ class UnuglifyJS:
             self.flags = flags
 
         if path is None:
-            if socket.gethostname() == 'hpc1':
-                self.path = '/share/apps/node_modules/unuglify-js/bin/unuglifyjs'
-            else:
+            if socket.gethostname() == 'bogdan.mac' or \
+                    socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/unuglifyjs'
+            else:
+                self.path = '/share/apps/node_modules/unuglify-js/bin/unuglifyjs'
         else:
             self.path = path
     
