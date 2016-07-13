@@ -30,6 +30,7 @@ class Uglifier:
         command = [self.path, in_file_path] + \
                     self.flags + \
                     ['-o', out_file_path]
+        print command
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
         _pc = proc.communicate()
     
