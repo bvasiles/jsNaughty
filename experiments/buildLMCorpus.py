@@ -125,7 +125,9 @@ def processFile(l):
             orig.append(' '.join([t for (_tt,t) in \
                                   iBuilder_clear.tokens[line_idx]]) + "\n")
 
-        cleanup(pid)
+        print len(orig)
+
+	cleanup(pid)
         return (js_file_path,
                 orig)
         
@@ -144,7 +146,6 @@ training_sample_path = sys.argv[2]
 
 output_path = Folder(sys.argv[3]).create()
 
-
 with open(training_sample_path, 'r') as f, \
         open(os.path.join(output_path,
                'log_' + os.path.basename(training_sample_path)), 'w') as g:
@@ -159,7 +160,7 @@ with open(training_sample_path, 'r') as f, \
     except:
         pass
 
-    pool = multiprocessing.Pool(processes=1)
+    pool = multiprocessing.Pool(processes=256)
 
     for result in pool.imap(processFile, reader):
         
