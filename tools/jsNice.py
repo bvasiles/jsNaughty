@@ -1,5 +1,6 @@
 import subprocess
 PIPE = subprocess.PIPE
+import socket
 
 
 class JSNice:
@@ -11,7 +12,10 @@ class JSNice:
             self.flags = flags
 
         if path is None:
-            self.path = '/usr/local/bin/jsnice'
+            if socket.gethostname() == 'hpc1':
+                self.path = '/share/apps/node_modules/jsnice/bin/jsnice'
+            else:
+                self.path = '/usr/local/bin/jsnice'
         else:
             self.path = path
     
