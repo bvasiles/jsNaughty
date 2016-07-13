@@ -14,7 +14,6 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
-            print socket.gethostname()
             if socket.gethostname() == 'bogdan.mac' or \
                     socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/uglifyjs'
