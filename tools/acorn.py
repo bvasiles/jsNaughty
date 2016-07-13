@@ -1,5 +1,6 @@
 import subprocess
 PIPE = subprocess.PIPE
+import socket
 
 class Acorn:
     
@@ -10,7 +11,10 @@ class Acorn:
             self.flags = flags
 
         if path is None:
-            self.path = '/usr/local/bin/acorn'
+            if socket.gethostname() == 'hpc1':
+                self.path = '/usr/local/bin/acorn'
+            else:
+                self.path = '/usr/local/bin/acorn'
         else:
             self.path = path
     

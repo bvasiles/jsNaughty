@@ -1,5 +1,7 @@
 import subprocess
 PIPE = subprocess.PIPE
+import socket
+
 
 class Uglifier:
     
@@ -12,7 +14,10 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
-            self.path = '/usr/local/bin/uglifyjs'
+            if socket.gethostname() == 'hpc1':
+                self.path = '/share/apps/node_modules/uglify-js/bin/uglifyjs'
+            else:
+                self.path = '/usr/local/bin/uglifyjs'
         else:
             self.path = path
         
