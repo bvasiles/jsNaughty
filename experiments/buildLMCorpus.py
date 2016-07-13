@@ -125,9 +125,7 @@ def processFile(l):
             orig.append(' '.join([t for (_tt,t) in \
                                   iBuilder_clear.tokens[line_idx]]) + "\n")
 
-        print len(orig)
-
-	cleanup(pid)
+        cleanup(pid)
         return (js_file_path,
                 orig)
         
