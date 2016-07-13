@@ -9,7 +9,8 @@ class Uglifier:
         # Default flags:
         # - minimize, most frequent var gets shortest name
         if flags is None:
-            self.flags = ['--acorn', '-m', 'sort', '-b']
+            self.flags = ['-m', 'sort', '-b']
+            #'--acorn', 
         else:
             self.flags = flags
         
