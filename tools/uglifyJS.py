@@ -15,10 +15,11 @@ class Uglifier:
         
         if path is None:
             print socket.gethostname()
-            if socket.gethostname() == 'hpc1':
-                self.path = '/share/apps/node_modules/uglify-js/bin/uglifyjs'
-            else:
+            if socket.gethostname() == 'bogdan.mac' or \
+                    socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/uglifyjs'
+            else:
+                self.path = '/share/apps/node_modules/uglify-js/bin/uglifyjs'
         else:
             self.path = path
         

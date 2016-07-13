@@ -12,10 +12,11 @@ class JSNice:
             self.flags = flags
 
         if path is None:
-            if socket.gethostname() == 'hpc1':
-                self.path = '/share/apps/node_modules/jsnice/bin/jsnice'
-            else:
+            if socket.gethostname() == 'bogdan.mac' or \
+                    socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/jsnice'
+            else:
+                self.path = '/share/apps/node_modules/jsnice/bin/jsnice'
         else:
             self.path = path
     

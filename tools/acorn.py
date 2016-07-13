@@ -2,6 +2,7 @@ import subprocess
 PIPE = subprocess.PIPE
 import socket
 
+
 class Acorn:
     
     def __init__(self, path=None, flags=None):
@@ -11,7 +12,8 @@ class Acorn:
             self.flags = flags
 
         if path is None:
-            if socket.gethostname() == 'hpc1':
+            if socket.gethostname() == 'bogdan.mac' or \
+                    socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/acorn'
             else:
                 self.path = '/usr/local/bin/acorn'
