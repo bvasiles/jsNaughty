@@ -10,14 +10,14 @@ from tools import Uglifier, Preprocessor, IndexBuilder, \
 from folderManager import Folder
 
 
-class TimeExceededError(Exception): pass
-def timeout(signum, frame):
-    raise TimeExceededError, "Timed Out"
+#class TimeExceededError(Exception): pass
+#def timeout(signum, frame):
+#    raise TimeExceededError, "Timed Out"
 
 
-import signal
+#import signal
 #SIGALRM is only usable on a unix platform
-signal.signal(signal.SIGALRM, timeout)
+#signal.signal(signal.SIGALRM, timeout)
 
 
 def cleanup(pid):
@@ -56,7 +56,7 @@ def processFile(l):
     
     try:
         # Timeout after 20 minutes
-        signal.alarm(1200)
+        #signal.alarm(1200)
         
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % pid
@@ -130,9 +130,9 @@ def processFile(l):
                 orig)
         
          
-    except TimeExceededError, e:
-        cleanup(pid)
-        return (js_file_path, None, str(e))
+    #except TimeExceededError, e:
+    #    cleanup(pid)
+    #    return (js_file_path, None, str(e))
 
     except Exception, e:
         cleanup(pid)
@@ -160,7 +160,7 @@ with open(training_sample_path, 'r') as f, \
 
     pool = multiprocessing.Pool(processes=32)
 
-    for result in pool.imap(processFile, reader):
+    for result in pool.imap_unordered(processFile, reader):
         
         if result[1] is not None:
             (js_file_path,
