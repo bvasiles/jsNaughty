@@ -13,14 +13,14 @@ from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec, \
 from folderManager import Folder
 
 
-class TimeExceededError(Exception): pass
-def timeout(signum, frame):
-    raise TimeExceededError, "Timed Out"
+#class TimeExceededError(Exception): pass
+#def timeout(signum, frame):
+#    raise TimeExceededError, "Timed Out"
 
 
-import signal
-#SIGALRM is only usable on a unix platform
-signal.signal(signal.SIGALRM, timeout)
+#import signal
+##SIGALRM is only usable on a unix platform
+#signal.signal(signal.SIGALRM, timeout)
 
 
 def cleanup(pid):
@@ -58,8 +58,8 @@ def processFile(l):
     pid = int(multiprocessing.current_process().ident)
     
     try:
-        # Timeout after 20 minutes
-        signal.alarm(1200)
+        ## Timeout after 20 minutes
+        #signal.alarm(1200)
         
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % pid
@@ -175,9 +175,9 @@ def processFile(l):
                 hash_def_two_renaming)
         
          
-    except TimeExceededError, e:
-        cleanup(pid)
-        return (js_file_path, None, str(e))
+    #except TimeExceededError, e:
+    #    cleanup(pid)
+    #    return (js_file_path, None, str(e))
 
     except Exception, e:
         cleanup(pid)
@@ -190,11 +190,9 @@ training_sample_path = sys.argv[2]
 output_path = Folder(sys.argv[3]).create()
 
 
-with open(training_sample_path, 'r') as f, \
-        open(os.path.join(output_path,
-               'log_' + os.path.basename(training_sample_path)), 'w') as g:
+with open(training_sample_path, 'r') as f:
+
     reader = UnicodeReader(f)
-    writer = UnicodeWriter(g)
 
     f1 = 'corpus.orig.js'
     f2 = 'corpus.no_renaming.js'
@@ -202,28 +200,32 @@ with open(training_sample_path, 'r') as f, \
     f4 = 'corpus.hash_renaming.js'
     f5 = 'corpus.hash_def_one_renaming.js'
     f6 = 'corpus.hash_def_two_renaming.js'
-    
+    flog = 'log_' + os.path.basename(training_sample_path)
+ 
     try:
-        for f in [f1, f2, f3, f4, f5, f6]:
+        for f in [f1, f2, f3, f4, f5, f6, flog]:
             os.remove(os.path.join(output_path, f))
     except:
         pass
 
-    pool = multiprocessing.Pool(processes=8)
+    pool = multiprocessing.Pool(processes=32)
 
-    for result in pool.imap(processFile, reader):
-        
-        if result[1] is not None:
-            (js_file_path,
-             orig, 
-             no_renaming, 
-             basic_renaming, 
-             hash_renaming,
-             hash_def_one_renaming,
-             hash_def_two_renaming) = result
+    for result in pool.imap_unordered(processFile, reader):
+      
+        with open(os.path.join(output_path, flog), 'a') as g:
+            writer = UnicodeWriter(g)
+  
+            if result[1] is not None:
+                (js_file_path,
+                 orig, 
+                 no_renaming, 
+                 basic_renaming, 
+                 hash_renaming,
+                 hash_def_one_renaming,
+                 hash_def_two_renaming) = result
           
-            try:
-                with open(os.path.join(output_path, f1), 'a') \
+                try:
+                    with open(os.path.join(output_path, f1), 'a') \
                             as f_orig, \
                         open(os.path.join(output_path, f2), 'a') \
                             as f_no_renaming, \
@@ -235,18 +237,18 @@ with open(training_sample_path, 'r') as f, \
                             as f_hash_def_one_renaming, \
                         open(os.path.join(output_path, f6), 'a') \
                             as f_hash_def_two_renaming:
-                    f_orig.writelines(orig)
-                    f_no_renaming.writelines(no_renaming)
-                    f_basic_renaming.writelines(basic_renaming)
-                    f_hash_renaming.writelines(hash_renaming)
-                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                        f_orig.writelines(orig)
+                        f_no_renaming.writelines(no_renaming)
+                        f_basic_renaming.writelines(basic_renaming)
+                        f_hash_renaming.writelines(hash_renaming)
+                        f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                        f_hash_def_two_renaming.writelines(hash_def_two_renaming)
                     
-                writer.writerow([js_file_path, 'OK'])
+                    writer.writerow([js_file_path, 'OK'])
         
-            except Exception, e:
-                writer.writerow([js_file_path, str(e)])
+                except Exception, e:
+                    writer.writerow([js_file_path, str(e)])
                 
-        else:
-            writer.writerow([result[0], result[2]])
+            else:
+                writer.writerow([result[0], result[2]])
 
