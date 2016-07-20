@@ -1,7 +1,7 @@
 import sys
 import os
 import glob
-
+import stat
 
 root_path = os.path.abspath(sys.argv[1])
 n_cores = sys.argv[2]
@@ -40,4 +40,8 @@ set -u
     
     with open(os.path.join(root_path, variant, "train.sh"), "w") as f:
         f.write(text)
+        
+    st = os.stat(os.path.join(root_path, variant, "train.sh"))
+    os.chmod(os.path.join(root_path, variant, "train.sh"), st.st_mode | stat.S_IEXEC)
+
 
