@@ -39,7 +39,7 @@ for idx, suffix in enumerate(suffixes):
                                "corpus.clear"), "w") as f:
             
             # Remove empty lines and lines longer than 20 tokens
-            simplified = [line+"\n" for line in corpus_clear \
+            simplified = [line for line in corpus_clear \
                     if len(line.split())>0 and len(line.split())<=20]
             
             lengths.append(len(simplified))
@@ -60,7 +60,7 @@ for idx, suffix in enumerate(suffixes):
     with open(os.path.join(root_path, variant, \
                            "corpus", "corpus.ugly"), "w") as f:
         
-        simplified = [line+"\n" for line in corpus_ugly \
+        simplified = [line for line in corpus_ugly \
                 if len(line.split())>0 and len(line.split())<=20]
         
         lengths.append(len(simplified))
