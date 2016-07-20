@@ -29,8 +29,8 @@ set -u
 #
 /home/bogdanv/mosesdecoder/scripts/training/train-model.perl -root-dir %s -corpus %s -f ugly -e clear -cores %s --alignment intersect -reordering distance -lm 0:5:/home/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm:8 --max-phrase-length 20 -external-bin-dir /home/bogdanv/mosesdecoder/bin --first-step 4 --last-step 9 > %s
 ''' % (os.path.join(root_path, variant), \
-       os.path.join(root_path, variant, "stdout-%%j.txt"), \
-       os.path.join(root_path, variant, "stderr-%%j.txt"), \
+       os.path.join(root_path, variant, "stdout-%j.txt"), \
+       os.path.join(root_path, variant, "stderr-%j.txt"), \
        "moses%d" % idx, \
        str(n_cores), \
        os.path.join(root_path, variant), \
