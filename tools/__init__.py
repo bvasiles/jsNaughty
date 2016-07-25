@@ -1,6 +1,6 @@
 __all__ = ['acorn', 'indexer', 'jsNice', 'lmQuery', 'moses', \
            'scoper', 'uglifyJS', 'unuglifyJS', 'preprocessor', \
-           'miniChecker', 'lexer', 'aligner']
+           'miniChecker', 'lexer', 'aligner', 'dos2unix']
 from tools.acorn import Acorn
 from tools.indexer import IndexBuilder
 from tools.jsNice import JSNice
@@ -13,3 +13,4 @@ from tools.preprocessor import Preprocessor
 from tools.miniChecker import MiniChecker
 from tools.lexer import Lexer
 from tools.aligner import Aligner
+from tools.dos2unix import Dos2Unix
