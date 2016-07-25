@@ -25,6 +25,7 @@ corpus_root = os.path.abspath(sys.argv[1])
 training_sample_path = sys.argv[2]
 
 log_path = sys.argv[3]
+num_threads = int(sys.argv[4])
 
 
 with open(training_sample_path, 'r') as f:
@@ -39,7 +40,7 @@ with open(training_sample_path, 'r') as f:
     except:
         pass
 
-    pool = multiprocessing.Pool(processes=8)
+    pool = multiprocessing.Pool(processes=num_threads)
 
     for result in pool.imap_unordered(processFile, reader):
       
