@@ -12,8 +12,10 @@ def processFile(l):
     js_file_path = l[0]
     
     try:
-        d2u = Dos2Unix(os.path.join(corpus_root, js_file_path))
-        return (js_file_path, d2u)
+        d2u = Dos2Unix()
+        ok = d2u.run(os.path.join(corpus_root, js_file_path))
+        return (js_file_path, ok)
+        
     except Exception, e:
         return (js_file_path, str(e))
 
