@@ -1,10 +1,8 @@
 import sys
 import os
 import glob
-# import stat
 
 root_path = os.path.abspath(sys.argv[1])
-n_cores = sys.argv[2]
 
 corpus_files = [os.path.basename(f) \
                     for f in glob.glob(os.path.join(root_path, "*.js")) \
