@@ -23,6 +23,25 @@ for idx, suffix in enumerate(suffixes):
     idx_distortion = moses_ini.index("[distortion-limit]\n") + 1
     moses_ini[idx_distortion] = "0\n"
     
+    
+    idx_unk = moses_ini.index("UnknownWordPenalty\n")
+    moses_ini[idx_unk] = "#UnknownWordPenalty\n"
+    idx_unk = moses_ini.index("UnknownWordPenalty0= 1\n")
+    moses_ini[idx_unk] = "#UnknownWordPenalty0= 1\n"
+    
+    
+    idx_wp = moses_ini.index("WordPenalty\n")
+    moses_ini[idx_wp] = "#WordPenalty\n"
+    idx_wp = moses_ini.index("WordPenalty0= -1\n")
+    moses_ini[idx_wp] = "#WordPenalty0= -1\n"
+    
+    
+    idx_wp = moses_ini.index("Distortion\n")
+    moses_ini[idx_wp] = "#Distortion\n"
+    idx_wp = moses_ini.index("Distortion0= 0.3\n")
+    moses_ini[idx_wp] = "#Distortion0= 0.3\n"
+    
+    
     l_phr_dict = [l for l in moses_ini \
                   if l.startswith("PhraseDictionaryMemory")][0]
     idx_phr_dict = moses_ini.index(l_phr_dict)
@@ -32,7 +51,8 @@ for idx, suffix in enumerate(suffixes):
                     parts[1:3] + \
                     [parts[3].replace("phrase-table.gz","phrase-table.minphr")] + \
                     parts[4:6]
-    moses_ini[idx_phr_dict] = " ".join(updated_parts)
+    moses_ini[idx_phr_dict] = " ".join(updated_parts) + "\n"
+    
     
     with open(os.path.join(root_path, variant, \
                            "model", "moses.bin.ini"), "w") as f:
