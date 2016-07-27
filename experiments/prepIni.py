@@ -23,6 +23,17 @@ for idx, suffix in enumerate(suffixes):
     idx_distortion = moses_ini.index("[distortion-limit]\n") + 1
     moses_ini[idx_distortion] = "0\n"
     
+    l_phr_dict = [l for l in moses_ini \
+                  if l.starts_with("PhraseDictionaryMemory")][0]
+    idx_phr_dict = moses_ini.index(l_phr_dict)
+    parts = l_phr_dict.split()
+    
+    updated_parts = ["PhraseDictionaryCompact"] + \
+                    parts[1:2] + \
+                    [parts[3].replace("phrase-table.gz","phrase-table.minphr")] + \
+                    parts[4:5]
+    moses_ini[idx_phr_dict] = " ".join(updated_parts)
+    
     with open(os.path.join(root_path, variant, \
                            "model", "moses.bin.ini"), "w") as f:
         f.writelines(moses_ini)
