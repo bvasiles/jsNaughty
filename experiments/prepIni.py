@@ -24,7 +24,7 @@ for idx, suffix in enumerate(suffixes):
     moses_ini[idx_distortion] = "0\n"
     
     l_phr_dict = [l for l in moses_ini \
-                  if l.starts_with("PhraseDictionaryMemory")][0]
+                  if l.startswith("PhraseDictionaryMemory")][0]
     idx_phr_dict = moses_ini.index(l_phr_dict)
     parts = l_phr_dict.split()
     
