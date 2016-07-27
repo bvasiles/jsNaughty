@@ -29,9 +29,9 @@ for idx, suffix in enumerate(suffixes):
     parts = l_phr_dict.split()
     
     updated_parts = ["PhraseDictionaryCompact"] + \
-                    parts[1:2] + \
+                    parts[1:3] + \
                     [parts[3].replace("phrase-table.gz","phrase-table.minphr")] + \
-                    parts[4:5]
+                    parts[4:6]
     moses_ini[idx_phr_dict] = " ".join(updated_parts)
     
     with open(os.path.join(root_path, variant, \
