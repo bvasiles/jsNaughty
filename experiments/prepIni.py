@@ -47,9 +47,15 @@ for idx, suffix in enumerate(suffixes):
     
     updated_parts = ["PhraseDictionaryCompact"] + \
                     parts[1:3] + \
-                    [parts[3].replace("phrase-table.gz","phrase-table.minphr")] + \
+                    [parts[3].replace("phrase-table.gz","phrase-table.minphr").replace("/bogdan/","/bogdanv/")] + \
                     parts[4:6]
     moses_ini[idx_phr_dict] = " ".join(updated_parts) + "\n"
+    
+    
+    l_lm = [l for l in moses_ini \
+                  if l.startswith("KENLM")][0]
+    idx_lm = moses_ini.index(l_lm)
+    moses_ini[idx_lm] = l_lm.replace("/bogdan/","/bogdanv/") + "\n"
     
     
     with open(os.path.join(root_path, variant, \
