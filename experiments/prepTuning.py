@@ -37,7 +37,7 @@ set -u
        os.path.join(tune_path, "corpus." + suffix + ".js"), \
        os.path.join(tune_path, "corpus.orig.js"), \
        str(n_cores),
-       os.path.join(root_path, variant, "model", "model.bin.ini"), \
+       os.path.join(root_path, variant, "model", "moses.bin.ini"), \
        os.path.join(root_path, variant), \
        os.path.join(root_path, variant, "mert.out"))
     
