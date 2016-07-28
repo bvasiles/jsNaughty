@@ -28,7 +28,7 @@ for idx, suffix in enumerate(suffixes):
 set -e
 set -u
 #
-/home/bogdanv/mosesdecoder/scripts/training/mert-moses.pl %s %s --decoder-flags="-threads %s" /home/bogdanv/mosesdecoder/bin/moses %s --mertdir /home/bogdanv/mosesdecoder/bin/ --rootdir /home/bogdanv/mosesdecoder/scripts --working-dir %s > %s
+/home/bogdanv/mosesdecoder/scripts/training/mert-moses.pl %s %s --decoder-flags="-threads %s" --jobs=%s /home/bogdanv/mosesdecoder/bin/moses %s --mertdir /home/bogdanv/mosesdecoder/bin/ --rootdir /home/bogdanv/mosesdecoder/scripts --working-dir %s > %s
 ''' % (os.path.join(root_path, variant), \
        os.path.join(root_path, variant, "stdout-%j.txt"), \
        os.path.join(root_path, variant, "stderr-%j.txt"), \
@@ -36,6 +36,7 @@ set -u
        str(n_cores), \
        os.path.join(tune_path, "corpus." + suffix + ".js"), \
        os.path.join(tune_path, "corpus.orig.js"), \
+       str(n_cores),
        str(n_cores),
        os.path.join(root_path, variant, "model", "moses.bin.ini"), \
        os.path.join(root_path, variant), \
