@@ -34,7 +34,7 @@ set -u
        os.path.join(root_path, variant, "stderr-%j.txt"), \
        "mert%d" % idx, \
        str(n_cores), \
-       os.path.join(tune_path, "corpus." + suffix), \
+       os.path.join(tune_path, "corpus." + suffix + ".js"), \
        os.path.join(tune_path, "corpus.orig.js"), \
        str(n_cores),
        os.path.join(root_path, variant, "model", "model.bin.ini"), \
