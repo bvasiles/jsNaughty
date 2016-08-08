@@ -143,7 +143,9 @@ with open(sample_path, 'r') as f:
         with open(os.path.join(output_path, flog), 'a') as g:
             writer = UnicodeWriter(g)
             
-            print result
-#             writer.writerow(result)
+            if result[1] is not None:
+                writer.writerow(result)
+            else:
+                writer.writerow([result[0], result[2]])
                 
         
