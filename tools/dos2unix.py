@@ -16,9 +16,10 @@ class Dos2Unix:
         
         # Call dos2unix
         command = [self.path, in_file_path]
+        
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
         _pc = proc.communicate()
-    
+        
         if not proc.returncode:
             ok = True
     
