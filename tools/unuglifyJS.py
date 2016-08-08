@@ -19,7 +19,7 @@ class UnuglifyJS:
                     socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/unuglifyjs'
             else:
-                self.path = '/share/apps/node_modules/unuglify-js/bin/unuglifyjs'
+                self.path = 'unuglifyjs'
         else:
             self.path = path
     
