@@ -118,7 +118,7 @@ def processFile(l):
 
 
 sample_path = os.path.abspath(sys.argv[1])
-corpus_root = Folder(sys.argv[2])
+corpus_root = os.path.abspath(sys.argv[2])
 
 output_path = Folder(sys.argv[3]).create()
 num_threads = int(sys.argv[4])
