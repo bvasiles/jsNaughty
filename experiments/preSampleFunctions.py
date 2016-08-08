@@ -84,7 +84,7 @@ def processFile(l):
                 f.write(f_body.encode("utf-8"))
             f.close()
         
-        (js_file_path, 'OK')
+        return (js_file_path, 'OK')
             
 #             # check if not too short and not too long
 #             statinfo_js = os.stat(f_path)
