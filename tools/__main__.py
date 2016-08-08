@@ -18,9 +18,9 @@ def processFile(js_file_path):
     
     print 'READING:', js_file_path
     
-#    acorn = Acorn()
-#    (_stdout, acorn_ok) = acorn.run(js_file_path)
-#    print 'RUNNING Acorn:', acorn_ok
+    acorn = Acorn()
+    (_stdout, acorn_ok) = acorn.run(js_file_path)
+    print 'RUNNING Acorn:', acorn_ok
     
     # Load in the minified file
     minified = open(js_file_path).read()
@@ -34,9 +34,9 @@ def processFile(js_file_path):
     tokens = indexBuilder.tokens
     print 'RUNNING IndexBuilder:', len(tokens)>0
     
-#     nice1 = JSNice()
-#     (ok, _out, _err) = nice1.run(js_file_path)
-#     print 'RUNNING JSNice:', ok
+    nice1 = JSNice()
+    (ok, _out, _err) = nice1.run(js_file_path)
+    print 'RUNNING JSNice:', ok
     
     nice2 = UnuglifyJS()
     (ok, _out, _err) = nice2.run(js_file_path)
@@ -58,15 +58,16 @@ def processFile(js_file_path):
     name2pth = scopeAnalyst.name2pth
     nameOrigin = scopeAnalyst.nameOrigin
     
-#     scopes = set(name2useScope.values())
-#     for scope in scopes:
-#         print scope
-#         lc_list = [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]] 
-#                    for (t,pos) in name2useScope.keys() 
-#                    if name2useScope[(t,pos)] == scope]
-#         highlight(tokens, lc_list)
-#         print
-    
+    scopes = set(name2useScope.values())
+
+    for scope in scopes:
+        print scope
+        lc_list = [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]] 
+                   for (t,pos) in name2useScope.keys()  
+                   if name2useScope[(t,pos)] == scope]
+        highlight(tokens, lc_list) 
+        print
+   
     # Discover the path to the source map
     _map_path = sourcemap.discover(minified)
     # Read and parse our sourcemap
@@ -116,7 +117,7 @@ def processFile(js_file_path):
 #             t.append(orig)
 
 #         if token == 'n':
-        print '\nNAME:', token, 'isGlobal =', glb
+        print '\nNAME:', token.encode('utf-8'), 'isGlobal =', glb
 #         print scope
 #         highlight(tokens, [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]]])
         
@@ -139,7 +140,7 @@ def processFile(js_file_path):
                 
 #                 pos = indexBuilder.flatMap[(line,col)]
             
-            print '  ', '%d:' % (tl+1), ' '.join([x[1] for x in l])
+            print '  ', '%d:' % (tl+1), ' '.join([x[1].encode('utf-8') for x in l])
             
         print
 
@@ -157,7 +158,7 @@ def highlight(tokens, lc_list):
             else:
                 new_line.append(t)
             
-        print '  ', ' '.join(new_line)
+        print '  ', ' '.join([t.encode('utf-8') for t in new_line])
 
 
 # manager = multiprocessing.Manager()

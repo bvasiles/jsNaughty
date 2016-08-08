@@ -16,7 +16,7 @@ class Acorn:
                     socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/acorn'
             else:
-                self.path = '/usr/local/bin/acorn'
+                self.path = 'acorn'
         else:
             self.path = path
     
