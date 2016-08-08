@@ -26,6 +26,7 @@ from collections import Counter
 def processFile(l):
     
     [js_file_path] = l
+    print js_file_path
     
     try:
         # Compute AST but don't store, it's huge
