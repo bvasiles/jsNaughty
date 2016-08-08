@@ -32,12 +32,12 @@ def processFile(l):
         try:
             parser = Acorn()
             (acorn_ast, acorn_ok) = parser.run(os.path.join(corpus_root, js_file_path))
-        except Exception, e:
-            return (js_file_path, None, str(e))
+        except:
+            return (js_file_path, None, 'Parser fail')
         
-        print acorn_ast[:100]
         if not acorn_ok:
             return (js_file_path, None, 'Parser fail')
+        print acorn_ast[:100]
         
         functions = []
         ast_ok = True
@@ -142,6 +142,7 @@ with open(sample_path, 'r') as f:
         with open(os.path.join(output_path, flog), 'a') as g:
             writer = UnicodeWriter(g)
             
-            writer.writerow(result)
+            print result
+#             writer.writerow(result)
                 
         
