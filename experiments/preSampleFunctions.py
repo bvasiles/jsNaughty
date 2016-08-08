@@ -26,19 +26,18 @@ from collections import Counter
 def processFile(l):
     
     [js_file_path] = l
-    print js_file_path
     
     try:
         # Compute AST but don't store, it's huge
         try:
             parser = Acorn()
-            (acorn_ast, acorn_ok) = parser.run(js_file_path)
+            (acorn_ast, acorn_ok) = parser.run(os.path.join(corpus_root, js_file_path))
         except Exception, e:
             return (js_file_path, None, str(e))
         
         print acorn_ast[:100]
-#         if not acorn_ok:
-#             return (js_file_path, None, 'Parser fail')
+        if not acorn_ok:
+            return (js_file_path, None, 'Parser fail')
         
         functions = []
         ast_ok = True
