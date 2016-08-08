@@ -32,8 +32,8 @@ def processFile(l):
         try:
             parser = Acorn()
             (acorn_ast, acorn_ok) = parser.run(js_file_path)
-        except:
-            return (js_file_path, None, 'Parser fail')
+        except Exception, e:
+            return (js_file_path, None, str(e))
         
         if not acorn_ok:
             return (js_file_path, None, 'Parser fail')
