@@ -35,8 +35,9 @@ def processFile(l):
         except Exception, e:
             return (js_file_path, None, str(e))
         
-        if not acorn_ok:
-            return (js_file_path, None, 'Parser fail')
+        print acorn_ast[:100]
+#         if not acorn_ok:
+#             return (js_file_path, None, 'Parser fail')
         
         functions = []
         ast_ok = True
