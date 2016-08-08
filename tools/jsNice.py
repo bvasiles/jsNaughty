@@ -16,7 +16,7 @@ class JSNice:
                     socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/jsnice'
             else:
-                self.path = '/share/apps/node_modules/jsnice/bin/jsnice'
+                self.path = 'jsnice'
         else:
             self.path = path
     
