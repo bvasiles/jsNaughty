@@ -37,7 +37,6 @@ def processFile(l):
         
         if not acorn_ok:
             return (js_file_path, None, 'Parser fail')
-        print acorn_ast[:100]
         
         functions = []
         ast_ok = True
@@ -84,33 +83,35 @@ def processFile(l):
             except UnicodeEncodeError:
                 f.write(f_body.encode("utf-8"))
             f.close()
+        
+        (js_file_path, 'OK')
             
-            # check if not too short and not too long
-            statinfo_js = os.stat(f_path)
-            num_bytes = statinfo_js.st_size
-             
-            # Num tokens
-            try:
-                tokens = Lexer(f_path).tokenList
-            except:
-                return (js_file_path, None, 'Lexer fail')
-        
-            names = [t for (tt,t) in tokens if is_token_subtype(tt, Token.Name)]
-            nameCounter = Counter(names)
-             
-            if len(nameCounter.keys()):
-                num_names = len(nameCounter.keys())
-                mean_name_occurences = mean(nameCounter.values())
-                median_name_occurences = median(nameCounter.values())
-            else:
-                num_names = 0
-                mean_name_occurences = 0.0
-                median_name_occurences = 0.0
-        
-            return (js_file_path, f_file, num_lines, 
-                    num_bytes, num_names, 
-                    '%.2f' % float(mean_name_occurences), 
-                    '%.2f' % float(median_name_occurences))
+#             # check if not too short and not too long
+#             statinfo_js = os.stat(f_path)
+#             num_bytes = statinfo_js.st_size
+#              
+#             # Num tokens
+#             try:
+#                 tokens = Lexer(f_path).tokenList
+#             except:
+#                 return (js_file_path, None, 'Lexer fail')
+#         
+#             names = [t for (tt,t) in tokens if is_token_subtype(tt, Token.Name)]
+#             nameCounter = Counter(names)
+#              
+#             if len(nameCounter.keys()):
+#                 num_names = len(nameCounter.keys())
+#                 mean_name_occurences = mean(nameCounter.values())
+#                 median_name_occurences = median(nameCounter.values())
+#             else:
+#                 num_names = 0
+#                 mean_name_occurences = 0.0
+#                 median_name_occurences = 0.0
+#         
+#             return (js_file_path, f_file, num_lines, 
+#                     num_bytes, num_names, 
+#                     '%.2f' % float(mean_name_occurences), 
+#                     '%.2f' % float(median_name_occurences))
         
     except Exception, e:
         return (js_file_path, None, str(e))
