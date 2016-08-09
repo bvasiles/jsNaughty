@@ -51,6 +51,15 @@ def cleanup(pid):
     except OSError:
         pass
 
+    try:
+        os.remove('tmp_%d.u.a.js' % pid)
+    except OSError:
+        pass
+    
+    try:
+        os.remove('tmp_%d.u.a.js' % pid)
+    except OSError:
+        pass
 
 
 def processFile(js_file_path):
@@ -62,11 +71,11 @@ def processFile(js_file_path):
     
     try:
         # Temp files to be created during processing
-        path_tmp = 'tmp_%s_%d.js' % (base_name, pid)
-        path_tmp_b = 'tmp_%s_%d.b.js' % (base_name, pid)
-        path_tmp_u = 'tmp_%s_%d.u.js' % (base_name, pid)
-        path_tmp_b_a = 'tmp_%s_%d.b.a.js' % (base_name, pid)
-        path_tmp_u_a = 'tmp_%s_%d.u.a.js' % (base_name, pid)
+        path_tmp = 'tmp_%d.js' % (pid)
+        path_tmp_b = 'tmp_%d.b.js' % (pid)
+        path_tmp_u = 'tmp_%d.u.js' % (pid)
+        path_tmp_b_a = 'tmp_%d.b.a.js' % (pid)
+        path_tmp_u_a = 'tmp_%d.u.a.js' % (pid)
         
         path_tmp_u_a1 = '%s_%d.u.js' % (base_name, pid)
         path_tmp_jsn = '%s_%d.n2p.js' % (base_name, pid)
@@ -128,18 +137,21 @@ def processFile(js_file_path):
             return (js_file_path, None, 'IndexBuilder fail')
         
         # Store uglified version
-        shutil.copy(path_tmp_u_a, os.path.join(output_path, path_tmp_u_a1))
+        ok = clear.run(path_tmp_u_a, os.path.join(output_path, path_tmp_u_a1))
+#         shutil.copy(path_tmp_u_a, os.path.join(output_path, path_tmp_u_a1))
         
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
-        (unuglifyjs_ok, out, err) = unuglifyJS.run(path_tmp_b_a, \
-                                       os.path.join(output_path, path_tmp_unugly))
+        (unuglifyjs_ok, out, err) = unuglifyJS.run(path_tmp_b_a, path_tmp_unugly)
+        ok = clear.run(path_tmp_unugly, os.path.join(output_path, path_tmp_unugly))
     
         # Run the JSNice from http://www.jsnice.org
         jsNice = JSNice()
-        (jsnice_ok, out, err) = jsNice.run(path_tmp_b_a, \
-                                       os.path.join(output_path, path_tmp_jsn))
-
+        (jsnice_ok, out, err) = jsNice.run(path_tmp_b_a, path_tmp_jsn)
+        ok = clear.run(path_tmp_jsn, os.path.join(output_path, path_tmp_jsn))
+        
+        
+        cleanup(pid)
         return (js_file_path, None, 'OK')
 
 #         
