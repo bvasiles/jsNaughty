@@ -139,7 +139,8 @@ def processFile(l):
         
         # Store uglified version
         ok = clear.run(path_tmp_u_a, os.path.join(output_path, path_ugly))
-        shutil.copy(path_tmp_b_a, os.path.join(output_path, path_orig))
+        
+        ok = clear.run(path_tmp_b_a, os.path.join(output_path, path_orig))
         
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
