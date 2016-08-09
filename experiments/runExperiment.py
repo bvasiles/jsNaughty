@@ -77,9 +77,10 @@ def processFile(l):
         path_tmp_b_a = 'tmp_%d.b.a.js' % (pid)
         path_tmp_u_a = 'tmp_%d.u.a.js' % (pid)
         
-        path_tmp_u_a1 = '%s_%d.u.js' % (base_name, pid)
-        path_tmp_jsn = '%s_%d.n2p.js' % (base_name, pid)
-        path_tmp_unugly = '%s_%d.nice.js' % (base_name, pid)
+        path_orig = '%s.js' % (base_name)
+        path_ugly = '%s.u.js' % (base_name)
+        path_jsn = '%s.n2p.js' % (base_name)
+        path_unugly = '%s.nice.js' % (base_name)
         
         # Strip comments, replace literals, etc
         try:
@@ -137,18 +138,18 @@ def processFile(l):
             return (js_file_path, None, 'IndexBuilder fail')
         
         # Store uglified version
-        ok = clear.run(path_tmp_u_a, os.path.join(output_path, path_tmp_u_a1))
-#         shutil.copy(path_tmp_u_a, os.path.join(output_path, path_tmp_u_a1))
+        ok = clear.run(path_tmp_u_a, os.path.join(output_path, path_ugly))
+        shutil.copy(path_tmp_b_a, os.path.join(output_path, path_orig))
         
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
-        (unuglifyjs_ok, out, err) = unuglifyJS.run(path_tmp_b_a, path_tmp_unugly)
-        ok = clear.run(path_tmp_unugly, os.path.join(output_path, path_tmp_unugly))
+        (unuglifyjs_ok, out, err) = unuglifyJS.run(path_tmp_b_a, path_unugly)
+        ok = clear.run(path_unugly, os.path.join(output_path, path_unugly))
     
         # Run the JSNice from http://www.jsnice.org
         jsNice = JSNice()
-        (jsnice_ok, out, err) = jsNice.run(path_tmp_b_a, path_tmp_jsn)
-        ok = clear.run(path_tmp_jsn, os.path.join(output_path, path_tmp_jsn))
+        (jsnice_ok, out, err) = jsNice.run(path_tmp_b_a, path_jsn)
+        ok = clear.run(path_jsn, os.path.join(output_path, path_jsn))
         
         
         cleanup(pid)
