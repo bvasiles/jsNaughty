@@ -62,9 +62,9 @@ def cleanup(pid):
         pass
 
 
-def processFile(js_file_path):
+def processFile(l):
     
-#     js_file_path = l[0]
+    js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
     pid = int(multiprocessing.current_process().ident)
@@ -218,10 +218,10 @@ def processFile(js_file_path):
     
     
 corpus_root = os.path.abspath(sys.argv[1])
-# training_sample_path = sys.argv[2]
+testing_sample_path = sys.argv[2]
 
-output_path = Folder(sys.argv[2]).create()
-num_threads = int(sys.argv[3])
+output_path = Folder(sys.argv[3]).create()
+num_threads = int(sys.argv[4])
 
 f1 = 'corpus.orig.js'
 f2 = 'corpus.no_renaming.js'
@@ -237,18 +237,23 @@ try:
 except:
     pass
 
-pool = multiprocessing.Pool(processes=num_threads)
 
-inputs = Folder(corpus_root).fullFileNames("*.js")
+# inputs = Folder(corpus_root).fullFileNames("*.js")
 
-for result in pool.imap_unordered(processFile, inputs):
-  
-    with open(os.path.join(output_path, flog), 'a') as g:
-        writer = UnicodeWriter(g)
+with open(testing_sample_path, 'r') as f:
 
-        if result[1] is not None:
-            writer.writerow(result)
-        else:
-            writer.writerow([result[0], result[2]])
+    reader = UnicodeReader(f)
+
+    pool = multiprocessing.Pool(processes=num_threads)
+    
+    for result in pool.imap_unordered(processFile, reader):
+      
+        with open(os.path.join(output_path, flog), 'a') as g:
+            writer = UnicodeWriter(g)
+    
+            if result[1] is not None:
+                writer.writerow(result)
+            else:
+                writer.writerow([result[0], result[2]])
             
 
