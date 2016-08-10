@@ -1,19 +1,22 @@
 import subprocess
 PIPE = subprocess.PIPE
+import socket
 
 
 class LMQuery:
     
-    def __init__(self, query_path=None, lm_path=None):
+    def __init__(self, query_path=None, lm_path):
         if query_path is None:
-            self.query_path = '/Users/bogdanv/mosesdecoder/bin/query'
+            if socket.gethostname() == 'bogdan.mac':
+                self.query_path = '/Users/bogdanv/mosesdecoder/bin/query'
+            elif socket.gethostname() == 'godot':
+                self.query_path = '/home/bogdan/mosesdecoder/bin/query'
+            else:
+                self.query_path = '/home/bogdanv/mosesdecoder/bin/query'
         else:
             self.query_path = query_path
 
-        if lm_path is None:
-            self.lm_path = '/Users/bogdanv/mosesdecoder/working/lm/js.blm.lm'
-        else:
-            self.lm_path = lm_path
+        self.lm_path = lm_path
             
     
     def run(self, line):

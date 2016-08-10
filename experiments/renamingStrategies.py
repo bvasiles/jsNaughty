@@ -144,14 +144,6 @@ def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly,
                                     if p >= left and \
                                     p < pos]
                           
-#                     if token == 'r' and line_idx == 13:
-#                         print token, pos
-#                         print line_context
-#                         print where_before
-#                         print left
-#                         print context_tokens
-#                         print
-     
                     context.setdefault((token, def_scope), [])
                     context[(token, def_scope)] += context_tokens
                           
