@@ -25,44 +25,27 @@ import shutil
 #signal.signal(signal.SIGALRM, timeout)
 
 
+def tryRemove(pth):
+    try:
+        os.remove(pth)
+    except OSError:
+        pass
+
 def cleanup(pid):
-    try:
-        os.remove('tmp_%d.js' % pid)
-    except OSError:
-        pass
+    tryRemove('tmp_%d.js' % pid)
+    tryRemove('tmp_%d.b.js' % pid)
+    tryRemove('tmp_%d.b.a.js' % pid)
+    tryRemove('tmp_%d.u.js' % pid)
+    tryRemove('tmp_%d.u.a.js' % pid)
+    tryRemove('tmp_%d.n2p.js' % pid)
+    tryRemove('tmp_%d.jsnice.js' % pid)
     
-    try:
-        os.remove('tmp_%d.b.js' % pid)
-    except OSError:
-        pass
-    
-    try:
-        os.remove('tmp_%d.b.a.js' % pid)
-    except OSError:
-        pass
-    
-    try:
-        os.remove('tmp_%d.u.js' % pid)
-    except OSError:
-        pass
-    
-    try:
-        os.remove('tmp_%d.u.a.js' % pid)
-    except OSError:
-        pass
-
-    try:
-        os.remove('tmp_%d.u.a.js' % pid)
-    except OSError:
-        pass
-    
-    try:
-        os.remove('tmp_%d.u.a.js' % pid)
-    except OSError:
-        pass
-
 
 def processFile(l):
+    
+    def localCleanup(output_path, base_names):
+        for base_name in base_names:
+            tryRemove(os.path.join(output_path, base_name))
     
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
@@ -73,14 +56,16 @@ def processFile(l):
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % (pid)
         path_tmp_b = 'tmp_%d.b.js' % (pid)
-        path_tmp_u = 'tmp_%d.u.js' % (pid)
         path_tmp_b_a = 'tmp_%d.b.a.js' % (pid)
+        path_tmp_u = 'tmp_%d.u.js' % (pid)
         path_tmp_u_a = 'tmp_%d.u.a.js' % (pid)
+        path_tmp_unugly = 'tmp_%d.n2p.js' % (pid)
+        path_tmp_jsnice = 'tmp_%d.jsnice.js' % (pid)
         
         path_orig = '%s.js' % (base_name)
         path_ugly = '%s.u.js' % (base_name)
-        path_jsn = '%s.n2p.js' % (base_name)
-        path_unugly = '%s.nice.js' % (base_name)
+        path_unugly = '%s.n2p.js' % (base_name)
+        path_jsnice = '%s.jsnice.js' % (base_name)
         
         # Strip comments, replace literals, etc
         try:
@@ -96,7 +81,7 @@ def processFile(l):
          
         if not ok:
             cleanup(pid)
-            return (js_file_path, None, 'Beautifier fail')
+            return (js_file_path, None, 'Beautifier 1 fail')
         
         # Minify
         ugly = Uglifier()
@@ -137,20 +122,51 @@ def processFile(l):
             cleanup(pid)
             return (js_file_path, None, 'IndexBuilder fail')
         
-        # Store uglified version
+        # Store original and uglified versions
         ok = clear.run(path_tmp_u_a, os.path.join(output_path, path_ugly))
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly])
+            return (js_file_path, None, 'Beautifier 2 fail')
         
         ok = clear.run(path_tmp_b_a, os.path.join(output_path, path_orig))
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig])
+            return (js_file_path, None, 'Beautifier 3 fail')
         
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
-        (unuglifyjs_ok, out, err) = unuglifyJS.run(path_tmp_b_a, path_unugly)
+        (ok, out, err) = unuglifyJS.run(path_tmp_b_a, path_unugly)
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig])
+            return (js_file_path, None, 'Nice2Predict fail')
+        
         ok = clear.run(path_unugly, os.path.join(output_path, path_unugly))
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, path_unugly])
+            return (js_file_path, None, 'Beautifier 4 fail')
     
         # Run the JSNice from http://www.jsnice.org
         jsNice = JSNice()
-        (jsnice_ok, out, err) = jsNice.run(path_tmp_b_a, path_jsn)
-        ok = clear.run(path_jsn, os.path.join(output_path, path_jsn))
+        (ok, out, err) = jsNice.run(path_tmp_b_a, path_jsnice)
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, path_unugly])
+            return (js_file_path, None, 'JSNice fail')
+
+        ok = clear.run(path_jsnice, os.path.join(output_path, path_jsnice))
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, \
+                                       path_unugly, path_jsnice])
+            return (js_file_path, None, 'Beautifier 5 fail')
+        
+        
+        
+        
         
         
         cleanup(pid)
