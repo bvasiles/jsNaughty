@@ -585,21 +585,16 @@ def processFile(l):
                                        path_unugly, path_jsnice])
             return (js_file_path, None, 'ScopeAnalyst fail')
         
-
-        # Fire up Moses
-        moses = MosesDecoder(ini_path=ini_path)
         
-        
-#         orig = []
         no_renaming = []
         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
-#             orig.append(' '.join([t for (_tt,t) in \
-#                                   iBuilder_clear.tokens[line_idx]]) + "\n")
             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
         
         with open(f2, 'w') as f_no_renaming:
             f_no_renaming.writelines(no_renaming)
         
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.no_renaming', 'model', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f2)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f2,
@@ -611,6 +606,8 @@ def processFile(l):
         with open(f3, 'w') as f_basic_renaming:
             f_basic_renaming.writelines(basic_renaming)
         
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.basic_renaming', 'model', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f3)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f3,
@@ -626,6 +623,8 @@ def processFile(l):
         with open(f4, 'w') as f_hash_renaming:
             f_hash_renaming.writelines(hash_renaming)
         
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.hash_renaming', 'model', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
@@ -639,6 +638,8 @@ def processFile(l):
         with open(f5, 'w') as f_hash_def_one_renaming:
             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
 
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.hash_def_one_renaming', 'model', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f5)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f5,
@@ -652,6 +653,8 @@ def processFile(l):
         with open(f6, 'w') as f_hash_def_two_renaming: 
             f_hash_def_two_renaming.writelines(hash_def_two_renaming)
         
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.hash_def_two_renaming', 'model', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f6)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f6,
