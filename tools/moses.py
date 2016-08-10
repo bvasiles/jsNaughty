@@ -6,7 +6,7 @@ import socket
 
 class MosesDecoder:
     
-    def __init__(self, path=None, ini_path):
+    def __init__(self, ini_path, path=None):
         if path is None:
             if socket.gethostname() == 'bogdan.mac':
                 self.command = ['/Users/bogdanv/mosesdecoder/bin/moses']
