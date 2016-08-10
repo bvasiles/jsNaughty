@@ -1,13 +1,12 @@
 import os
 import sys
-from tools.moses import MosesDecoder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
 from tools import Uglifier, Preprocessor, IndexBuilder, \
                     Beautifier, Lexer, Aligner, ScopeAnalyst, \
-                    UnuglifyJS, JSNice, LMQuery
+                    UnuglifyJS, JSNice, LMQuery, MosesDecoder
 
 from renamingStrategies import renameUsingScopeId, renameUsingHashAllPrec, \
                                 renameUsingHashDefLine
