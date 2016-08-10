@@ -1,22 +1,29 @@
 import subprocess
 PIPE = subprocess.PIPE
+import socket
+# from pygments.token import Token, is_token_subtype
 
 
 class MosesDecoder:
     
-    def __init__(self, path=None, ini_path=None):
+    def __init__(self, path=None, ini_path):
         if path is None:
-            self.command = ['/Users/bogdanv/mosesdecoder/bin/moses']
+            if socket.gethostname() == 'bogdan.mac':
+                self.command = ['/Users/bogdanv/mosesdecoder/bin/moses']
+            elif socket.gethostname() == 'godot':
+                self.command = ['/home/bogdan/mosesdecoder/bin/moses']
+            else:
+                self.command = ['/home/bogdanv/mosesdecoder/bin/moses']
         else:
             self.command = [path]
     
-        if ini_path is None:
-            self.ini_path = '/Users/bogdanv/mosesdecoder/working/bin-model/moses.ini'
-        else:
-            self.ini_path = ini_path
+        # moses.ini config file
+        self.ini_path = ini_path
+        
+        self.translation = None
 
         
-    def run(self, in_file_path, out_file_path):
+    def run(self, in_file_path):
         moses_ok = False
         
         command = self.command + \
@@ -28,6 +35,12 @@ class MosesDecoder:
     
         if not proc.returncode:
             moses_ok = True
+            self.translation = out
     
         return (moses_ok, out, err)
+
+
+        
+        
+    
         
