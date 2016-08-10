@@ -5,7 +5,7 @@ import socket
 
 class LMQuery:
     
-    def __init__(self, query_path=None, lm_path):
+    def __init__(self, lm_path, query_path=None):
         if query_path is None:
             if socket.gethostname() == 'bogdan.mac':
                 self.query_path = '/Users/bogdanv/mosesdecoder/bin/query'
