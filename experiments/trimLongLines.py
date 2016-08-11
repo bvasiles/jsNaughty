@@ -29,7 +29,7 @@ for corpus in Folder(root_path).subfoldersNoHidden():
         with open(os.path.join(target_path, 
                               os.path.basename(corpus),
                               os.path.basename(f)), "w") as g:
-            for row in f.readlines():
+            for row in open(f).readlines():
                 if len(row.split()) <= 20:
                     g.write(row)
 
