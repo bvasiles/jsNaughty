@@ -20,8 +20,7 @@ for corpus in Folder(root_path).subfoldersNoHidden():
 
     corpus_files = [f \
                     for f in glob.glob(os.path.join(os.path.join(root_path, corpus), "*.js")) \
-                    if os.path.basename(f).startswith("corpus.") and \
-                        os.path.basename(f) != "corpus.orig.js"]
+                    if os.path.basename(f).startswith("corpus.")]
     
     for f in corpus_files:
         with open(os.path.join(target_path, 
