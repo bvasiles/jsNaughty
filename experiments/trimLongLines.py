@@ -18,12 +18,10 @@ for corpus in Folder(root_path).subfoldersNoHidden():
     o = Folder(os.path.join(target_path, 
                         os.path.basename(corpus))).create()
 
-    corpus_files = [os.path.basename(f) \
+    corpus_files = [f \
                     for f in glob.glob(os.path.join(os.path.join(root_path, corpus), "*.js")) \
                     if os.path.basename(f).startswith("corpus.") and \
                         os.path.basename(f) != "corpus.orig.js"]
-    suffixes = [f[7:-3] for f in corpus_files]
-    print corpus,  corpus_files
     
     for f in corpus_files:
         with open(os.path.join(target_path, 
