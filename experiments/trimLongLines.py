@@ -24,13 +24,13 @@ for corpus in Folder(root_path).subfoldersNoHidden():
                         os.path.basename(f) != "corpus.orig.js"]
     suffixes = [f[7:-3] for f in corpus_files]
     print corpus,  corpus_files
+    
+    for f in corpus_files:
+        with open(os.path.join(target_path, 
+                              os.path.basename(corpus),
+                              os.path.basename(f)), "w") as g:
+            for row in f.readlines():
+                if len(row.split()) <= 20:
+                    g.write(row)
 
 
-# for idx, suffix in enumerate(suffixes):
-#     
-#     
-#     variant = "train." + suffix
-#     
-#     moses_ini = open(os.path.join(root_path, variant, \
-#                                   "model", "moses.ini"), "r").readlines()
-#     
