@@ -30,16 +30,16 @@ for corpus in Folder(root_path).subfoldersNoHidden():
                     if os.path.basename(f).endswith("corpus.orig.js")][0]
     orig = corpora[f_orig]
     
-    gs = [open(os.path.join(target_path, 
+    gs = [(f, open(os.path.join(target_path, 
                               os.path.basename(corpus),
-                              os.path.basename(f)), "w") 
+                              os.path.basename(f)), "w")) 
           for f in corpus_files]
     
     for idx, row in enumerate(orig):
         if len(row.split()) <= 20:
             if len(set([corpora[f][idx] for f in corpus_files])) > 1:
-                for g in gs:
-                    g.write(row)
+                for (f,g) in gs:
+                    g.write(corpora[f][idx])
     
 
 
