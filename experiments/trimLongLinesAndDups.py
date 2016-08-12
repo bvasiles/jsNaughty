@@ -35,11 +35,16 @@ for corpus in Folder(root_path).subfoldersNoHidden():
                               os.path.basename(f)), "w")) 
           for f in corpus_files]
     
+    seen = {}
+    
     for idx, row in enumerate(orig):
         if len(row.split()) <= 20:
             if len(set([corpora[f][idx] for f in corpus_files])) > 1:
-                for (f,g) in gs:
-                    g.write(corpora[f][idx])
-    
+                c = ''.join([corpora[f][idx] for (f,g) in gs])
+                if not seen.has_key(c):
+                    for (f,g) in gs:
+                        g.write(corpora[f][idx])
+                    seen[c] = True
+
 
 
