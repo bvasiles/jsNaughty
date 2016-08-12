@@ -1,7 +1,11 @@
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                             os.path.pardir)))
 import glob
 import stat
+from folderManager import Folder
+
 
 root_path = os.path.abspath(sys.argv[1])
 tune_path = os.path.abspath(sys.argv[2])
@@ -25,8 +29,8 @@ for idx, suffix in enumerate(suffixes):
        os.path.join(tune_path, "corpus.orig.js"), \
        str(n_cores),
        os.path.join(root_path, variant, "model", "moses.bin.ini"), \
-       os.path.join(root_path, variant), \
-       os.path.join(root_path, variant, "mert.out"))
+       os.path.join(root_path, variant, "tuning"), \
+       os.path.join(root_path, variant, "tuning", "mert.out"))
     
     with open(os.path.join(root_path, variant, "tune.sh"), "w") as f:
         f.write(text)
@@ -34,4 +38,6 @@ for idx, suffix in enumerate(suffixes):
     st = os.stat(os.path.join(root_path, variant, "tune.sh"))
     os.chmod(os.path.join(root_path, variant, "tune.sh"), st.st_mode | stat.S_IEXEC)
 
-
+    Folder(os.path.join(root_path, variant, "tuning")).create()
+    
+    
