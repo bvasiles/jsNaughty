@@ -59,7 +59,7 @@ print len(wo), 'w/o Moses'
 w = [k for k,v in data.iteritems() if len(v.keys())==17]
 print len(w), 'w Moses'
 
-print len(data.keys()) - wo - w, 'unaccounted for'
+print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
  
 
 orig = {}
