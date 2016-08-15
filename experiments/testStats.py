@@ -25,6 +25,7 @@ def processFile(l):
             scope = def_scope.replace("\"","")
             i = scope.find('[variables][_values]')
             scope = scope[:i+len('[variables][_values]')]
+            print name, scope
             candidates.append( (scope, name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
