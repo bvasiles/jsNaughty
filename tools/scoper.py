@@ -153,12 +153,9 @@ class ScopeAnalyst:
             # `name` leaves are interesting ...  
             if pth[-1] == 'name':
                 
-#                 print key, pth
-                
                 # Get the parent of the `node` name; the parent  
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
-#                 print '\t', parent.keys()
                 
                 # ... but only if they have `scope`, `thedef`,
                 # and `start` siblings
