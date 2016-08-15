@@ -55,7 +55,7 @@ for row in reader:
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
     
-    print strategy, translated_name, row[2], scope
+#     print strategy, translated_name, row[2], scope
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
