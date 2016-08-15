@@ -28,6 +28,9 @@ def processFile(l):
                 i = scope.find('[variables][_values]')
                 if i > -1:
                     scope = scope[:i+len('[variables][_values]')]
+                i = scope.find('[functions][_values]')
+                if i > -1:
+                    scope = scope[:i+len('[functions][_values]')]
     
                 candidates.append( (scope, name) )
 
@@ -54,7 +57,10 @@ for row in reader:
     i = scope.find('[variables][_values]')
     if i > -1:
         scope = scope[:i+len('[variables][_values]')]
-    
+    i = scope.find('[functions][_values]')
+    if i > -1:
+        scope = scope[:i+len('[functions][_values]')]
+        
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
