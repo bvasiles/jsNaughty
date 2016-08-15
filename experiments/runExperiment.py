@@ -464,8 +464,10 @@ def processFile(l):
     
     pid = int(multiprocessing.current_process().ident)
     
-    #try:
-    if True:
+    candidates = []
+    
+    try:
+#     if True:
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % (pid)
         path_tmp_b = 'tmp_%d.b.js' % (pid)
@@ -570,6 +572,19 @@ def processFile(l):
             localCleanup(output_path, [path_ugly, path_orig, path_unugly])
             return (js_file_path, None, 'Beautifier 4 fail')
     
+        try:
+            scopeAnalyst = ScopeAnalyst(os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 path_tmp_unugly))
+            nameOrigin = scopeAnalyst.nameOrigin
+            for (name, def_scope) in nameOrigin.iterkeys():
+                candidates.append(('Nice2Predict',def_scope,name))
+        except:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, path_unugly])
+            return (js_file_path, None, 'ScopeAnalyst fail')
+    
+    
     
         # Run the JSNice from http://www.jsnice.org
         jsNice = JSNice()
@@ -585,6 +600,20 @@ def processFile(l):
             localCleanup(output_path, [path_ugly, path_orig, \
                                        path_unugly, path_jsnice])
             return (js_file_path, None, 'Beautifier 5 fail')
+        
+        try:
+            scopeAnalyst = ScopeAnalyst(os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 path_tmp_jsnice))
+            nameOrigin = scopeAnalyst.nameOrigin
+            for (name, def_scope) in nameOrigin.iterkeys():
+                candidates.append(('JSNice',def_scope,name))
+        except:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, \
+                                       path_unugly, path_jsnice])
+            return (js_file_path, None, 'ScopeAnalyst fail')
+        
         
         
         # Compute scoping: name2scope is a dictionary where keys
@@ -689,13 +718,13 @@ def processFile(l):
         
         cleanup(pid)
         cleanupRenamed(pid)
-        return (js_file_path, None, 'OK')
+        return (js_file_path, 'OK', candidates)
 
 
-    #except Exception, e:
-    #    cleanup(pid)
-    #    cleanupRenamed(pid)
-    #    return (js_file_path, None, str(e))
+    except Exception, e:
+        cleanup(pid)
+        cleanupRenamed(pid)
+        return (js_file_path, None, str(e).replace("\n", ""))
     
     
 corpus_root = os.path.abspath(sys.argv[1])
@@ -707,6 +736,7 @@ ini_path = os.path.abspath(sys.argv[5])
 lm_path = os.path.abspath(sys.argv[6])
 
 flog = 'log_test_' + os.path.basename(corpus_root)
+c_path = os.path.basename(corpus_root) + '.candidates'
 #f1, f2, f3, f4, f5, f6, 
 try:
     for f in [flog]:
@@ -727,11 +757,16 @@ with open(testing_sample_path, 'r') as f:
     
     for result in pool.imap_unordered(processFile, reader):
       
-        with open(os.path.join(output_path, flog), 'a') as g:
+        with open(os.path.join(output_path, flog), 'a') as g, \
+                open(os.path.join(output_path, c_path), 'a') as c:
             writer = UnicodeWriter(g)
+            cw = UnicodeWriter(c)
     
             if result[1] is not None:
-                writer.writerow(result)
+                candidates = result[2]
+                writer.writerow(result[:2])
+                for r in candidates:
+                    cw.writerow(r)
             else:
                 writer.writerow([result[0], result[2]])
             
