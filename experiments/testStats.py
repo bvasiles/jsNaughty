@@ -18,7 +18,7 @@ def processFile(l):
                                                  js_file_name))
         nameOrigin = scopeAnalyst.nameOrigin
         for (name, def_scope) in nameOrigin.iterkeys():
-            candidates.append( (def_scope, name) )
+            candidates.append( (def_scope.replace("\"",""), name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
@@ -60,6 +60,7 @@ w = [k for k,v in data.iteritems() if len(v.keys())==17]
 print len(w), 'w Moses'
 
 print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
+print
  
 
 orig = {}
@@ -83,7 +84,7 @@ for file_name in orig.iterkeys():
     print file_name
     
     for def_scope, names in orig[file_name].iteritems():
-        print '\t', names
+        print '\t', names, def_scope
         for strategy, dscope in data[file_name].iteritems():
             try:
                 print '\t\t', strategy, dscope[def_scope]
