@@ -46,6 +46,8 @@ def processTranslation(translation, iBuilder_clear,
                        scopeAnalyst, lm_path, f,
                        output_path, base_name, clear):
     
+    nc = []
+    
     def writeTmpLines(lines, out_file_path):
         js_tmp = open(out_file_path, 'w')
         js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
@@ -162,6 +164,10 @@ def processTranslation(translation, iBuilder_clear,
                 name_candidates.setdefault((name, def_scope), {})
                 name_candidates[(name, def_scope)].setdefault(name_translation, set([]))
                 name_candidates[(name, def_scope)][name_translation].add(n)            
+  
+                
+#         for (name, def_scope), d in name_candidates.iteritems():
+#             nc.append( (def_scope, name, ','.join(d.keys())) )
   
                 #print name, name_translation, n, def_scope
         
@@ -386,10 +392,12 @@ def processTranslation(translation, iBuilder_clear,
             
         def rename(lines, renaming_map):
             draft_translation = deepcopy(lines)
+            
             for (name, def_scope), renaming in renaming_map.iteritems():
                 for (line_num, line_idx) in name_positions[(name, def_scope)]:
                     (token_type, name) = draft_translation[line_num][line_idx]
                     draft_translation[line_num][line_idx] = (token_type, renaming)
+
             return draft_translation
             
 
@@ -410,12 +418,15 @@ def processTranslation(translation, iBuilder_clear,
         
         strategy = f.split('.')[1]
         
-        lm_translation = rename(iBuilder_clear.tokens, 
-                                computeLMRenaming(iBuilder_clear.tokens, 
-                                                  name_candidates, 
-                                                  name_positions,
-                                                  lm_path))
-        #print lm_translation
+        renaming_map = computeLMRenaming(iBuilder_clear.tokens, 
+                                          name_candidates, 
+                                          name_positions,
+                                          lm_path)
+        for (name, def_scope), renaming in renaming_map.iteritems():
+            nc.append( (f[:-3]+'.lm', def_scope, renaming, 
+                        ','.join(name_candidates[(name, def_scope)])) )
+        
+        lm_translation = rename(iBuilder_clear.tokens, renaming_map)
 
         writeTmpLines(lm_translation, f[:-3] + '.lm.js')
         ok = clear.run(f[:-3] + '.lm.js', 
@@ -448,7 +459,7 @@ def processTranslation(translation, iBuilder_clear,
         if not ok:
             return False
 
-    return True
+    return nc
 
     
 
@@ -578,7 +589,7 @@ def processFile(l):
                                  path_tmp_unugly))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('Nice2Predict',def_scope,name))
+                candidates.append(('Nice2Predict', def_scope, name, ''))
         except:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, path_unugly])
@@ -607,7 +618,7 @@ def processFile(l):
                                  path_tmp_jsnice))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('JSNice',def_scope,name))
+                candidates.append(('JSNice', def_scope, name, ''))
         except:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, \
@@ -647,9 +658,11 @@ def processFile(l):
 
         #print _moses_ok, translation, _err
 
-        processTranslation(translation, iBuilder_ugly, 
+        nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f2,
                        output_path, base_name, clear)
+        if nc:
+            candidates += nc
         
         
         # Simple renaming: disambiguate overloaded names using scope id
