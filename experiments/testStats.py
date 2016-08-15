@@ -86,10 +86,8 @@ for file_name in orig.iterkeys():
     for def_scope, names in orig[file_name].iteritems():
         print '\t', names, def_scope
         for strategy, dscope in data[file_name].iteritems():
-            try:
+            if dscope.has_key(def_scope):
                 print '\t\t', strategy, dscope[def_scope]
-            except:
-                pass
 
     print
 
