@@ -18,9 +18,10 @@ def processFile(l):
                                                  js_file_name))
         nameOrigin = scopeAnalyst.nameOrigin
         isGlobal = scopeAnalyst.isGlobal
+        nameDefScope2pos = scopeAnalyst.nameDefScope2pos
         
         for (name, def_scope) in nameOrigin.iterkeys():
-            if not isGlobal.get((name, def_scope), True):
+            if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
                 candidates.append( (def_scope.replace("\"",""), name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
