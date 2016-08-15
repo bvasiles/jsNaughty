@@ -21,8 +21,8 @@ def processFile(l):
         nameDefScope2pos = scopeAnalyst.nameDefScope2pos
         
         for (name, def_scope) in nameOrigin.iterkeys():
-            if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
-                candidates.append( (def_scope.replace("\"",""), name) )
+#             if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
+            candidates.append( (def_scope.replace("\"",""), name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
@@ -44,7 +44,7 @@ for row in reader:
     scope = row[2]
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
-    candidates = row[5] if len(row[5]) else None
+    alternatives = row[5] if len(row[5]) else None
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
@@ -52,7 +52,7 @@ for row in reader:
     
     data[file_name][strategy][scope].append( (translated_name, 
                                               ugly_name, 
-                                              candidates) )
+                                              alternatives) )
     
     
 print len(data.keys()), 'files'
