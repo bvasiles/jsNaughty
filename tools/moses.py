@@ -19,7 +19,7 @@ class MosesDecoder:
     
         # moses.ini config file
         self.ini_path = ini_path
-        print 'Moses:', self.ini_path
+#         print 'Moses:', self.ini_path
         
         self.translation = None
 
