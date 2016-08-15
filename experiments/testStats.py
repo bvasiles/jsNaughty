@@ -24,10 +24,11 @@ def processFile(l):
 #             if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
             scope = def_scope.replace("\"","")
             i = scope.find('[variables][_values]')
-            scope = scope[:i+len('[variables][_values]')]
+            if i > -1:
+                scope = scope[:i+len('[variables][_values]')]
 #             print name, scope
             candidates.append( (scope, name) )
-            print name, def_scope, scope
+#             print name, def_scope, scope
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
@@ -48,7 +49,8 @@ for row in reader:
     strategy = row[1]
     scope = row[2]
     i = scope.find('[variables][_values]')
-    scope = scope[:i+len('[variables][_values]')]
+    if i > -1:
+        scope = scope[:i+len('[variables][_values]')]
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
