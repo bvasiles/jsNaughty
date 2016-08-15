@@ -25,7 +25,7 @@ class LMQuery:
         
         echo = subprocess.Popen(['echo', line], stdout=PIPE)
         proc = subprocess.Popen([self.query_path, 
-                               '-n', '-v', 'sentence', 
+                               '-n', '-s', #'sentence', 
                                self.lm_path], 
                               stdin=echo.stdout, stderr=PIPE, stdout=PIPE)
         out, err = proc.communicate()
