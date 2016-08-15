@@ -613,7 +613,7 @@ def processFile(l):
             f_no_renaming.writelines(no_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.no_renaming', 'model', 'moses.bin.ini'))
+                           'train.no_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f2)
 
         #print _moses_ok, translation, _err
@@ -629,7 +629,7 @@ def processFile(l):
             f_basic_renaming.writelines(basic_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.basic_renaming', 'model', 'moses.bin.ini'))
+                           'train.basic_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f3)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f3,
@@ -646,7 +646,7 @@ def processFile(l):
             f_hash_renaming.writelines(hash_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_renaming', 'model', 'moses.bin.ini'))
+                           'train.hash_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
@@ -661,7 +661,7 @@ def processFile(l):
             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
 
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_def_one_renaming', 'model', 'moses.bin.ini'))
+                           'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f5)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f5,
@@ -676,7 +676,7 @@ def processFile(l):
             f_hash_def_two_renaming.writelines(hash_def_two_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_def_two_renaming', 'model', 'moses.bin.ini'))
+                           'train.hash_def_two_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f6)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f6,
