@@ -17,8 +17,11 @@ def processFile(l):
         scopeAnalyst = ScopeAnalyst(os.path.join(results_path, 
                                                  js_file_name))
         nameOrigin = scopeAnalyst.nameOrigin
+        isGlobal = scopeAnalyst.isGlobal
+        
         for (name, def_scope) in nameOrigin.iterkeys():
-            candidates.append( (def_scope.replace("\"",""), name) )
+            if not isGlobal.get((name, def_scope), True):
+                candidates.append( (def_scope.replace("\"",""), name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
