@@ -736,10 +736,10 @@ ini_path = os.path.abspath(sys.argv[5])
 lm_path = os.path.abspath(sys.argv[6])
 
 flog = 'log_test_' + os.path.basename(corpus_root)
-c_path = os.path.basename(corpus_root) + '.candidates'
+c_path = 'candidates.csv'
 #f1, f2, f3, f4, f5, f6, 
 try:
-    for f in [flog]:
+    for f in [flog, c_path]:
         os.remove(os.path.join(output_path, f))
 except:
     pass
@@ -763,10 +763,10 @@ with open(testing_sample_path, 'r') as f:
             cw = UnicodeWriter(c)
     
             if result[1] is not None:
-                candidates = result[2]
-                writer.writerow(result[:2])
+                js_file_path, ok, candidates = result
+                writer.writerow([js_file_path, ok])
                 for r in candidates:
-                    cw.writerow(r)
+                    cw.writerow([js_file_path]+r)
             else:
                 writer.writerow([result[0], result[2]])
             
