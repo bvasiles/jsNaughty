@@ -33,11 +33,12 @@ def cleanup(pid):
     tryRemove('tmp_%d.jsnice.js' % pid)
 
 def cleanupRenamed(pid):
-    tryRemove('tmp_%d.no_renaming.js' % pid)
-    tryRemove('tmp_%d.basic_renaming.js' % pid)
-    tryRemove('tmp_%d.hash_renaming.js' % pid)
-    tryRemove('tmp_%d.hash_def_one_renaming.js' % pid)
-    tryRemove('tmp_%d.hash_def_two_renaming.js' % pid)
+    for strategy in ['js', 'lm.js', 'len.js', 'freqlen.js']:
+        tryRemove('tmp_%d.no_renaming.%s' % (pid, strategy))
+        tryRemove('tmp_%d.basic_renaming.%s' % (pid, strategy))
+        tryRemove('tmp_%d.hash_renaming.%s' % (pid, strategy))
+        tryRemove('tmp_%d.hash_def_one_renaming.%s' % (pid, strategy))
+        tryRemove('tmp_%d.hash_def_two_renaming.%s' % (pid, strategy))
     
 
 
@@ -54,6 +55,12 @@ def processTranslation(translation, iBuilder_clear,
         
         
     if translation is not None:
+
+
+        print f
+        print translation
+        print
+        print
 
         # Compute scoping 
         try:
@@ -92,9 +99,10 @@ def processTranslation(translation, iBuilder_clear,
                     (l,c) = iBuilder_clear.tokMap[(line_num, line_idx)]
                     p = iBuilder_clear.flatMap[(l,c)]
                     
-                    def_scope = name2defScope[(token, p)]
+                    if not isGlobal.get((token, p), True):
+
+                        def_scope = name2defScope[(token, p)]
                     
-                    if not isGlobal[(token, p)]:
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
                         position_names[line_num][line_idx] = (token, def_scope)
@@ -133,7 +141,9 @@ def processTranslation(translation, iBuilder_clear,
             # parameter). Keep only unique translations.
             translations.setdefault(n, set([]))
             translations[n].add(translation)
-            
+           
+            #print n, translation_parts 
+ 
             # Which within-line indices have non-global var names? 
             line_dict = position_names.get(n, {})
             
@@ -152,7 +162,8 @@ def processTranslation(translation, iBuilder_clear,
                 name_candidates.setdefault((name, def_scope), {})
                 name_candidates[(name, def_scope)].setdefault(name_translation, set([]))
                 name_candidates[(name, def_scope)][name_translation].add(n)            
-
+  
+                #print name, name_translation, n, def_scope
         
         
         def computeFreqLenRenaming(lines, name_candidates, name_positions):
@@ -276,6 +287,8 @@ def processTranslation(translation, iBuilder_clear,
             renaming_map = {}
             seen = {}
 
+            #print name_candidates
+
             # There is no uncertainty about the translation for
             # variables that have a single candidate translation
             for ((name, def_scope), val) in [((name, def_scope), val) 
@@ -345,15 +358,19 @@ def processTranslation(translation, iBuilder_clear,
                                 lmquery = LMQuery(lm_path=lm_path)
                                 (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
                                 
+                                #print _lm_err
+
                                 if not lm_ok:
                                     lm_log_prob = -9999999999
                                 line_log_probs.append(lm_log_prob)
+
                             if not len(line_log_probs):
                                 lm_log_prob = -9999999999
                             else:
                                 lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
             
                             log_probs.append((candidate_name, lm_log_prob))
+                            #print candidate_name, log_probs
                         
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
@@ -363,7 +380,7 @@ def processTranslation(translation, iBuilder_clear,
                     else:
                         renaming_map[(name, def_scope)] = name
                         seen[(name, def_scope)] = True
-                    
+            #print renaming_map       
             return renaming_map
 
             
@@ -398,10 +415,12 @@ def processTranslation(translation, iBuilder_clear,
                                                   name_candidates, 
                                                   name_positions,
                                                   lm_path))
+        #print lm_translation
+
         writeTmpLines(lm_translation, f[:-3] + '.lm.js')
         ok = clear.run(f[:-3] + '.lm.js', 
                        os.path.join(output_path, 
-                                    '%s.%s.len.js' % (base_name, strategy)))
+                                    '%s.%s.lm.js' % (base_name, strategy)))
         if not ok:
             return False
         
@@ -445,7 +464,8 @@ def processFile(l):
     
     pid = int(multiprocessing.current_process().ident)
     
-    try:
+    #try:
+    if True:
         # Temp files to be created during processing
         path_tmp = 'tmp_%d.js' % (pid)
         path_tmp_b = 'tmp_%d.b.js' % (pid)
@@ -593,8 +613,11 @@ def processFile(l):
             f_no_renaming.writelines(no_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.no_renaming', 'model', 'moses.ini'))
+                           'train.no_renaming', 'model', 'moses.bin.ini'))
         (_moses_ok, translation, _err) = moses.run(f2)
+
+        #print _moses_ok, translation, _err
+
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f2,
                        output_path, base_name, clear)
@@ -606,7 +629,7 @@ def processFile(l):
             f_basic_renaming.writelines(basic_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.basic_renaming', 'model', 'moses.ini'))
+                           'train.basic_renaming', 'model', 'moses.bin.ini'))
         (_moses_ok, translation, _err) = moses.run(f3)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f3,
@@ -618,12 +641,12 @@ def processFile(l):
         # and build a hash of the concatenation.
         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
                                                iBuilder_ugly,
-                                               debug=False)
+                                               debug=True)
         with open(f4, 'w') as f_hash_renaming:
             f_hash_renaming.writelines(hash_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_renaming', 'model', 'moses.ini'))
+                           'train.hash_renaming', 'model', 'moses.bin.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
@@ -633,12 +656,12 @@ def processFile(l):
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=False,
-                                                   debug=False)
+                                                   debug=True)
         with open(f5, 'w') as f_hash_def_one_renaming:
             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
 
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_def_one_renaming', 'model', 'moses.ini'))
+                           'train.hash_def_one_renaming', 'model', 'moses.bin.ini'))
         (_moses_ok, translation, _err) = moses.run(f5)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f5,
@@ -648,12 +671,12 @@ def processFile(l):
         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=True,
-                                                   debug=False)
+                                                   debug=True)
         with open(f6, 'w') as f_hash_def_two_renaming: 
             f_hash_def_two_renaming.writelines(hash_def_two_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_def_two_renaming', 'model', 'moses.ini'))
+                           'train.hash_def_two_renaming', 'model', 'moses.bin.ini'))
         (_moses_ok, translation, _err) = moses.run(f6)
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f6,
@@ -665,10 +688,10 @@ def processFile(l):
         return (js_file_path, None, 'OK')
 
 
-    except Exception, e:
-        cleanup(pid)
-        cleanupRenamed(pid)
-        return (js_file_path, None, str(e))
+    #except Exception, e:
+    #    cleanup(pid)
+    #    cleanupRenamed(pid)
+    #    return (js_file_path, None, str(e))
     
     
 corpus_root = os.path.abspath(sys.argv[1])
@@ -679,12 +702,6 @@ num_threads = int(sys.argv[4])
 ini_path = os.path.abspath(sys.argv[5])
 lm_path = os.path.abspath(sys.argv[6])
 
-f1 = 'corpus.orig.js'
-f2 = 'corpus.no_renaming.js'
-f3 = 'corpus.basic_renaming.js'
-f4 = 'corpus.hash_renaming.js'
-f5 = 'corpus.hash_def_one_renaming.js'
-f6 = 'corpus.hash_def_two_renaming.js'
 flog = 'log_test_' + os.path.basename(corpus_root)
 #f1, f2, f3, f4, f5, f6, 
 try:
@@ -700,16 +717,18 @@ with open(testing_sample_path, 'r') as f:
 
     reader = UnicodeReader(f)
 
-    pool = multiprocessing.Pool(processes=num_threads)
+    processFile(reader.next())
+
+#    pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processFile, reader):
+#    for result in pool.imap_unordered(processFile, reader):
       
-        with open(os.path.join(output_path, flog), 'a') as g:
-            writer = UnicodeWriter(g)
+#        with open(os.path.join(output_path, flog), 'a') as g:
+#            writer = UnicodeWriter(g)
     
-            if result[1] is not None:
-                writer.writerow(result)
-            else:
-                writer.writerow([result[0], result[2]])
+#            if result[1] is not None:
+#                writer.writerow(result)
+#            else:
+#                writer.writerow([result[0], result[2]])
             
 
