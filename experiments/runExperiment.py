@@ -423,7 +423,7 @@ def processTranslation(translation, iBuilder_clear,
                                           name_positions,
                                           lm_path)
         for (name, def_scope), renaming in renaming_map.iteritems():
-            nc.append( (f[:-3]+'.lm', def_scope, renaming, 
+            nc.append( (strategy+'.lm', def_scope, renaming, name, 
                         ','.join(name_candidates[(name, def_scope)])) )
         
         lm_translation = rename(iBuilder_clear.tokens, renaming_map)
@@ -436,10 +436,15 @@ def processTranslation(translation, iBuilder_clear,
             return False
         
         
-        len_translation = rename(iBuilder_clear.tokens, 
-                                 computeLenRenaming(iBuilder_clear.tokens, 
-                                                    name_candidates, 
-                                                    name_positions))
+        renaming_map = computeLenRenaming(iBuilder_clear.tokens, 
+                                            name_candidates, 
+                                            name_positions)
+        for (name, def_scope), renaming in renaming_map.iteritems():
+            nc.append( (strategy+'.len', def_scope, renaming, name, 
+                        ','.join(name_candidates[(name, def_scope)])) )
+        
+        len_translation = rename(iBuilder_clear.tokens, renaming_map)
+        
         writeTmpLines(len_translation, f[:-3] + '.len.js')
         ok = clear.run(f[:-3] + '.len.js', 
                        os.path.join(output_path, 
@@ -447,11 +452,16 @@ def processTranslation(translation, iBuilder_clear,
         if not ok:
             return False
 
-
-        freqlen_translation = rename(iBuilder_clear.tokens, 
-                                 computeFreqLenRenaming(iBuilder_clear.tokens, 
-                                                    name_candidates, 
-                                                    name_positions))
+        
+        renaming_map = computeFreqLenRenaming(iBuilder_clear.tokens, 
+                                            name_candidates, 
+                                            name_positions)
+        for (name, def_scope), renaming in renaming_map.iteritems():
+            nc.append( (strategy+'.freqlen', def_scope, renaming, name, 
+                        ','.join(name_candidates[(name, def_scope)])) )
+        
+        freqlen_translation = rename(iBuilder_clear.tokens, renaming_map)
+        
         writeTmpLines(freqlen_translation, f[:-3] + '.freqlen.js')
         ok = clear.run(f[:-3] + '.freqlen.js', 
                        os.path.join(output_path, 
@@ -589,7 +599,7 @@ def processFile(l):
                                  path_tmp_unugly))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('Nice2Predict', def_scope, name, ''))
+                candidates.append(('Nice2Predict', def_scope, name, '', ''))
         except:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, path_unugly])
@@ -618,7 +628,7 @@ def processFile(l):
                                  path_tmp_jsnice))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('JSNice', def_scope, name, ''))
+                candidates.append(('JSNice', def_scope, name, '', ''))
         except:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, \
@@ -656,8 +666,6 @@ def processFile(l):
                            'train.no_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f2)
 
-        #print _moses_ok, translation, _err
-
         nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f2,
                        output_path, base_name, clear)
@@ -673,10 +681,12 @@ def processFile(l):
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.basic_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f3)
-        processTranslation(translation, iBuilder_ugly, 
+        nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f3,
                        output_path, base_name, clear)
-
+        if nc:
+            candidates += nc
+            
         
         # More complicated renaming: collect the context around  
         # each name (global variables, API calls, punctuation)
@@ -691,13 +701,12 @@ def processFile(l):
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
-#         print _moses_ok
-#         print translation
-#         print _err
-        processTranslation(translation, iBuilder_ugly, 
+        
+        nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
                        output_path, base_name, clear)
-
+        if nc:
+            candidates += nc
         
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
@@ -709,10 +718,13 @@ def processFile(l):
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f5)
-        processTranslation(translation, iBuilder_ugly, 
+        
+        nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f5,
                        output_path, base_name, clear)
-
+        if nc:
+            candidates += nc
+            
 
         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
@@ -724,10 +736,13 @@ def processFile(l):
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_def_two_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f6)
-        processTranslation(translation, iBuilder_ugly, 
+        
+        nc = processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f6,
                        output_path, base_name, clear)
-        
+        if nc:
+            candidates += nc
+            
         
         cleanup(pid)
         cleanupRenamed(pid)
