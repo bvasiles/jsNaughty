@@ -57,10 +57,10 @@ def processTranslation(translation, iBuilder_clear,
     if translation is not None:
 
 
-        print f
-        print translation
-        print
-        print
+#         print f
+#         print translation
+#         print
+#         print
 
         # Compute scoping 
         try:
@@ -642,12 +642,16 @@ def processFile(l):
         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
                                                iBuilder_ugly,
                                                debug=True)
+        print hash_renaming
         with open(f4, 'w') as f_hash_renaming:
             f_hash_renaming.writelines(hash_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
+        print _moses_ok
+        print translation
+        print _err
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
                        output_path, base_name, clear)
