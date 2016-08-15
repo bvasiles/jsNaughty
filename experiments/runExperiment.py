@@ -743,16 +743,10 @@ def processFile(l):
         if nc:
             candidates += nc
             
-            
-        with open(os.path.join(output_path, js_file_path+'.candidates.csv'), 'a') as c:
-            cw = UnicodeWriter(c)
-            for r in candidates:
-                cw.writerow([js_file_path]+
-                                [x.replace("\"","") for x in list(r)])
         
         cleanup(pid)
         cleanupRenamed(pid)
-        return (js_file_path, 'OK')
+        return (js_file_path, 'OK', candidates)
 
 
     except Exception, e:
@@ -770,9 +764,10 @@ ini_path = os.path.abspath(sys.argv[5])
 lm_path = os.path.abspath(sys.argv[6])
 
 flog = 'log_test_' + os.path.basename(corpus_root)
+c_path = 'candidates.csv'
 #f1, f2, f3, f4, f5, f6, 
 try:
-    for f in [flog]:
+    for f in [flog, c_path]:
         os.remove(os.path.join(output_path, f))
 except:
     pass
@@ -790,12 +785,17 @@ with open(testing_sample_path, 'r') as f:
     
     for result in pool.imap_unordered(processFile, reader):
       
-        with open(os.path.join(output_path, flog), 'a') as g:
+        with open(os.path.join(output_path, flog), 'a') as g, \
+                open(os.path.join(output_path, c_path), 'a') as c:
             writer = UnicodeWriter(g)
+            cw = UnicodeWriter(c)
     
             if result[1] is not None:
-                js_file_path, ok = result
+                js_file_path, ok, candidates = result
                 writer.writerow([js_file_path, ok])
+                for r in candidates:
+                    cw.writerow([js_file_path]+
+                                [x.replace("\"","") for x in list(r)])
             else:
                 writer.writerow([result[0], result[2]])
             
