@@ -27,6 +27,7 @@ def processFile(l):
             scope = scope[:i+len('[variables][_values]')]
 #             print name, scope
             candidates.append( (scope, name) )
+            print name, def_scope, scope
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
@@ -51,6 +52,8 @@ for row in reader:
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
+    
+    print strategy, translated_name, row[2], scope
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
