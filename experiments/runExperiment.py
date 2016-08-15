@@ -717,18 +717,18 @@ with open(testing_sample_path, 'r') as f:
 
     reader = UnicodeReader(f)
 
-    processFile(reader.next())
+#     processFile(reader.next())
 
-#    pool = multiprocessing.Pool(processes=num_threads)
+    pool = multiprocessing.Pool(processes=num_threads)
     
-#    for result in pool.imap_unordered(processFile, reader):
+    for result in pool.imap_unordered(processFile, reader):
       
-#        with open(os.path.join(output_path, flog), 'a') as g:
-#            writer = UnicodeWriter(g)
+        with open(os.path.join(output_path, flog), 'a') as g:
+            writer = UnicodeWriter(g)
     
-#            if result[1] is not None:
-#                writer.writerow(result)
-#            else:
-#                writer.writerow([result[0], result[2]])
+            if result[1] is not None:
+                writer.writerow(result)
+            else:
+                writer.writerow([result[0], result[2]])
             
 
