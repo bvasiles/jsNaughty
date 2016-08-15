@@ -641,17 +641,17 @@ def processFile(l):
         # and build a hash of the concatenation.
         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
                                                iBuilder_ugly,
-                                               debug=True)
-        print hash_renaming
+                                               debug=False)
+#         print hash_renaming
         with open(f4, 'w') as f_hash_renaming:
             f_hash_renaming.writelines(hash_renaming)
         
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(f4)
-        print _moses_ok
-        print translation
-        print _err
+#         print _moses_ok
+#         print translation
+#         print _err
         processTranslation(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, f4,
                        output_path, base_name, clear)
@@ -660,7 +660,7 @@ def processFile(l):
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=False,
-                                                   debug=True)
+                                                   debug=False)
         with open(f5, 'w') as f_hash_def_one_renaming:
             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
 
@@ -675,7 +675,7 @@ def processFile(l):
         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=True,
-                                                   debug=True)
+                                                   debug=False)
         with open(f6, 'w') as f_hash_def_two_renaming: 
             f_hash_def_two_renaming.writelines(hash_def_two_renaming)
         
