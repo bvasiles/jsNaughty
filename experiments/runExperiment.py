@@ -794,7 +794,8 @@ with open(testing_sample_path, 'r') as f:
                 js_file_path, ok, candidates = result
                 writer.writerow([js_file_path, ok])
                 for r in candidates:
-                    cw.writerow([js_file_path]+list(r))
+                    cw.writerow([js_file_path]+
+                                [x.replace("\"","") for x in list(r)])
             else:
                 writer.writerow([result[0], result[2]])
             
