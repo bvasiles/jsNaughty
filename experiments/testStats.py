@@ -25,7 +25,7 @@ def processFile(l):
             scope = def_scope.replace("\"","")
             i = scope.find('[variables][_values]')
             scope = scope[:i+len('[variables][_values]')]
-            print name, scope
+#             print name, scope
             candidates.append( (scope, name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
@@ -46,6 +46,8 @@ for row in reader:
     file_name = row[0]
     strategy = row[1]
     scope = row[2]
+    i = scope.find('[variables][_values]')
+    scope = scope[:i+len('[variables][_values]')]
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
