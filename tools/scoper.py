@@ -182,6 +182,8 @@ class ScopeAnalyst:
                     glb = self.__get_def_global(parent['thedef'])
                     self.isGlobal[(key, start)] = glb
                     
+                    print self.isGlobal[(key, start)]
+                    
                     # Keep track of each name's scopes to figure 
                     # out which names are overloaded
                     self.nameScopes.setdefault(key, set([]))
