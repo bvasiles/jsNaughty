@@ -21,14 +21,16 @@ def processFile(l):
         nameDefScope2pos = scopeAnalyst.nameDefScope2pos
         
         for (name, def_scope) in nameOrigin.iterkeys():
-#             if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
-            scope = def_scope.replace("\"","")
-            i = scope.find('[variables][_values]')
-            if i > -1:
-                scope = scope[:i+len('[variables][_values]')]
-#             print name, scope
-            candidates.append( (scope, name) )
-#             print name, def_scope, scope
+            pos = nameDefScope2pos[(name, def_scope)]
+            
+            if not isGlobal.get((name, pos), True):
+                scope = def_scope.replace("\"","")
+                i = scope.find('[variables][_values]')
+                if i > -1:
+                    scope = scope[:i+len('[variables][_values]')]
+    
+                candidates.append( (scope, name) )
+
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
@@ -47,15 +49,15 @@ reader = UnicodeReader(open(csv_path))
 for row in reader:
     file_name = row[0]
     strategy = row[1]
+    
     scope = row[2]
     i = scope.find('[variables][_values]')
     if i > -1:
         scope = scope[:i+len('[variables][_values]')]
+    
     translated_name = row[3]
     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[5] if len(row[5]) else None
-    
-#     print strategy, translated_name, row[2], scope
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
