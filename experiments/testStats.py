@@ -22,7 +22,10 @@ def processFile(l):
         
         for (name, def_scope) in nameOrigin.iterkeys():
 #             if not isGlobal.get((name, nameDefScope2pos[(name, def_scope)]), True):
-            candidates.append( (def_scope.replace("\"",""), name) )
+            scope = def_scope.replace("\"","")
+            i = scope.find('[variables][_values]')
+            scope = scope[:i+len('[variables][_values]')]
+            candidates.append( (scope, name) )
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
