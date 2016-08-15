@@ -153,7 +153,7 @@ class ScopeAnalyst:
             # `name` leaves are interesting ...  
             if pth[-1] == 'name':
                 
-                print pth
+                print key, pth
                 
                 # Get the parent of the `node` name; the parent  
                 # contains the other attributes we need.
