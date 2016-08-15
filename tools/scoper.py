@@ -129,6 +129,7 @@ class ScopeAnalyst:
         # For each (name, start position) tuple, record its scope 
         # identifier (which will be a path in the AST above)
         self.name2defScope = {}
+        self.nameDefScope2pos = {}
         self.name2useScope = {}
         self.name2pth = {}
         self.nameScope2pth = {}
@@ -169,6 +170,8 @@ class ScopeAnalyst:
                     # Retrieve scope identifier
                     def_scope = self.__get_def_scope(parent['thedef'])
                     self.name2defScope[(key, start)] = def_scope
+                    
+                    self.nameDefScope2pos[(key, def_scope)] = start
                     
                     # Is name global (defined outside of this file)?
                     glb = self.__get_def_global(parent['thedef'])
