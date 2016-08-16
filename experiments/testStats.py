@@ -105,7 +105,7 @@ orig = {}
 
 pool = multiprocessing.Pool(processes=num_threads)
       
-for result in pool.imap_unordered(processFile, w[:1]):
+for result in pool.imap_unordered(processFile, w):
     if result[1] is not None:
         file_name, ok, candidates = result
         
