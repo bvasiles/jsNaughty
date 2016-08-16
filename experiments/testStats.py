@@ -48,10 +48,15 @@ num_threads = int(sys.argv[3])
 
 data = {}
 
+strategies = set([])
+
 reader = UnicodeReader(open(csv_path))
+
 for row in reader:
     file_name = row[0]
+    
     strategy = row[1]
+    strategies.add(strategy)
     
     scope = row[2]
     i = scope.find('[variables][_values]')
@@ -67,11 +72,13 @@ for row in reader:
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
-    data[file_name][strategy].setdefault(scope, [])
-    
-    data[file_name][strategy][scope].append( (translated_name, 
+    data[file_name][strategy][scope] = (translated_name, 
                                               ugly_name, 
-                                              alternatives) )
+                                              alternatives)    
+#     data[file_name][strategy].setdefault(scope, [])
+#     data[file_name][strategy][scope].append( (translated_name, 
+#                                               ugly_name, 
+#                                               alternatives) )
     
     
 print len(data.keys()), 'files'
@@ -86,6 +93,14 @@ print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
 print
  
 
+s2n = {}
+n2s = {}
+for idx, strategy in enumerate(strategies):
+    s2n[strategy] = idx
+    n2s[idx] = strategy
+
+
+
 orig = {}
 
 pool = multiprocessing.Pool(processes=num_threads)
@@ -97,17 +112,25 @@ for result in pool.imap_unordered(processFile, w[:1]):
         orig.setdefault(file_name, {})
 
         for (def_scope, name) in candidates:
-            orig[file_name].setdefault(def_scope, [])
-            orig[file_name][def_scope].append(name)
+            orig[file_name][def_scope] = name
+#             orig[file_name].setdefault(def_scope, [])
+#             orig[file_name][def_scope].append(name)
     
     else:
         print result[0], result[2]
-            
+
+
+# writer = UnicodeWriter(open(os.path.join(results_path, 
+#                                          'stats.csv'), 'w'))
+
 for file_name in orig.iterkeys():
+    row = [file_name]
+    counts = [None]*len(strategies)
+    
     print file_name
     
-    for def_scope, names in orig[file_name].iteritems():
-        print '\t', names, def_scope
+    for def_scope, name in orig[file_name].iteritems():
+        print '\t', name, def_scope
         for strategy, dscope in data[file_name].iteritems():
             if dscope.has_key(def_scope):
                 print '\t\t', strategy, dscope[def_scope]
