@@ -130,23 +130,22 @@ for file_name in orig.iterkeys():
     counts = [0]*len(strategies)
     num_names = 0
     
-    print file_name
-    
+#     print file_name
     
     for def_scope, name in orig[file_name].iteritems():
-        print '\t', name, def_scope
+#         print '\t', name, def_scope
         num_names += 1
         
         for strategy, dscope in data[file_name].iteritems():
             if dscope.has_key(def_scope):
-                print '\t\t', strategy, dscope[def_scope]
+#                 print '\t\t', strategy, dscope[def_scope]
                 (translated_name, 
                  ugly_name, 
                  alternatives) = dscope[def_scope]
                 if name == translated_name:
                     counts[s2n[strategy]] += 1
 
-    print
+#     print
     row += [num_names]
     row += counts
     writer.writerow(row)
