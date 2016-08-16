@@ -148,8 +148,11 @@ for file_name in orig.iterkeys():
                  alternatives) = dscope[def_scope]
                 if name == translated_name:
                     counts[s2n[strategy]] += 1
-                if name in alternatives.split(','):
-                    alt_counts[s2n[strategy]] += 1
+                try:
+                    if name in alternatives.split(','):
+                        alt_counts[s2n[strategy]] += 1
+                except:
+                    pass
 
 #     print
     row += [num_names]
