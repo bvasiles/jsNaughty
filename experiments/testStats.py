@@ -120,22 +120,36 @@ for result in pool.imap_unordered(processFile, w[:1]):
         print result[0], result[2]
 
 
-# writer = UnicodeWriter(open(os.path.join(results_path, 
-#                                          'stats.csv'), 'w'))
+writer = UnicodeWriter(open(os.path.join(results_path, 
+                                        'stats.csv'), 'w'))
+writer.writerow(['file', 'num_names'] + 
+                [n2s[i] for i in range(len(strategies))]) 
 
 for file_name in orig.iterkeys():
     row = [file_name]
-    counts = [None]*len(strategies)
+    counts = [0]*len(strategies)
+    num_names = 0
     
     print file_name
     
+    
     for def_scope, name in orig[file_name].iteritems():
         print '\t', name, def_scope
+        num_names += 1
+        
         for strategy, dscope in data[file_name].iteritems():
             if dscope.has_key(def_scope):
                 print '\t\t', strategy, dscope[def_scope]
+                (translated_name, 
+                 ugly_name, 
+                 alternatives) = dscope[def_scope]
+                if name == translated_name:
+                    counts[s2n[strategy]] += 1
 
     print
+    row += [num_names]
+    row += counts
+    writer.writerow(row)
 
 
     
