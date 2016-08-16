@@ -26,10 +26,12 @@ def tryRemove(pth):
 def cleanup(pid):
     tryRemove('tmp_%d.js' % pid)
     tryRemove('tmp_%d.b.js' % pid)
+    tryRemove('tmp_%d.b.js.tmp' % pid)
     tryRemove('tmp_%d.b.a.js' % pid)
     tryRemove('tmp_%d.u.js' % pid)
     tryRemove('tmp_%d.u.a.js' % pid)
     tryRemove('tmp_%d.n2p.js' % pid)
+    tryRemove('tmp_%d.n2p.js.tmp' % pid)
     tryRemove('tmp_%d.jsnice.js' % pid)
 
 def cleanupRenamed(pid):
@@ -519,11 +521,17 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
-        ok = clear.run(path_tmp, path_tmp_b)
-         
+        ok = clear.run(path_tmp, path_tmp_b+'.tmp')
         if not ok:
             cleanup(pid)
             return (js_file_path, None, 'Beautifier 1 fail')
+         
+        jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
+        
+        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_b+'.tmp', path_tmp_b)
+        if not ok:
+            cleanup(pid)
+            return (js_file_path, None, 'JSNice Beautifier 1 fail')
         
         # Minify
         ugly = Uglifier()
@@ -587,11 +595,17 @@ def processFile(l):
             localCleanup(output_path, [path_ugly, path_orig])
             return (js_file_path, None, 'Nice2Predict fail')
         
-        ok = clear.run(path_tmp_unugly, os.path.join(output_path, path_unugly))
+        ok = clear.run(path_tmp_unugly, path_tmp_unugly+'.tmp')
         if not ok:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, path_unugly])
             return (js_file_path, None, 'Beautifier 4 fail')
+        
+        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_unugly+'.tmp', \
+                                    os.path.join(output_path, path_unugly))
+        if not ok:
+            cleanup(pid)
+            return (js_file_path, None, 'JSNice Beautifier 2 fail')
     
         try:
             scopeAnalyst = ScopeAnalyst(os.path.join(
