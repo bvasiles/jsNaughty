@@ -147,7 +147,7 @@ for file_name in orig.iterkeys():
         num_strategies = 0
         
         (translated_name, ugly_name, alternatives) =  \
-            data[file_name]['basic_renaming.lm']
+            data[file_name]['basic_renaming.lm'].values()[0]
             
         if translated_name != name:
             num_mini_names += 1
