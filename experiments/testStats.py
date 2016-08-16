@@ -124,11 +124,14 @@ writer = UnicodeWriter(open(os.path.join(results_path,
                                         'stats.csv'), 'w'))
 writer.writerow(['file', 'num_names'] + 
                 [n2s[i].replace('.','_') 
+                 for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_maybe' 
                  for i in range(len(strategies))]) 
 
 for file_name in orig.iterkeys():
     row = [file_name]
     counts = [0]*len(strategies)
+    alt_counts = [0]*len(strategies)
     num_names = 0
     
 #     print file_name
@@ -145,14 +148,16 @@ for file_name in orig.iterkeys():
                  alternatives) = dscope[def_scope]
                 if name == translated_name:
                     counts[s2n[strategy]] += 1
+                if name in alternatives.split(','):
+                    alt_counts[s2n[strategy]] += 1
 
 #     print
     row += [num_names]
     row += counts
+    row += alt_counts
     writer.writerow(row)
 
 
-    
     
     
     
