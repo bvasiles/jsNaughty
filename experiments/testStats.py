@@ -98,7 +98,7 @@ n2s = {}
 for idx, strategy in enumerate(sorted(strategies)):
     s2n[strategy] = idx
     n2s[idx] = strategy
-
+    print idx, strategy
 
 
 orig = {}
