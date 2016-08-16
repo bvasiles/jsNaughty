@@ -99,7 +99,7 @@ for idx, strategy in enumerate(sorted(strategies)):
     s2n[strategy] = idx
     n2s[idx] = strategy
     print idx, strategy
-
+print
 
 orig = {}
 
@@ -122,7 +122,7 @@ for result in pool.imap_unordered(processFile, w):
 
 writer = UnicodeWriter(open(os.path.join(results_path, 
                                         'stats.csv'), 'w'))
-writer.writerow(['file', 'num_names'] + 
+writer.writerow(['file', 'num_names', 'num_mini_names'] + 
                 [n2s[i].replace('.','_') 
                  for i in range(len(strategies))] +
                 [n2s[i].replace('.','_')+'_maybe' 
@@ -132,47 +132,56 @@ for file_name in orig.iterkeys():
     row = [file_name]
     counts = [0]*len(strategies)
     alt_counts = [0]*len(strategies)
+    
     num_names = 0
+    num_mini_names = 0
     
 #     seen = {}
     
 #     print file_name
     
     for def_scope, name in orig[file_name].iteritems():
+
 #         print '\t', name, def_scope
         num_names += 1
         num_strategies = 0
         
-        for strategy, dscope in data[file_name].iteritems():
+        (translated_name, ugly_name, alternatives) =  \
+            data[file_name]['basic_renaming.lm']
             
-            num_strategies += 1
-            
-#             if not seen.has_key(strategy):
-#                 counts[s2n[strategy]] = 0
-#                 seen[strategy] = True
-            
-            if dscope.has_key(def_scope):
-#                 print '\t\t', strategy, dscope[def_scope]
-                (translated_name, 
-                 ugly_name, 
-                 alternatives) = dscope[def_scope]
-                
-                if name == translated_name:
-                    counts[s2n[strategy]] += 1
-                
-                try:
-                    if name in alternatives.split(','):
-                        alt_counts[s2n[strategy]] += 1
-                except:
-                    pass
+        if translated_name != name:
+            num_mini_names += 1
         
-        try:
-            assert num_strategies == 17
-        except AssertionError:
-            print file_name, name, def_scope
+            for strategy, dscope in data[file_name].iteritems():
+                
+                num_strategies += 1
+                
+    #             if not seen.has_key(strategy):
+    #                 counts[s2n[strategy]] = 0
+    #                 seen[strategy] = True
+                
+                if dscope.has_key(def_scope):
+    #                 print '\t\t', strategy, dscope[def_scope]
+                    (translated_name, 
+                     ugly_name, 
+                     alternatives) = dscope[def_scope]
+                    
+                    if name == translated_name:
+                        counts[s2n[strategy]] += 1
+                    
+                    try:
+                        if name in alternatives.split(','):
+                            alt_counts[s2n[strategy]] += 1
+                    except:
+                        pass
+        
+            try:
+                assert num_strategies == 17
+            except AssertionError:
+                print file_name, name, def_scope
 
 #     print
-    row += [num_names]
+    row += [num_names, num_mini_names]
     row += counts
     row += alt_counts
     writer.writerow(row)
