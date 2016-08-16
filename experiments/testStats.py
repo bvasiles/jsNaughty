@@ -95,7 +95,7 @@ print
 
 s2n = {}
 n2s = {}
-for idx, strategy in enumerate(strategies):
+for idx, strategy in enumerate(sorted(strategies)):
     s2n[strategy] = idx
     n2s[idx] = strategy
 
