@@ -26,12 +26,14 @@ def tryRemove(pth):
 def cleanup(pid):
     tryRemove('tmp_%d.js' % pid)
     tryRemove('tmp_%d.b.js' % pid)
-    tryRemove('tmp_%d.b.js.tmp' % pid)
+    tryRemove('tmp_%d.b.js.tmp1' % pid)
+    tryRemove('tmp_%d.b.js.tmp2' % pid)
     tryRemove('tmp_%d.b.a.js' % pid)
     tryRemove('tmp_%d.u.js' % pid)
     tryRemove('tmp_%d.u.a.js' % pid)
     tryRemove('tmp_%d.n2p.js' % pid)
-    tryRemove('tmp_%d.n2p.js.tmp' % pid)
+    tryRemove('tmp_%d.n2p.js.tmp1' % pid)
+    tryRemove('tmp_%d.n2p.js.tmp2' % pid)
     tryRemove('tmp_%d.jsnice.js' % pid)
 
 def cleanupRenamed(pid):
@@ -59,12 +61,6 @@ def processTranslation(translation, iBuilder_clear,
         
         
     if translation is not None:
-
-
-#         print f
-#         print translation
-#         print
-#         print
 
         # Compute scoping 
         try:
@@ -486,7 +482,7 @@ def processFile(l):
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
     pid = int(multiprocessing.current_process().ident)
-    
+
     candidates = []
     
     try:
@@ -521,18 +517,23 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
-        ok = clear.run(path_tmp, path_tmp_b+'.tmp')
+        ok = clear.run(path_tmp, path_tmp_b+'.tmp1')
         if not ok:
             cleanup(pid)
             return (js_file_path, None, 'Beautifier 1 fail')
          
         jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
         
-        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_b+'.tmp', path_tmp_b)
+        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_b+'.tmp1', path_tmp_b+'.tmp2')
         if not ok:
             cleanup(pid)
             return (js_file_path, None, 'JSNice Beautifier 1 fail')
-        
+
+        ok = clear.run(path_tmp_b+'.tmp2', path_tmp_b)
+        if not ok:
+            cleanup(pid)
+            return (js_file_path, None, 'Beautifier 1 fail')
+         
         # Minify
         ugly = Uglifier()
         ok = ugly.run(path_tmp_b, path_tmp_u)
@@ -548,7 +549,7 @@ def processFile(l):
         except:
             cleanup(pid)
             return (js_file_path, None, 'Lexer fail')
-        
+       
         # For now only work with minified files that have
         # the same number of tokens as the originals
         if not len(tok_clear) == len(tok_ugly):
@@ -595,18 +596,23 @@ def processFile(l):
             localCleanup(output_path, [path_ugly, path_orig])
             return (js_file_path, None, 'Nice2Predict fail')
         
-        ok = clear.run(path_tmp_unugly, path_tmp_unugly+'.tmp')
+        ok = clear.run(path_tmp_unugly, path_tmp_unugly+'.tmp1')
         if not ok:
             cleanup(pid)
             localCleanup(output_path, [path_ugly, path_orig, path_unugly])
             return (js_file_path, None, 'Beautifier 4 fail')
         
-        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_unugly+'.tmp', \
-                                    os.path.join(output_path, path_unugly))
+        (ok, _out, _err) = jsNiceBeautifier.run(path_tmp_unugly+'.tmp1', path_tmp_unugly+'.tmp2')
         if not ok:
             cleanup(pid)
             return (js_file_path, None, 'JSNice Beautifier 2 fail')
     
+        ok = clear.run(path_tmp_unugly+'.tmp2', os.path.join(output_path, path_unugly))
+        if not ok:
+            cleanup(pid)
+            localCleanup(output_path, [path_ugly, path_orig, path_unugly])
+            return (js_file_path, None, 'Beautifier 4 fail')
+
         try:
             scopeAnalyst = ScopeAnalyst(os.path.join(
                                  os.path.dirname(os.path.realpath(__file__)), 
