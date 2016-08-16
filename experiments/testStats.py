@@ -123,7 +123,8 @@ for result in pool.imap_unordered(processFile, w):
 writer = UnicodeWriter(open(os.path.join(results_path, 
                                         'stats.csv'), 'w'))
 writer.writerow(['file', 'num_names'] + 
-                [n2s[i] for i in range(len(strategies))]) 
+                [n2s[i].replace('.','_') 
+                 for i in range(len(strategies))]) 
 
 for file_name in orig.iterkeys():
     row = [file_name]
