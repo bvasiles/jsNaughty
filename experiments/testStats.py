@@ -130,23 +130,26 @@ writer.writerow(['file', 'num_names'] +
 
 for file_name in orig.iterkeys():
     row = [file_name]
-    counts = [None]*len(strategies)
+    counts = [0]*len(strategies)
     alt_counts = [0]*len(strategies)
     num_names = 0
     
-    seen = {}
+#     seen = {}
     
 #     print file_name
     
     for def_scope, name in orig[file_name].iteritems():
 #         print '\t', name, def_scope
         num_names += 1
+        num_strategies = 0
         
         for strategy, dscope in data[file_name].iteritems():
             
-            if not seen.has_key(strategy):
-                counts[s2n[strategy]] = 0
-                seen[strategy] = True
+            num_strategies += 1
+            
+#             if not seen.has_key(strategy):
+#                 counts[s2n[strategy]] = 0
+#                 seen[strategy] = True
             
             if dscope.has_key(def_scope):
 #                 print '\t\t', strategy, dscope[def_scope]
@@ -162,6 +165,11 @@ for file_name in orig.iterkeys():
                         alt_counts[s2n[strategy]] += 1
                 except:
                     pass
+        
+        try:
+            assert num_strategies == 17
+        except AssertionError:
+            print file_name, name, def_scope
 
 #     print
     row += [num_names]
