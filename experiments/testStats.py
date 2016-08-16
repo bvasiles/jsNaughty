@@ -152,33 +152,33 @@ for file_name in orig.iterkeys():
         if translated_name != name:
             num_mini_names += 1
         
-            for strategy, dscope in data[file_name].iteritems():
+        for strategy, dscope in data[file_name].iteritems():
+            
+            num_strategies += 1
+            
+#             if not seen.has_key(strategy):
+#                 counts[s2n[strategy]] = 0
+#                 seen[strategy] = True
+            
+            if dscope.has_key(def_scope):
+#                 print '\t\t', strategy, dscope[def_scope]
+                (translated_name, 
+                 ugly_name, 
+                 alternatives) = dscope[def_scope]
                 
-                num_strategies += 1
+                if name == translated_name:
+                    counts[s2n[strategy]] += 1
                 
-    #             if not seen.has_key(strategy):
-    #                 counts[s2n[strategy]] = 0
-    #                 seen[strategy] = True
-                
-                if dscope.has_key(def_scope):
-    #                 print '\t\t', strategy, dscope[def_scope]
-                    (translated_name, 
-                     ugly_name, 
-                     alternatives) = dscope[def_scope]
-                    
-                    if name == translated_name:
-                        counts[s2n[strategy]] += 1
-                    
-                    try:
-                        if name in alternatives.split(','):
-                            alt_counts[s2n[strategy]] += 1
-                    except:
-                        pass
-        
-            try:
-                assert num_strategies == 17
-            except AssertionError:
-                print file_name, name, def_scope
+                try:
+                    if name in alternatives.split(','):
+                        alt_counts[s2n[strategy]] += 1
+                except:
+                    pass
+    
+        try:
+            assert num_strategies == 17
+        except AssertionError:
+            print file_name, name, def_scope
 
 #     print
     row += [num_names, num_mini_names]
