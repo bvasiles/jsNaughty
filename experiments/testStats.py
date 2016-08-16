@@ -130,9 +130,11 @@ writer.writerow(['file', 'num_names'] +
 
 for file_name in orig.iterkeys():
     row = [file_name]
-    counts = [0]*len(strategies)
+    counts = [None]*len(strategies)
     alt_counts = [0]*len(strategies)
     num_names = 0
+    
+    seen = {}
     
 #     print file_name
     
@@ -141,13 +143,20 @@ for file_name in orig.iterkeys():
         num_names += 1
         
         for strategy, dscope in data[file_name].iteritems():
+            
+            if not seen.has_key(strategy):
+                counts[s2n[strategy]] = 0
+                seen[strategy] = True
+            
             if dscope.has_key(def_scope):
 #                 print '\t\t', strategy, dscope[def_scope]
                 (translated_name, 
                  ugly_name, 
                  alternatives) = dscope[def_scope]
+                
                 if name == translated_name:
                     counts[s2n[strategy]] += 1
+                
                 try:
                     if name in alternatives.split(','):
                         alt_counts[s2n[strategy]] += 1
