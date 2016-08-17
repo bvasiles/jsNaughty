@@ -811,128 +811,88 @@ def processTranslationUnscoped(translation, iBuilder_clear, lm_path,
 #                 draft_translation[idx][flatIdx-sumIdx] = (token_type, literal)
 #             return draft_translation
 
-        
-        strategy = f.split('.')[1]
-        
+
+        def collectVars(translation, suffix):
+            
+            nc = []
+            
+            strategy = f.split('.')[1]
+            
+            f_name = f[:-3] + '.' + suffix + '.js'
+            f_name_b = os.path.join(output_path, 
+                                '%s.%s.%s.js' % (base_name, strategy, suffix))
+            
+            writeTmpLines(translation, f_name)
+            ok = clear.run(f_name, f_name_b)
+            if not ok:
+                return False
+    
+            try:
+                lexer = Lexer(f_name_b)
+                iBuilder = IndexBuilder(lexer.tokenList)
+    
+                scopeAnalyst = ScopeAnalyst(f_name_b)
+            except:
+                return False
+    
+            nameOrigin = scopeAnalyst.nameOrigin
+            isGlobal = scopeAnalyst.isGlobal
+            nameDefScope2pos = scopeAnalyst.nameDefScope2pos
+            
+            for (name, def_scope) in nameOrigin.iterkeys():
+                pos = nameDefScope2pos[(name, def_scope)]
+                if not isGlobal.get((name, pos), True):
+                    (lin,col) = iBuilder.revFlatMat[pos]
+                    (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
+    
+                    nc.append( (strategy + '.' + suffix, def_scope, 
+                                tok_lin, tok_col, name, '', '' ) )
+            
+            return nc
+            
+            
+                    
         renaming_map = computeLMRenaming(iBuilder_clear.tokens, 
                                           name_candidates, 
                                           name_positions,
                                           lm_path)
-#         for name, renaming in renaming_map.iteritems():
-#             nc.append( (strategy+'.unscoped.lm', 'unscoped', '','', 
-#                         renaming, name, ','.join(name_candidates[name])) )
         
         lm_translation = rename(iBuilder_clear.tokens, renaming_map)
 
-
-        f_name = f[:-3] + '.unscoped.lm.js'
-        f_name_b = os.path.join(output_path, 
-                                '%s.%s.unscoped.lm.js' % (base_name, strategy))
-        writeTmpLines(lm_translation, f_name)
-        ok = clear.run(f_name, f_name_b)
-        if not ok:
+        cv = collectVars(lm_translation, 'unscoped.lm')
+        if not cv:
             return False
-        
-        try:
-            lexer = Lexer(f_name_b)
-            iBuilder = IndexBuilder(lexer.tokenList)
-
-            scopeAnalyst = ScopeAnalyst(f_name_b)
-        except:
-            return False
-        
-        nameOrigin = scopeAnalyst.nameOrigin
-        isGlobal = scopeAnalyst.isGlobal
-        nameDefScope2pos = scopeAnalyst.nameDefScope2pos
-        
-        for (name, def_scope) in nameOrigin.iterkeys():
-            pos = nameDefScope2pos[(name, def_scope)]
-            if not isGlobal.get((name, pos), True):
-                (lin,col) = iBuilder.revFlatMat[pos]
-                (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
-
-                nc.append( (strategy+'.unscoped.lm', def_scope, 
-                            tok_lin, tok_col, name, '', '' ) )
+        else:
+            nc += cv
                 
         
         
         renaming_map = computeLenRenaming(iBuilder_clear.tokens, 
                                             name_candidates, 
                                             name_positions)
-#         for name, renaming in renaming_map.iteritems():
-#             nc.append( (strategy+'.unscoped.len', 'unscoped', '','', 
-#                         renaming, name, ','.join(name_candidates[name])) )
         
         len_translation = rename(iBuilder_clear.tokens, renaming_map)
         
-        f_name = f[:-3] + '.unscoped.len.js'
-        f_name_b = os.path.join(output_path, 
-                                '%s.%s.unscoped.len.js' % (base_name, strategy))
-        writeTmpLines(len_translation, f_name)
-        ok = clear.run(f_name, f_name_b)
-        if not ok:
+        cv = collectVars(len_translation, 'unscoped.len')
+        if not cv:
             return False
-        
-        try:
-            lexer = Lexer(f_name_b)
-            iBuilder = IndexBuilder(lexer.tokenList)
-
-            scopeAnalyst = ScopeAnalyst(f_name_b)
-        except:
-            return False
-        
-        nameOrigin = scopeAnalyst.nameOrigin
-        isGlobal = scopeAnalyst.isGlobal
-        nameDefScope2pos = scopeAnalyst.nameDefScope2pos
-        
-        for (name, def_scope) in nameOrigin.iterkeys():
-            pos = nameDefScope2pos[(name, def_scope)]
-            if not isGlobal.get((name, pos), True):
-                (lin,col) = iBuilder.revFlatMat[pos]
-                (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
-
-                nc.append( (strategy+'.unscoped.len', def_scope, 
-                            tok_lin, tok_col, name, '', '' ) )
+        else:
+            nc += cv
 
 
         
         renaming_map = computeFreqLenRenaming(iBuilder_clear.tokens, 
                                             name_candidates, 
                                             name_positions)
-#         for name, renaming in renaming_map.iteritems():
-#             nc.append( (strategy+'.unscoped.freqlen', 'unscoped', '','', 
-#                         renaming, name, ','.join(name_candidates[name])) )
         
         freqlen_translation = rename(iBuilder_clear.tokens, renaming_map)
         
-        f_name = f[:-3] + '.unscoped.freqlen.js'
-        f_name_b = os.path.join(output_path, 
-                                '%s.%s.unscoped.freqlen.js' % (base_name, strategy))
-        writeTmpLines(freqlen_translation, f_name)
-        ok = clear.run(f_name, f_name_b)
-        if not ok:
+        cv = collectVars(freqlen_translation, 'unscoped.freqlen')
+        if not cv:
             return False
-
-        try:
-            lexer = Lexer(f_name_b)
-            iBuilder = IndexBuilder(lexer.tokenList)
-
-            scopeAnalyst = ScopeAnalyst(f_name_b)
-        except:
-            return False
-
-        nameOrigin = scopeAnalyst.nameOrigin
-        isGlobal = scopeAnalyst.isGlobal
-        nameDefScope2pos = scopeAnalyst.nameDefScope2pos
+        else:
+            nc += cv
         
-        for (name, def_scope) in nameOrigin.iterkeys():
-            pos = nameDefScope2pos[(name, def_scope)]
-            if not isGlobal.get((name, pos), True):
-                (lin,col) = iBuilder.revFlatMat[pos]
-                (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
-
-                nc.append( (strategy+'.unscoped.freqlen', def_scope, 
-                            tok_lin, tok_col, name, '', '' ) )
 
 
     return nc
