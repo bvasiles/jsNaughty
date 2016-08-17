@@ -55,6 +55,8 @@ def processTranslation(translation, iBuilder_clear,
         
         
     if translation is not None:
+        
+#         nameScope2TokIdx = {}
 
         # Compute scoping 
         try:
@@ -92,6 +94,12 @@ def processTranslation(translation, iBuilder_clear,
                     if not isGlobal.get((token, p), True):
 
                         def_scope = name2defScope[(token, p)]
+                        
+#                         if not nameScope2TokIdx.has_key((token, def_scope)):
+#                             pos = scopeAnalyst.nameDefScope2pos[(token, def_scope)]
+#                             (lin,col) = iBuilder_clear.revFlatMat[pos]
+#                             (tok_lin,tok_col) = iBuilder_clear.revTokMap[(lin,col)]
+#                             nameScope2TokIdx[(token, def_scope)] = (tok_lin,tok_col)
                     
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
@@ -399,7 +407,15 @@ def processTranslation(translation, iBuilder_clear,
                                           name_positions,
                                           lm_path)
         for (name, def_scope), renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.lm', def_scope, renaming, name, 
+            
+            pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+            (lin,col) = iBuilder_clear.revFlatMat[pos]
+            (tok_lin,tok_col) = iBuilder_clear.revTokMap[(lin,col)]
+#             nameScope2TokIdx[(token, def_scope)] = (tok_lin,tok_col)
+#             (tok_lin,tok_col) = nameScope2TokIdx[(token, def_scope)]
+            
+            nc.append( (strategy+'.lm', def_scope, tok_lin, tok_col, 
+                        renaming, name, 
                         ','.join(name_candidates[(name, def_scope)])) )
         
         lm_translation = rename(iBuilder_clear.tokens, renaming_map)
@@ -416,7 +432,14 @@ def processTranslation(translation, iBuilder_clear,
                                             name_candidates, 
                                             name_positions)
         for (name, def_scope), renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.len', def_scope, renaming, name, 
+
+            pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+            (lin,col) = iBuilder_clear.revFlatMat[pos]
+            (tok_lin,tok_col) = iBuilder_clear.revTokMap[(lin,col)]
+#             (tok_lin,tok_col) = nameScope2TokIdx[(token, def_scope)]
+
+            nc.append( (strategy+'.len', def_scope, tok_lin, tok_col,
+                        renaming, name, 
                         ','.join(name_candidates[(name, def_scope)])) )
         
         len_translation = rename(iBuilder_clear.tokens, renaming_map)
@@ -433,7 +456,14 @@ def processTranslation(translation, iBuilder_clear,
                                             name_candidates, 
                                             name_positions)
         for (name, def_scope), renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.freqlen', def_scope, renaming, name, 
+            
+            pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+            (lin,col) = iBuilder_clear.revFlatMat[pos]
+            (tok_lin,tok_col) = iBuilder_clear.revTokMap[(lin,col)]
+#             (tok_lin,tok_col) = nameScope2TokIdx[(token, def_scope)]
+            
+            nc.append( (strategy+'.freqlen', def_scope, tok_lin, tok_col, 
+                        renaming, name, 
                         ','.join(name_candidates[(name, def_scope)])) )
         
         freqlen_translation = rename(iBuilder_clear.tokens, renaming_map)
@@ -789,8 +819,8 @@ def processTranslationUnscoped(translation, iBuilder_clear, lm_path,
                                           name_positions,
                                           lm_path)
         for name, renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.unscoped.lm', 'unscoped', renaming, name, 
-                        ','.join(name_candidates[name])) )
+            nc.append( (strategy+'.unscoped.lm', 'unscoped', '','', 
+                        renaming, name, ','.join(name_candidates[name])) )
         
         lm_translation = rename(iBuilder_clear.tokens, renaming_map)
 
@@ -806,8 +836,8 @@ def processTranslationUnscoped(translation, iBuilder_clear, lm_path,
                                             name_candidates, 
                                             name_positions)
         for name, renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.unscoped.len', 'unscoped', renaming, 
-                        name, ','.join(name_candidates[name])) )
+            nc.append( (strategy+'.unscoped.len', 'unscoped', '','', 
+                        renaming, name, ','.join(name_candidates[name])) )
         
         len_translation = rename(iBuilder_clear.tokens, renaming_map)
         
@@ -823,8 +853,8 @@ def processTranslationUnscoped(translation, iBuilder_clear, lm_path,
                                             name_candidates, 
                                             name_positions)
         for name, renaming in renaming_map.iteritems():
-            nc.append( (strategy+'.unscoped.freqlen', 'unscoped', renaming, 
-                        name, ','.join(name_candidates[name])) )
+            nc.append( (strategy+'.unscoped.freqlen', 'unscoped', '','', 
+                        renaming, name, ','.join(name_candidates[name])) )
         
         freqlen_translation = rename(iBuilder_clear.tokens, renaming_map)
         
@@ -1005,12 +1035,25 @@ def processFile(l):
 
 
         try:
+            lexer = Lexer(temp_files['path_unugly'])
+            iBuilder = IndexBuilder(lexer.tokenList)
+        except:
+            cleanup(temp_files)
+            return (js_file_path, None, 'IndexBuilder fail')
+        
+        try:
             scopeAnalyst = ScopeAnalyst(os.path.join(
                                  os.path.dirname(os.path.realpath(__file__)), 
                                  temp_files['path_unugly']))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('Nice2Predict', def_scope, name, '', ''))
+                
+                pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+                (lin,col) = iBuilder.revFlatMat[pos]
+                (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+                
+                candidates.append(('Nice2Predict', def_scope, 
+                                   tok_lin, tok_col, name, '',''))
         except:
             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
@@ -1031,6 +1074,12 @@ def processFile(l):
             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
         
+        try:
+            lexer = Lexer(temp_files['path_jsnice'])
+            iBuilder = IndexBuilder(lexer.tokenList)
+        except:
+            cleanup(temp_files)
+            return (js_file_path, None, 'IndexBuilder fail')
         
         try:
             scopeAnalyst = ScopeAnalyst(os.path.join(
@@ -1038,7 +1087,13 @@ def processFile(l):
                                  temp_files['path_jsnice']))
             nameOrigin = scopeAnalyst.nameOrigin
             for (name, def_scope) in nameOrigin.iterkeys():
-                candidates.append(('JSNice', def_scope, name, '', ''))
+                
+                pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+                (lin,col) = iBuilder.revFlatMat[pos]
+                (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+                
+                candidates.append(('JSNice', def_scope, 
+                                   tok_lin, tok_col, name, '',''))
         except:
             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
