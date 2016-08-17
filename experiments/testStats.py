@@ -176,7 +176,7 @@ for file_name in orig.iterkeys():
                     pass
     
         try:
-            assert num_strategies == 17
+            assert num_strategies == 8
         except AssertionError:
             print file_name, name, def_scope
 
