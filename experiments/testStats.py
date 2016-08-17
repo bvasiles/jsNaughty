@@ -86,7 +86,7 @@ print len(data.keys()), 'files'
 wo = [k for k,v in data.iteritems() if len(v.keys())==2]
 print len(wo), 'w/o Moses'
 
-w = [k for k,v in data.iteritems() if len(v.keys())==17]
+w = [k for k,v in data.iteritems() if len(v.keys())==8]
 print len(w), 'w Moses'
 
 print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
