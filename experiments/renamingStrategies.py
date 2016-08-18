@@ -294,7 +294,7 @@ def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly,
     for line_idx, line in enumerate(iBuilder_ugly.tokens):
             
         new_line = []
-        for token_idx, (token_type, token) in enumerate(line):
+        for token_idx, (_token_type, token) in enumerate(line):
   
             (l,c) = iBuilder_ugly.tokMap[(line_idx, token_idx)]
             pos = iBuilder_ugly.flatMap[(l,c)]
