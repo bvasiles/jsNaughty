@@ -833,37 +833,37 @@ def processFile(l):
         
         
         
-#         # Compute scoping: name2scope is a dictionary where keys
-#         # are (name, start_index) tuples and values are scope identifiers. 
-#         # Note: start_index is a flat (unidimensional) index, 
-#         # not a (line_chr_idx, col_chr_idx) index.
-#         try:
-#             scopeAnalyst = ScopeAnalyst(os.path.join(
-#                                  os.path.dirname(os.path.realpath(__file__)), 
-#                                  temp_files['path_tmp_u_a']))
-#         except:
-#             cleanup(temp_files)
-#             return (js_file_path, None, 'ScopeAnalyst fail')
-#         
-#         
-# 
-#         # Baseline translation: No renaming, no scoping
-#         no_renaming = []
-#         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
-#             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
-#         
-#         with open(temp_files['f2'], 'w') as f_no_renaming:
-#             f_no_renaming.writelines(no_renaming)
-#         
-#         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-#                            'train.no_renaming', 'tuning', 'moses.ini'))
-#         (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
-# 
-#         nc = processTranslationUnscoped(translation, iBuilder_ugly, 
-#                        lm_path, temp_files['f2'],
-#                        output_path, base_name)
-#         if nc:
-#             candidates += nc
+        # Compute scoping: name2scope is a dictionary where keys
+        # are (name, start_index) tuples and values are scope identifiers. 
+        # Note: start_index is a flat (unidimensional) index, 
+        # not a (line_chr_idx, col_chr_idx) index.
+        try:
+            scopeAnalyst = ScopeAnalyst(os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 temp_files['path_tmp_u_a']))
+        except:
+            cleanup(temp_files)
+            return (js_file_path, None, 'ScopeAnalyst fail')
+         
+         
+ 
+        # Baseline translation: No renaming, no scoping
+        no_renaming = []
+        for _line_idx, line in enumerate(iBuilder_ugly.tokens):
+            no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
+         
+        with open(temp_files['f2'], 'w') as f_no_renaming:
+            f_no_renaming.writelines(no_renaming)
+         
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.no_renaming', 'tuning', 'moses.ini'))
+        (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
+ 
+        nc = processTranslationUnscoped(translation, iBuilder_ugly, 
+                       lm_path, temp_files['f2'],
+                       output_path, base_name)
+        if nc:
+            candidates += nc
 #                     
 # #  translation, iBuilder, lm_path, 
 # #                                f_path, output_path, base_name       
