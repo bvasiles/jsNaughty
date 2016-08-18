@@ -362,7 +362,7 @@ def summarizeScopedTranslation(renaming_map,
     f_base = os.path.basename(f_path)
     training_strategy = f_base.split('.')[1]
     tmp_path = '%s.%s.js' % (f_base, translation_strategy)
-    o_path = '%s.%s.js' % (base_name, translation_strategy)
+    o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
     
     for (name, def_scope), renaming in renaming_map.iteritems():
             
@@ -391,20 +391,22 @@ def summarizeUnscopedTranslation(renaming_map,
                                f_path,
                                translation_strategy,
                                output_path,
+                               base_name,
                                name_candidates,
                                name_positions,
                                iBuilder):
 
     nc = []
-        
-    base_name = os.path.basename(f_path)
-    training_strategy = base_name.split('.')[1]
-    o_path = '%s.unscoped.%s.js' % (base_name, translation_strategy)
+    
+    f_base = os.path.basename(f_path)
+    training_strategy = f_base.split('.')[1]
+    tmp_path = '%s.%s.js' % (f_base, translation_strategy)
+    o_path = '%s.%s.unscoped.%s.js' % (base_name, training_strategy, translation_strategy)
     
     writeTmpLines(rename(iBuilder, name_positions, renaming_map), o_path)
     
     clear = Beautifier()
-    ok = clear.run(o_path, os.path.join(output_path, o_path))
+    ok = clear.run(tmp_path, os.path.join(output_path, o_path))
     if not ok:
         return False
     
@@ -533,6 +535,7 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
                                        f_path,
                                        'lm',
                                        output_path,
+                                       base_name,
                                        name_candidates,
                                        name_positions,
                                        iBuilder)
@@ -547,6 +550,7 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
                                        f_path,
                                        'len',
                                        output_path,
+                                       base_name,
                                        name_candidates,
                                        name_positions,
                                        iBuilder)
@@ -561,6 +565,7 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
                                        f_path,
                                        'freqlen',
                                        output_path,
+                                       base_name,
                                        name_candidates,
                                        name_positions,
                                        iBuilder)
