@@ -374,6 +374,7 @@ def summarizeScopedTranslation(renaming_map,
                                translation_strategy,
                                output_path,
                                name_candidates,
+                               name_positions,
                                iBuilder,
                                scopeAnalyst):
 
@@ -396,7 +397,7 @@ def summarizeScopedTranslation(renaming_map,
                     renaming,
                     ','.join(name_candidates[(name, def_scope)])) )
     
-    writeTmpLines(rename(iBuilder.tokens, renaming_map), o_path)
+    writeTmpLines(rename(iBuilder, name_positions, renaming_map), o_path)
     
     clear = Beautifier()
     ok = clear.run(o_path, os.path.join(output_path, o_path))
@@ -435,6 +436,7 @@ def processTranslation(translation, iBuilder,
                                        'lm',
                                        output_path,
                                        name_candidates,
+                                       name_positions,
                                        iBuilder,
                                        scopeAnalyst)
         if not r:
@@ -449,6 +451,7 @@ def processTranslation(translation, iBuilder,
                                        'len',
                                        output_path,
                                        name_candidates,
+                                       name_positions,
                                        iBuilder,
                                        scopeAnalyst)
         if not r:
@@ -463,6 +466,7 @@ def processTranslation(translation, iBuilder,
                                        'freqlen',
                                        output_path,
                                        name_candidates,
+                                       name_positions,
                                        iBuilder,
                                        scopeAnalyst)
         if not r:
