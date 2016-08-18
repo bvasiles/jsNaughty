@@ -155,11 +155,14 @@ writer.writerow(['file', 'num_names', 'num_glb_names', 'num_loc_names'] +
                 [n2s[i].replace('.','_') 
                  for i in range(len(strategies))] +
                 [n2s[i].replace('.','_')+'_all' 
+                for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_glb' 
                 for i in range(len(strategies))])
 
 for file_name in orig.iterkeys():
     row = [file_name]
     counts_loc = [0]*len(strategies)
+    counts_glb = [0]*len(strategies)
     counts = [0]*len(strategies)
 #     alt_counts = [0]*len(strategies)
     
@@ -212,6 +215,8 @@ for file_name in orig.iterkeys():
                     
                         if not glb:
                             counts_loc[s2n[strategy]] += 1
+                        else:
+                            counts_glb[s2n[strategy]] += 1
                             
                         counts[s2n[strategy]] += 1
                     
@@ -230,6 +235,7 @@ for file_name in orig.iterkeys():
     row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
     row += counts_loc
     row += counts
+    row += counts_glb
 #     row += alt_counts
     writer.writerow(row)
 
