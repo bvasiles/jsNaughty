@@ -58,7 +58,7 @@ def makeKey(token,
     
     if scopeAnalyst is not None:
         name2defScope = scopeAnalyst.resolve_scope()
-        def_scope = name2defScope[(token, p)]
+        def_scope = name2defScope.get((token, p), None)
         return (token, def_scope)
     else:
         return (token, None)
