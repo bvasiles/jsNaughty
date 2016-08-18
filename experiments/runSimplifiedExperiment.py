@@ -410,7 +410,7 @@ def summarizeUnscopedTranslation(renaming_map,
     
     f_base = os.path.basename(f_path)
     training_strategy = f_base.split('.')[1]
-    tmp_path = '%s.%s.js' % (f_base, translation_strategy)
+    tmp_path = '%s.%s.js' % (f_base[:-3], translation_strategy)
     o_path = '%s.%s.unscoped.%s.js' % (base_name, training_strategy, translation_strategy)
     
     print f_path, f_base, training_strategy, tmp_path, o_path, base_name
