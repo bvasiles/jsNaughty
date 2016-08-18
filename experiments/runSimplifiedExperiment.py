@@ -451,349 +451,349 @@ def processTranslation(translation, iBuilder,
 
 
                 
-
-def processTranslationUnscoped(translation, iBuilder, lm_path, 
-                               f, output_path, base_name, clear):
-    
-    nc = []
-        
-    if translation is not None:
-    
-        (name_positions, 
-         position_names) = prepareHelpers(iBuilder, None)
-    
-        # Parse moses output
-        name_candidates = parseMosesOutput(translation,
-                                           iBuilder,
-                                           position_names)
-        
-        
-        def computeFreqLenRenaming(lines, name_candidates, name_positions):
-            renaming_map = {}
-            seen = {}
-            
-            # There is no uncertainty about the translation for
-            # variables that have a single candidate translation
-            for (name, val) in [(name, val) 
-                         for name, val in name_candidates.items() 
-                         if len(val.keys()) == 1]:
-                             
-                candidate_name = val.keys()[0]
-                
-                # Don't use the same translation for different
-                # variables within the same scope.
-                if not seen.has_key(candidate_name):
-                    renaming_map[name] = candidate_name
-                    seen[candidate_name] = True
-                else:
-                    renaming_map[name] = name
-                
-            # For the remaining variables, choose the translation 
-            # that has the longest name
-            
-            token_lines = []
-            for name, pos in name_positions.iteritems():
-                # pos is a list of tuples [(line_num, line_idx)]
-                token_lines.append((name, \
-                                len(set([line_num \
-                                         for (line_num, _line_idx) in pos]))))
-                
-            # Sort names by how many lines they appear 
-            # on in the input, descending
-            token_lines = sorted(token_lines, \
-                         key=lambda (name, num_lines): -num_lines)
-            
-            for name, _num_lines in token_lines:
-                # Sort candidates by how many lines in the translation
-                # they appear on, and by name length, both descending
-                candidates = sorted([(name_translation, len(line_nums)) \
-                                     for (name_translation,line_nums) \
-                                     in name_candidates[name].items()], 
-                                    key=lambda e:(-e[1],-len(e[0])))
-                
-                if len(candidates) > 1:
-                    unseen_candidates = [candidate_name 
-                                         for (candidate_name, _occurs) in candidates
-                                         if not seen.has_key(candidate_name)]
-                    
-                    if len(unseen_candidates):
-                        candidate_name = unseen_candidates[0]
-                        
-                        renaming_map[name] = candidate_name
-                        seen[candidate_name] = True
-                    else:
-                        renaming_map[name] = name
-                        seen[name] = True
-                    
-            return renaming_map
-        
-        
-        def computeLenRenaming(lines, name_candidates, name_positions):
-            renaming_map = {}
-            seen = {}
-            
-            # There is no uncertainty about the translation for
-            # variables that have a single candidate translation
-            for (name, val) in [(name, val) 
-                         for name, val in name_candidates.items() 
-                         if len(val.keys()) == 1]:
-                
-                candidate_name = val.keys()[0]
-                
-                if not seen.has_key(candidate_name):
-                    renaming_map[name] = candidate_name
-                    seen[candidate_name] = True
-                else:
-                    renaming_map[name] = name
-                
-            # For the remaining variables, choose the translation that 
-            # has the longest name
-            token_lines = []
-            
-            for name, pos in name_positions.iteritems():
-                token_lines.append((name, \
-                                    len(set([line_num \
-                                         for (line_num, _line_idx) in pos]))))
-                
-            # Sort names by how many lines they appear 
-            # on in the input, descending
-            token_lines = sorted(token_lines, 
-                                 key=lambda (name, num_lines): -num_lines)
-            
-            for name, _num_lines in token_lines:
-                
-                # Sort candidates by length of translation, descending
-                candidates = sorted([(name_translation, len(line_nums)) \
-                                     for (name_translation,line_nums) \
-                                     in name_candidates[name].items()],
-                                    key=lambda e:-len(e[0]))
-                
-                if len(candidates) > 1:
-                    unseen_candidates = [candidate_name 
-                                         for (candidate_name, _occurs) in candidates
-                                         if not seen.has_key(candidate_name)]
-                    
-                    if len(unseen_candidates):
-                        candidate_name = unseen_candidates[0]
-                        
-                        renaming_map[name] = candidate_name
-                        seen[candidate_name] = True
-                    else:
-                        renaming_map[name] = name
-                        seen[name] = True
-                    
-            return renaming_map
-        
-        
-        def computeLMRenaming(lines, name_candidates, name_positions, lm_path):
-            renaming_map = {}
-            seen = {}
-
-            # There is no uncertainty about the translation for
-            # variables that have a single candidate translation
-            for (name, val) in [(name, val) 
-                         for name, val in name_candidates.items() 
-                         if len(val.keys()) == 1]:
-                             
-                candidate_name = val.keys()[0]
-                
-                if not seen.has_key(candidate_name):
-                    renaming_map[name] = candidate_name
-                    seen[candidate_name] = True
-                else:
-                    renaming_map[name] = name
-                
-            # For the remaining variables, choose the translation that 
-            # gives the highest language model log probability
-            
-            token_lines = []
-            
-            for name, pos in name_positions.iteritems():
-                token_lines.append((name, \
-                                    len(set([line_num \
-                                         for (line_num, _line_idx) in pos]))))
-                
-            # Sort names by how many lines they appear 
-            # on in the input, descending
-            token_lines = sorted(token_lines, 
-                                 key=lambda (name, num_lines): -num_lines)
-            
-            for name, _num_lines in token_lines:
-                # Sort candidates by how many lines in the translation
-                # they appear on, and by name length, both descending
-                candidates = sorted([(name_translation, len(line_nums)) \
-                                     for (name_translation,line_nums) \
-                                     in name_candidates[name].items()], 
-                                    key=lambda e:(-e[1],-len(e[0])))
-                
-                if len(candidates) > 1:
-
-                    log_probs = []
-                    
-                    unseen_candidates = [candidate_name 
-                                         for (candidate_name, _occurs) in candidates
-                                         if not seen.has_key(candidate_name)]
-                    
-                    if len(unseen_candidates):
-                        
-                        for candidate_name in unseen_candidates:
-                            line_nums = set([num \
-                                for (num,idx) in name_positions[name]])
-                            
-                            draft_lines = []
-                            
-                            for line_num in line_nums:
-                                draft_line = [token for (token_type, token) 
-                                              in lines[line_num]]
-                                for line_idx in [idx 
-                                                 for (num, idx) in name_positions[name] 
-                                                 if num == line_num]:
-                                    draft_line[line_idx] = candidate_name
-                                    
-                                draft_lines.append(' '.join(draft_line))
-                                
-                                
-                            line_log_probs = []
-                            for line in draft_lines:
-                                lmquery = LMQuery(lm_path=lm_path)
-                                (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
-                                
-                                if not lm_ok:
-                                    lm_log_prob = -9999999999
-                                line_log_probs.append(lm_log_prob)
-
-                            if not len(line_log_probs):
-                                lm_log_prob = -9999999999
-                            else:
-                                lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
-            
-                            log_probs.append((candidate_name, lm_log_prob))
-                        
-                        candidate_names = sorted(log_probs, key=lambda e:-e[1])
-                        candidate_name = candidate_names[0][0]
-                        
-                        renaming_map[name] = candidate_name
-                        seen[candidate_name] = True
-                    else:
-                        renaming_map[name] = name
-                        seen[name] = True
-                   
-            return renaming_map
-
-            
-        def rename(lines, renaming_map):
-            draft_translation = deepcopy(lines)
-            
-            for name, renaming in renaming_map.iteritems():
-                for (line_num, line_idx) in name_positions[name]:
-                    (token_type, name) = draft_translation[line_num][line_idx]
-                    draft_translation[line_num][line_idx] = (token_type, renaming)
-
-            return draft_translation
-            
-
-#         def replaceLiterals(lines, revLiteralsMap):
+# 
+# def processTranslationUnscoped(translation, iBuilder, lm_path, 
+#                                f, output_path, base_name, clear):
+#     
+#     nc = []
+#         
+#     if translation is not None:
+#     
+#         (name_positions, 
+#          position_names) = prepareHelpers(iBuilder, None)
+#     
+#         # Parse moses output
+#         name_candidates = parseMosesOutput(translation,
+#                                            iBuilder,
+#                                            position_names)
+#         
+#         
+#         def computeFreqLenRenaming(lines, name_candidates, name_positions):
+#             renaming_map = {}
+#             seen = {}
+#             
+#             # There is no uncertainty about the translation for
+#             # variables that have a single candidate translation
+#             for (name, val) in [(name, val) 
+#                          for name, val in name_candidates.items() 
+#                          if len(val.keys()) == 1]:
+#                              
+#                 candidate_name = val.keys()[0]
+#                 
+#                 # Don't use the same translation for different
+#                 # variables within the same scope.
+#                 if not seen.has_key(candidate_name):
+#                     renaming_map[name] = candidate_name
+#                     seen[candidate_name] = True
+#                 else:
+#                     renaming_map[name] = name
+#                 
+#             # For the remaining variables, choose the translation 
+#             # that has the longest name
+#             
+#             token_lines = []
+#             for name, pos in name_positions.iteritems():
+#                 # pos is a list of tuples [(line_num, line_idx)]
+#                 token_lines.append((name, \
+#                                 len(set([line_num \
+#                                          for (line_num, _line_idx) in pos]))))
+#                 
+#             # Sort names by how many lines they appear 
+#             # on in the input, descending
+#             token_lines = sorted(token_lines, \
+#                          key=lambda (name, num_lines): -num_lines)
+#             
+#             for name, _num_lines in token_lines:
+#                 # Sort candidates by how many lines in the translation
+#                 # they appear on, and by name length, both descending
+#                 candidates = sorted([(name_translation, len(line_nums)) \
+#                                      for (name_translation,line_nums) \
+#                                      in name_candidates[name].items()], 
+#                                     key=lambda e:(-e[1],-len(e[0])))
+#                 
+#                 if len(candidates) > 1:
+#                     unseen_candidates = [candidate_name 
+#                                          for (candidate_name, _occurs) in candidates
+#                                          if not seen.has_key(candidate_name)]
+#                     
+#                     if len(unseen_candidates):
+#                         candidate_name = unseen_candidates[0]
+#                         
+#                         renaming_map[name] = candidate_name
+#                         seen[candidate_name] = True
+#                     else:
+#                         renaming_map[name] = name
+#                         seen[name] = True
+#                     
+#             return renaming_map
+#         
+#         
+#         def computeLenRenaming(lines, name_candidates, name_positions):
+#             renaming_map = {}
+#             seen = {}
+#             
+#             # There is no uncertainty about the translation for
+#             # variables that have a single candidate translation
+#             for (name, val) in [(name, val) 
+#                          for name, val in name_candidates.items() 
+#                          if len(val.keys()) == 1]:
+#                 
+#                 candidate_name = val.keys()[0]
+#                 
+#                 if not seen.has_key(candidate_name):
+#                     renaming_map[name] = candidate_name
+#                     seen[candidate_name] = True
+#                 else:
+#                     renaming_map[name] = name
+#                 
+#             # For the remaining variables, choose the translation that 
+#             # has the longest name
+#             token_lines = []
+#             
+#             for name, pos in name_positions.iteritems():
+#                 token_lines.append((name, \
+#                                     len(set([line_num \
+#                                          for (line_num, _line_idx) in pos]))))
+#                 
+#             # Sort names by how many lines they appear 
+#             # on in the input, descending
+#             token_lines = sorted(token_lines, 
+#                                  key=lambda (name, num_lines): -num_lines)
+#             
+#             for name, _num_lines in token_lines:
+#                 
+#                 # Sort candidates by length of translation, descending
+#                 candidates = sorted([(name_translation, len(line_nums)) \
+#                                      for (name_translation,line_nums) \
+#                                      in name_candidates[name].items()],
+#                                     key=lambda e:-len(e[0]))
+#                 
+#                 if len(candidates) > 1:
+#                     unseen_candidates = [candidate_name 
+#                                          for (candidate_name, _occurs) in candidates
+#                                          if not seen.has_key(candidate_name)]
+#                     
+#                     if len(unseen_candidates):
+#                         candidate_name = unseen_candidates[0]
+#                         
+#                         renaming_map[name] = candidate_name
+#                         seen[candidate_name] = True
+#                     else:
+#                         renaming_map[name] = name
+#                         seen[name] = True
+#                     
+#             return renaming_map
+#         
+#         
+#         def computeLMRenaming(lines, name_candidates, name_positions, lm_path):
+#             renaming_map = {}
+#             seen = {}
+# 
+#             # There is no uncertainty about the translation for
+#             # variables that have a single candidate translation
+#             for (name, val) in [(name, val) 
+#                          for name, val in name_candidates.items() 
+#                          if len(val.keys()) == 1]:
+#                              
+#                 candidate_name = val.keys()[0]
+#                 
+#                 if not seen.has_key(candidate_name):
+#                     renaming_map[name] = candidate_name
+#                     seen[candidate_name] = True
+#                 else:
+#                     renaming_map[name] = name
+#                 
+#             # For the remaining variables, choose the translation that 
+#             # gives the highest language model log probability
+#             
+#             token_lines = []
+#             
+#             for name, pos in name_positions.iteritems():
+#                 token_lines.append((name, \
+#                                     len(set([line_num \
+#                                          for (line_num, _line_idx) in pos]))))
+#                 
+#             # Sort names by how many lines they appear 
+#             # on in the input, descending
+#             token_lines = sorted(token_lines, 
+#                                  key=lambda (name, num_lines): -num_lines)
+#             
+#             for name, _num_lines in token_lines:
+#                 # Sort candidates by how many lines in the translation
+#                 # they appear on, and by name length, both descending
+#                 candidates = sorted([(name_translation, len(line_nums)) \
+#                                      for (name_translation,line_nums) \
+#                                      in name_candidates[name].items()], 
+#                                     key=lambda e:(-e[1],-len(e[0])))
+#                 
+#                 if len(candidates) > 1:
+# 
+#                     log_probs = []
+#                     
+#                     unseen_candidates = [candidate_name 
+#                                          for (candidate_name, _occurs) in candidates
+#                                          if not seen.has_key(candidate_name)]
+#                     
+#                     if len(unseen_candidates):
+#                         
+#                         for candidate_name in unseen_candidates:
+#                             line_nums = set([num \
+#                                 for (num,idx) in name_positions[name]])
+#                             
+#                             draft_lines = []
+#                             
+#                             for line_num in line_nums:
+#                                 draft_line = [token for (token_type, token) 
+#                                               in lines[line_num]]
+#                                 for line_idx in [idx 
+#                                                  for (num, idx) in name_positions[name] 
+#                                                  if num == line_num]:
+#                                     draft_line[line_idx] = candidate_name
+#                                     
+#                                 draft_lines.append(' '.join(draft_line))
+#                                 
+#                                 
+#                             line_log_probs = []
+#                             for line in draft_lines:
+#                                 lmquery = LMQuery(lm_path=lm_path)
+#                                 (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+#                                 
+#                                 if not lm_ok:
+#                                     lm_log_prob = -9999999999
+#                                 line_log_probs.append(lm_log_prob)
+# 
+#                             if not len(line_log_probs):
+#                                 lm_log_prob = -9999999999
+#                             else:
+#                                 lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+#             
+#                             log_probs.append((candidate_name, lm_log_prob))
+#                         
+#                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
+#                         candidate_name = candidate_names[0][0]
+#                         
+#                         renaming_map[name] = candidate_name
+#                         seen[candidate_name] = True
+#                     else:
+#                         renaming_map[name] = name
+#                         seen[name] = True
+#                    
+#             return renaming_map
+# 
+#             
+#         def rename(lines, renaming_map):
 #             draft_translation = deepcopy(lines)
-#             # Replace back literals
-#             lineLengths = [len(l) for l in lines]
-#             idx = 0
-#             sumIdx = 0
-#             for (flatIdx, literal) in revLiteralsMap:
-#                 while flatIdx > sumIdx + lineLengths[idx]:
-#                     sumIdx += lineLengths[idx]
-#                     idx += 1
-#                 (token_type, name) = draft_translation[idx][flatIdx-sumIdx]
-#                 draft_translation[idx][flatIdx-sumIdx] = (token_type, literal)
+#             
+#             for name, renaming in renaming_map.iteritems():
+#                 for (line_num, line_idx) in name_positions[name]:
+#                     (token_type, name) = draft_translation[line_num][line_idx]
+#                     draft_translation[line_num][line_idx] = (token_type, renaming)
+# 
 #             return draft_translation
-
-
-        def collectVars(translation, suffix):
-            
-            nc = []
-            
-            strategy = f.split('.')[1]
-            
-            f_name = f[:-3] + '.' + suffix + '.js'
-            f_name_b = os.path.join(output_path, 
-                                '%s.%s.%s.js' % (base_name, strategy, suffix))
-            
-            writeTmpLines(translation, f_name)
-            ok = clear.run(f_name, f_name_b)
-            if not ok:
-                return False
-    
-            try:
-                lexer = Lexer(f_name_b)
-                iBuilder = IndexBuilder(lexer.tokenList)
-    
-                scopeAnalyst = ScopeAnalyst(f_name_b)
-            except:
-                return False
-    
-            nameOrigin = scopeAnalyst.nameOrigin
-            isGlobal = scopeAnalyst.isGlobal
-            nameDefScope2pos = scopeAnalyst.nameDefScope2pos
-            
-            for (name, def_scope) in nameOrigin.iterkeys():
-                pos = nameDefScope2pos[(name, def_scope)]
-                if not isGlobal.get((name, pos), True):
-                    (lin,col) = iBuilder.revFlatMat[pos]
-                    (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
-    
-                    nc.append( (strategy + '.' + suffix, def_scope, 
-                                tok_lin, tok_col, name, '', '' ) )
-            
-            return nc
-            
-            
-                    
-        renaming_map = computeLMRenaming(iBuilder.tokens, 
-                                          name_candidates, 
-                                          name_positions,
-                                          lm_path)
-        
-        lm_translation = rename(iBuilder.tokens, renaming_map)
-
-        cv = collectVars(lm_translation, 'unscoped.lm')
-        if not cv:
-            return False
-        else:
-            nc += cv
-                
-        
-        
-        renaming_map = computeLenRenaming(iBuilder.tokens, 
-                                            name_candidates, 
-                                            name_positions)
-        
-        len_translation = rename(iBuilder.tokens, renaming_map)
-        
-        cv = collectVars(len_translation, 'unscoped.len')
-        if not cv:
-            return False
-        else:
-            nc += cv
-
-
-        
-        renaming_map = computeFreqLenRenaming(iBuilder.tokens, 
-                                            name_candidates, 
-                                            name_positions)
-        
-        freqlen_translation = rename(iBuilder.tokens, renaming_map)
-        
-        cv = collectVars(freqlen_translation, 'unscoped.freqlen')
-        if not cv:
-            return False
-        else:
-            nc += cv
-        
-
-
-    return nc
-
-
-    
+#             
+# 
+# #         def replaceLiterals(lines, revLiteralsMap):
+# #             draft_translation = deepcopy(lines)
+# #             # Replace back literals
+# #             lineLengths = [len(l) for l in lines]
+# #             idx = 0
+# #             sumIdx = 0
+# #             for (flatIdx, literal) in revLiteralsMap:
+# #                 while flatIdx > sumIdx + lineLengths[idx]:
+# #                     sumIdx += lineLengths[idx]
+# #                     idx += 1
+# #                 (token_type, name) = draft_translation[idx][flatIdx-sumIdx]
+# #                 draft_translation[idx][flatIdx-sumIdx] = (token_type, literal)
+# #             return draft_translation
+# 
+# 
+#         def collectVars(translation, suffix):
+#             
+#             nc = []
+#             
+#             strategy = f.split('.')[1]
+#             
+#             f_name = f[:-3] + '.' + suffix + '.js'
+#             f_name_b = os.path.join(output_path, 
+#                                 '%s.%s.%s.js' % (base_name, strategy, suffix))
+#             
+#             writeTmpLines(translation, f_name)
+#             ok = clear.run(f_name, f_name_b)
+#             if not ok:
+#                 return False
+#     
+#             try:
+#                 lexer = Lexer(f_name_b)
+#                 iBuilder = IndexBuilder(lexer.tokenList)
+#     
+#                 scopeAnalyst = ScopeAnalyst(f_name_b)
+#             except:
+#                 return False
+#     
+#             nameOrigin = scopeAnalyst.nameOrigin
+#             isGlobal = scopeAnalyst.isGlobal
+#             nameDefScope2pos = scopeAnalyst.nameDefScope2pos
+#             
+#             for (name, def_scope) in nameOrigin.iterkeys():
+#                 pos = nameDefScope2pos[(name, def_scope)]
+#                 if not isGlobal.get((name, pos), True):
+#                     (lin,col) = iBuilder.revFlatMat[pos]
+#                     (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
+#     
+#                     nc.append( (strategy + '.' + suffix, def_scope, 
+#                                 tok_lin, tok_col, name, '', '' ) )
+#             
+#             return nc
+#             
+#             
+#                     
+#         renaming_map = computeLMRenaming(iBuilder.tokens, 
+#                                           name_candidates, 
+#                                           name_positions,
+#                                           lm_path)
+#         
+#         lm_translation = rename(iBuilder.tokens, renaming_map)
+# 
+#         cv = collectVars(lm_translation, 'unscoped.lm')
+#         if not cv:
+#             return False
+#         else:
+#             nc += cv
+#                 
+#         
+#         
+#         renaming_map = computeLenRenaming(iBuilder.tokens, 
+#                                             name_candidates, 
+#                                             name_positions)
+#         
+#         len_translation = rename(iBuilder.tokens, renaming_map)
+#         
+#         cv = collectVars(len_translation, 'unscoped.len')
+#         if not cv:
+#             return False
+#         else:
+#             nc += cv
+# 
+# 
+#         
+#         renaming_map = computeFreqLenRenaming(iBuilder.tokens, 
+#                                             name_candidates, 
+#                                             name_positions)
+#         
+#         freqlen_translation = rename(iBuilder.tokens, renaming_map)
+#         
+#         cv = collectVars(freqlen_translation, 'unscoped.freqlen')
+#         if not cv:
+#             return False
+#         else:
+#             nc += cv
+#         
+# 
+# 
+#     return nc
+# 
+# 
+#     
 
 def processFile(l):
     
@@ -835,7 +835,7 @@ def processFile(l):
 
     candidates = []
     
-    try:
+    if True:
         
         # Strip comments, replace literals, etc
         try:
@@ -1052,11 +1052,11 @@ def processFile(l):
                            'train.no_renaming', 'tuning', 'moses.ini'))
         (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
 
-        nc = processTranslationUnscoped(translation, iBuilder_ugly, 
-                       lm_path, temp_files['f2'],
-                       output_path, base_name, clear)
-        if nc:
-            candidates += nc
+#         nc = processTranslationUnscoped(translation, iBuilder_ugly, 
+#                        lm_path, temp_files['f2'],
+#                        output_path, base_name, clear)
+#         if nc:
+#             candidates += nc
 
         
         # Default translation: No renaming
@@ -1106,10 +1106,10 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-    except Exception, e:
-        cleanup(temp_files)
-        cleanupRenamed(pid)
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         cleanup(temp_files)
+#         cleanupRenamed(pid)
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
     
