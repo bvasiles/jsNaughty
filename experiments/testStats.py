@@ -157,6 +157,8 @@ writer.writerow(['file', 'num_names', 'num_glb_names', 'num_loc_names'] +
                 [n2s[i].replace('.','_')+'_all' 
                 for i in range(len(strategies))] +
                 [n2s[i].replace('.','_')+'_glb' 
+                for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_maybe' 
                 for i in range(len(strategies))])
 
 for file_name in orig.iterkeys():
@@ -164,7 +166,7 @@ for file_name in orig.iterkeys():
     counts_loc = [0]*len(strategies)
     counts_glb = [0]*len(strategies)
     counts = [0]*len(strategies)
-#     alt_counts = [0]*len(strategies)
+    alt_counts = [0]*len(strategies)
     
     num_names = 0
     num_glb_names = 0
@@ -220,11 +222,12 @@ for file_name in orig.iterkeys():
                             
                         counts[s2n[strategy]] += 1
                     
-    #                 try:
-    #                     if name in alternatives.split(','):
-    #                         alt_counts[s2n[strategy]] += 1
-    #                 except:
-    #                     pass
+                    try:
+                        if not glb:
+                            if name in alternatives.split(','):
+                                alt_counts[s2n[strategy]] += 1
+                    except:
+                        pass
     
             try:
                 assert num_strategies == num_non_trivial
@@ -236,7 +239,7 @@ for file_name in orig.iterkeys():
     row += counts_loc
     row += counts
     row += counts_glb
-#     row += alt_counts
+    row += alt_counts
     writer.writerow(row)
 
 
