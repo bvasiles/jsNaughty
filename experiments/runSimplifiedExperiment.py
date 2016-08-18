@@ -366,7 +366,7 @@ def summarizeScopedTranslation(renaming_map,
         
     f_base = os.path.basename(f_path)
     training_strategy = f_base.split('.')[1]
-    tmp_path = '%s.%s.js' % (f_base, translation_strategy)
+    tmp_path = '%s.%s.js' % (f_base[:-3], translation_strategy)
     o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
     
     print f_path, f_base, training_strategy, tmp_path, o_path, base_name
@@ -864,48 +864,48 @@ def processFile(l):
                        output_path, base_name)
         if nc:
             candidates += nc
-#                     
-# #  translation, iBuilder, lm_path, 
-# #                                f_path, output_path, base_name       
-#         # Default translation: No renaming
-# #         no_renaming = []
-# #         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
-# #             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
-# #         
-# #         with open(temp_files['f2'], 'w') as f_no_renaming:
-# #             f_no_renaming.writelines(no_renaming)
-# #         
-# #         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-# #                            'train.no_renaming', 'tuning', 'moses.ini'))
-# #         (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
-# 
-#         nc = processTranslationScoped(translation, iBuilder_ugly, 
-#                        scopeAnalyst, lm_path, temp_files['f2'],
-#                        output_path, base_name)
-#         if nc:
-#             candidates += nc
+                     
+#  translation, iBuilder, lm_path, 
+#                                f_path, output_path, base_name       
+        # Default translation: No renaming
+#         no_renaming = []
+#         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
+#             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
 #         
+#         with open(temp_files['f2'], 'w') as f_no_renaming:
+#             f_no_renaming.writelines(no_renaming)
 #         
-#         
-#         # More complicated renaming: collect the context around  
-#         # each name (global variables, API calls, punctuation)
-#         # and build a hash of the concatenation.        
-#         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
-#                                                    iBuilder_ugly, 
-#                                                    twoLines=False,
-#                                                    debug=False)
-#         with open(temp_files['f5'], 'w') as f_hash_def_one_renaming:
-#             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-# 
 #         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-#                            'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
-#         (_moses_ok, translation, _err) = moses.run(temp_files['f5'])
-#         
-#         nc = processTranslationScoped(translation, iBuilder_ugly, 
-#                        scopeAnalyst, lm_path, temp_files['f5'],
-#                        output_path, base_name)
-#         if nc:
-#             candidates += nc
+#                            'train.no_renaming', 'tuning', 'moses.ini'))
+#         (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
+ 
+        nc = processTranslationScoped(translation, iBuilder_ugly, 
+                       scopeAnalyst, lm_path, temp_files['f2'],
+                       output_path, base_name)
+        if nc:
+            candidates += nc
+         
+         
+         
+        # More complicated renaming: collect the context around  
+        # each name (global variables, API calls, punctuation)
+        # and build a hash of the concatenation.        
+        hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
+                                                   iBuilder_ugly, 
+                                                   twoLines=False,
+                                                   debug=False)
+        with open(temp_files['f5'], 'w') as f_hash_def_one_renaming:
+            f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+ 
+        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+                           'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
+        (_moses_ok, translation, _err) = moses.run(temp_files['f5'])
+         
+        nc = processTranslationScoped(translation, iBuilder_ugly, 
+                       scopeAnalyst, lm_path, temp_files['f5'],
+                       output_path, base_name)
+        if nc:
+            candidates += nc
             
             
         
