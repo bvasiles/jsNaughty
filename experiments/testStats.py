@@ -24,13 +24,13 @@ def processFile(l):
             pos = nameDefScope2pos[(name, def_scope)]
             
             if not isGlobal.get((name, pos), True):
-                scope = def_scope.replace("\"","")
-                i = scope.find('[variables][_values]')
-                if i > -1:
-                    scope = scope[:i+len('[variables][_values]')]
-                i = scope.find('[functions][_values]')
-                if i > -1:
-                    scope = scope[:i+len('[functions][_values]')]
+#                 scope = def_scope.replace("\"","")
+#                 i = scope.find('[variables][_values]')
+#                 if i > -1:
+#                     scope = scope[:i+len('[variables][_values]')]
+#                 i = scope.find('[functions][_values]')
+#                 if i > -1:
+#                     scope = scope[:i+len('[functions][_values]')]
     
                 candidates.append( (scope, name) )
 
@@ -56,27 +56,32 @@ strategies = set([])
 reader = UnicodeReader(open(csv_path))
 
 for row in reader:
+    # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
     file_name = row[0]
     
     strategy = row[1]
     strategies.add(strategy)
     
-    scope = row[2]
-    i = scope.find('[variables][_values]')
-    if i > -1:
-        scope = scope[:i+len('[variables][_values]')]
-    i = scope.find('[functions][_values]')
-    if i > -1:
-        scope = scope[:i+len('[functions][_values]')]
+    tok_lin = row[3]
+    tok_col = row[4]
+    scope = (tok_lin,tok_col) #row[2]
+
+    glb = row[5]
+#     i = scope.find('[variables][_values]')
+#     if i > -1:
+#         scope = scope[:i+len('[variables][_values]')]
+#     i = scope.find('[functions][_values]')
+#     if i > -1:
+#         scope = scope[:i+len('[functions][_values]')]
         
-    translated_name = row[3]
-    ugly_name = row[4] if len(row[4]) else None
-    alternatives = row[5] if len(row[5]) else None
+    translated_name = row[6]
+#     ugly_name = row[4] if len(row[4]) else None
+    alternatives = row[7] if len(row[7]) else None
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
     data[file_name][strategy][scope] = (translated_name, 
-                                              ugly_name, 
+#                                               ugly_name, 
                                               alternatives)    
 #     data[file_name][strategy].setdefault(scope, [])
 #     data[file_name][strategy][scope].append( (translated_name, 
@@ -95,6 +100,7 @@ print len(w), 'w Moses'
 print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
 print
  
+exit()
 
 s2n = {}
 n2s = {}
