@@ -108,10 +108,10 @@ def prepareHelpers(iBuilder,
                     if not isGlobal.get((token, p), True):
                         def_scope = name2defScope[(token, p)]
 
-                    print (token, def_scope), line_num, line_idx
-                    name_positions.setdefault((token, def_scope), [])
-                    name_positions[(token, def_scope)].append((line_num, line_idx))
-                    position_names[line_num][line_idx] = (token, def_scope)
+                        print (token, def_scope), line_num, line_idx
+                        name_positions.setdefault((token, def_scope), [])
+                        name_positions[(token, def_scope)].append((line_num, line_idx))
+                        position_names[line_num][line_idx] = (token, def_scope)
                 
                 else:
                     def_scope = None
