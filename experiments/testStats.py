@@ -76,7 +76,7 @@ for row in reader:
     tok_col = int(row[4])
     scope = (tok_lin,tok_col) #row[2]
 
-    glb = row[5]
+#     glb = row[5]
 #     i = scope.find('[variables][_values]')
 #     if i > -1:
 #         scope = scope[:i+len('[variables][_values]')]
@@ -168,7 +168,7 @@ for file_name in orig.iterkeys():
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
 
-#         print '\t', name, def_scope
+        print '\t', name, def_scope, glb
         num_names += 1
         
         if glb:
