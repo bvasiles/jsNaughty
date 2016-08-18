@@ -506,9 +506,8 @@ def processTranslationScoped(translation, iBuilder,
 
 
 
-def processTranslationUnscoped(translation, iBuilder, 
-                       scopeAnalyst, lm_path, f_path,
-                       output_path, base_name, clear):
+def processTranslationUnscoped(translation, iBuilder, lm_path, 
+                               f_path, output_path, base_name):
     
     nc = []
     
@@ -521,7 +520,7 @@ def processTranslationUnscoped(translation, iBuilder,
         name_candidates = parseMosesOutput(translation,
                                            iBuilder,
                                            position_names)
-        
+
         r = summarizeUnscopedTranslation(computeLMRenaming(name_candidates,
                                                          name_positions,
                                                          iBuilder,
@@ -531,8 +530,7 @@ def processTranslationUnscoped(translation, iBuilder,
                                        output_path,
                                        name_candidates,
                                        name_positions,
-                                       iBuilder,
-                                       scopeAnalyst)
+                                       iBuilder)
         if not r:
             return False
         nc += r
@@ -546,8 +544,7 @@ def processTranslationUnscoped(translation, iBuilder,
                                        output_path,
                                        name_candidates,
                                        name_positions,
-                                       iBuilder,
-                                       scopeAnalyst)
+                                       iBuilder)
         if not r:
             return False
         nc += r
@@ -561,8 +558,7 @@ def processTranslationUnscoped(translation, iBuilder,
                                        output_path,
                                        name_candidates,
                                        name_positions,
-                                       iBuilder,
-                                       scopeAnalyst)
+                                       iBuilder)
         if not r:
             return False
         nc += r
@@ -833,11 +829,12 @@ def processFile(l):
 
         nc = processTranslationUnscoped(translation, iBuilder_ugly, 
                        lm_path, temp_files['f2'],
-                       output_path, base_name, clear)
+                       output_path, base_name)
         if nc:
             candidates += nc
-
-        
+                    
+#  translation, iBuilder, lm_path, 
+#                                f_path, output_path, base_name       
         # Default translation: No renaming
 #         no_renaming = []
 #         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
