@@ -108,7 +108,7 @@ def prepareHelpers(iBuilder,
                     if not isGlobal.get((token, p), True):
                         def_scope = name2defScope[(token, p)]
 
-                        print (token, def_scope), line_num, line_idx
+#                         print (token, def_scope), line_num, line_idx
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
                         position_names[line_num][line_idx] = (token, def_scope)
@@ -116,7 +116,7 @@ def prepareHelpers(iBuilder,
                 else:
                     def_scope = None
 
-                    print (token, def_scope), line_num, line_idx
+#                     print (token, def_scope), line_num, line_idx
                     name_positions.setdefault((token, def_scope), [])
                     name_positions[(token, def_scope)].append((line_num, line_idx))
                     position_names[line_num][line_idx] = (token, def_scope)
@@ -289,7 +289,7 @@ def computeLMRenaming(name_candidates,
     # Sort names by how many lines they appear 
     # on in the input, descending
     token_lines = sorted(token_lines, key=lambda e: -e[1])
-    print token_lines
+#     print token_lines
     
     for key, _num_lines in token_lines:
         # Sort candidates by how many lines in the translation
@@ -1165,24 +1165,25 @@ with open(testing_sample_path, 'r') as f:
 
     reader = UnicodeReader(f)
 
-    processFile(reader.next())
+    result = processFile(reader.next())
 
 #     pool = multiprocessing.Pool(processes=num_threads)
     
 #     for result in pool.imap_unordered(processFile, reader):
-#       
-#         with open(os.path.join(output_path, flog), 'a') as g, \
-#                 open(os.path.join(output_path, c_path), 'a') as c:
-#             writer = UnicodeWriter(g)
-#             cw = UnicodeWriter(c)
-#     
-#             if result[1] is not None:
-#                 js_file_path, ok, candidates = result
-#                 writer.writerow([js_file_path, ok])
-#                 for r in candidates:
-#                     cw.writerow([js_file_path]+
-#                                 [str(x).replace("\"","") for x in list(r)])
-#             else:
-#                 writer.writerow([result[0], result[2]])
-#             
+    if True:
+    
+        with open(os.path.join(output_path, flog), 'a') as g, \
+                open(os.path.join(output_path, c_path), 'a') as c:
+            writer = UnicodeWriter(g)
+            cw = UnicodeWriter(c)
+     
+            if result[1] is not None:
+                js_file_path, ok, candidates = result
+                writer.writerow([js_file_path, ok])
+                for r in candidates:
+                    cw.writerow([js_file_path]+
+                                [str(x).replace("\"","") for x in list(r)])
+            else:
+                writer.writerow([result[0], result[2]])
+             
 
