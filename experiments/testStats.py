@@ -166,7 +166,7 @@ for file_name in orig.iterkeys():
 #         print '\t', name, def_scope
         num_names += 1
         
-        if glb == 'True':
+        if glb:
             num_glb_names += 1
         else:
             num_loc_names += 1
@@ -195,7 +195,7 @@ for file_name in orig.iterkeys():
                 
                 if name == translated_name:
                 
-                    if not glb == 'True':
+                    if not glb:
                         counts_loc[s2n[strategy]] += 1
                         
                     counts[s2n[strategy]] += 1
