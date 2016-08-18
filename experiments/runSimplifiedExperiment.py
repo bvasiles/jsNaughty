@@ -52,17 +52,17 @@ def writeTmpLines(lines,
 
 
 
-def makeKey(token, 
-            p, 
-            scopeAnalyst=None):
-    
-    if scopeAnalyst is not None:
-        name2defScope = scopeAnalyst.resolve_scope()
-        def_scope = name2defScope.get((token, p), None)
-        return (token, def_scope)
-    else:
-        return (token, None)
-        
+# def makeKey(token, 
+#             p, 
+#             scopeAnalyst=None):
+#     
+#     if scopeAnalyst is not None:
+#         name2defScope = scopeAnalyst.resolve_scope()
+#         def_scope = name2defScope.get((token, p), None)
+#         return (token, def_scope)
+#     else:
+#         return (token, None)
+#         
 #         isGlobal = scopeAnalyst.isGlobal
 # 
 #         if not isGlobal.get((token, p), True):
@@ -100,16 +100,20 @@ def prepareHelpers(iBuilder,
                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
                 p = iBuilder.flatMap[(l,c)]
                 
-                (token, def_scope) = makeKey(token, p, scopeAnalyst)
                 
-                if (def_scope is None) or \
-                        (def_scope is not None \
-                         and not scopeAnalyst.isGlobal.get((token, p), True)):
+                if scopeAnalyst is not None:
+                    name2defScope = scopeAnalyst.resolve_scope()
+                    isGlobal = scopeAnalyst.isGlobal
+            
+                    if not isGlobal.get((token, p), True):
+                        def_scope = name2defScope[(token, p)]
+                else:
+                    def_scope = None
                 
-                    print (token, def_scope), line_num, line_idx
-                    name_positions.setdefault((token, def_scope), [])
-                    name_positions[(token, def_scope)].append((line_num, line_idx))
-                    position_names[line_num][line_idx] = (token, def_scope)
+                print (token, def_scope), line_num, line_idx
+                name_positions.setdefault((token, def_scope), [])
+                name_positions[(token, def_scope)].append((line_num, line_idx))
+                position_names[line_num][line_idx] = (token, def_scope)
 
     return (name_positions, position_names)
                 
