@@ -1137,24 +1137,24 @@ with open(testing_sample_path, 'r') as f:
 
     reader = UnicodeReader(f)
 
-#     processFile(reader.next())
+    processFile(reader.next())
 
-    pool = multiprocessing.Pool(processes=num_threads)
+#     pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processFile, reader):
-      
-        with open(os.path.join(output_path, flog), 'a') as g, \
-                open(os.path.join(output_path, c_path), 'a') as c:
-            writer = UnicodeWriter(g)
-            cw = UnicodeWriter(c)
-    
-            if result[1] is not None:
-                js_file_path, ok, candidates = result
-                writer.writerow([js_file_path, ok])
-                for r in candidates:
-                    cw.writerow([js_file_path]+
-                                [str(x).replace("\"","") for x in list(r)])
-            else:
-                writer.writerow([result[0], result[2]])
-            
+#     for result in pool.imap_unordered(processFile, reader):
+#       
+#         with open(os.path.join(output_path, flog), 'a') as g, \
+#                 open(os.path.join(output_path, c_path), 'a') as c:
+#             writer = UnicodeWriter(g)
+#             cw = UnicodeWriter(c)
+#     
+#             if result[1] is not None:
+#                 js_file_path, ok, candidates = result
+#                 writer.writerow([js_file_path, ok])
+#                 for r in candidates:
+#                     cw.writerow([js_file_path]+
+#                                 [str(x).replace("\"","") for x in list(r)])
+#             else:
+#                 writer.writerow([result[0], result[2]])
+#             
 
