@@ -425,7 +425,7 @@ def summarizeUnscopedTranslation(renaming_map,
         
         pos = scopeAnalyst_local.nameDefScope2pos[(name, def_scope)]
         
-        if not isGlobal.get((name, pos), True):
+        if not False: #isGlobal.get((name, pos), True):
             (lin,col) = iBuilder_local.revFlatMat[pos]
             (tok_lin, tok_col) = iBuilder_local.revTokMap[(lin,col)]
     
