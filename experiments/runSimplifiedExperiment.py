@@ -389,8 +389,7 @@ def processTranslation(translation, iBuilder,
     
     if translation is not None:
 
-        (name_candidates, 
-         name_positions, 
+        (name_positions, 
          position_names) = prepareHelpers(iBuilder, scopeAnalyst)
         
         # Parse moses output
