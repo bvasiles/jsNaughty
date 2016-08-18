@@ -88,7 +88,7 @@ for row in reader:
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
-    print file_name, strategy, scope, (translated_name, alternatives)
+#     print file_name, strategy, scope, (translated_name, alternatives)
     data[file_name][strategy][scope] = (translated_name, 
 #                                               ugly_name, 
                                               alternatives)    
@@ -129,6 +129,7 @@ for result in pool.imap_unordered(processFile, w):
         orig.setdefault(file_name, {})
 
         for (def_scope, name, glb) in candidates:
+            print file_name, def_scope, (name, glb)
             orig[file_name][def_scope] = (name, glb)
 #             orig[file_name].setdefault(def_scope, [])
 #             orig[file_name][def_scope].append(name)
