@@ -56,6 +56,7 @@ def makeKey(token,
             p, 
             scopeAnalyst=None):
     
+    print 'making key for', token, p
     if scopeAnalyst is not None:
         name2defScope = scopeAnalyst.resolve_scope()
         isGlobal = scopeAnalyst.isGlobal
