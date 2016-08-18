@@ -75,29 +75,34 @@ def prepareHelpers(iBuilder,
                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
                 p = iBuilder.flatMap[(l,c)]
                 
-                cond = False
+#                 cond = False
                 if scopeAnalyst is not None:
                     name2defScope = scopeAnalyst.resolve_scope()
                     isGlobal = scopeAnalyst.isGlobal
             
-                    if not False: #isGlobal.get((token, p), True):
+#                     if not False: #isGlobal.get((token, p), True):
+                    try:
                         def_scope = name2defScope[(token, p)]
-                        cond = True
+                        
+                        name_positions.setdefault((token, def_scope), [])
+                        name_positions[(token, def_scope)].append((line_num, line_idx))
+                        position_names[line_num][line_idx] = (token, def_scope)
+                    except KeyError:
+                        pass
 
+#                         cond = True
 # #                         print (token, def_scope), line_num, line_idx
-#                         name_positions.setdefault((token, def_scope), [])
-#                         name_positions[(token, def_scope)].append((line_num, line_idx))
-#                         position_names[line_num][line_idx] = (token, def_scope)
                 
                 else:
                     def_scope = None
-                    cond = True
                 
-                if cond:
-#                     print (token, def_scope), line_num, line_idx
                     name_positions.setdefault((token, def_scope), [])
                     name_positions[(token, def_scope)].append((line_num, line_idx))
                     position_names[line_num][line_idx] = (token, def_scope)
+
+#                     cond = True
+#                 if cond:
+#                     print (token, def_scope), line_num, line_idx
                 
 
     return (name_positions, position_names)
