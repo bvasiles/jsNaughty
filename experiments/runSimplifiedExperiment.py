@@ -369,16 +369,19 @@ def summarizeScopedTranslation(renaming_map,
     tmp_path = '%s.%s.js' % (f_base, translation_strategy)
     o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
     
+    isGlobal = scopeAnalyst.isGlobal
+    
     for (name, def_scope), renaming in renaming_map.iteritems():
             
         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
-        
+            
         (lin,col) = iBuilder.revFlatMat[pos]
         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
         
         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
                     def_scope, 
                     tok_lin, tok_col, 
+                    isGlobal.get((name, pos), True),
                     renaming,
                     ','.join(name_candidates[(name, def_scope)])) )
     
@@ -437,6 +440,7 @@ def summarizeUnscopedTranslation(renaming_map,
             nc.append( ('%s.unscoped.%s' % (training_strategy, translation_strategy), 
                     def_scope, 
                     tok_lin, tok_col, 
+                    isGlobal.get((name, pos), True),
                     name,
                     '','') )
             
@@ -761,6 +765,8 @@ def processFile(l):
                                  os.path.dirname(os.path.realpath(__file__)), 
                                  temp_files['path_unugly']))
             nameOrigin = scopeAnalyst.nameOrigin
+            isGlobal = scopeAnalyst.isGlobal
+            
             for (name, def_scope) in nameOrigin.iterkeys():
                 
                 pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
@@ -768,7 +774,9 @@ def processFile(l):
                 (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
                 
                 candidates.append(('Nice2Predict', def_scope, 
-                                   tok_lin, tok_col, name, '',''))
+                                   tok_lin, tok_col, 
+                                   isGlobal.get((name, pos), True),
+                                   name, '',''))
         except:
             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
@@ -801,6 +809,8 @@ def processFile(l):
                                  os.path.dirname(os.path.realpath(__file__)), 
                                  temp_files['path_jsnice']))
             nameOrigin = scopeAnalyst.nameOrigin
+            isGlobal = scopeAnalyst.isGlobal
+            
             for (name, def_scope) in nameOrigin.iterkeys():
                 
                 pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
@@ -808,7 +818,9 @@ def processFile(l):
                 (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
                 
                 candidates.append(('JSNice', def_scope, 
-                                   tok_lin, tok_col, name, '',''))
+                                   tok_lin, tok_col, 
+                                   isGlobal.get((name, pos), True),
+                                   name, '',''))
         except:
             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
