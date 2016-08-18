@@ -80,7 +80,7 @@ def prepareHelpers(iBuilder,
                     name2defScope = scopeAnalyst.resolve_scope()
                     isGlobal = scopeAnalyst.isGlobal
             
-                    if not isGlobal.get((token, p), True):
+                    if not False: #isGlobal.get((token, p), True):
                         def_scope = name2defScope[(token, p)]
                         cond = True
 
