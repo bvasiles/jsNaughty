@@ -70,8 +70,8 @@ for row in reader:
     strategy = row[1]
     strategies.add(strategy)
     
-    tok_lin = row[3]
-    tok_col = row[4]
+    tok_lin = int(row[3])
+    tok_col = int(row[4])
     scope = (tok_lin,tok_col) #row[2]
 
     glb = row[5]
@@ -129,7 +129,7 @@ for result in pool.imap_unordered(processFile, w):
         orig.setdefault(file_name, {})
 
         for (def_scope, name, glb) in candidates:
-            print file_name, def_scope, (name, glb)
+#             print file_name, def_scope, (name, glb)
             orig[file_name][def_scope] = (name, glb)
 #             orig[file_name].setdefault(def_scope, [])
 #             orig[file_name][def_scope].append(name)
