@@ -140,19 +140,21 @@ for result in pool.imap_unordered(processFile, w):
 
 writer = UnicodeWriter(open(os.path.join(results_path, 
                                         'stats.csv'), 'w'))
-writer.writerow(['file', 'num_names'] + 
+writer.writerow(['file', 'num_names', 'num_glb_names', 'num_loc_names'] + 
                 [n2s[i].replace('.','_') 
-                 for i in range(len(strategies))]) 
-#  +
-#                 [n2s[i].replace('.','_')+'_maybe' 
-#                  for i in range(len(strategies))]
+                 for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_all' 
+                for i in range(len(strategies))])
 
 for file_name in orig.iterkeys():
     row = [file_name]
+    counts_loc = [0]*len(strategies)
     counts = [0]*len(strategies)
 #     alt_counts = [0]*len(strategies)
     
     num_names = 0
+    num_glb_names = 0
+    num_loc_names = 0
 #     num_mini_names = 0
     
 #     seen = {}
@@ -163,13 +165,19 @@ for file_name in orig.iterkeys():
 
 #         print '\t', name, def_scope
         num_names += 1
-        num_strategies = 0
+        
+        if glb == 'True':
+            num_glb_names += 1
+        else:
+            num_loc_names += 1
         
         (translated_name, alternatives) =  \
             data[file_name]['no_renaming.lm'].values()[0]
             
 #         if translated_name != name:
 #             num_mini_names += 1
+        
+        num_strategies = 0
         
         for strategy, dscope in data[file_name].iteritems():
             
@@ -186,6 +194,10 @@ for file_name in orig.iterkeys():
                  alternatives) = dscope[def_scope]
                 
                 if name == translated_name:
+                
+                    if not glb == 'True':
+                        counts_loc[s2n[strategy]] += 1
+                        
                     counts[s2n[strategy]] += 1
                 
 #                 try:
@@ -200,7 +212,8 @@ for file_name in orig.iterkeys():
             print file_name, name, def_scope
 
 #     print
-    row += [num_names]#, num_mini_names]
+    row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
+    row += counts_loc
     row += counts
 #     row += alt_counts
     writer.writerow(row)
