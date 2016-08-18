@@ -351,6 +351,7 @@ def summarizeScopedTranslation(renaming_map,
                                f_path,
                                translation_strategy,
                                output_path,
+                               base_name,
                                name_candidates,
                                name_positions,
                                iBuilder,
@@ -358,8 +359,9 @@ def summarizeScopedTranslation(renaming_map,
 
     nc = []
         
-    base_name = os.path.basename(f_path)
-    training_strategy = base_name.split('.')[1]
+    f_base = os.path.basename(f_path)
+    training_strategy = f_base.split('.')[1]
+    tmp_path = '%s.%s.js' % (f_base, translation_strategy)
     o_path = '%s.%s.js' % (base_name, translation_strategy)
     
     for (name, def_scope), renaming in renaming_map.iteritems():
@@ -375,10 +377,10 @@ def summarizeScopedTranslation(renaming_map,
                     renaming,
                     ','.join(name_candidates[(name, def_scope)])) )
     
-    writeTmpLines(rename(iBuilder, name_positions, renaming_map), o_path)
+    writeTmpLines(rename(iBuilder, name_positions, renaming_map), tmp_path)
     
     clear = Beautifier()
-    ok = clear.run(o_path, os.path.join(output_path, o_path))
+    ok = clear.run(tmp_path, os.path.join(output_path, o_path))
     if not ok:
         return False
     return nc
@@ -437,7 +439,7 @@ def summarizeUnscopedTranslation(renaming_map,
 
 def processTranslationScoped(translation, iBuilder, 
                        scopeAnalyst, lm_path, f_path,
-                       output_path, base_name, clear):
+                       output_path, base_name):
     
     nc = []
     
@@ -849,7 +851,7 @@ def processFile(l):
 
         nc = processTranslationScoped(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, temp_files['f2'],
-                       output_path, base_name, clear)
+                       output_path, base_name)
         if nc:
             candidates += nc
         
@@ -871,7 +873,7 @@ def processFile(l):
         
         nc = processTranslationScoped(translation, iBuilder_ugly, 
                        scopeAnalyst, lm_path, temp_files['f5'],
-                       output_path, base_name, clear)
+                       output_path, base_name)
         if nc:
             candidates += nc
             
