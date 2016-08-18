@@ -157,7 +157,7 @@ for file_name in orig.iterkeys():
     
 #     print file_name
     
-    for def_scope, name, glb in orig[file_name].iteritems():
+    for def_scope, (name, glb) in orig[file_name].iteritems():
 
 #         print '\t', name, def_scope
         num_names += 1
