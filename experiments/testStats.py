@@ -60,6 +60,7 @@ num_trivial = 5
 num_non_trivial = 11
 
 data = {}
+coverage = {}
 
 strategies = set([])
 
@@ -93,10 +94,14 @@ for row in reader:
     
         data.setdefault(file_name, {})
         data[file_name].setdefault(strategy, {})
-    #     print file_name, strategy, scope, (translated_name, alternatives)
-        data[file_name][strategy][scope] = (translated_name, 
+        data[file_name][strategy][scope] = (translated_name, alternatives)
+        
+        coverage.setdefault(file_name, {})
+        coverage[file_name].setdefault(scope, set([]))
+        coverage[file_name][scope].add(scope)
+            
     #                                               ugly_name, 
-                                                  alternatives)    
+    #     print file_name, strategy, scope, (translated_name, alternatives)
     #     data[file_name][strategy].setdefault(scope, [])
     #     data[file_name][strategy][scope].append( (translated_name, 
     #                                               ugly_name, 
@@ -134,8 +139,9 @@ for result in pool.imap_unordered(processFile, w):
         orig.setdefault(file_name, {})
 
         for (def_scope, name, glb) in candidates:
-#             print file_name, def_scope, (name, glb)
             orig[file_name][def_scope] = (name, glb)
+
+#             print file_name, def_scope, (name, glb)
 #             orig[file_name].setdefault(def_scope, [])
 #             orig[file_name][def_scope].append(name)
     
@@ -168,48 +174,50 @@ for file_name in orig.iterkeys():
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
 
-        print '\t', name, def_scope, glb
-        num_names += 1
-        
-        if glb:
-            num_glb_names += 1
-        else:
-            num_loc_names += 1
-        
-        (translated_name, alternatives) =  \
-            data[file_name]['no_renaming.lm'].values()[0]
+        if len(coverage[file_name][def_scope]) == num_non_trivial:
+
+            print '\t', name, def_scope, glb
+            num_names += 1
             
-#         if translated_name != name:
-#             num_mini_names += 1
-        
-        num_strategies = 0
-        
-        for strategy, dscope in data[file_name].iteritems():
+            if glb:
+                num_glb_names += 1
+            else:
+                num_loc_names += 1
             
-            num_strategies += 1
-            
-#             if not seen.has_key(strategy):
-#                 counts[s2n[strategy]] = 0
-#                 seen[strategy] = True
-            
-            if dscope.has_key(def_scope):
-#                 print '\t\t', strategy, dscope[def_scope]
-                (translated_name, 
-#                  ugly_name, 
-                 alternatives) = dscope[def_scope]
+            (translated_name, alternatives) =  \
+                data[file_name]['no_renaming.lm'].values()[0]
                 
-                if name == translated_name:
+    #         if translated_name != name:
+    #             num_mini_names += 1
+            
+            num_strategies = 0
+            
+            for strategy, dscope in data[file_name].iteritems():
                 
-                    if not glb:
-                        counts_loc[s2n[strategy]] += 1
-                        
-                    counts[s2n[strategy]] += 1
+                num_strategies += 1
                 
-#                 try:
-#                     if name in alternatives.split(','):
-#                         alt_counts[s2n[strategy]] += 1
-#                 except:
-#                     pass
+    #             if not seen.has_key(strategy):
+    #                 counts[s2n[strategy]] = 0
+    #                 seen[strategy] = True
+                
+                if dscope.has_key(def_scope):
+    #                 print '\t\t', strategy, dscope[def_scope]
+                    (translated_name, 
+    #                  ugly_name, 
+                     alternatives) = dscope[def_scope]
+                    
+                    if name == translated_name:
+                    
+                        if not glb:
+                            counts_loc[s2n[strategy]] += 1
+                            
+                        counts[s2n[strategy]] += 1
+                    
+    #                 try:
+    #                     if name in alternatives.split(','):
+    #                         alt_counts[s2n[strategy]] += 1
+    #                 except:
+    #                     pass
     
         try:
             assert num_strategies == num_non_trivial
