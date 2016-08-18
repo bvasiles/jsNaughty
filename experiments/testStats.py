@@ -174,11 +174,11 @@ for file_name in orig.iterkeys():
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
         
-        print file_name, def_scope, len(coverage[file_name][def_scope])
+#         print file_name, def_scope, len(coverage[file_name][def_scope])
         
         if len(coverage[file_name][def_scope]) == num_non_trivial:
 
-            print '\t', name, def_scope, glb
+#             print '\t', name, def_scope, glb
             num_names += 1
             
             if glb:
