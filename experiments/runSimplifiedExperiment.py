@@ -369,7 +369,7 @@ def summarizeScopedTranslation(renaming_map,
     tmp_path = '%s.%s.js' % (f_base, translation_strategy)
     o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
     
-    print f_path, f_base, training_strategy, tmp_path, o_path
+    print f_path, f_base, training_strategy, tmp_path, o_path, base_name
     
     isGlobal = scopeAnalyst.isGlobal
     
@@ -412,6 +412,8 @@ def summarizeUnscopedTranslation(renaming_map,
     training_strategy = f_base.split('.')[1]
     tmp_path = '%s.%s.js' % (f_base, translation_strategy)
     o_path = '%s.%s.unscoped.%s.js' % (base_name, training_strategy, translation_strategy)
+    
+    print f_path, f_base, training_strategy, tmp_path, o_path, base_name
     
     writeTmpLines(rename(iBuilder, name_positions, renaming_map), tmp_path)
     
