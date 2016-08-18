@@ -39,8 +39,10 @@ def processFile(l):
 #                 i = scope.find('[functions][_values]')
 #                 if i > -1:
 #                     scope = scope[:i+len('[functions][_values]')]
-    
-            candidates.append( (scope, name, glb) )
+            
+            if name != 'TOKEN_LITERAL_STRING' and \
+                    name != 'TOKEN_LITERAL_NUMBER':
+                candidates.append( (scope, name, glb) )
 
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
@@ -86,16 +88,19 @@ for row in reader:
 #     ugly_name = row[4] if len(row[4]) else None
     alternatives = row[7] if len(row[7]) else None
     
-    data.setdefault(file_name, {})
-    data[file_name].setdefault(strategy, {})
-#     print file_name, strategy, scope, (translated_name, alternatives)
-    data[file_name][strategy][scope] = (translated_name, 
-#                                               ugly_name, 
-                                              alternatives)    
-#     data[file_name][strategy].setdefault(scope, [])
-#     data[file_name][strategy][scope].append( (translated_name, 
-#                                               ugly_name, 
-#                                               alternatives) )
+    if translated_name != 'TOKEN_LITERAL_STRING' and \
+            translated_name != 'TOKEN_LITERAL_NUMBER':
+    
+        data.setdefault(file_name, {})
+        data[file_name].setdefault(strategy, {})
+    #     print file_name, strategy, scope, (translated_name, alternatives)
+        data[file_name][strategy][scope] = (translated_name, 
+    #                                               ugly_name, 
+                                                  alternatives)    
+    #     data[file_name][strategy].setdefault(scope, [])
+    #     data[file_name][strategy][scope].append( (translated_name, 
+    #                                               ugly_name, 
+    #                                               alternatives) )
     
     
 print len(data.keys()), 'files'
