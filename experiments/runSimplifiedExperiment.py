@@ -58,17 +58,22 @@ def makeKey(token,
     
     if scopeAnalyst is not None:
         name2defScope = scopeAnalyst.resolve_scope()
-        isGlobal = scopeAnalyst.isGlobal
-
-        if not isGlobal.get((token, p), True):
-            def_scope = name2defScope[(token, p)]
-            key = (token, def_scope)
+        def_scope = name2defScope[(token, p)]
+        return (token, def_scope)
     else:
-        key = (token, None)
-    print 'making key for', token, p, key
-    return key
-#             return (token, def_scope)
-#         return (token, None)
+        return (token, None)
+        
+#         isGlobal = scopeAnalyst.isGlobal
+# 
+#         if not isGlobal.get((token, p), True):
+#             def_scope = name2defScope[(token, p)]
+#             key = (token, def_scope)
+#     else:
+#         key = (token, None)
+#     print 'making key for', token, p, key
+#     return key
+# #             return (token, def_scope)
+# #         return (token, None)
 
 
 
@@ -95,12 +100,16 @@ def prepareHelpers(iBuilder,
                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
                 p = iBuilder.flatMap[(l,c)]
                 
-                k = makeKey(token, p, scopeAnalyst)
+                (token, def_scope) = makeKey(token, p, scopeAnalyst)
                 
-                print k, line_num, line_idx
-                name_positions.setdefault(k, [])
-                name_positions[k].append((line_num, line_idx))
-                position_names[line_num][line_idx] = k
+                if (def_scope is None) or \
+                        (def_scope is not None \
+                         and not scopeAnalyst.isGlobal.get((token, p), True)):
+                
+                    print (token, def_scope), line_num, line_idx
+                    name_positions.setdefault((token, def_scope), [])
+                    name_positions[(token, def_scope)].append((line_num, line_idx))
+                    position_names[line_num][line_idx] = (token, def_scope)
 
     return (name_positions, position_names)
                 
