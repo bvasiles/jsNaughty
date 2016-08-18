@@ -93,6 +93,7 @@ def prepareHelpers(iBuilder,
                 
                 k = makeKey(token, p, scopeAnalyst)
                 
+                print k, line_num, line_idx
                 name_positions.setdefault(k, [])
                 name_positions[k].append((line_num, line_idx))
                 position_names[line_num][line_idx] = k
