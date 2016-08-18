@@ -264,7 +264,7 @@ def computeLMRenaming(name_candidates,
     # Sort names by how many lines they appear 
     # on in the input, descending
     token_lines = sorted(token_lines, 
-                         key=lambda ((name, def_scope), num_lines): -num_lines)
+                         key=lambda (key, num_lines): -num_lines)
     
     for key, _num_lines in token_lines:
         # Sort candidates by how many lines in the translation
