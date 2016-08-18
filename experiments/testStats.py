@@ -173,7 +173,9 @@ for file_name in orig.iterkeys():
 #     print file_name
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
-
+        
+        print file_name, def_scope, len(coverage[file_name][def_scope])
+        
         if len(coverage[file_name][def_scope]) == num_non_trivial:
 
             print '\t', name, def_scope, glb
