@@ -88,6 +88,7 @@ for row in reader:
     
     data.setdefault(file_name, {})
     data[file_name].setdefault(strategy, {})
+    print file_name, strategy, scope, (translated_name, alternatives)
     data[file_name][strategy][scope] = (translated_name, 
 #                                               ugly_name, 
                                               alternatives)    
