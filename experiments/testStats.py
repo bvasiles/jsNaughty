@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 from unicodeManager import UnicodeReader, UnicodeWriter
 import multiprocessing
-from tools import ScopeAnalyst
+from tools import ScopeAnalyst, Lexer, IndexBuilder
                     
 
 def processFile(l):
@@ -14,6 +14,9 @@ def processFile(l):
     candidates = []
         
     try:
+        lexer = Lexer(os.path.join(results_path, js_file_name))
+        iBuilder = IndexBuilder(lexer.tokenList)
+        
         scopeAnalyst = ScopeAnalyst(os.path.join(results_path, 
                                                  js_file_name))
         nameOrigin = scopeAnalyst.nameOrigin
@@ -23,7 +26,12 @@ def processFile(l):
         for (name, def_scope) in nameOrigin.iterkeys():
             pos = nameDefScope2pos[(name, def_scope)]
             
-            if not isGlobal.get((name, pos), True):
+            (lin,col) = iBuilder.revFlatMat[pos]
+            scope = iBuilder.revTokMap[(lin,col)]
+            
+            glb = isGlobal.get((name, pos), True)
+            
+#             if not isGlobal.get((name, pos), True):
 #                 scope = def_scope.replace("\"","")
 #                 i = scope.find('[variables][_values]')
 #                 if i > -1:
@@ -32,7 +40,7 @@ def processFile(l):
 #                 if i > -1:
 #                     scope = scope[:i+len('[functions][_values]')]
     
-                candidates.append( (scope, name) )
+            candidates.append( (scope, name, glb) )
 
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
@@ -100,7 +108,6 @@ print len(w), 'w Moses'
 print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
 print
  
-exit()
 
 s2n = {}
 n2s = {}
@@ -120,8 +127,8 @@ for result in pool.imap_unordered(processFile, w):
         
         orig.setdefault(file_name, {})
 
-        for (def_scope, name) in candidates:
-            orig[file_name][def_scope] = name
+        for (def_scope, name, glb) in candidates:
+            orig[file_name][def_scope] = (name, glb)
 #             orig[file_name].setdefault(def_scope, [])
 #             orig[file_name][def_scope].append(name)
     
@@ -131,35 +138,36 @@ for result in pool.imap_unordered(processFile, w):
 
 writer = UnicodeWriter(open(os.path.join(results_path, 
                                         'stats.csv'), 'w'))
-writer.writerow(['file', 'num_names', 'num_mini_names'] + 
+writer.writerow(['file', 'num_names'] + 
                 [n2s[i].replace('.','_') 
-                 for i in range(len(strategies))] +
-                [n2s[i].replace('.','_')+'_maybe' 
                  for i in range(len(strategies))]) 
+#  +
+#                 [n2s[i].replace('.','_')+'_maybe' 
+#                  for i in range(len(strategies))]
 
 for file_name in orig.iterkeys():
     row = [file_name]
     counts = [0]*len(strategies)
-    alt_counts = [0]*len(strategies)
+#     alt_counts = [0]*len(strategies)
     
     num_names = 0
-    num_mini_names = 0
+#     num_mini_names = 0
     
 #     seen = {}
     
 #     print file_name
     
-    for def_scope, name in orig[file_name].iteritems():
+    for def_scope, name, glb in orig[file_name].iteritems():
 
 #         print '\t', name, def_scope
         num_names += 1
         num_strategies = 0
         
-        (translated_name, ugly_name, alternatives) =  \
+        (translated_name, alternatives) =  \
             data[file_name]['no_renaming.lm'].values()[0]
             
-        if translated_name != name:
-            num_mini_names += 1
+#         if translated_name != name:
+#             num_mini_names += 1
         
         for strategy, dscope in data[file_name].iteritems():
             
@@ -172,17 +180,17 @@ for file_name in orig.iterkeys():
             if dscope.has_key(def_scope):
 #                 print '\t\t', strategy, dscope[def_scope]
                 (translated_name, 
-                 ugly_name, 
+#                  ugly_name, 
                  alternatives) = dscope[def_scope]
                 
                 if name == translated_name:
                     counts[s2n[strategy]] += 1
                 
-                try:
-                    if name in alternatives.split(','):
-                        alt_counts[s2n[strategy]] += 1
-                except:
-                    pass
+#                 try:
+#                     if name in alternatives.split(','):
+#                         alt_counts[s2n[strategy]] += 1
+#                 except:
+#                     pass
     
         try:
             assert num_strategies == num_non_trivial
@@ -190,9 +198,9 @@ for file_name in orig.iterkeys():
             print file_name, name, def_scope
 
 #     print
-    row += [num_names, num_mini_names]
+    row += [num_names]#, num_mini_names]
     row += counts
-    row += alt_counts
+#     row += alt_counts
     writer.writerow(row)
 
 
