@@ -219,10 +219,10 @@ for file_name in orig.iterkeys():
     #                 except:
     #                     pass
     
-        try:
-            assert num_strategies == num_non_trivial
-        except AssertionError:
-            print file_name, name, def_scope
+            try:
+                assert num_strategies == num_non_trivial
+            except AssertionError:
+                print file_name, name, def_scope
 
 #     print
     row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
