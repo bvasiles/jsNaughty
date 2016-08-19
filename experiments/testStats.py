@@ -235,7 +235,7 @@ for file_name in orig.iterkeys():
                     print file_name, name, def_scope
 
         except:
-            print file_name
+            print file_name, def_scope, (name, glb)
 
 #     print
     row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
