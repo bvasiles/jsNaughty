@@ -705,6 +705,14 @@ def processFile(l):
             cleanup(temp_files)
             return (js_file_path, None, 'Aligner fail')
         
+        
+        
+        if open(temp_files['path_tmp_b']).read() == \
+                open(temp_files['path_tmp_u']).read():
+            cleanup(temp_files)
+            return (js_file_path, None, 'Not minified')
+
+        
         try:
             lex_ugly = Lexer(temp_files['path_tmp_u_a'])
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
