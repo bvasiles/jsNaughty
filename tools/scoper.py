@@ -172,14 +172,13 @@ class ScopeAnalyst:
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
                     
-                    if key == 'n' or key == 'calendarEventId':
-                        print 'start', start
-                    
                     # Retrieve scope identifier
                     def_scope = self.__get_def_scope(parent['thedef'])
                     self.name2defScope[(key, start)] = def_scope
                     
                     if key == 'n' or key == 'calendarEventId':
+                        print 'start', start
+                        print 'use_scope', use_scope
                         print 'def_scope', def_scope
                     
                     self.nameDefScope2pos[(key, def_scope)] = start
