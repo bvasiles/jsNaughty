@@ -180,59 +180,62 @@ for file_name in orig.iterkeys():
     for def_scope, (name, glb) in orig[file_name].iteritems():
         
 #         print file_name, def_scope, len(coverage[file_name][def_scope])
-        
-        if len(coverage[file_name][def_scope]) == num_non_trivial:
-
-#             print '\t', name, def_scope, glb
-            num_names += 1
-            
-            if glb:
-                num_glb_names += 1
-            else:
-                num_loc_names += 1
-            
-            (translated_name, alternatives) =  \
-                data[file_name]['no_renaming.lm'].values()[0]
-                
-    #         if translated_name != name:
-    #             num_mini_names += 1
-            
-            num_strategies = 0
-            
-            for strategy, dscope in data[file_name].iteritems():
-                
-                num_strategies += 1
-                
-    #             if not seen.has_key(strategy):
-    #                 counts[s2n[strategy]] = 0
-    #                 seen[strategy] = True
-                
-                if dscope.has_key(def_scope):
-    #                 print '\t\t', strategy, dscope[def_scope]
-                    (translated_name, 
-    #                  ugly_name, 
-                     alternatives) = dscope[def_scope]
-                    
-                    if name == translated_name:
-                    
-                        if not glb:
-                            counts_loc[s2n[strategy]] += 1
-                        else:
-                            counts_glb[s2n[strategy]] += 1
-                            
-                        counts[s2n[strategy]] += 1
-                    
-                    try:
-                        if not glb:
-                            if name in alternatives.split(','):
-                                alt_counts[s2n[strategy]] += 1
-                    except:
-                        pass
+        try:
+            if len(coverage[file_name][def_scope]) == num_non_trivial:
     
-            try:
-                assert num_strategies == num_non_trivial
-            except AssertionError:
-                print file_name, name, def_scope
+    #             print '\t', name, def_scope, glb
+                num_names += 1
+                
+                if glb:
+                    num_glb_names += 1
+                else:
+                    num_loc_names += 1
+                
+                (translated_name, alternatives) =  \
+                    data[file_name]['no_renaming.lm'].values()[0]
+                    
+        #         if translated_name != name:
+        #             num_mini_names += 1
+                
+                num_strategies = 0
+                
+                for strategy, dscope in data[file_name].iteritems():
+                    
+                    num_strategies += 1
+                    
+        #             if not seen.has_key(strategy):
+        #                 counts[s2n[strategy]] = 0
+        #                 seen[strategy] = True
+                    
+                    if dscope.has_key(def_scope):
+        #                 print '\t\t', strategy, dscope[def_scope]
+                        (translated_name, 
+        #                  ugly_name, 
+                         alternatives) = dscope[def_scope]
+                        
+                        if name == translated_name:
+                        
+                            if not glb:
+                                counts_loc[s2n[strategy]] += 1
+                            else:
+                                counts_glb[s2n[strategy]] += 1
+                                
+                            counts[s2n[strategy]] += 1
+                        
+                        try:
+                            if not glb:
+                                if name in alternatives.split(','):
+                                    alt_counts[s2n[strategy]] += 1
+                        except:
+                            pass
+        
+                try:
+                    assert num_strategies == num_non_trivial
+                except AssertionError:
+                    print file_name, name, def_scope
+
+        except:
+            print file_name
 
 #     print
     row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
