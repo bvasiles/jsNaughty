@@ -56,8 +56,8 @@ csv_path = os.path.abspath(sys.argv[1])
 results_path = os.path.abspath(sys.argv[2])
 num_threads = int(sys.argv[3])
 
-num_trivial = 5
-num_non_trivial = 11
+# num_trivial = 5
+num_non_trivial = 8
 
 data = {}
 coverage = {}
@@ -110,13 +110,13 @@ for row in reader:
     
 print len(data.keys()), 'files'
 
-wo = [k for k,v in data.iteritems() if len(v.keys())==num_trivial]
-print len(wo), 'w/o Moses'
+# wo = [k for k,v in data.iteritems() if len(v.keys())==num_trivial]
+# print len(wo), 'w/o Moses'
 
 w = [k for k,v in data.iteritems() if len(v.keys())==num_non_trivial]
 print len(w), 'w Moses'
 
-print len(data.keys()) - len(wo) - len(w), 'unaccounted for'
+print len(data.keys()) - len(w), 'unaccounted for'
 print
  
 
