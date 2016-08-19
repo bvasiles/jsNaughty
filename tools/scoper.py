@@ -64,7 +64,7 @@ def keypaths(nested):
                 for subkey, subvalue in keypaths(subdict):
                     yield [key, idx] + subkey, subvalue
         else:
-            if key == 'calendarEventId':
+            if value == 'calendarEventId':
                 print '***', [key], value
             yield [key], value
             
