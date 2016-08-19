@@ -172,9 +172,15 @@ class ScopeAnalyst:
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
                     
+                    if key == 'n' or key == 'calendarEventId':
+                        print 'start', start
+                    
                     # Retrieve scope identifier
                     def_scope = self.__get_def_scope(parent['thedef'])
                     self.name2defScope[(key, start)] = def_scope
+                    
+                    if key == 'n' or key == 'calendarEventId':
+                        print 'def_scope', def_scope
                     
                     self.nameDefScope2pos[(key, def_scope)] = start
                     
@@ -189,6 +195,9 @@ class ScopeAnalyst:
                     
                     depth = parent.get('pth', None)
                     self.name2pth[(key, start)] = depth
+                    
+                    if key == 'n' or key == 'calendarEventId':
+                        print 'depth', depth
                     
                     self.nameScope2pth.setdefault((key, def_scope), [])
                     self.nameScope2pth[(key, def_scope)].append(depth)
