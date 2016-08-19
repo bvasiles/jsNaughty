@@ -490,20 +490,20 @@ def processTranslationScoped(translation, iBuilder,
         nc += r
 
         
-        r = summarizeScopedTranslation(computeFreqLenRenaming(name_candidates,
-                                                              name_positions,
-                                                              lambda e:-len(e[0])),
-                                       f_path,
-                                       'len',
-                                       output_path,
-                                       base_name,
-                                       name_candidates,
-                                       name_positions,
-                                       iBuilder,
-                                       scopeAnalyst)
-        if not r:
-            return False
-        nc += r
+#         r = summarizeScopedTranslation(computeFreqLenRenaming(name_candidates,
+#                                                               name_positions,
+#                                                               lambda e:-len(e[0])),
+#                                        f_path,
+#                                        'len',
+#                                        output_path,
+#                                        base_name,
+#                                        name_candidates,
+#                                        name_positions,
+#                                        iBuilder,
+#                                        scopeAnalyst)
+#         if not r:
+#             return False
+#         nc += r
         
         
         r = summarizeScopedTranslation(computeFreqLenRenaming(name_candidates,
@@ -557,19 +557,19 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
         nc += r
 
         
-        r = summarizeUnscopedTranslation(computeFreqLenRenaming(name_candidates,
-                                                              name_positions,
-                                                              lambda e:-len(e[0])),
-                                       f_path,
-                                       'len',
-                                       output_path,
-                                       base_name,
-                                       name_candidates,
-                                       name_positions,
-                                       iBuilder)
-        if not r:
-            return False
-        nc += r
+#         r = summarizeUnscopedTranslation(computeFreqLenRenaming(name_candidates,
+#                                                               name_positions,
+#                                                               lambda e:-len(e[0])),
+#                                        f_path,
+#                                        'len',
+#                                        output_path,
+#                                        base_name,
+#                                        name_candidates,
+#                                        name_positions,
+#                                        iBuilder)
+#         if not r:
+#             return False
+#         nc += r
         
         
         r = summarizeUnscopedTranslation(computeFreqLenRenaming(name_candidates,
