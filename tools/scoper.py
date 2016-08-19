@@ -58,14 +58,14 @@ def keypaths(nested):
     for key, value in nested.iteritems():
         if isinstance(value, dict):
             for subkey, subvalue in keypaths(value):
-                if key == 'calendarEventId':
-                    print '***', [key] + subkey, subvalue
                 yield [key] + subkey, subvalue
         elif isinstance(value, list):
             for idx, subdict in enumerate(value):
                 for subkey, subvalue in keypaths(subdict):
                     yield [key, idx] + subkey, subvalue
         else:
+            if key == 'calendarEventId':
+                print '***', [key], value
             yield [key], value
             
 
