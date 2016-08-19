@@ -31,6 +31,8 @@ def processFile(l):
             
             glb = isGlobal.get((name, pos), True)
             
+            print name, def_scope, pos, (lin,col), scope, glb
+            
 #             if not isGlobal.get((name, pos), True):
 #                 scope = def_scope.replace("\"","")
 #                 i = scope.find('[variables][_values]')
