@@ -158,7 +158,7 @@ class ScopeAnalyst:
                 parent = self.__get_ref_key(pth[:-1])
                 
                 if key == 'n' or key == 'calendarEventId':
-                    print key, pth
+                    print '\n', key, pth
                 
                 # ... but only if they have `scope`, `thedef`,
                 # and `start` siblings
