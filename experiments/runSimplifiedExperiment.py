@@ -670,6 +670,22 @@ def processFile(l):
             return (js_file_path, None, 'Beautifier fail')
          
          
+        # Weird JSNice renamings despite --no-rename
+        try:
+            before = set([token for (token, token_type) in 
+                          Lexer(temp_files['path_tmp_b_1']).tokenList
+                          if is_token_subtype(token_type, Token.Name)]) 
+            after = set([token for (token, token_type) in 
+                          Lexer(temp_files['path_tmp_b']).tokenList
+                          if is_token_subtype(token_type, Token.Name)])
+            
+            if not before == after:
+                return (js_file_path, None, 'Weird JSNice renaming')
+            
+        except:
+            cleanup(temp_files)
+            return (js_file_path, None, 'Lexer fail')
+         
          
         # Minify
         ugly = Uglifier()
