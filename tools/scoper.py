@@ -64,8 +64,8 @@ def keypaths(nested):
                 for subkey, subvalue in keypaths(subdict):
                     yield [key, idx] + subkey, subvalue
         else:
-            if value == 'calendarEventId':
-                print '***', [key], value
+#             if value == 'calendarEventId':
+#                 print '***', [key], value
             yield [key], value
             
 
@@ -159,7 +159,7 @@ class ScopeAnalyst:
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
                 
-                if key == 'n' or key == 'calendarEventId':
+                if key == 't':
                     print '\n', key, pth
                 
                 # ... but only if they have `scope`, `thedef`,
@@ -178,11 +178,6 @@ class ScopeAnalyst:
                     def_scope = self.__get_def_scope(parent['thedef'])
                     self.name2defScope[(key, start)] = def_scope
                     
-                    if key == 'n' or key == 'calendarEventId':
-                        print 'start', start
-                        print 'use_scope', use_scope
-                        print 'def_scope', def_scope
-                    
                     self.nameDefScope2pos[(key, def_scope)] = start
                     
                     # Is name global (defined outside of this file)?
@@ -197,7 +192,10 @@ class ScopeAnalyst:
                     depth = parent.get('pth', None)
                     self.name2pth[(key, start)] = depth
                     
-                    if key == 'n' or key == 'calendarEventId':
+                    if key == 't':
+                        print 'start', start
+                        print 'use_scope', use_scope
+                        print 'def_scope', def_scope
                         print 'depth', depth
                     
                     self.nameScope2pth.setdefault((key, def_scope), [])
