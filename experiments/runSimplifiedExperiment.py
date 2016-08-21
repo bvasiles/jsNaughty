@@ -943,7 +943,7 @@ def processFile(l):
         (_moses_ok, translation, _err) = moses.run(temp_files['f5'])
          
         nc = processTranslationScoped(translation, iBuilder_ugly, 
-                       scopeAnalyst, lm_path, temp_files['f5'], temp_files['path_ugly'],
+                       scopeAnalyst, lm_path, temp_files['f5'], 
                        output_path, base_name)
         if nc:
             candidates += nc
