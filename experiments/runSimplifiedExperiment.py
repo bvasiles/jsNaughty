@@ -352,6 +352,23 @@ def rename(iBuilder, name_positions, renaming_map):
 
 
 
+def isHash(name):
+    # _45e4313f
+    return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
+ 
+    
+def renameHashed(iBuilder, name_positions, renaming_map):
+    draft_translation = deepcopy(iBuilder.tokens)
+    for (name, def_scope), renaming in renaming_map.iteritems():
+        for (line_num, line_idx) in name_positions[(name, def_scope)]:
+            (token_type, name) = draft_translation[line_num][line_idx]
+            if not isHash(renaming):
+                draft_translation[line_num][line_idx] = (token_type, renaming)
+
+    return draft_translation
+
+
+
 def summarizeScopedTranslation(renaming_map,
                                f_path,
                                translation_strategy,
@@ -387,7 +404,7 @@ def summarizeScopedTranslation(renaming_map,
                     renaming,
                     ','.join(name_candidates[(name, def_scope)])) )
     
-    writeTmpLines(rename(iBuilder, name_positions, renaming_map), tmp_path)
+    writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
     
     clear = Beautifier()
     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
@@ -415,7 +432,7 @@ def summarizeUnscopedTranslation(renaming_map,
     
 #     print f_path, f_base, training_strategy, tmp_path, o_path, base_name
     
-    writeTmpLines(rename(iBuilder, name_positions, renaming_map), tmp_path)
+    writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
     
     clear = Beautifier()
     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
@@ -450,7 +467,7 @@ def summarizeUnscopedTranslation(renaming_map,
             
     return nc
     
-
+    
 
 def processTranslationScoped(translation, iBuilder, 
                        scopeAnalyst, lm_path, f_path,
@@ -926,7 +943,7 @@ def processFile(l):
         (_moses_ok, translation, _err) = moses.run(temp_files['f5'])
          
         nc = processTranslationScoped(translation, iBuilder_ugly, 
-                       scopeAnalyst, lm_path, temp_files['f5'],
+                       scopeAnalyst, lm_path, temp_files['f5'], temp_files['path_ugly'],
                        output_path, base_name)
         if nc:
             candidates += nc
