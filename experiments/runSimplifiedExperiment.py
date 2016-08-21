@@ -678,6 +678,7 @@ def processFile(l):
                                                 temp_files['path_tmp_b_2'])
         if not ok:
             cleanup(temp_files)
+            print js_file_path, _err
             return (js_file_path, None, 'JSNice Beautifier fail')
 
         ok = clear.run(temp_files['path_tmp_b_2'], 
@@ -790,6 +791,7 @@ def processFile(l):
                                                 temp_files['path_tmp_unugly_2'])
         if not ok:
             cleanup(temp_files)
+            print js_file_path, _err
             return (js_file_path, None, 'JSNice Beautifier fail')
     
         ok = clear.run(temp_files['path_tmp_unugly_2'], 
