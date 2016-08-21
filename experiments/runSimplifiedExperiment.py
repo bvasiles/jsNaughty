@@ -340,12 +340,15 @@ def computeLMRenaming(name_candidates,
 
      
 
-def rename(iBuilder, name_positions, renaming_map):
+def rename(iBuilder, 
+           name_positions, 
+           renaming_map):
+    
     draft_translation = deepcopy(iBuilder.tokens)
     
     for (name, def_scope), renaming in renaming_map.iteritems():
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
-            (token_type, name) = draft_translation[line_num][line_idx]
+            (token_type, _name) = draft_translation[line_num][line_idx]
             draft_translation[line_num][line_idx] = (token_type, renaming)
 
     return draft_translation
@@ -357,16 +360,87 @@ def isHash(name):
     return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
  
     
-def renameHashed(iBuilder, name_positions, renaming_map):
+def renameHashed(iBuilder, 
+                 name_positions, 
+                 renaming_map):
+    
     draft_translation = deepcopy(iBuilder.tokens)
     for (name, def_scope), renaming in renaming_map.iteritems():
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
-            (token_type, name) = draft_translation[line_num][line_idx]
+            (token_type, _name) = draft_translation[line_num][line_idx]
             if not isHash(renaming):
                 draft_translation[line_num][line_idx] = (token_type, renaming)
 
     return draft_translation
 
+
+
+def renameHashedFallback(iBuilder, 
+                         name_positions, 
+                         renaming_map, 
+                         fallback_renaming_map):
+    
+    draft_translation = deepcopy(iBuilder.tokens)
+    for (name, def_scope), renaming in renaming_map.iteritems():
+        for (line_num, line_idx) in name_positions[(name, def_scope)]:
+            (token_type, token) = draft_translation[line_num][line_idx]
+            if not isHash(renaming):
+                draft_translation[line_num][line_idx] = (token_type, renaming)
+            else:
+                draft_translation[line_num][line_idx] = (token_type, \
+                             fallback_renaming_map.get((name, def_scope), token))
+
+    return draft_translation
+
+
+
+def summarizeFallbackTranslation(renaming_map,
+                                 fallback_renaming_map,
+                                 f_path,
+                                 translation_strategy,
+                                 output_path,
+                                 base_name,
+                                 name_candidates,
+                                 name_positions,
+                                 iBuilder,
+                                 scopeAnalyst):
+
+    nc = []
+        
+    f_base = os.path.basename(f_path)
+    training_strategy = f_base.split('.')[1]
+    tmp_path = '%s.%s.js' % (f_base[:-3], translation_strategy)
+    o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
+    
+#     print f_path, f_base, training_strategy, tmp_path, o_path, base_name
+    
+    isGlobal = scopeAnalyst.isGlobal
+    
+    for (name, def_scope), renaming in renaming_map.iteritems():
+            
+        pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+            
+        (lin,col) = iBuilder.revFlatMat[pos]
+        (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+        
+        nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
+                    def_scope, 
+                    tok_lin, tok_col, 
+                    isGlobal.get((name, pos), True),
+                    renaming,
+                    ','.join(name_candidates[(name, def_scope)])) )
+    
+    writeTmpLines(renameHashedFallback(iBuilder, 
+                                       name_positions, 
+                                       renaming_map,
+                                       fallback_renaming_map), 
+                  tmp_path)
+    
+    clear = Beautifier()
+    ok = clear.run(tmp_path, os.path.join(output_path, o_path))
+    if not ok:
+        return False
+    return nc
 
 
 def summarizeScopedTranslation(renaming_map,
@@ -469,6 +543,126 @@ def summarizeUnscopedTranslation(renaming_map,
     
     
 
+ 
+def processTranslationScopedFallback(translation, 
+                                     fallback_translation,
+                                     iBuilder, 
+                                     scopeAnalyst, 
+                                     lm_path, 
+                                     f_path,
+                                     output_path, 
+                                     base_name):
+     
+    nc = []
+    
+    if translation is not None:
+ 
+        (name_positions, 
+         position_names) = prepareHelpers(iBuilder, scopeAnalyst)
+         
+        if fallback_translation is not None:
+            fallback_name_candidates = parseMosesOutput(fallback_translation,
+                                                        iBuilder,
+                                                        position_names)
+    
+            fallback_renaming_map = computeLMRenaming(fallback_name_candidates,
+                                                      name_positions,
+                                                      iBuilder,
+                                                      lm_path)
+         
+        # Parse moses output
+        name_candidates = parseMosesOutput(translation,
+                                           iBuilder,
+                                           position_names)
+        # name_candidates is a dictionary of dictionaries: 
+        # keys are (name, None) (if scopeAnalyst=None) or 
+        # (name, def_scope) tuples (otherwise); 
+        # values are suggested translations with the sets 
+        # of line numbers on which they appear.
+        
+        renaming_map = computeLMRenaming(name_candidates,
+                                         name_positions,
+                                         iBuilder,
+                                         lm_path)
+ 
+        if fallback_translation is not None:
+            r = summarizeFallbackTranslation(renaming_map,
+                                             fallback_renaming_map,
+                                             f_path,
+                                             'lm',
+                                             output_path,
+                                             base_name,
+                                             name_candidates,
+                                             name_positions,
+                                             iBuilder,
+                                             scopeAnalyst)
+ 
+        else:
+            r = summarizeScopedTranslation(renaming_map,
+                                           f_path,
+                                           'lm',
+                                           output_path,
+                                           base_name,
+                                           name_candidates,
+                                           name_positions,
+                                           iBuilder,
+                                           scopeAnalyst)
+        if not r:
+            return False
+        nc += r
+ 
+         
+#         r = summarizeScopedTranslation(computeFreqLenRenaming(name_candidates,
+#                                                               name_positions,
+#                                                               lambda e:-len(e[0])),
+#                                        f_path,
+#                                        'len',
+#                                        output_path,
+#                                        base_name,
+#                                        name_candidates,
+#                                        name_positions,
+#                                        iBuilder,
+#                                        scopeAnalyst)
+#         if not r:
+#             return False
+#         nc += r
+        
+        
+        renaming_map = computeFreqLenRenaming(name_candidates,
+                                              name_positions,
+                                              lambda e:(-e[1],-len(e[0])))
+         
+        if fallback_translation is not None:
+            r = summarizeFallbackTranslation(renaming_map,
+                                             fallback_renaming_map,
+                                             f_path,
+                                             'freqlen',
+                                             output_path,
+                                             base_name,
+                                             name_candidates,
+                                             name_positions,
+                                             iBuilder,
+                                             scopeAnalyst)
+        
+        else:
+            r = summarizeScopedTranslation(renaming_map,
+                                           f_path,
+                                           'freqlen',
+                                           output_path,
+                                           base_name,
+                                           name_candidates,
+                                           name_positions,
+                                           iBuilder,
+                                           scopeAnalyst)
+        if not r:
+            return False
+        nc += r
+         
+ 
+    return nc
+
+
+
 def processTranslationScoped(translation, iBuilder, 
                        scopeAnalyst, lm_path, f_path,
                        output_path, base_name):
@@ -489,11 +683,13 @@ def processTranslationScoped(translation, iBuilder,
         # (name, def_scope) tuples (otherwise); 
         # values are suggested translations with the sets 
         # of line numbers on which they appear.
+        
+        renaming_map_lm = computeLMRenaming(name_candidates,
+                                         name_positions,
+                                         iBuilder,
+                                         lm_path)
 
-        r = summarizeScopedTranslation(computeLMRenaming(name_candidates,
-                                                         name_positions,
-                                                         iBuilder,
-                                                         lm_path),
+        r = summarizeScopedTranslation(renaming_map_lm,
                                        f_path,
                                        'lm',
                                        output_path,
@@ -523,9 +719,11 @@ def processTranslationScoped(translation, iBuilder,
 #         nc += r
         
         
-        r = summarizeScopedTranslation(computeFreqLenRenaming(name_candidates,
-                                                              name_positions,
-                                                              lambda e:(-e[1],-len(e[0]))),
+        renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
+                                                      name_positions,
+                                                      lambda e:(-e[1],-len(e[0])))
+        
+        r = summarizeScopedTranslation(renaming_map_freqlen,
                                        f_path,
                                        'freqlen',
                                        output_path,
@@ -558,10 +756,12 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
                                            iBuilder,
                                            position_names)
 
-        r = summarizeUnscopedTranslation(computeLMRenaming(name_candidates,
-                                                         name_positions,
-                                                         iBuilder,
-                                                         lm_path),
+        renaming_map_lm = computeLMRenaming(name_candidates,
+                                             name_positions,
+                                             iBuilder,
+                                             lm_path)
+        
+        r = summarizeUnscopedTranslation(renaming_map_lm,
                                        f_path,
                                        'lm',
                                        output_path,
@@ -588,10 +788,11 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
 #             return False
 #         nc += r
         
+        renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
+                                                      name_positions,
+                                                      lambda e:(-e[1],-len(e[0])))
         
-        r = summarizeUnscopedTranslation(computeFreqLenRenaming(name_candidates,
-                                                              name_positions,
-                                                              lambda e:(-e[1],-len(e[0]))),
+        r = summarizeUnscopedTranslation(renaming_map_freqlen,
                                        f_path,
                                        'freqlen',
                                        output_path,
@@ -633,6 +834,7 @@ def processFile(l):
 #                   'f4': 'tmp_%d.hash_renaming.js' % pid,
                   'f5': 'tmp_%d.hash_def_one_renaming.js' % pid,
 #                   'f6': 'tmp_%d.hash_def_two_renaming.js' % pid,
+                  'f7': 'tmp_%d.hash_def_one_renaming_fb.js' % pid,
                   'path_orig': os.path.join(output_path, 
                                             '%s.js' % base_name),
                   'path_ugly': os.path.join(output_path, 
@@ -916,11 +1118,16 @@ def processFile(l):
          
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.no_renaming', 'tuning', 'moses.ini'))
-        (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
+        (_moses_ok, 
+            translation_no_renaming, 
+            _err) = moses.run(temp_files['f2'])
  
-        nc = processTranslationUnscoped(translation, iBuilder_ugly, 
-                       lm_path, temp_files['f2'],
-                       output_path, base_name)
+        nc = processTranslationUnscoped(translation_no_renaming, 
+                                        iBuilder_ugly, 
+                                        lm_path, 
+                                        temp_files['f2'],
+                                        output_path, 
+                                        base_name)
         if nc:
             candidates += nc
                      
@@ -938,9 +1145,13 @@ def processFile(l):
 #                            'train.no_renaming', 'tuning', 'moses.ini'))
 #         (_moses_ok, translation, _err) = moses.run(temp_files['f2'])
  
-        nc = processTranslationScoped(translation, iBuilder_ugly, 
-                       scopeAnalyst, lm_path, temp_files['f2'],
-                       output_path, base_name)
+        nc = processTranslationScoped(translation_no_renaming, 
+                                      iBuilder_ugly, 
+                                      scopeAnalyst, 
+                                      lm_path, 
+                                      temp_files['f2'],
+                                      output_path, 
+                                      base_name)
         if nc:
             candidates += nc
          
@@ -958,11 +1169,30 @@ def processFile(l):
  
         moses = MosesDecoder(ini_path=os.path.join(ini_path, \
                            'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
-        (_moses_ok, translation, _err) = moses.run(temp_files['f5'])
+        (_moses_ok, 
+            translation_hash_renaming, 
+            _err) = moses.run(temp_files['f5'])
          
-        nc = processTranslationScoped(translation, iBuilder_ugly, 
-                       scopeAnalyst, lm_path, temp_files['f5'], 
-                       output_path, base_name)
+        nc = processTranslationScoped(translation_hash_renaming, 
+                                      iBuilder_ugly, 
+                                      scopeAnalyst, 
+                                      lm_path, 
+                                      temp_files['f5'], 
+                                      output_path, 
+                                      base_name)
+        if nc:
+            candidates += nc
+        
+        
+        
+        nc = processTranslationScopedFallback(translation_hash_renaming, 
+                                              translation_no_renaming,
+                                              iBuilder_ugly, 
+                                              scopeAnalyst, 
+                                              lm_path, 
+                                              temp_files['f7'], 
+                                              output_path, 
+                                              base_name)
         if nc:
             candidates += nc
             
