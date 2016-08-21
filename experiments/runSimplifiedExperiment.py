@@ -663,46 +663,54 @@ def processFile(l):
             return (js_file_path, None, 'Preprocessor fail')
         
         
-        
         # Pass through beautifier to fix layout
         clear = Beautifier()
         ok = clear.run(temp_files['path_tmp'], 
-                       temp_files['path_tmp_b_1'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Beautifier fail')
-         
-        jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
-        
-        (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_b_1'], 
-                                                temp_files['path_tmp_b_2'])
-        if not ok:
-            cleanup(temp_files)
-            print js_file_path, _err
-            return (js_file_path, None, 'JSNice Beautifier fail')
-
-        ok = clear.run(temp_files['path_tmp_b_2'], 
                        temp_files['path_tmp_b'])
         if not ok:
             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
-         
-         
-        # Weird JSNice renamings despite --no-rename
-        try:
-            before = set([token for (token, token_type) in 
-                          Lexer(temp_files['path_tmp_b_1']).tokenList
-                          if is_token_subtype(token_type, Token.Name)]) 
-            after = set([token for (token, token_type) in 
-                          Lexer(temp_files['path_tmp_b']).tokenList
-                          if is_token_subtype(token_type, Token.Name)])
-            
-            if not before == after:
-                return (js_file_path, None, 'Weird JSNice renaming')
-            
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Lexer fail')
+        
+        
+#         # Pass through beautifier to fix layout
+#         clear = Beautifier()
+#         ok = clear.run(temp_files['path_tmp'], 
+#                        temp_files['path_tmp_b_1'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
+#          
+#         jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
+#         
+#         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_b_1'], 
+#                                                 temp_files['path_tmp_b_2'])
+#         if not ok:
+#             cleanup(temp_files)
+#             print js_file_path, _err
+#             return (js_file_path, None, 'JSNice Beautifier fail')
+# 
+#         ok = clear.run(temp_files['path_tmp_b_2'], 
+#                        temp_files['path_tmp_b'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
+#          
+#          
+#         # Weird JSNice renamings despite --no-rename
+#         try:
+#             before = set([token for (token, token_type) in 
+#                           Lexer(temp_files['path_tmp_b_1']).tokenList
+#                           if is_token_subtype(token_type, Token.Name)]) 
+#             after = set([token for (token, token_type) in 
+#                           Lexer(temp_files['path_tmp_b']).tokenList
+#                           if is_token_subtype(token_type, Token.Name)])
+#             
+#             if not before == after:
+#                 return (js_file_path, None, 'Weird JSNice renaming')
+#             
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Lexer fail')
          
          
         # Minify
@@ -780,25 +788,33 @@ def processFile(l):
         if not ok:
             cleanup(temp_files)
             return (js_file_path, None, 'Nice2Predict fail')
+
         
         ok = clear.run(temp_files['path_tmp_unugly'], 
-                       temp_files['path_tmp_unugly_1'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Beautifier fail')
-        
-        (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_unugly_1'], 
-                                                temp_files['path_tmp_unugly_2'])
-        if not ok:
-            cleanup(temp_files)
-            print js_file_path, _err
-            return (js_file_path, None, 'JSNice Beautifier fail')
-    
-        ok = clear.run(temp_files['path_tmp_unugly_2'], 
                        temp_files['path_unugly'])
         if not ok:
             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
+        
+        
+#         ok = clear.run(temp_files['path_tmp_unugly'], 
+#                        temp_files['path_tmp_unugly_1'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
+#         
+#         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_unugly_1'], 
+#                                                 temp_files['path_tmp_unugly_2'])
+#         if not ok:
+#             cleanup(temp_files)
+#             print js_file_path, _err
+#             return (js_file_path, None, 'JSNice Beautifier fail')
+#     
+#         ok = clear.run(temp_files['path_tmp_unugly_2'], 
+#                        temp_files['path_unugly'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
 
 
         try:
@@ -831,47 +847,47 @@ def processFile(l):
     
     
     
-        # Run the JSNice from http://www.jsnice.org
-        jsNice = JSNice()
-        (ok, _out, _err) = jsNice.run(temp_files['path_tmp_u_a'], 
-                                      temp_files['path_tmp_jsnice'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'JSNice fail')
-
-        ok = clear.run(temp_files['path_tmp_jsnice'], 
-                       temp_files['path_jsnice'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Beautifier fail')
-        
-        try:
-            lexer = Lexer(temp_files['path_jsnice'])
-            iBuilder = IndexBuilder(lexer.tokenList)
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'IndexBuilder fail')
-        
-        try:
-            scopeAnalyst = ScopeAnalyst(os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_jsnice']))
-            nameOrigin = scopeAnalyst.nameOrigin
-            isGlobal = scopeAnalyst.isGlobal
-            
-            for (name, def_scope) in nameOrigin.iterkeys():
-                
-                pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
-                (lin,col) = iBuilder.revFlatMat[pos]
-                (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
-                
-                candidates.append(('JSNice', def_scope, 
-                                   tok_lin, tok_col, 
-                                   isGlobal.get((name, pos), True),
-                                   name, '',''))
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'ScopeAnalyst fail')
+#         # Run the JSNice from http://www.jsnice.org
+#         jsNice = JSNice()
+#         (ok, _out, _err) = jsNice.run(temp_files['path_tmp_u_a'], 
+#                                       temp_files['path_tmp_jsnice'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'JSNice fail')
+# 
+#         ok = clear.run(temp_files['path_tmp_jsnice'], 
+#                        temp_files['path_jsnice'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
+#         
+#         try:
+#             lexer = Lexer(temp_files['path_jsnice'])
+#             iBuilder = IndexBuilder(lexer.tokenList)
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'IndexBuilder fail')
+#         
+#         try:
+#             scopeAnalyst = ScopeAnalyst(os.path.join(
+#                                  os.path.dirname(os.path.realpath(__file__)), 
+#                                  temp_files['path_jsnice']))
+#             nameOrigin = scopeAnalyst.nameOrigin
+#             isGlobal = scopeAnalyst.isGlobal
+#             
+#             for (name, def_scope) in nameOrigin.iterkeys():
+#                 
+#                 pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+#                 (lin,col) = iBuilder.revFlatMat[pos]
+#                 (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+#                 
+#                 candidates.append(('JSNice', def_scope, 
+#                                    tok_lin, tok_col, 
+#                                    isGlobal.get((name, pos), True),
+#                                    name, '',''))
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'ScopeAnalyst fail')
         
         
         
