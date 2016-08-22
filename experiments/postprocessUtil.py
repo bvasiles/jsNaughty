@@ -1,7 +1,8 @@
 '''
 Created on Aug 21, 2016
 
-@author: caseycas
+    - Copied postprocessing functions from Bogdan's runSimplifiedExperiment 
+    to reference them from other files.
 '''
 import os
 import sys
