@@ -149,8 +149,41 @@ class Preprocessor:
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
         writeTmpLines(lines, out_file_path)
+        
+    def __str__(self):
+        lines = formatTokens(self.tokenList)
+        return '\n'.join([' '.join([token for (_token_type, token) in line]) for line in lines])
     
 
+class WebPreprocessor:
+    
+    def __init__(self, js_text):
+        # lex
+        lexer = get_lexer_for_filename("jsFile.js")
+    
+        # FIXME: right now I'm replacing all numbers in 
+        # scientific notation by 1. Replace by actual value
+        programText = replaceSciNotNum(js_text)
+    
+        # Tokenize input
+        self.tokenList = list(lex(programText, lexer))
 
+        # Remove comments
+        self.tokenList = tokensExceptTokenType(self.tokenList, Token.Comment)
+    
+        # Replace .1 by 0.1
+        self.tokenList = fixIncompleteDecimals(self.tokenList)
+        
+        # Strip annotations and literals
+        self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
 
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, String, 
+                                          'TOKEN_LITERAL_STRING')
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
+                                          'TOKEN_LITERAL_NUMBER')
+
+    def __str__(self):
+        lines = formatTokens(self.tokenList)
+        return '\n'.join([' '.join([token for (_token_type, token) in line]) for line in lines])
+    
 

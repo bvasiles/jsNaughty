@@ -9,8 +9,9 @@ from tools.moses import MosesDecoder
 from tools.scoper import ScopeAnalyst
 from tools.uglifyJS import Uglifier, Beautifier
 from tools.unuglifyJS import UnuglifyJS
-from tools.preprocessor import Preprocessor
+from tools.preprocessor import Preprocessor, WebPreprocessor
+from tools.postprocessor import Postprocessor
 from tools.miniChecker import MiniChecker
-from tools.lexer import Lexer
+from tools.lexer import Lexer, WebLexer
 from tools.aligner import Aligner
 from tools.dos2unix import Dos2Unix
