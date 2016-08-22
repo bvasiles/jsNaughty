@@ -126,11 +126,15 @@ class ScopeAnalyst:
         # This is a hack at the moment. I wrote a simple JS script
         # that uses node.js to export the AST produced and used by 
         # UglifyJS internally to JSON format
-        command = ['node', 'nodeScoper.js', in_file_path]
+        #command = ['/usr/local/bin/node', scoper_js_path, in_file_path]
+        command = ['node', scoper_js_path, in_file_path]
+        print(command)
         proc = subprocess.Popen(command, 
                                 stderr=PIPE, stdout=PIPE, 
                                 cwd=scoper_dir)
         out, _err = proc.communicate()
+        print("Here")
+        print(proc.returncode)
     
         if proc.returncode:
             raise Exception, _err

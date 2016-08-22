@@ -15,11 +15,15 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
-            if socket.gethostname() == 'bogdan.mac' or \
-                    socket.gethostname() == 'godot':
-                self.path = '/usr/local/bin/uglifyjs'
-            else:
+            if socket.gethostname() == 'godeep':
                 self.path = 'uglifyjs'
+            else:
+                self.path = '/usr/local/bin/uglifyjs'
+            #if socket.gethostname() == 'bogdan.mac' or \
+            #        socket.gethostname() == 'godot' or socket.gethostname() == 'Caseys-MacBook-Pro.local' :
+            #    self.path = '/usr/local/bin/uglifyjs'
+            #else:
+            #    self.path = 'uglifyjs'
         else:
             self.path = path
         
@@ -38,8 +42,24 @@ class Uglifier:
             uglifyjs_ok = True
     
         return uglifyjs_ok
-
     
+    def webRun(self, inputText):
+        '''
+        Variant that inputs from stdin and outputs to stdout.  Avoid the
+        writing to file for more speed when running this as a web service.
+        '''
+        uglifyjs_ok = False
+        
+        # Call uglifyjs
+        command = [self.path, inputText] + self.flags
+        proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
+        out, err = proc.communicate()
+    
+        if not proc.returncode:
+            uglifyjs_ok = True
+    
+        return (uglifyjs_ok, out, err)
+
 class Beautifier(Uglifier):
 
     def __init__(self):
