@@ -22,22 +22,37 @@ def writeTmpLines(lines, out_file_path):
                             for line in lines]).encode('utf8'))
     js_tmp.write('\n')
     js_tmp.close()
+
+def writeTextRep(lines):
+    '''
+    Complement to writeTmpLines, create an equivalent internal String
+    representation of the lines (basically without the orginal spacing."
+    '''
+    return '\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in lines]) + '\n'
+
     
     
 
 class Lexer:
 
     def __init__(self, js_file_path):
-        self.programText = open(js_file_path, 'r').read()
+        programText = open(js_file_path, 'r').read()
         lexer = get_lexer_for_filename(js_file_path)
+        
     
         # Tokenize input
-        self.tokenList = list(lex(self.programText, lexer))
+        self.tokenList = list(lex(programText, lexer))
+        self.collapsedText = self.getTextRep()
 
 
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
         writeTmpLines(lines, out_file_path)
+
+    def getTextRep(self):
+        lines = formatTokens(self.tokenList)
+        return writeTextRep(lines)
         
 class WebLexer:
     '''
