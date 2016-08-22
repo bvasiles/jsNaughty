@@ -28,13 +28,29 @@ def writeTmpLines(lines, out_file_path):
 class Lexer:
 
     def __init__(self, js_file_path):
-        programText = open(js_file_path, 'r').read()
+        self.programText = open(js_file_path, 'r').read()
         lexer = get_lexer_for_filename(js_file_path)
     
         # Tokenize input
+        self.tokenList = list(lex(self.programText, lexer))
+
+
+    def write_temp_file(self, out_file_path):
+        lines = formatTokens(self.tokenList)
+        writeTmpLines(lines, out_file_path)
+        
+class WebLexer:
+    '''
+    Variant that takes raw Text instead of input file
+    '''
+    
+    def __init__(self, inputText):
+        programText = inputText
+        lexer = get_lexer_for_filename("jsFile.js")
+    
+        # Tokenize input
         self.tokenList = list(lex(programText, lexer))
-
-
+        
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
         writeTmpLines(lines, out_file_path)
