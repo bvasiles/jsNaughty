@@ -46,7 +46,8 @@ clear = Beautifier()
 #(ok, beautText, err) = clear.webRun(preproText)
 ok = clear.run(preproFile, beautFile)
 print(ok)
-if(not ok):s
+if(not ok):
+    cleanup([preproFile, beautFile])
     print("Beautify failed")
     #quit()
 
@@ -54,6 +55,7 @@ try:
     lex_ugly = Lexer(beautFile)
     iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
 except:
+    cleanup([preproFile, beautFile])
     print("IndexBuilder fail")
     quit()
     
@@ -80,8 +82,8 @@ except:
 #                                               iBuilder_ugly, 
 #                                               twoLines=False,
 #                                                debug=False)
-
-mosesParams["text"] = lex_ugly.programText
+print(lex_ugly.collapsedText)
+mosesParams["text"] = lex_ugly.collapsedText
 mosesParams["align"] = "true"
 mosesParams["report-all-factors"] = "true"
 
@@ -94,7 +96,6 @@ print(translation)
 
 #Use one of the scoping options
 #None
-print("Here")
 nc = processTranslationUnscoped(translation, iBuilder_ugly, 
                                 lm_path, tempFile,
                                 tempFile + ".out", str(transactionID))
@@ -103,6 +104,8 @@ if nc:
     candidates += nc
 print("Here!")
 print("Result: " + str(nc))
+
+#If candidates is empty, display the original text?
     
 #Scope
 #nc = processTranslationScoped(translation, iBuilder_ugly, 
