@@ -127,7 +127,8 @@ class ScopeAnalyst:
         # that uses node.js to export the AST produced and used by 
         # UglifyJS internally to JSON format
         #command = ['/usr/local/bin/node', scoper_js_path, in_file_path]
-        command = ['node', scoper_js_path, in_file_path]
+        #command = ['node', scoper_js_path, in_file_path]
+        command = ['node', 'nodeScoper.js', in_file_path]
         print(command)
         proc = subprocess.Popen(command, 
                                 stderr=PIPE, stdout=PIPE, 
