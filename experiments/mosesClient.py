@@ -19,8 +19,10 @@ mosesParams = {}
 candidates = []
 
 #TODO: Replace with input text from a Ruby on Rails implementation
-input_path = "/Users/caseycas/jsnaughty/data/js_files.sample/98440.js"
-baseDir = "/Users/caseycas/temp/"
+input_path = "/home/ccasal/jsnaughty/data/js_files.sample/98440.js"
+#input_path = "/Users/caseycas/jsnaughty/data/js_files.sample/98440.js"
+#baseDir = "/Users/caseycas/temp/"
+baseDir = "/home/ccasal/temp/"
 transactionID = 98440
 tempFile = baseDir + str(transactionID) + "_temp.js"
 lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
@@ -44,7 +46,7 @@ clear = Beautifier()
 #(ok, beautText, err) = clear.webRun(preproText)
 ok = clear.run(preproFile, beautFile)
 print(ok)
-if(not ok):
+if(not ok):s
     print("Beautify failed")
     #quit()
 
@@ -59,11 +61,9 @@ lex_ugly.write_temp_file(tempFile)
 
 
 #Do Scope related tasks
-#TODO: This still depends on an input file. I would like to replace it with
-scopeAnalyst = ScopeAnalyst(tempFile, "/Users/caseycas/jsnaughty/node_scoper/nodeScoper.js")
 #a raw text version
 try:
-    scopeAnalyst = ScopeAnalyst(tempFile, "/Users/caseycas/jsnaughty/node_scoper/nodeScoper.js")
+    scopeAnalyst = ScopeAnalyst(tempFile)
 except:
     cleanup({"temp" : tempFile})
     print("ScopeAnalyst Fail")
