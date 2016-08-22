@@ -119,9 +119,10 @@ def parseMosesOutput(moses_output,
                      position_names):
         
     name_candidates = {}
+    print(iBuilder.tokens)
         
     for line in moses_output.split('\n'):
-    
+        print(line)
         translations = {}
         
         parts = line.split('|||')
