@@ -7,16 +7,27 @@ import re
 
 class Postprocessor:
 
-    def __init__(self, mosesOutput):
+    def __init__(self, nbestList):
         self.ignoreRegex = "^\|\d+-\d+\|$"
         self.extraUNK = "|UNK|UNK|UNK"
-        self.processedOutput = self.processOutput(mosesOutput)
+        #extract and combine the n-best list into the expected format
+        translations = []
+        for entry in nbestList:
+            tmp = self.processOutput(entry['hyp'])
+            translations.append(tmp)
+
+        #Weave the translations together. Assumption -> 10 translations each of equal length
+        combined = []
+        for i in range(0, len(translations[0])):
+            combined += [t[i] for t in translations]
+
+        self.processedOutput = "\n".join(combined)
         
     def processOutput(self, rawOutput):
         i = 0
-        tmp = ""
+        tmp = []
         for line in rawOutput.split("\n"):
-            tmp += str(i) + " ||| " + self.processLine(line) + "\n"
+            tmp.append(str(i) + " ||| " + self.processLine(line))
             i += 1
             
         return tmp
