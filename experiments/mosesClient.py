@@ -19,11 +19,12 @@ mosesParams = {}
 candidates = []
 
 #TODO: Replace with input text from a Ruby on Rails implementation
-input_path = "/home/ccasal/jsnaughty/data/js_files.sample/98440.js"
-#input_path = "/Users/caseycas/jsnaughty/data/js_files.sample/98440.js"
+#input_path = "/home/ccasal/jsnaughty/data/js_files.sample/98440.js"
+input_path = "/home/ccasal/temp/2.js"
 #baseDir = "/Users/caseycas/temp/"
 baseDir = "/home/ccasal/temp/"
-transactionID = 98440
+#transactionID = 98440
+transactionID = 1
 tempFile = baseDir + str(transactionID) + "_temp.js"
 lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
 
@@ -88,7 +89,7 @@ mosesParams["align"] = "true"
 mosesParams["report-all-factors"] = "true"
 
 results = proxy.translate(mosesParams)# __request("translate", mosesParams)
-rawText = Postprocessor(results["text"])
+rawText = Postprocessor(results["nbest"])
 translation = rawText.getProcessedOutput()
 
 #Send to output:
