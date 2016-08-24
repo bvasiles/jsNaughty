@@ -42,7 +42,7 @@ def processFile(row):
         try:
             (iBuilder_orig, scopeAnalyst_orig) = load(temp_files['path_orig'])
         except Exception, e:
-            return (js_file_path, None, 'Orig fail: ' + str(e).replace("\n", ""))
+            return (js_file_path, None, 'Orig fail')
         
         
         data = {}
@@ -108,7 +108,7 @@ def processFile(row):
             if not all_ok:
                 method = 'u'
         except Exception, e:
-            return (js_file_path, None, 'Ugly fail: ' + str(e).replace("\n", ""))
+            return (js_file_path, None, 'Ugly fail')
         
 
         try:
@@ -116,7 +116,7 @@ def processFile(row):
             if not all_ok:
                 method = 'n2p'
         except Exception, e:
-            return (js_file_path, None, 'N2P fail: ' + str(e).replace("\n", ""))
+            return (js_file_path, None, 'N2P fail')
 
 
         try:
@@ -124,7 +124,7 @@ def processFile(row):
             if not all_ok:
                 method = 'hash.lm'
         except Exception, e:
-            return (js_file_path, None, 'Hash fail: ' + str(e).replace("\n", ""))
+            return (js_file_path, None, 'Hash fail')
         
 
         return (js_file_path, all_ok, method)
