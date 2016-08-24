@@ -192,19 +192,19 @@ class ScopeAnalyst:
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start'])
                     
-                    if True: #key == 't':
-    #                     parent = self.__get_ref_key(pth[:-1])
-                        print '\n\n\n', key, start, pth
-                        print parent.keys()
-                        print '\n\t', 'SCOPE:', parent.get('scope',{}).keys()
-                        print '\t\t', 'pth:', parent.get('scope',{}).get('pth','')
-                        print '\t\t', '$ref:', parent.get('scope',{}).get('$ref','')
-                        print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('scope',{})).get('pth','')
-        #                    print '---'
-                        print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
-                        print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
-                        print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
-                        print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
+#                     if True: #key == 't':
+#     #                     parent = self.__get_ref_key(pth[:-1])
+#                         print '\n\n\n', key, start, pth
+#                         print parent.keys()
+#                         print '\n\t', 'SCOPE:', parent.get('scope',{}).keys()
+#                         print '\t\t', 'pth:', parent.get('scope',{}).get('pth','')
+#                         print '\t\t', '$ref:', parent.get('scope',{}).get('$ref','')
+#                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('scope',{})).get('pth','')
+#         #                    print '---'
+#                         print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
+#                         print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
+#                         print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
+#                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
     
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
