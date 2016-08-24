@@ -1,1 +1,8 @@
+{% extends "deobfuscate/base.html" %}
+
+{% block content %}
+<h2>Behold, The Deobfuscated Javascript: </h2>
+<textarea rows = "{{ height }}" cols = "{{ width }}">
 {{ out_text }}
+</textarea>
+{% endblock %}
