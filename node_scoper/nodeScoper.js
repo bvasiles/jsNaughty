@@ -9,7 +9,7 @@ var code = fs.readFileSync(fpath, "utf8");
 
 var toplevel = UglifyJS.parse(code);
 
-toplevel.figure_out_scope();
+toplevel.figure_out_scope({"screw_ie8": true});
 
 console.log(JSON.stringify(JSON.decycle(toplevel), undefined, 2))
 
