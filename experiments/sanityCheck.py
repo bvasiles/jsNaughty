@@ -72,7 +72,7 @@ def processFile(row):
         def check(pth, data):
             (iBuilder, scopeAnalyst) = load(pth)
             
-            all_ok = True
+            ok = True
         
             name2defScope = scopeAnalyst.resolve_scope()
             isGlobal = scopeAnalyst.isGlobal
@@ -95,33 +95,38 @@ def processFile(row):
                 if not (glb_orig == glb and 
                         set(lc_list_orig) == set(lc_list)):
 #                     print '  ', name,  lc_list, lc_list_orig
-                    all_ok = False
+                    ok = False
             
-            return all_ok
-            
+            return ok
+         
+         
+        all_ok = True   
                 
         try:
-            ok = check(temp_files['path_ugly'], data)
-            return (js_file_path, ok, 'u')
+            all_ok = check(temp_files['path_ugly'], data)
+            method = 'u'
+#             return (js_file_path, ok, 'u')
         except:
             return (js_file_path, None, 'Ugly fail')
         
 
         try:
-            ok = check(temp_files['path_unugly'], data)
-            return (js_file_path, ok, 'n2p')
+            all_ok = check(temp_files['path_unugly'], data)
+            method = 'n2p'
+#             return (js_file_path, ok, 'n2p')
         except:
             return (js_file_path, None, 'N2P fail')
 
 
         try:
-            ok = check(temp_files['path_hash_lm'], data)
-            return (js_file_path, ok, 'hash.lm')
+            all_ok = check(temp_files['path_hash_lm'], data)
+            method = 'hash.lm'
+#             return (js_file_path, ok, 'hash.lm')
         except:
             return (js_file_path, None, 'Hash fail')
         
 
-        return (js_file_path, 'OK')
+        return (js_file_path, all_ok, method)
         
 
     except Exception, e:
