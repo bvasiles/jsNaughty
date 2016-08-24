@@ -67,7 +67,8 @@ def processFile(js_file_path):
     # Discover the path to the source map
     map_path = sourcemap.discover(minified)
     # Read and parse our sourcemap
-    sourcemapIndex = sourcemap.load(open(map_path))
+    if map_path:
+        sourcemapIndex = sourcemap.load(open(map_path))
     
     # Cluster names by scope 
     nameScope2Positions = {}
@@ -103,7 +104,10 @@ def processFile(js_file_path):
         tt = []
         line_tok_idxs = set([])
         for (l,c) in pos:
-            orig = sourcemapIndex.lookup(line=l, column=c).name
+            if map_path:
+                orig = sourcemapIndex.lookup(line=l, column=c).name
+            else:
+                orig = token
             (tl,tc) = indexBuilder.revTokMap[(l,c)]
             line_tok_idxs.add(tl)
             p = indexBuilder.flatMap[(l,c)]
