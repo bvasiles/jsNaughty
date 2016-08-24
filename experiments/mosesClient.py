@@ -114,4 +114,3 @@ print("Result: " + str(nc))
 #                               output_path, base_name)
 #if nc:
 #    candidates += nc
-
