@@ -6,8 +6,7 @@ from django.template import Context
 
 from .forms import JSForm
 from .models import PlaceHolderModel
-from deobfuscate.internal_test import MockClient
-#TODO: Move experiments and other python files inside of the website framework
+#from deobfuscate.internal_test import MockClient
 from deobfuscate.experiments import MosesClient
 
 # Create your views here.
@@ -33,13 +32,13 @@ def get_js(request):
             # TODO: Call the inner python loops here.
             #mClient = MosesClient()
             #output = mClient.processFile(form.cleaned_data['in_text'])
-            tClient = MockClient()
+            #tClient = MockClient()
             rClient = MosesClient()
             
             #output = "Behold, The Deobfuscated Javascript: " + tClient.deobfuscateJS(form.cleaned_data['in_text'])
-            output = "Behold, The Deobfuscated Javascript: " + rClient.deobfuscateJS(form.cleaned_data['in_text'], 0)
+            output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0)
             # redirect to a new URL:
-            return render(request, 'deobfuscate/results.html', Context({'out_text': output}))
+            return render(request, 'deobfuscate/results.html', Context({'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80}))
 
     # if a GET (or any other method) we'll create a blank form
     else:
