@@ -98,6 +98,12 @@ num_threads = int(sys.argv[3])
 
 
 flog = 'log_sanity'
+try:
+    for f in [flog]:
+        os.remove(os.path.join(results_root, f))
+except:
+    pass
+
 
 with open(file_list_path, 'r') as f:
 
