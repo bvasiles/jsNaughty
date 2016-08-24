@@ -162,6 +162,20 @@ class ScopeAnalyst:
         for (pth, key) in keypaths(self.ast):
             # Iterate over all leaves
             
+            if key == 't':
+                parent = self.__get_ref_key(pth[:-1])
+                print '\n\n\n', key, pth
+                print parent.keys()
+                print '\n\t', 'SCOPE:', parent['scope'].keys()
+                print '\t\t', 'pth:', parent['scope']['pth']
+                print '\t\t', '$ref:', parent['scope'].get('$ref','')
+                print '\t\t', '$ref -->:', self.__ref_or_not(parent['scope'])['pth']
+#                    print '---'
+                print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
+                print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
+                print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
+                print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
+            
             # `name` leaves are interesting ...  
             if pth[-1] == 'name':
                 
@@ -169,18 +183,6 @@ class ScopeAnalyst:
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
                 
-                if key == 't':
-                    print '\n\n\n', key, pth
-                    print parent.keys()
-                    print '\n\t', 'SCOPE:', parent['scope'].keys()
-                    print '\t\t', 'pth:', parent['scope']['pth']
-                    print '\t\t', '$ref:', parent['scope'].get('$ref','')
-                    print '\t\t', '$ref -->:', self.__ref_or_not(parent['scope'])['pth']
-#                    print '---'
-                    print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
-                    print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
-                    print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
-                    print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
 #
 #                    refs = parent.get('thedef',{}).get('references',[])
 #                    if len(refs):
