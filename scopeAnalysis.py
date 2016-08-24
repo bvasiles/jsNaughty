@@ -104,13 +104,14 @@ def processFile(js_file_path):
         tt = []
         line_tok_idxs = set([])
         for (l,c) in pos:
+            (tl,tc) = indexBuilder.revTokMap[(l,c)]
+            line_tok_idxs.add(tl)
+            p = indexBuilder.flatMap[(l,c)]
             if map_path:
                 orig = sourcemapIndex.lookup(line=l, column=c).name
             else:
                 orig = token
-            (tl,tc) = indexBuilder.revTokMap[(l,c)]
-            line_tok_idxs.add(tl)
-            p = indexBuilder.flatMap[(l,c)]
+            print token,scope,(l,c),orig
             tt.append(((tl,tc),p,orig))
 #             t.append(orig)
 
