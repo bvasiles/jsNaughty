@@ -47,6 +47,7 @@ def processFile(row):
         
         data = {}
         
+        print '\n', js_file_path
         
         name2defScope_orig = scopeAnalyst_orig.resolve_scope()
         isGlobal_orig = scopeAnalyst_orig.isGlobal
