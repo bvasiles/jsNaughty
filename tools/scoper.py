@@ -166,10 +166,10 @@ class ScopeAnalyst:
                 parent = self.__get_ref_key(pth[:-1])
                 print '\n\n\n', key, pth
                 print parent.keys()
-                print '\n\t', 'SCOPE:', parent['scope'].keys()
-                print '\t\t', 'pth:', parent['scope']['pth']
-                print '\t\t', '$ref:', parent['scope'].get('$ref','')
-                print '\t\t', '$ref -->:', self.__ref_or_not(parent['scope'])['pth']
+                print '\n\t', 'SCOPE:', parent.get('scope',{}).keys()
+                print '\t\t', 'pth:', parent.get('scope',{}).get('pth','')
+                print '\t\t', '$ref:', parent.get('scope',{}).get('$ref','')
+                print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('scope',{})).get('pth','')
 #                    print '---'
                 print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
                 print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
