@@ -100,28 +100,29 @@ def processFile(row):
             return ok
          
          
-        all_ok = True   
+        all_ok = True
+        method = ''
                 
         try:
             all_ok = check(temp_files['path_ugly'], data)
-            method = 'u'
-#             return (js_file_path, ok, 'u')
+            if not all_ok:
+                method = 'u'
         except:
             return (js_file_path, None, 'Ugly fail')
         
 
         try:
             all_ok = check(temp_files['path_unugly'], data)
-            method = 'n2p'
-#             return (js_file_path, ok, 'n2p')
+            if not all_ok:
+                method = 'n2p'
         except:
             return (js_file_path, None, 'N2P fail')
 
 
         try:
             all_ok = check(temp_files['path_hash_lm'], data)
-            method = 'hash.lm'
-#             return (js_file_path, ok, 'hash.lm')
+            if not all_ok:
+                method = 'hash.lm'
         except:
             return (js_file_path, None, 'Hash fail')
         
