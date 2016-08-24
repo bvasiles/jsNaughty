@@ -66,7 +66,7 @@ def processFile(row):
                        if name2defScope_orig[(t,pos)] == def_scope]
             
             data[tok_scope_orig] = (name, glb_orig, lc_list)
-#             print '  ', name, tok_scope_orig, glb_orig, lc_list
+            print '  ', name, tok_scope_orig, glb_orig, lc_list
         
         
         def check(pth, data):
@@ -94,7 +94,7 @@ def processFile(row):
                 (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
                 if not (glb_orig == glb and 
                         set(lc_list_orig) == set(lc_list)):
-#                     print '  ', name,  lc_list, lc_list_orig
+                    print '  **', name,  lc_list, lc_list_orig
                     ok = False
             
             return ok
