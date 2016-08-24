@@ -44,10 +44,10 @@ def processFile(row):
         except:
             return (js_file_path, None, 'Orig fail')
         
-        try:
-            (iBuilder_ugly, scopeAnalyst_ugly) = load(temp_files['path_ugly'])
-        except:
-            return (js_file_path, None, 'Ugly fail')
+#         try:
+#             (iBuilder_ugly, scopeAnalyst_ugly) = load(temp_files['path_ugly'])
+#         except:
+#             return (js_file_path, None, 'Ugly fail')
 #         
 #         try:
 #             (iBuilder_unugly, scopeAnalyst_unugly) = load(temp_files['path_unugly'])
@@ -84,34 +84,69 @@ def processFile(row):
 #             print '  ', name, tok_scope_orig, glb_orig, lc_list
         
         
-        all_ok = True
-        
-        print js_file_path
-        
-        name2defScope_ugly = scopeAnalyst_ugly.resolve_scope()
-        isGlobal_ugly = scopeAnalyst_ugly.isGlobal
-        nameDefScope2pos_ugly = scopeAnalyst_ugly.nameDefScope2pos
-        nameOrigin_ugly = scopeAnalyst_ugly.nameOrigin
-        
-        for (name, def_scope) in nameOrigin_ugly.iterkeys():
-            pos = nameDefScope2pos_ugly[(name, def_scope)]
+        def check(pth, data):
+            (iBuilder, scopeAnalyst) = load(pth)
             
-            (lin,col) = iBuilder_ugly.revFlatMat[pos]
-            tok_scope = iBuilder_ugly.revTokMap[(lin,col)]
-            
-            glb_ugly = isGlobal_ugly.get((name, pos), True)
-            
-            lc_list = [iBuilder_ugly.revTokMap[iBuilder_ugly.revFlatMat[pos]] 
-                       for (t,pos) in name2defScope_ugly.keys()  
-                       if name2defScope_ugly[(t,pos)] == def_scope]        
+            all_ok = True
         
-            (name_orig, glb_orig, lc_list_orig) = data[tok_scope]
-            if not (glb_orig == glb_ugly and set(lc_list_orig) == set(lc_list)):
-                print '  ', name,  lc_list, lc_list_orig
-                all_ok = False
+            name2defScope = scopeAnalyst.resolve_scope()
+            isGlobal = scopeAnalyst.isGlobal
+            nameDefScope2pos = scopeAnalyst.nameDefScope2pos
+            nameOrigin = scopeAnalyst.nameOrigin
+            
+            for (name, def_scope) in nameOrigin.iterkeys():
+                pos = nameDefScope2pos[(name, def_scope)]
+                
+                (lin,col) = iBuilder.revFlatMat[pos]
+                tok_scope = iBuilder.revTokMap[(lin,col)]
+                
+                glb = isGlobal.get((name, pos), True)
+                
+                lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
+                           for (t,pos) in name2defScope.keys()  
+                           if name2defScope[(t,pos)] == def_scope]        
+            
+                (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
+                if not (glb_orig == glb and 
+                        set(lc_list_orig) == set(lc_list)):
+#                     print '  ', name,  lc_list, lc_list_orig
+                    all_ok = False
+            
+            return all_ok
+            
         
-        print all_ok
-        print '\n\n'
+        try:
+            print js_file_path, check(temp_files['path_ugly'], data)
+        except:
+            return (js_file_path, None, 'Ugly fail')
+        
+        
+#         all_ok = True
+#         
+#         name2defScope_ugly = scopeAnalyst_ugly.resolve_scope()
+#         isGlobal_ugly = scopeAnalyst_ugly.isGlobal
+#         nameDefScope2pos_ugly = scopeAnalyst_ugly.nameDefScope2pos
+#         nameOrigin_ugly = scopeAnalyst_ugly.nameOrigin
+#         
+#         for (name, def_scope) in nameOrigin_ugly.iterkeys():
+#             pos = nameDefScope2pos_ugly[(name, def_scope)]
+#             
+#             (lin,col) = iBuilder_ugly.revFlatMat[pos]
+#             tok_scope = iBuilder_ugly.revTokMap[(lin,col)]
+#             
+#             glb_ugly = isGlobal_ugly.get((name, pos), True)
+#             
+#             lc_list = [iBuilder_ugly.revTokMap[iBuilder_ugly.revFlatMat[pos]] 
+#                        for (t,pos) in name2defScope_ugly.keys()  
+#                        if name2defScope_ugly[(t,pos)] == def_scope]        
+#         
+#             (name_orig, glb_orig, lc_list_orig) = data[tok_scope]
+#             if not (glb_orig == glb_ugly and set(lc_list_orig) == set(lc_list)):
+#                 print '  ', name,  lc_list, lc_list_orig
+#                 all_ok = False
+#         
+#         print all_ok
+#         print '\n\n'
         return (js_file_path, 'OK')
         
 
