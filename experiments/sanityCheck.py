@@ -29,8 +29,6 @@ def processFile(row):
 
     try:
         
-        print js_file_path
-
         def load(pth):
             lexer = Lexer(pth)
             iBuilder = IndexBuilder(lexer.tokenList)
@@ -67,6 +65,8 @@ def processFile(row):
         isGlobal_orig = scopeAnalyst_orig.isGlobal
         nameDefScope2pos_orig = scopeAnalyst_orig.nameDefScope2pos
         nameOrigin_orig = scopeAnalyst_orig.nameOrigin
+        
+        print js_file_path
         
         for (name, def_scope) in nameOrigin_orig.iterkeys():
             pos = nameDefScope2pos_orig[(name, def_scope)]
