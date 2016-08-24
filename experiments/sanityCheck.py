@@ -165,6 +165,6 @@ with open(file_list_path, 'r') as f:
                 js_file_path, ok, method = result
                 writer.writerow([js_file_path, ok, method])
             else:
-                writer.writerow([result[0], result[2]])
+                writer.writerow([result[0], result[2]], '')
              
 
