@@ -21,9 +21,9 @@ class MosesClient():
         
         mosesParams = {}
         candidates = []
-        baseDir = "./"
+        baseDir = os.getcwd()
         tempFile = baseDir + str(transactionID) + "_temp.js"
-        lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
+        #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
         
         preproFile = baseDir + str(transactionID) + "_prepro.js"
         beautFile = baseDir + str(transactionID) + "_beaut.js"
@@ -61,8 +61,6 @@ class MosesClient():
         
         #Do Scope related tasks
         #a raw text version
-        scopeAnalyst = ScopeAnalyst(tempFile)
-        return("")
         try:
             scopeAnalyst = ScopeAnalyst(tempFile)
         except:
