@@ -192,7 +192,7 @@ class ScopeAnalyst:
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start'])
                     
-                    if key == 't':
+                    if True: #key == 't':
     #                     parent = self.__get_ref_key(pth[:-1])
                         print '\n\n\n', key, start, pth
                         print parent.keys()
