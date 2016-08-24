@@ -113,7 +113,7 @@ with open(file_list_path, 'r') as f:
             writer = UnicodeWriter(g)
      
             if result[1] is not None:
-                js_file_path, ok, candidates = result
+                js_file_path, ok = result
                 writer.writerow([js_file_path, ok])
             else:
                 writer.writerow([result[0], result[2]])
