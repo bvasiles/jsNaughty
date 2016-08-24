@@ -184,9 +184,17 @@ class ScopeAnalyst:
                         parent.has_key('thedef') and \
                         parent.has_key('start'):
                     
+#                    if key == 't':
+#                        print
+#                        print parent['scope'].keys()
+
+ 
+                    # Retrieve starting position for the name
+                    start = self.__get_start(parent['start'])
+                    
                     if key == 't':
     #                     parent = self.__get_ref_key(pth[:-1])
-                        print '\n\n\n', key, pth
+                        print '\n\n\n', key, start, pth
                         print parent.keys()
                         print '\n\t', 'SCOPE:', parent.get('scope',{}).keys()
                         print '\t\t', 'pth:', parent.get('scope',{}).get('pth','')
@@ -197,15 +205,7 @@ class ScopeAnalyst:
                         print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
                         print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
-
-#                    if key == 't':
-#                        print
-#                        print parent['scope'].keys()
-
- 
-                    # Retrieve starting position for the name
-                    start = self.__get_start(parent['start'])
-                    
+    
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
                     
