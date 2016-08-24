@@ -65,9 +65,9 @@ def processFile(js_file_path):
         print
    
     # Discover the path to the source map
-    _map_path = sourcemap.discover(minified)
+    map_path = sourcemap.discover(minified)
     # Read and parse our sourcemap
-#     sourcemapIndex = sourcemap.load(open(map_path))
+    sourcemapIndex = sourcemap.load(open(map_path))
     
     # Cluster names by scope 
     nameScope2Positions = {}
@@ -103,19 +103,19 @@ def processFile(js_file_path):
         tt = []
         line_tok_idxs = set([])
         for (l,c) in pos:
-#             orig = sourcemapIndex.lookup(line=l, column=c).name
+            orig = sourcemapIndex.lookup(line=l, column=c).name
             (tl,tc) = indexBuilder.revTokMap[(l,c)]
             line_tok_idxs.add(tl)
             p = indexBuilder.flatMap[(l,c)]
-            tt.append(((tl,tc),p))
+            tt.append(((tl,tc),p,orig))
 #             t.append(orig)
 
 #         if token == 'n':
-        print '\nNAME:', token.encode('utf-8'), '( isGlobal =', glb, ')'
+        print '\nNAME:', token.encode('utf-8'), '( isGlobal =', glb, '; original =', orig, ')'
 #         print scope
 #         highlight(tokens, [indexBuilder.revTokMap[indexBuilder.revFlatMat[pos]]])
         
-        for ((tli,tci),p) in tt:
+        for ((tli,tci),p,orig) in tt:
             scope = name2defScope[(token, p)]
             use_scope = name2useScope[(token, p)]
             pth = name2pth[(token, p)]
@@ -127,9 +127,9 @@ def processFile(js_file_path):
 #             print 'pth:', pth
 #             print
   
-        for tl in sorted(set([tli for ((tli,tci),p) in tt])):
+        for tl in sorted(set([tli for ((tli,tci),p,orig) in tt])):
             l = list(tokens[tl])
-            for tc in [tci for ((tli,tci),p) in tt if tli==tl]:
+            for tc in [tci for ((tli,tci),p,orig) in tt if tli==tl]:
                 l[tc] = (l[tc][0], unichr(0x2588) + token + unichr(0x2588))
                 
 #                 pos = indexBuilder.flatMap[(line,col)]
