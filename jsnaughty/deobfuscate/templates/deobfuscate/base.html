@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'deobfuscate/style.css' %}" />
+    <title>JSNaughty - Deofuscator for Javascript</title>
+</head>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
