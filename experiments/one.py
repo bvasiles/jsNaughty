@@ -500,9 +500,9 @@ def renameHashed(iBuilder,
 #     for (name, def_scope), renaming in renaming_map.iteritems():
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
             (token_type, _name) = draft_translation[line_num][line_idx]
-            print (token_type, _name)
-#             if not isHash(renaming):
-#                 draft_translation[line_num][line_idx] = (token_type, renaming)
+#             print (token_type, _name)
+            if not isHash(renaming):
+                draft_translation[line_num][line_idx] = (token_type, renaming)
 
     return draft_translation
 
