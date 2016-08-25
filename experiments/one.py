@@ -624,6 +624,7 @@ def summarizeScopedTranslation(renaming_map,
 #     if not ok:
 #         return False
     print '****'
+    print nc
     exit()
 
     return nc
