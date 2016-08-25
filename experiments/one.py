@@ -490,7 +490,8 @@ def renameHashed(iBuilder,
                  renaming_map):
     
     draft_translation = deepcopy(iBuilder.tokens)
-    for (name, def_scope), renaming in renaming_map.iteritems():
+    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+#     for (name, def_scope), renaming in renaming_map.iteritems():
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
             (token_type, _name) = draft_translation[line_num][line_idx]
             if not isHash(renaming):
@@ -589,7 +590,7 @@ def summarizeScopedTranslation(renaming_map,
     
     isGlobal = scopeAnalyst.isGlobal
     
-    for (name, def_scope), renaming in renaming_map.iteritems():
+    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
             
         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
             
