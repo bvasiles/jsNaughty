@@ -41,7 +41,8 @@ def processFile(l):
                   'path_tmp_b_a': 'tmp_%d.b.a.js' % pid,
                   'path_tmp_u_a': 'tmp_%d.u.a.js' % pid}
     
-    try:        
+#     try:
+    if True:
         # Strip comments, replace literals, etc
         try:
             prepro = Preprocessor(os.path.join(corpus_root, js_file_path))
@@ -171,9 +172,9 @@ def processFile(l):
                 hash_def_one_renaming)#,
 #                 hash_def_two_renaming)
         
-    except Exception, e:
-        cleanup(temp_files)
-        return (js_file_path, None, str(e))
+#     except Exception, e:
+#         cleanup(temp_files)
+#         return (js_file_path, None, str(e))
     
     
 corpus_root = os.path.abspath(sys.argv[1])
@@ -216,7 +217,8 @@ with open(training_sample_path, 'r') as f:
                  hash_def_one_renaming) = result#,
 #                  hash_def_two_renaming) = result
           
-                try:
+#                 try:
+                if True:
                     with open(os.path.join(output_path, f1), 'a') \
                             as f_orig, \
                         open(os.path.join(output_path, f2), 'a') \
@@ -238,8 +240,8 @@ with open(training_sample_path, 'r') as f:
                     
                     writer.writerow([js_file_path, 'OK'])
         
-                except Exception, e:
-                    writer.writerow([js_file_path, str(e)])
+#                 except Exception, e:
+#                     writer.writerow([js_file_path, str(e)])
                 
             else:
                 writer.writerow([result[0], result[2]])
