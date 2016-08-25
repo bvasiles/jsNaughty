@@ -47,7 +47,7 @@ def processFile(row):
         
         data = {}
         
-        print '\n', js_file_path
+#         print '\n', js_file_path
         
         name2defScope_orig = scopeAnalyst_orig.resolve_scope()
         isGlobal_orig = scopeAnalyst_orig.isGlobal
@@ -67,7 +67,7 @@ def processFile(row):
                        if name2defScope_orig[(t,pos)] == def_scope]
             
             data[tok_scope_orig] = (name, glb_orig, lc_list)
-            print '  ', name, tok_scope_orig, glb_orig, lc_list
+#             print '  ', name, tok_scope_orig, glb_orig, lc_list
         
         
         def check(pth, data):
@@ -81,22 +81,26 @@ def processFile(row):
             nameOrigin = scopeAnalyst.nameOrigin
             
             for (name, def_scope) in nameOrigin.iterkeys():
-                pos = nameDefScope2pos[(name, def_scope)]
                 
-                (lin,col) = iBuilder.revFlatMat[pos]
-                tok_scope = iBuilder.revTokMap[(lin,col)]
+                if name != 'TOKEN_LITERAL_NUMBER' and \
+                        name != 'TOKEN_LITERAL_STRING':
                 
-                glb = isGlobal.get((name, pos), True)
+                    pos = nameDefScope2pos[(name, def_scope)]
+                    
+                    (lin,col) = iBuilder.revFlatMat[pos]
+                    tok_scope = iBuilder.revTokMap[(lin,col)]
+                    
+                    glb = isGlobal.get((name, pos), True)
+                    
+                    lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
+                               for (t,pos) in name2defScope.keys()  
+                               if name2defScope[(t,pos)] == def_scope]        
                 
-                lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
-                           for (t,pos) in name2defScope.keys()  
-                           if name2defScope[(t,pos)] == def_scope]        
-            
-                (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
-                if not (glb_orig == glb and 
-                        set(lc_list_orig) == set(lc_list)):
-                    print '  **', name,  lc_list, lc_list_orig
-                    ok = False
+                    (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
+                    if not (glb_orig == glb and 
+                            set(lc_list_orig) == set(lc_list)):
+#                         print '  **', name,  lc_list, lc_list_orig
+                        ok = False
             
             return ok
          
