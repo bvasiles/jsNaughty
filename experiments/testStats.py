@@ -59,7 +59,7 @@ results_path = os.path.abspath(sys.argv[2])
 num_threads = int(sys.argv[3])
 
 # num_trivial = 5
-num_non_trivial = 8
+num_non_trivial = 7
 
 data = {}
 coverage = {}
