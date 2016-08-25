@@ -56,7 +56,8 @@ def processFile(l):
 
 csv_path = os.path.abspath(sys.argv[1])
 results_path = os.path.abspath(sys.argv[2])
-num_threads = int(sys.argv[3])
+sanity_path = os.path.abspath(sys.argv[3])
+num_threads = int(sys.argv[4])
 
 # num_trivial = 5
 num_non_trivial = 7
@@ -66,48 +67,65 @@ coverage = {}
 
 strategies = set([])
 
+
+sanity = {}
+reader = UnicodeReader(open(sanity_path))
+for row in reader:
+    if row[1] == 'True':
+        sanity[row[0]] = True
+    else:
+        sanity[row[0]] = False
+
+
 reader = UnicodeReader(open(csv_path))
+
+ignored = 0
 
 for row in reader:
     # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
     file_name = row[0]
     
-    strategy = row[1]
-    strategies.add(strategy)
+    if sanity[file_name]:
     
-    tok_lin = int(row[3])
-    tok_col = int(row[4])
-    scope = (tok_lin,tok_col) #row[2]
-
-#     glb = row[5]
-#     i = scope.find('[variables][_values]')
-#     if i > -1:
-#         scope = scope[:i+len('[variables][_values]')]
-#     i = scope.find('[functions][_values]')
-#     if i > -1:
-#         scope = scope[:i+len('[functions][_values]')]
+        strategy = row[1]
+        strategies.add(strategy)
         
-    translated_name = row[6]
-#     ugly_name = row[4] if len(row[4]) else None
-    alternatives = row[7] if len(row[7]) else None
+        tok_lin = int(row[3])
+        tok_col = int(row[4])
+        scope = (tok_lin,tok_col) #row[2]
     
-    if translated_name != 'TOKEN_LITERAL_STRING' and \
-            translated_name != 'TOKEN_LITERAL_NUMBER':
-    
-        data.setdefault(file_name, {})
-        data[file_name].setdefault(strategy, {})
-        data[file_name][strategy][scope] = (translated_name, alternatives)
-        
-        coverage.setdefault(file_name, {})
-        coverage[file_name].setdefault(scope, set([]))
-        coverage[file_name][scope].add(strategy)
+    #     glb = row[5]
+    #     i = scope.find('[variables][_values]')
+    #     if i > -1:
+    #         scope = scope[:i+len('[variables][_values]')]
+    #     i = scope.find('[functions][_values]')
+    #     if i > -1:
+    #         scope = scope[:i+len('[functions][_values]')]
             
-    #                                               ugly_name, 
-    #     print file_name, strategy, scope, (translated_name, alternatives)
-    #     data[file_name][strategy].setdefault(scope, [])
-    #     data[file_name][strategy][scope].append( (translated_name, 
-    #                                               ugly_name, 
-    #                                               alternatives) )
+        translated_name = row[6]
+    #     ugly_name = row[4] if len(row[4]) else None
+        alternatives = row[7] if len(row[7]) else None
+        
+        if translated_name != 'TOKEN_LITERAL_STRING' and \
+                translated_name != 'TOKEN_LITERAL_NUMBER':
+        
+            data.setdefault(file_name, {})
+            data[file_name].setdefault(strategy, {})
+            data[file_name][strategy][scope] = (translated_name, alternatives)
+            
+            coverage.setdefault(file_name, {})
+            coverage[file_name].setdefault(scope, set([]))
+            coverage[file_name][scope].add(strategy)
+                
+        #                                               ugly_name, 
+        #     print file_name, strategy, scope, (translated_name, alternatives)
+        #     data[file_name][strategy].setdefault(scope, [])
+        #     data[file_name][strategy][scope].append( (translated_name, 
+        #                                               ugly_name, 
+        #                                               alternatives) )
+    
+    else:
+        ignored += 1
     
     
 print len(data.keys()), 'files'
@@ -117,6 +135,7 @@ print len(data.keys()), 'files'
 
 w = [k for k,v in data.iteritems() if len(v.keys())==num_non_trivial]
 print len(w), 'w Moses'
+print ignored, 'ignored due to unknown errors'
 
 print len(data.keys()) - len(w), 'unaccounted for'
 print
