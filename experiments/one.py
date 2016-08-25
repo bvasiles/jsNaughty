@@ -1269,54 +1269,54 @@ def processFile(l):
          
          
  
-#         # Baseline translation: No renaming, no scoping
-#         no_renaming = []
-#         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
-#             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
-#          
-#         with open(temp_files['f2'], 'w') as f_no_renaming:
-#             f_no_renaming.writelines(no_renaming)
-# 
-#         lx = Lexer(temp_files['f2'])
-# 
-#         mosesParams = {}
-#         mosesParams["text"] = lx.collapsedText # hash_def_one_renaming #lex_ugly.collapsedText
-#         #mosesParams["align"] = "true"
-#         #mosesParams["report-all-factors"] = "true"
-# 
-#         #print '\n=============\n', mosesParams["text"], '\n'
-# 
-#         mresults = proxy_nr.translate(mosesParams)# __request("translate", mosesParams)
-#         rawText = Postprocessor(mresults["nbest"])
-#         translation_no_renaming = rawText.getProcessedOutput()
-#          
-# #        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-# #                           'train.no_renaming', 'tuning', 'moses.ini'))
-# #        (_moses_ok, 
-# #            translation_no_renaming, 
-# #            _err) = moses.run(temp_files['f2'])
-#  
-#         nc = processTranslationUnscoped(translation_no_renaming, 
-#                                         iBuilder_ugly, 
-#                                         lm_path, 
-#                                         temp_files['f2'],
-#                                         output_path, 
-#                                         base_name)
-#         if nc:
-#             candidates += nc
-#  
-# 
-# 
-# 
-#         nc = processTranslationScoped(translation_no_renaming, 
-#                                       iBuilder_ugly, 
-#                                       scopeAnalyst, 
-#                                       lm_path, 
-#                                       temp_files['f2'],
-#                                       output_path, 
-#                                       base_name)
-#         if nc:
-#             candidates += nc
+        # Baseline translation: No renaming, no scoping
+        no_renaming = []
+        for _line_idx, line in enumerate(iBuilder_ugly.tokens):
+            no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
+          
+        with open(temp_files['f2'], 'w') as f_no_renaming:
+            f_no_renaming.writelines(no_renaming)
+ 
+        lx = Lexer(temp_files['f2'])
+ 
+        mosesParams = {}
+        mosesParams["text"] = lx.collapsedText # hash_def_one_renaming #lex_ugly.collapsedText
+        #mosesParams["align"] = "true"
+        #mosesParams["report-all-factors"] = "true"
+ 
+        #print '\n=============\n', mosesParams["text"], '\n'
+ 
+        mresults = proxy_nr.translate(mosesParams)# __request("translate", mosesParams)
+        rawText = Postprocessor(mresults["nbest"])
+        translation_no_renaming = rawText.getProcessedOutput()
+          
+#        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+#                           'train.no_renaming', 'tuning', 'moses.ini'))
+#        (_moses_ok, 
+#            translation_no_renaming, 
+#            _err) = moses.run(temp_files['f2'])
+  
+        nc = processTranslationUnscoped(translation_no_renaming, 
+                                        iBuilder_ugly, 
+                                        lm_path, 
+                                        temp_files['f2'],
+                                        output_path, 
+                                        base_name)
+        if nc:
+            candidates += nc
+  
+ 
+ 
+ 
+        nc = processTranslationScoped(translation_no_renaming, 
+                                      iBuilder_ugly, 
+                                      scopeAnalyst, 
+                                      lm_path, 
+                                      temp_files['f2'],
+                                      output_path, 
+                                      base_name)
+        if nc:
+            candidates += nc
          
          
          
