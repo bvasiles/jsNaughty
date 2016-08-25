@@ -496,11 +496,12 @@ def renameHashed(iBuilder,
     
     draft_translation = deepcopy(iBuilder.tokens)
     for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
-#     for (name, def_scope), renaming in renaming_map.iteritems():
-        for (line_num, line_idx) in name_positions[(name, def_scope)]:
-            (token_type, _name) = draft_translation[line_num][line_idx]
-            if not isHash(renaming):
-                draft_translation[line_num][line_idx] = (token_type, renaming)
+        print ((name, def_scope), use_scope), renaming
+# #     for (name, def_scope), renaming in renaming_map.iteritems():
+#         for (line_num, line_idx) in name_positions[(name, def_scope)]:
+#             (token_type, _name) = draft_translation[line_num][line_idx]
+#             if not isHash(renaming):
+#                 draft_translation[line_num][line_idx] = (token_type, renaming)
 
     return draft_translation
 
@@ -617,14 +618,14 @@ def summarizeScopedTranslation(renaming_map,
     
 #         name_candidates[k][use_scope][name_translation].add(n)
     
-#     writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
+    print '****'
+    writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
 #     
 #     clear = Beautifier()
 #     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
 #     if not ok:
 #         return False
-    print '****'
-    print nc
+
     exit()
 
     return nc
