@@ -195,58 +195,75 @@ def computeFreqLenRenaming(name_candidates,
     
     # There is no uncertainty about the translation for
     # variables that have a single candidate translation
-    for (key, val) in [(key, val) 
-                       for key, val in name_candidates.items() 
-                       if len(val.keys()) == 1]:
-                     
-        (name, def_scope) = key
-        candidate_name = val.keys()[0]
-        
-        # Don't use the same translation for different
-        # variables within the same scope.
-        if not seen.has_key((candidate_name, def_scope)):
-            renaming_map[key] = candidate_name
-            seen[(candidate_name, def_scope)] = True
+
+    for key, val in name_candidates.iteritems():
+        for use_scope, suggestions in val.iteritems():
             
-        else:
-            renaming_map[key] = name
-        
+            if len(suggestions.keys()) == 1:
+                
+                candidate_name = suggestions.keys()[0]
+                
+                (name, def_scope) = key
+                
+                # Don't use the same translation for different
+                # variables within the same scope.
+                if not seen.has_key((candidate_name, use_scope)):
+#                     print (key, use_scope), candidate_name
+                    renaming_map[(key, use_scope)] = candidate_name
+                    seen[(candidate_name, use_scope)] = True
+                else:
+#                     print (key, use_scope), name
+                    renaming_map[(key, use_scope)] = name
+                    seen[(name, use_scope)] = True
+                    # You can still get screwed here if name
+                    # was the suggestion for something else 
+                    # in this scope earlier. Ignoring for now
+    
+    
     # For the remaining variables, choose the translation 
     # that has the longest name
+        
     token_lines = []
+    
     for key, pos in name_positions.iteritems():
-        # pos is a list of tuples [(line_num, line_idx)]
-        token_lines.append((key, 
-                            len(set([line_num 
-                                     for (line_num, _line_idx) in pos]))))
+        token_lines.append((key, \
+                            len(set([line_num \
+                                 for (line_num, _line_idx) in pos]))))
         
     # Sort names by how many lines they appear 
     # on in the input, descending
-    token_lines = sorted(token_lines, \
-                 key=lambda (key, num_lines): -num_lines)
+    token_lines = sorted(token_lines, key=lambda e: -e[1])
+#     print token_lines
     
     for key, _num_lines in token_lines:
-        # Sort candidates by how many lines in the translation
-        # they appear on, and by name length, both descending
-        candidates = sorted([(name_translation, len(line_nums)) \
-                             for (name_translation, line_nums) \
-                             in name_candidates[key].items()], 
-                            key=sorting_key) #lambda e:(-e[1],-len(e[0])))
         
-        if len(candidates) > 1:
-            (name, def_scope) = key
-            unseen_candidates = [candidate_name 
-                                 for (candidate_name, _occurs) in candidates
-                                 if not seen.has_key((candidate_name, def_scope))]
-            
-            if len(unseen_candidates):
-                candidate_name = unseen_candidates[0]
+        for use_scope, suggestions in name_candidates[key].iteritems():
+#             suggestions[name_translation] = set([line numbers])
+        
+            # Sort candidates by how many lines in the translation
+            # they appear on, and by name length, both descending
+            candidates = sorted([(name_translation, len(line_nums)) \
+                                 for (name_translation, line_nums) \
+                                 in suggestions.items()], 
+                                key=sorting_key) #lambda e:(-e[1],-len(e[0])))
+        
+            if len(candidates) > 1:
+
+                (name, def_scope) = key
+                unseen_candidates = [candidate_name 
+                                     for (candidate_name, _occurs) in candidates
+                                     if not seen.has_key((candidate_name, use_scope))]
                 
-                renaming_map[key] = candidate_name
-                seen[(candidate_name, def_scope)] = True
-            else:
-                renaming_map[key] = name
-                seen[(name, def_scope)] = True
+                if len(unseen_candidates):
+                    candidate_name = unseen_candidates[0]
+                    
+                    renaming_map[(key, use_scope)] = candidate_name
+                    seen[(candidate_name, use_scope)] = True
+                    
+                else:
+#                     print (key, use_scope), name
+                    renaming_map[(key, use_scope)] = name
+                    seen[(name, use_scope)] = True
             
     return renaming_map
 
@@ -273,11 +290,11 @@ def computeLMRenaming(name_candidates,
                 (name, def_scope) = key
                 
                 if not seen.has_key((candidate_name, use_scope)):
-                    print (key, use_scope), candidate_name
+#                     print (key, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = candidate_name
                     seen[(candidate_name, use_scope)] = True
                 else:
-                    print (key, use_scope), name
+#                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
                     # You can still get screwed here if name
@@ -359,12 +376,12 @@ def computeLMRenaming(name_candidates,
                     candidate_names = sorted(log_probs, key=lambda e:-e[1])
                     candidate_name = candidate_names[0][0]
                     
-                    print (key, use_scope), candidate_name
+#                     print (key, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = candidate_name
                     seen[(candidate_name, use_scope)] = True
                     
                 else:
-                    print (key, use_scope), name
+#                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
     
@@ -865,22 +882,22 @@ def processTranslationScoped(translation, iBuilder,
 #         nc += r
         
         
-#         renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
-#                                                       name_positions,
-#                                                       lambda e:(-e[1],-len(e[0])))
-#         
-#         r = summarizeScopedTranslation(renaming_map_freqlen,
-#                                        f_path,
-#                                        'freqlen',
-#                                        output_path,
-#                                        base_name,
-#                                        name_candidates,
-#                                        name_positions,
-#                                        iBuilder,
-#                                        scopeAnalyst)
-#         if not r:
-#             return False
-#         nc += r
+        renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
+                                                      name_positions,
+                                                      lambda e:(-e[1],-len(e[0])))
+         
+        r = summarizeScopedTranslation(renaming_map_freqlen,
+                                       f_path,
+                                       'freqlen',
+                                       output_path,
+                                       base_name,
+                                       name_candidates,
+                                       name_positions,
+                                       iBuilder,
+                                       scopeAnalyst)
+        if not r:
+            return False
+        nc += r
         
 
     return nc
