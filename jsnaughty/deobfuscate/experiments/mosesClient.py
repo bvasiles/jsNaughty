@@ -14,8 +14,22 @@ from renamingStrategies import renameUsingHashDefLine
 from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped
 
 
+prepro_error = "Preprocessor Failed"
+beaut_error = "Beautifier Failed"
+ib_error = "IndexBuilder Failed"
+sa_error = "ScopeAnalyst Failed"
+ms_error = "Moses Server Step Failed"
+
 class MosesClient():
+
     
+    def getValidationErrors(self):
+        return [prepro_error,beaut_error,ib_error,sa_error]
+    
+    def getServerError(self):
+        return ms_error
+    
+    #TODO: Double check what cleanup does..
     def deobfuscateJS(self, obfuscatedCode, transactionID):
         proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8080/RPC2")
         
@@ -35,8 +49,8 @@ class MosesClient():
             prepro.write_temp_file(preproFile)
         except:
             cleanup([preproFile])
-            print("Preprocessor failed")
-            return("Preprocessor Failed")
+            print(prepro_error)
+            return(prepro_error)
             
         clear = Beautifier()
         #TODO: Need a text version of beautifier to avoid the file read and write.
@@ -45,16 +59,16 @@ class MosesClient():
         print(ok)
         if(not ok):
             cleanup([preproFile, beautFile])
-            return("Beautifier Failed")
-            #quit()
+            print(beaut_error)
+            return(beaut_error)
         
         try:
             lex_ugly = Lexer(beautFile)
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
         except:
             cleanup([preproFile, beautFile])
-            print("IndexBuilder fail")
-            return("IndexBuilder Failed")
+            print(ib_error)
+            return(ib_error)
             
         lex_ugly.write_temp_file(tempFile)
         
@@ -65,8 +79,8 @@ class MosesClient():
             scopeAnalyst = ScopeAnalyst(tempFile)
         except:
             cleanup({"temp" : tempFile})
-            print("ScopeAnalyst Fail")
-            return("ScopeAnalyst Failed")
+            print(sa_error)
+            return(sa_error)
         
         #Do Rename related tasks
         #In our case, I don't think we need to actually do anything for no_renaming
@@ -84,9 +98,14 @@ class MosesClient():
         mosesParams["align"] = "true"
         mosesParams["report-all-factors"] = "true"
         
-        results = proxy.translate(mosesParams)# __request("translate", mosesParams)
-        rawText = Postprocessor(results["nbest"])
-        translation = rawText.getProcessedOutput()
+        try:
+            results = proxy.translate(mosesParams)# __request("translate", mosesParams)
+            rawText = Postprocessor(results["nbest"])
+            translation = rawText.getProcessedOutput()
+        except:
+            cleanup([preproFile, beautFile, tempFile])
+            print(ms_error)
+            return(ms_error)
         
         #Send to output:
         cleanup([preproFile, beautFile, tempFile])
