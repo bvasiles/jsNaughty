@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from django.conf.global_settings import SECURE_SSL_REDIRECT,\
-    SECURE_BROWSER_XSS_FILTER, SECURE_CONTENT_TYPE_NOSNIFF
+#from django.conf.global_settings import SECURE_SSL_REDIRECT,\
+#    SECURE_BROWSER_XSS_FILTER, SECURE_CONTENT_TYPE_NOSNIFF
+from django.conf.global_settings import SECURE_BROWSER_XSS_FILTER,\
+    SECURE_CONTENT_TYPE_NOSNIFF
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -122,7 +124,7 @@ USE_TZ = True
 #Security deployment settings
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True #This option causes the SSL error problem
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
