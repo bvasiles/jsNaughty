@@ -602,16 +602,18 @@ def summarizeScopedTranslation(renaming_map,
         ((name, def_scope), use_scope) = k
              
         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
-#             
-#         (lin,col) = iBuilder.revFlatMat[pos]
-#         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
-#         
-#         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
-#                     def_scope, 
-#                     tok_lin, tok_col, 
-#                     isGlobal.get((name, pos), True),
-#                     renaming,
-#                     ','.join(name_candidates[(name, def_scope)])) )
+             
+        (lin,col) = iBuilder.revFlatMat[pos]
+        (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+         
+        nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
+                    def_scope, 
+                    tok_lin, tok_col, 
+                    isGlobal.get((name, pos), True),
+                    renaming,
+                    ','.join(name_candidates[(name, def_scope)][use_scope])) )
+    
+#         name_candidates[k][use_scope][name_translation].add(n)
     
 #     writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
 #     
