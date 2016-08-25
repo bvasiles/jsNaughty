@@ -14,6 +14,11 @@ from folderManager import Folder
 from pygments.token import Token, is_token_subtype
 from copy import deepcopy
 
+import xmlrpclib
+from tools import WebPreprocessor, Postprocessor, WebLexer
+
+proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8081/RPC2")
+
 
 
 def tryRemove(pth):
@@ -1167,11 +1172,22 @@ def processFile(l):
         with open(temp_files['f5'], 'w') as f_hash_def_one_renaming:
             f_hash_def_one_renaming.writelines(hash_def_one_renaming)
  
-        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
-                           'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
-        (_moses_ok, 
-            translation_hash_renaming, 
-            _err) = moses.run(temp_files['f5'])
+#        moses = MosesDecoder(ini_path=os.path.join(ini_path, \
+#                           'train.hash_def_one_renaming', 'tuning', 'moses.ini'))
+#        (_moses_ok, 
+#            translation_hash_renaming, 
+#            _err) = moses.run(temp_files['f5'])
+
+
+        mosesParams = {}
+        mosesParams["text"] = hash_def_one_renaming #lex_ugly.collapsedText
+        #mosesParams["align"] = "true"
+        #mosesParams["report-all-factors"] = "true"
+
+        mresults = proxy.translate(mosesParams)# __request("translate", mosesParams)
+        rawText = Postprocessor(mresults["nbest"])
+        translation_hash_renaming = rawText.getProcessedOutput()
+
          
         nc = processTranslationScoped(translation_hash_renaming, 
                                       iBuilder_ugly, 
@@ -1185,16 +1201,16 @@ def processFile(l):
         
         
         
-        nc = processTranslationScopedFallback(translation_hash_renaming, 
-                                              translation_no_renaming,
-                                              iBuilder_ugly, 
-                                              scopeAnalyst, 
-                                              lm_path, 
-                                              temp_files['f7'], 
-                                              output_path, 
-                                              base_name)
-        if nc:
-            candidates += nc
+#        nc = processTranslationScopedFallback(translation_hash_renaming, 
+#                                              translation_no_renaming,
+#                                              iBuilder_ugly, 
+#                                              scopeAnalyst, 
+#                                              lm_path, 
+#                                              temp_files['f7'], 
+#                                              output_path, 
+#                                              base_name)
+#        if nc:
+#            candidates += nc
             
             
         

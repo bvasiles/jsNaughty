@@ -31,7 +31,7 @@ def processFile(l):
             
             glb = isGlobal.get((name, pos), True)
             
-            print name, def_scope, pos, (lin,col), scope, glb
+#            print name, def_scope, pos, (lin,col), scope, glb
             
 #             if not isGlobal.get((name, pos), True):
 #                 scope = def_scope.replace("\"","")
@@ -178,6 +178,7 @@ for file_name in orig.iterkeys():
 #     seen = {}
     
 #     print file_name
+    skip = False
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
         
@@ -238,17 +239,19 @@ for file_name in orig.iterkeys():
 
         except:
             print file_name, def_scope, (name, glb)
-
+            skip = True
+  
 #     print
-    row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
-    row += counts_loc
-    row += counts
-    row += counts_glb
-    row += alt_counts
-    writer.writerow(row)
+    if not skip:
+        row += [num_names, num_glb_names, num_loc_names]#, num_mini_names]
+        row += counts_loc
+        row += counts
+        row += counts_glb
+        row += alt_counts
+        writer.writerow(row)
 
 
-    
+
     
     
 
