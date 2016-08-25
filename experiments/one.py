@@ -813,8 +813,7 @@ def processTranslationScoped(translation, iBuilder,
         renaming_map_lm = computeLMRenaming(name_candidates,
                                          name_positions,
                                          iBuilder,
-                                         lm_path,
-                                         scopeAnalyst)
+                                         lm_path)
 
         r = summarizeScopedTranslation(renaming_map_lm,
                                        f_path,
