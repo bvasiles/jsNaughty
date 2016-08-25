@@ -383,85 +383,85 @@ def computeLMRenaming(name_candidates,
 #             
 #         else:
 #             renaming_map[(name, use_scope)] = name
-        
-    # For the remaining variables, choose the translation that 
-    # gives the highest language model log probability
-    
-    token_lines = []
-    
-    for key, pos in name_positions.iteritems():
-        token_lines.append((key, \
-                            len(set([line_num \
-                                 for (line_num, _line_idx) in pos]))))
-        
-    # Sort names by how many lines they appear 
-    # on in the input, descending
-    token_lines = sorted(token_lines, key=lambda e: -e[1])
-#     print token_lines
-    
-    for key, _num_lines in token_lines:
-        # Sort candidates by how many lines in the translation
-        # they appear on, and by name length, both descending
-        candidates = sorted([(name_translation, len(line_nums)) \
-                             for (name_translation, line_nums) \
-                             in name_candidates[key].items()], 
-                            key=lambda e:(-e[1],-len(e[0])))
-        
-        if len(candidates) > 1:
-
-            log_probs = []
-            
-            (name, def_scope) = key
-            unseen_candidates = [candidate_name 
-                                 for (candidate_name, _occurs) in candidates
-                                 if not seen.has_key((candidate_name, def_scope))]
-            
-            if len(unseen_candidates):
-                
-                for candidate_name in unseen_candidates:
-                    line_nums = set([num \
-                        for (num,idx) in name_positions[key]])
-                    
-                    draft_lines = []
-                    
-                    for line_num in line_nums:
-                        draft_line = [token for (_token_type, token) 
-                                      in iBuilder.tokens[line_num]]
-                        for line_idx in [idx 
-                                         for (num, idx) in name_positions[key] 
-                                         if num == line_num]:
-                            draft_line[line_idx] = candidate_name
-                            
-                        draft_lines.append(' '.join(draft_line))
-                        
-                        
-                    line_log_probs = []
-                    for line in draft_lines:
-                        lmquery = LMQuery(lm_path=lm_path)
-                        (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
-                        
-                        if not lm_ok:
-                            lm_log_prob = -9999999999
-                        line_log_probs.append(lm_log_prob)
-
-                    if not len(line_log_probs):
-                        lm_log_prob = -9999999999
-                    else:
-                        lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
-    
-                    log_probs.append((candidate_name, lm_log_prob))
-                
-                candidate_names = sorted(log_probs, key=lambda e:-e[1])
-                candidate_name = candidate_names[0][0]
-                
-                renaming_map[key] = candidate_name
-                seen[(candidate_name, def_scope)] = True
-                
-            else:
-                renaming_map[key] = name
-                seen[key] = True
-           
-    return renaming_map
+#         
+#     # For the remaining variables, choose the translation that 
+#     # gives the highest language model log probability
+#     
+#     token_lines = []
+#     
+#     for key, pos in name_positions.iteritems():
+#         token_lines.append((key, \
+#                             len(set([line_num \
+#                                  for (line_num, _line_idx) in pos]))))
+#         
+#     # Sort names by how many lines they appear 
+#     # on in the input, descending
+#     token_lines = sorted(token_lines, key=lambda e: -e[1])
+# #     print token_lines
+#     
+#     for key, _num_lines in token_lines:
+#         # Sort candidates by how many lines in the translation
+#         # they appear on, and by name length, both descending
+#         candidates = sorted([(name_translation, len(line_nums)) \
+#                              for (name_translation, line_nums) \
+#                              in name_candidates[key].items()], 
+#                             key=lambda e:(-e[1],-len(e[0])))
+#         
+#         if len(candidates) > 1:
+# 
+#             log_probs = []
+#             
+#             (name, def_scope) = key
+#             unseen_candidates = [candidate_name 
+#                                  for (candidate_name, _occurs) in candidates
+#                                  if not seen.has_key((candidate_name, def_scope))]
+#             
+#             if len(unseen_candidates):
+#                 
+#                 for candidate_name in unseen_candidates:
+#                     line_nums = set([num \
+#                         for (num,idx) in name_positions[key]])
+#                     
+#                     draft_lines = []
+#                     
+#                     for line_num in line_nums:
+#                         draft_line = [token for (_token_type, token) 
+#                                       in iBuilder.tokens[line_num]]
+#                         for line_idx in [idx 
+#                                          for (num, idx) in name_positions[key] 
+#                                          if num == line_num]:
+#                             draft_line[line_idx] = candidate_name
+#                             
+#                         draft_lines.append(' '.join(draft_line))
+#                         
+#                         
+#                     line_log_probs = []
+#                     for line in draft_lines:
+#                         lmquery = LMQuery(lm_path=lm_path)
+#                         (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+#                         
+#                         if not lm_ok:
+#                             lm_log_prob = -9999999999
+#                         line_log_probs.append(lm_log_prob)
+# 
+#                     if not len(line_log_probs):
+#                         lm_log_prob = -9999999999
+#                     else:
+#                         lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+#     
+#                     log_probs.append((candidate_name, lm_log_prob))
+#                 
+#                 candidate_names = sorted(log_probs, key=lambda e:-e[1])
+#                 candidate_name = candidate_names[0][0]
+#                 
+#                 renaming_map[key] = candidate_name
+#                 seen[(candidate_name, def_scope)] = True
+#                 
+#             else:
+#                 renaming_map[key] = name
+#                 seen[key] = True
+#            
+#     return renaming_map
 
      
 
