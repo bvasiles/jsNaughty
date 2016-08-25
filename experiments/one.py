@@ -600,8 +600,8 @@ def summarizeScopedTranslation(renaming_map,
         print k, renaming
         
         ((name, def_scope), use_scope) = k
-#             
-#         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+             
+        pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
 #             
 #         (lin,col) = iBuilder.revFlatMat[pos]
 #         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
