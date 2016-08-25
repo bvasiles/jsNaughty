@@ -201,9 +201,12 @@ with open(training_sample_path, 'r') as f:
     except:
         pass
 
-    pool = multiprocessing.Pool(processes=num_threads)
+#     pool = multiprocessing.Pool(processes=num_threads)
 
-    for result in pool.imap_unordered(processFile, reader):
+#     for result in pool.imap_unordered(processFile, reader):
+
+    for row in reader:
+        result = processFile(reader.next())
       
         with open(os.path.join(output_path, flog), 'a') as g:
             writer = UnicodeWriter(g)
