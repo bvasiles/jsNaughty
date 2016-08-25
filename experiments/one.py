@@ -590,7 +590,9 @@ def summarizeScopedTranslation(renaming_map,
     
     isGlobal = scopeAnalyst.isGlobal
     
-    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+    for k, renaming in renaming_map.iteritems():
+        
+        ((name, def_scope), use_scope) = k
             
         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
             
