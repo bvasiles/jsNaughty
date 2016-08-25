@@ -599,7 +599,7 @@ def summarizeScopedTranslation(renaming_map,
     
     for k, renaming in renaming_map.iteritems():
         
-        print k, renaming
+#         print k, renaming
         
         ((name, def_scope), use_scope) = k
              
@@ -608,7 +608,7 @@ def summarizeScopedTranslation(renaming_map,
         (lin,col) = iBuilder.revFlatMat[pos]
         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
         
-        print '  ', ','.join(name_candidates[(name, def_scope)][use_scope].keys())
+#         print '  ', ','.join(name_candidates[(name, def_scope)][use_scope].keys())
          
         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
                     def_scope, 
@@ -619,7 +619,7 @@ def summarizeScopedTranslation(renaming_map,
     
 #         name_candidates[k][use_scope][name_translation].add(n)
     
-    print '****'
+#     print '****'
     writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
 #     
 #     clear = Beautifier()
@@ -627,7 +627,7 @@ def summarizeScopedTranslation(renaming_map,
 #     if not ok:
 #         return False
 
-    exit()
+#     exit()
 
     return nc
 
@@ -865,22 +865,22 @@ def processTranslationScoped(translation, iBuilder,
 #         nc += r
         
         
-        renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
-                                                      name_positions,
-                                                      lambda e:(-e[1],-len(e[0])))
-        
-        r = summarizeScopedTranslation(renaming_map_freqlen,
-                                       f_path,
-                                       'freqlen',
-                                       output_path,
-                                       base_name,
-                                       name_candidates,
-                                       name_positions,
-                                       iBuilder,
-                                       scopeAnalyst)
-        if not r:
-            return False
-        nc += r
+#         renaming_map_freqlen = computeFreqLenRenaming(name_candidates,
+#                                                       name_positions,
+#                                                       lambda e:(-e[1],-len(e[0])))
+#         
+#         r = summarizeScopedTranslation(renaming_map_freqlen,
+#                                        f_path,
+#                                        'freqlen',
+#                                        output_path,
+#                                        base_name,
+#                                        name_candidates,
+#                                        name_positions,
+#                                        iBuilder,
+#                                        scopeAnalyst)
+#         if not r:
+#             return False
+#         nc += r
         
 
     return nc
