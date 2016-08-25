@@ -606,14 +606,14 @@ def summarizeScopedTranslation(renaming_map,
         (lin,col) = iBuilder.revFlatMat[pos]
         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
         
-        print '  ', name_candidates[(name, def_scope)][use_scope].keys()
+#         print '  ', name_candidates[(name, def_scope)][use_scope].keys()
          
-#         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
-#                     def_scope, 
-#                     tok_lin, tok_col, 
-#                     isGlobal.get((name, pos), True),
-#                     renaming,
-#                     ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
+        nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
+                    def_scope, 
+                    tok_lin, tok_col, 
+                    isGlobal.get((name, pos), True),
+                    renaming,
+                    ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
     
 #         name_candidates[k][use_scope][name_translation].add(n)
     
