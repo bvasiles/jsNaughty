@@ -79,7 +79,7 @@ for row in reader:
 
 reader = UnicodeReader(open(csv_path))
 
-ignored = 0
+ignored = set([])
 
 for row in reader:
     # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
@@ -125,7 +125,7 @@ for row in reader:
         #                                               alternatives) )
     
     else:
-        ignored += 1
+        ignored.add(file_name)
     
     
 print len(data.keys()), 'files'
@@ -135,7 +135,7 @@ print len(data.keys()), 'files'
 
 w = [k for k,v in data.iteritems() if len(v.keys())==num_non_trivial]
 print len(w), 'w Moses'
-print ignored, 'ignored due to unknown errors'
+print len(ignored), 'ignored due to unknown errors'
 
 print len(data.keys()) - len(w), 'unaccounted for'
 print
