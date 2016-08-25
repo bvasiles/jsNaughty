@@ -638,13 +638,11 @@ def summarizeScopedTranslation(renaming_map,
     
 #     print '****'
     writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
-#     
-#     clear = Beautifier()
-#     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
-#     if not ok:
-#         return False
-
-#     exit()
+     
+    clear = Beautifier()
+    ok = clear.run(tmp_path, os.path.join(output_path, o_path))
+    if not ok:
+        return False
 
     return nc
 
