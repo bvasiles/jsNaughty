@@ -599,26 +599,28 @@ def summarizeScopedTranslation(renaming_map,
         
         print k, renaming
         
-        ((name, def_scope), use_scope) = k
-            
-        pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
-            
-        (lin,col) = iBuilder.revFlatMat[pos]
-        (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
-        
-        nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
-                    def_scope, 
-                    tok_lin, tok_col, 
-                    isGlobal.get((name, pos), True),
-                    renaming,
-                    ','.join(name_candidates[(name, def_scope)])) )
+#         ((name, def_scope), use_scope) = k
+#             
+#         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+#             
+#         (lin,col) = iBuilder.revFlatMat[pos]
+#         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+#         
+#         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
+#                     def_scope, 
+#                     tok_lin, tok_col, 
+#                     isGlobal.get((name, pos), True),
+#                     renaming,
+#                     ','.join(name_candidates[(name, def_scope)])) )
     
-    writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
-    
-    clear = Beautifier()
-    ok = clear.run(tmp_path, os.path.join(output_path, o_path))
-    if not ok:
-        return False
+#     writeTmpLines(renameHashed(iBuilder, name_positions, renaming_map), tmp_path)
+#     
+#     clear = Beautifier()
+#     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
+#     if not ok:
+#         return False
+    print '****'
+
     return nc
 
 
