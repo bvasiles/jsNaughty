@@ -611,7 +611,7 @@ def summarizeScopedTranslation(renaming_map,
                     tok_lin, tok_col, 
                     isGlobal.get((name, pos), True),
                     renaming,
-                    ','.join(name_candidates[(name, def_scope)][use_scope])) )
+                    ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
     
 #         name_candidates[k][use_scope][name_translation].add(n)
     
