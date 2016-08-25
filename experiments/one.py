@@ -606,7 +606,7 @@ def summarizeScopedTranslation(renaming_map,
         (lin,col) = iBuilder.revFlatMat[pos]
         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
         
-        print '  ', name_candidates[(name, def_scope)][use_scope]
+        print '  ', name_candidates[(name, def_scope)][use_scope].keys()
          
 #         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
 #                     def_scope, 
