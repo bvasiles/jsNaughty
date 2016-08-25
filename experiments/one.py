@@ -978,8 +978,8 @@ def processFile(l):
 
     candidates = []
     
-#     if True:
-    try:
+    if True:
+#     try:
         
         # Strip comments, replace literals, etc
         try:
@@ -1346,10 +1346,10 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-    except Exception, e:
-        cleanup(temp_files)
-        cleanupRenamed(pid)
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         cleanup(temp_files)
+#         cleanupRenamed(pid)
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
     
@@ -1377,12 +1377,12 @@ with open(testing_sample_path, 'r') as f:
 
     reader = UnicodeReader(f)
 
-#     result = processFile(reader.next())
+    result = processFile(reader.next())
 
-    pool = multiprocessing.Pool(processes=num_threads)
+#     pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processFile, reader):
-#     if True:
+#     for result in pool.imap_unordered(processFile, reader):
+    if True:
     
         with open(os.path.join(output_path, flog), 'a') as g, \
                 open(os.path.join(output_path, c_path), 'a') as c:
