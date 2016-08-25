@@ -599,7 +599,7 @@ def summarizeScopedTranslation(renaming_map,
         
         print k, renaming
         
-#         ((name, def_scope), use_scope) = k
+        ((name, def_scope), use_scope) = k
 #             
 #         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
 #             
