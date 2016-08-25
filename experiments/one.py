@@ -295,6 +295,8 @@ def computeLMRenaming(name_candidates,
                     seen[(candidate_name, use_scope)] = True
                 else:
 #                     print (key, use_scope), name
+                    if seen[(name, use_scope)]:
+                        print (name, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
                     # You can still get screwed here if name
