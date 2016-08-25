@@ -290,11 +290,11 @@ def computeLMRenaming(name_candidates,
                 (name, def_scope) = key
                 
                 if not seen.has_key((candidate_name, use_scope)):
-                    print (key, use_scope), candidate_name
+#                     print (key, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = candidate_name
                     seen[(candidate_name, use_scope)] = True
                 else:
-                    print (key, use_scope), name
+#                     print (key, use_scope), name
 #                     if seen[(name, use_scope)]:
 #                         print (name, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = name
@@ -378,7 +378,7 @@ def computeLMRenaming(name_candidates,
                     candidate_names = sorted(log_probs, key=lambda e:-e[1])
                     candidate_name = candidate_names[0][0]
                     
-                    print (key, use_scope), candidate_name
+#                     print (key, use_scope), candidate_name
                     renaming_map[(key, use_scope)] = candidate_name
                     seen[(candidate_name, use_scope)] = True
                     
@@ -386,11 +386,11 @@ def computeLMRenaming(name_candidates,
 #                     if seen[(name, use_scope)]:
 #                         print (name, use_scope), candidate_name
                     
-                    print (key, use_scope), name
+#                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
     
-    print '\n\n'
+#     print '\n\n'
     return renaming_map
     
     
