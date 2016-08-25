@@ -15,15 +15,17 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
-            if socket.gethostname() == 'godeep':
-                self.path = 'uglifyjs'
-            else:
+#             if socket.gethostname() == 'godeep':
+#                 self.path = 'uglifyjs'
+#             else:
+#                 self.path = '/usr/local/bin/uglifyjs'
+            if socket.gethostname() == 'bogdan.mac' or \
+                    socket.gethostname() == 'godot' or \
+                    socket.gethostname() == 'Caseys-MacBook-Pro.local' :
                 self.path = '/usr/local/bin/uglifyjs'
-            #if socket.gethostname() == 'bogdan.mac' or \
-            #        socket.gethostname() == 'godot' or socket.gethostname() == 'Caseys-MacBook-Pro.local' :
-            #    self.path = '/usr/local/bin/uglifyjs'
-            #else:
-            #    self.path = 'uglifyjs'
+            else:
+                # Godeep & HPC1 Cluster
+                self.path = 'uglifyjs'
         else:
             self.path = path
         
