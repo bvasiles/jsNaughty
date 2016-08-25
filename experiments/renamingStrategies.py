@@ -96,7 +96,8 @@ def sha(concat_str, debug=False):
         return '<<' + concat_str + '>>'
     
     
-def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly,
+def renameUsingHashAllPrec(scopeAnalyst, 
+                           iBuilder_ugly,
                            debug=False):
     '''
     More complicated renaming: collect the context around  
@@ -204,62 +205,65 @@ def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly,
 
 
 
-def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly, 
-                           twoLines=False, debug=False):
+def renameUsingHashDefLine(scopeAnalyst, 
+                           iBuilder, 
+                           twoLines=False, 
+                           debug=False):
     '''
     '''
 
-    name2defScope = scopeAnalyst.resolve_scope()
-    isGlobal = scopeAnalyst.isGlobal
-    name2useScope = scopeAnalyst.resolve_use_scope()
-    name2pth = scopeAnalyst.resolve_path()
-    nameOrigin = scopeAnalyst.nameOrigin
-                    
+#     name2defScope = scopeAnalyst.resolve_scope()
+#     isGlobal = scopeAnalyst.isGlobal
+#     name2useScope = scopeAnalyst.resolve_use_scope()
+#     name2pth = scopeAnalyst.resolve_path()
+#     nameOrigin = scopeAnalyst.nameOrigin
+              
     hash_renaming = []
                  
     context = {}
     
-    def traversal(iBuilder_ugly, name2defScope, name2pth, 
-                  isGlobal, nameOrigin, context, condition):
+    def traversal(scopeAnalyst, iBuilder, context, condition):
         
         seen = {}
-        for line_idx, line in enumerate(iBuilder_ugly.tokens):
+        for line_idx, line in enumerate(iBuilder.tokens):
             
             for token_idx, (token_type, token) in enumerate(line):
-                (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
-                pos = iBuilder_ugly.flatMap[(l,c)]
+                (l,c) = iBuilder.tokMap[(line_idx,token_idx)]
+                pos = iBuilder.flatMap[(l,c)]
                 
                 try:
-                    def_scope = name2defScope[(token, pos)]
-                    pth = name2pth[(token, pos)]
+                    def_scope = scopeAnalyst.name2defScope[(token, pos)]
+                    use_scope = scopeAnalyst.name2useScope[(token, pos)]
+                    pth = scopeAnalyst.name2pth[(token, pos)]
                 except KeyError:
                     continue
                 
                 if not isValidContextToken((token_type, token)):
                     continue
                 
-                if isGlobal.get((token, pos), True):
+                if scopeAnalyst.isGlobal.get((token, pos), True):
                     continue
                 
                 context_tokens = []
                 
                 # If token is defined on the current line,
                 # count this line towards token's context.
-                if condition(pth, nameOrigin, token, def_scope, seen):
+                if condition(pth, scopeAnalyst, token, 
+                             def_scope, use_scope, seen):
                     
                     for tidx, (tt, t) in enumerate(line):
-                        (tl,tc) = iBuilder_ugly.tokMap[(line_idx, tidx)]
-                        p = iBuilder_ugly.flatMap[(tl,tc)]
+                        (tl,tc) = iBuilder.tokMap[(line_idx, tidx)]
+                        p = iBuilder.flatMap[(tl,tc)]
                         
-                        if isGlobal.get((t, p), True) or \
+                        if scopeAnalyst.isGlobal.get((t, p), True) or \
                                 not is_token_subtype(tt, Token.Name):
                             context_tokens.append(t)
                          
                         if t == token and p == pos and \
-                                not isGlobal.get((t, p), True):
+                                not scopeAnalyst.isGlobal.get((t, p), True):
                             context_tokens.append('#')
                             
-                    seen[(token, def_scope)] = True
+                    seen[((token, def_scope), use_scope)] = True
                     
                 context.setdefault((token, def_scope), [])
                 context[(token, def_scope)] += context_tokens
@@ -267,42 +271,40 @@ def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly,
         return context
     
     
-    def passOne(pth, nameOrigin, token, def_scope, seen):
-        if pth == nameOrigin.get((token, def_scope), None) and \
-                not seen.get((token, def_scope), False):
+    def passOne(pth, scopeAnalyst, token, def_scope, use_scope, seen):
+        if pth == scopeAnalyst.nameOrigin.get((token, def_scope), None) and \
+                not seen.get(((token, def_scope), use_scope), False):
             return True
         return False
     
     
-    def passTwo(pth, nameOrigin, token, def_scope, seen):
-        if pth != nameOrigin[(token, def_scope)] and \
-                not seen.get((token, def_scope), False):
+    def passTwo(pth, scopeAnalyst, token, def_scope, use_scope, seen):
+        if pth != scopeAnalyst.nameOrigin[(token, def_scope)] and \
+                not seen.get(((token, def_scope), use_scope), False):
             return True
         return False
 
 
-    context = traversal(iBuilder_ugly, name2defScope, name2pth, 
-                  isGlobal, nameOrigin, context, passOne)
+    context = traversal(scopeAnalyst, iBuilder, context, passOne)
     
     if twoLines:
-        context = traversal(iBuilder_ugly, name2defScope, name2pth, 
-                    isGlobal, nameOrigin, context, passTwo)
+        context = traversal(scopeAnalyst, iBuilder, context, passTwo)
     
     shas = {}
     reverse_shas = {}
         
-    for line_idx, line in enumerate(iBuilder_ugly.tokens):
+    for line_idx, line in enumerate(iBuilder.tokens):
             
         new_line = []
         for token_idx, (_token_type, token) in enumerate(line):
   
-            (l,c) = iBuilder_ugly.tokMap[(line_idx, token_idx)]
-            pos = iBuilder_ugly.flatMap[(l,c)]
+            (l,c) = iBuilder.tokMap[(line_idx, token_idx)]
+            pos = iBuilder.flatMap[(l,c)]
                 
             try:
                 # name2scope only exists for Token.Name tokens
-                def_scope = name2defScope[(token, pos)]
-                use_scope = name2useScope[(token, pos)]
+                def_scope = scopeAnalyst.name2defScope[(token, pos)]
+                use_scope = scopeAnalyst.name2useScope[(token, pos)]
                   
                 # context only exists for non-global names
                 concat_str = ''.join(context[(token, def_scope)])
