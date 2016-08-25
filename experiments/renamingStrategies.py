@@ -225,6 +225,7 @@ def renameUsingHashDefLine(scopeAnalyst,
     def traversal(scopeAnalyst, iBuilder, context, condition):
         
         seen = {}
+        
         for line_idx, line in enumerate(iBuilder.tokens):
             
             for token_idx, (token_type, token) in enumerate(line):
@@ -233,7 +234,6 @@ def renameUsingHashDefLine(scopeAnalyst,
                 
                 try:
                     def_scope = scopeAnalyst.name2defScope[(token, pos)]
-                    use_scope = scopeAnalyst.name2useScope[(token, pos)]
                     pth = scopeAnalyst.name2pth[(token, pos)]
                 except KeyError:
                     continue
@@ -248,8 +248,7 @@ def renameUsingHashDefLine(scopeAnalyst,
                 
                 # If token is defined on the current line,
                 # count this line towards token's context.
-                if condition(pth, scopeAnalyst, token, 
-                             def_scope, use_scope, seen):
+                if condition(pth, scopeAnalyst, token, def_scope, seen):
                     
                     for tidx, (tt, t) in enumerate(line):
                         (tl,tc) = iBuilder.tokMap[(line_idx, tidx)]
@@ -263,7 +262,7 @@ def renameUsingHashDefLine(scopeAnalyst,
                                 not scopeAnalyst.isGlobal.get((t, p), True):
                             context_tokens.append('#')
                             
-                    seen[((token, def_scope), use_scope)] = True
+                    seen[(token, def_scope)] = True
                     
                 context.setdefault((token, def_scope), [])
                 context[(token, def_scope)] += context_tokens
@@ -271,16 +270,16 @@ def renameUsingHashDefLine(scopeAnalyst,
         return context
     
     
-    def passOne(pth, scopeAnalyst, token, def_scope, use_scope, seen):
+    def passOne(pth, scopeAnalyst, token, def_scope, seen):
         if pth == scopeAnalyst.nameOrigin.get((token, def_scope), None) and \
-                not seen.get(((token, def_scope), use_scope), False):
+                not seen.get((token, def_scope), False):
             return True
         return False
     
     
-    def passTwo(pth, scopeAnalyst, token, def_scope, use_scope, seen):
+    def passTwo(pth, scopeAnalyst, token, def_scope, seen):
         if pth != scopeAnalyst.nameOrigin[(token, def_scope)] and \
-                not seen.get(((token, def_scope), use_scope), False):
+                not seen.get((token, def_scope), False):
             return True
         return False
 
@@ -296,6 +295,7 @@ def renameUsingHashDefLine(scopeAnalyst,
     for line_idx, line in enumerate(iBuilder.tokens):
             
         new_line = []
+        
         for token_idx, (_token_type, token) in enumerate(line):
   
             (l,c) = iBuilder.tokMap[(line_idx, token_idx)]
@@ -316,14 +316,14 @@ def renameUsingHashDefLine(scopeAnalyst,
                 new_token = shas.setdefault(concat_str, sha_str)
                     
                 # Compute reverse mapping
-                reverse_shas.setdefault((sha_str, use_scope), set([]))
-                reverse_shas[(sha_str, use_scope)].add(token)
+                reverse_shas.setdefault((sha_str, def_scope), set([]))
+                reverse_shas[(sha_str, def_scope)].add(use_scope)
                     
                 # Detect collisions
-                if len(reverse_shas[(sha_str, use_scope)]) > 1:
+                if len(reverse_shas[(sha_str, def_scope)]) > 1:
                     # Two different names from the same use_scope
                     # have the same hash. Rename one by prepending
-                    # the variable/function name to the hash
+                    # the identifier name to the hash
                     sha_str = token + '_' + sha_str
                     new_token = sha_str
                     
