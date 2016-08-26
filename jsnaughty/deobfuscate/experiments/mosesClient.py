@@ -5,6 +5,7 @@ Created on Aug 21, 2016
 '''
 import os
 import sys
+import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
@@ -31,7 +32,7 @@ class MosesClient():
     
     #TODO: Double check what cleanup does..
     def deobfuscateJS(self, obfuscatedCode, transactionID):
-        proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8080/RPC2")
+        proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40012/RPC2")
         
         mosesParams = {}
         candidates = []
@@ -41,7 +42,7 @@ class MosesClient():
         
         preproFile = baseDir + str(transactionID) + "_prepro.js"
         beautFile = baseDir + str(transactionID) + "_beaut.js"
-        
+        start = time.time()
         # Strip comments, replace literals, etc
         try:
             prepro = WebPreprocessor(obfuscatedCode)
@@ -82,6 +83,8 @@ class MosesClient():
             print(sa_error)
             return(sa_error)
         
+        end = time.time()
+        preprocessDuration = end - start
         #Do Rename related tasks
         #In our case, I don't think we need to actually do anything for no_renaming
         #no_renaming = []
@@ -109,7 +112,7 @@ class MosesClient():
         
         #Send to output:
         cleanup([preproFile, beautFile, tempFile])
-        return(translation)
+        return("Preprocess Time: " + str(preprocessDuration) + "\n" + translation)
         
         #Use one of the scoping options
         #None
