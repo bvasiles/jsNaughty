@@ -86,7 +86,7 @@ for row in reader:
     # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
     file_name = row[0]
     
-    if sanity[file_name]:
+    if sanity.get(file_name, False):
     
         strategy = row[1]
         strategies.add(strategy)
