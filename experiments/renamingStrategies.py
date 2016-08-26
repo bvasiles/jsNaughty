@@ -48,15 +48,15 @@ def prepareHelpers(iBuilder,
                     name2defScope = scopeAnalyst.resolve_scope()
                     isGlobal = scopeAnalyst.isGlobal
             
-                    if not isGlobal.get((token, p), True):
-#                     try:
+#                     if not False: #isGlobal.get((token, p), True):
+                    try:
                         def_scope = name2defScope[(token, p)]
                         
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
                         position_names[line_num][line_idx] = (token, def_scope)
-#                     except KeyError:
-#                         pass
+                    except KeyError:
+                        pass
 
 #                         cond = True
 # #                         print (token, def_scope), line_num, line_idx
