@@ -21,7 +21,7 @@ def rename(iBuilder,
 
 
 def prepareHelpers(iBuilder, 
-                   scopeAnalyst=None):
+                   scopeAnalyst):
 
     # Collect names and their locations in various formats
     # that will come in handy later:
@@ -43,31 +43,22 @@ def prepareHelpers(iBuilder,
                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
                 p = iBuilder.flatMap[(l,c)]
                 
-#                 cond = False
-                if scopeAnalyst is not None:
-                    name2defScope = scopeAnalyst.resolve_scope()
-                    isGlobal = scopeAnalyst.isGlobal
-            
-#                     if not False: #isGlobal.get((token, p), True):
-                    try:
-                        def_scope = name2defScope[(token, p)]
-                        
-                        name_positions.setdefault((token, def_scope), [])
-                        name_positions[(token, def_scope)].append((line_num, line_idx))
-                        position_names[line_num][line_idx] = (token, def_scope)
-                    except KeyError:
-                        pass
+                name2defScope = scopeAnalyst.resolve_scope()
+                isGlobal = scopeAnalyst.isGlobal
+        
+#                 try:
+                if not isGlobal.get((token, p), True):
+                    def_scope = name2defScope[(token, p)]
+                    
+                    name_positions.setdefault((token, def_scope), [])
+                    name_positions[(token, def_scope)].append((line_num, line_idx))
+                    position_names[line_num][line_idx] = (token, def_scope)
+#                 except KeyError:
+#                     pass
 
 #                         cond = True
 # #                         print (token, def_scope), line_num, line_idx
                 
-                else:
-                    def_scope = None
-                
-                    name_positions.setdefault((token, def_scope), [])
-                    name_positions[(token, def_scope)].append((line_num, line_idx))
-                    position_names[line_num][line_idx] = (token, def_scope)
-
 #                     cond = True
 #                 if cond:
 #                     print (token, def_scope), line_num, line_idx
