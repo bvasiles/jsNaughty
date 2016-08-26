@@ -1,3 +1,4 @@
+import time
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -32,7 +33,10 @@ def get_js(request):
             # process the data in form.cleaned_data as required
             rClient = MosesClient()
             #try:
+            start = time.time()
             output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0) #Validate here.
+            end = time.time()
+            duration = end-start
             if(output in rClient.getValidationErrors()):
                 form = LastJSInvalidForm()
                 return render(request, "deobfuscate/get_js.html", {'form': form})
@@ -42,7 +46,7 @@ def get_js(request):
                 return render(request, "deobfuscate/get_js.html", {'form': form})
             else:
                 # redirect to a new URL:
-                return render(request, 'deobfuscate/results.html', Context({'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80}))
+                return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
             #except:
             #    form = JSForm()
             #    
