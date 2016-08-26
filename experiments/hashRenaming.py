@@ -41,7 +41,9 @@ hash_renaming = renameUsingHashDefLine(scopeAnalyst,
                                    twoLines=False,
                                    debug=mode)
 
-writeTmpLines(hash_renaming, output_file)
+with open(output_file, 'w') as f:
+    f.writelines(hash_renaming)
+# writeTmpLines(hash_renaming, output_file)
  
 # clear = Beautifier()
 # ok = clear.run(tmp_path, os.path.join(output_path, o_path))
