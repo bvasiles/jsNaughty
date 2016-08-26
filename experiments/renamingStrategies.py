@@ -1,5 +1,143 @@
 from pygments.token import Token, is_token_subtype
 import hashlib
+from copy import deepcopy
+
+
+
+def rename(iBuilder, 
+           name_positions, 
+           renaming_map):
+    
+    draft_translation = deepcopy(iBuilder.tokens)
+    
+    for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+        for (line_num, line_idx) in name_positions[(name, def_scope)]:
+            (token_type, _name) = draft_translation[line_num][line_idx]
+            draft_translation[line_num][line_idx] = (token_type, renaming)
+
+    return draft_translation
+
+
+
+
+def prepareHelpers(iBuilder, 
+                   scopeAnalyst):
+
+    # Collect names and their locations in various formats
+    # that will come in handy later:
+    
+    # Which locations [(line number, index within line)] does
+    # a variable name appear at?
+    name_positions = {}
+    
+    # Which variable name is at a location specified by 
+    # [line number][index within line]?
+    position_names = {}
+    
+    for line_num, line in enumerate(iBuilder.tokens):
+        position_names.setdefault(line_num, {})
+        
+        for line_idx, (token_type, token) in enumerate(line):
+            
+            if is_token_subtype(token_type, Token.Name):
+                (l,c) = iBuilder.tokMap[(line_num, line_idx)]
+                p = iBuilder.flatMap[(l,c)]
+                
+                name2defScope = scopeAnalyst.resolve_scope()
+                isGlobal = scopeAnalyst.isGlobal
+        
+#                 try:
+                if not isGlobal.get((token, p), True):
+                    def_scope = name2defScope[(token, p)]
+                    
+                    name_positions.setdefault((token, def_scope), [])
+                    name_positions[(token, def_scope)].append((line_num, line_idx))
+                    position_names[line_num][line_idx] = (token, def_scope)
+#                 except KeyError:
+#                     pass
+
+    return (name_positions, position_names)
+           
+
+
+
+def computeFreqLenRenaming(name_candidates, 
+                           name_positions,
+                           sorting_key):
+    
+    renaming_map = {}
+    seen = {}
+    
+    # There is no uncertainty about the translation for
+    # variables that have a single candidate translation
+
+    for key, val in name_candidates.iteritems():
+        for use_scope, suggestions in val.iteritems():
+            
+            if len(suggestions.keys()) == 1:
+                
+                candidate_name = suggestions.keys()[0]
+                
+                (name, def_scope) = key
+                
+                # Don't use the same translation for different
+                # variables within the same scope.
+                if not seen.has_key((candidate_name, use_scope)):
+#                     print (key, use_scope), candidate_name
+                    renaming_map[(key, use_scope)] = candidate_name
+                    seen[(candidate_name, use_scope)] = True
+                else:
+#                     print (key, use_scope), name
+                    renaming_map[(key, use_scope)] = name
+                    seen[(name, use_scope)] = True
+    
+    # For the remaining variables, choose the translation 
+    # that has the longest name
+        
+    token_lines = []
+    
+    for key, pos in name_positions.iteritems():
+        token_lines.append((key, \
+                            len(set([line_num \
+                                 for (line_num, _line_idx) in pos]))))
+        
+    # Sort names by how many lines they appear 
+    # on in the input, descending
+    token_lines = sorted(token_lines, key=lambda e: -e[1])
+#     print token_lines
+    
+    for key, _num_lines in token_lines:
+        
+        for use_scope, suggestions in name_candidates[key].iteritems():
+#             suggestions[name_translation] = set([line numbers])
+        
+            # Sort candidates by how many lines in the translation
+            # they appear on, and by name length, both descending
+            candidates = sorted([(name_translation, len(line_nums)) \
+                                 for (name_translation, line_nums) \
+                                 in suggestions.items()], 
+                                key=sorting_key) #lambda e:(-e[1],-len(e[0])))
+        
+            if len(candidates) > 1:
+
+                (name, def_scope) = key
+                unseen_candidates = [candidate_name 
+                                     for (candidate_name, _occurs) in candidates
+                                     if not seen.has_key((candidate_name, use_scope))]
+                
+                if len(unseen_candidates):
+                    candidate_name = unseen_candidates[0]
+                    
+                    renaming_map[(key, use_scope)] = candidate_name
+                    seen[(candidate_name, use_scope)] = True
+                    
+                else:
+#                     print (key, use_scope), name
+                    renaming_map[(key, use_scope)] = name
+                    seen[(name, use_scope)] = True
+            
+    return renaming_map
+
 
 
 def generateScopeIds(num_scopes, except_ids):
@@ -202,61 +340,58 @@ def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly,
 
     return hash_renaming
 
+                
 
-
-def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly, 
-                           twoLines=False, debug=False):
+def renameUsingHashDefLine(scopeAnalyst, 
+                           iBuilder, 
+                           twoLines=False, 
+                           debug=False):
     '''
     '''
 
-    name2defScope = scopeAnalyst.resolve_scope()
-    isGlobal = scopeAnalyst.isGlobal
-    name2useScope = scopeAnalyst.resolve_use_scope()
-    name2pth = scopeAnalyst.resolve_path()
-    nameOrigin = scopeAnalyst.nameOrigin
-                    
-    hash_renaming = []
+#     hash_renaming = []
                  
     context = {}
     
-    def traversal(iBuilder_ugly, name2defScope, name2pth, 
-                  isGlobal, nameOrigin, context, condition):
+    def traversal(scopeAnalyst, iBuilder, context, condition):
         
         seen = {}
-        for line_idx, line in enumerate(iBuilder_ugly.tokens):
+        
+        for line_idx, line in enumerate(iBuilder.tokens):
             
             for token_idx, (token_type, token) in enumerate(line):
-                (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
-                pos = iBuilder_ugly.flatMap[(l,c)]
+                (l,c) = iBuilder.tokMap[(line_idx,token_idx)]
+                pos = iBuilder.flatMap[(l,c)]
                 
                 try:
-                    def_scope = name2defScope[(token, pos)]
-                    pth = name2pth[(token, pos)]
+                    def_scope = scopeAnalyst.name2defScope[(token, pos)]
+#                     use_scope = scopeAnalyst.name2useScope[(token, pos)]
+                    pth = scopeAnalyst.name2pth[(token, pos)]
                 except KeyError:
                     continue
                 
                 if not isValidContextToken((token_type, token)):
                     continue
                 
-                if isGlobal.get((token, pos), True):
+                if scopeAnalyst.isGlobal.get((token, pos), True):
                     continue
                 
                 context_tokens = []
                 
                 # If token is defined on the current line,
                 # count this line towards token's context.
-                if condition(pth, nameOrigin, token, def_scope, seen):
+                if condition(pth, scopeAnalyst, token, def_scope, seen):
                     
                     for tidx, (tt, t) in enumerate(line):
-                        (tl,tc) = iBuilder_ugly.tokMap[(line_idx, tidx)]
-                        p = iBuilder_ugly.flatMap[(tl,tc)]
+                        (tl,tc) = iBuilder.tokMap[(line_idx, tidx)]
+                        p = iBuilder.flatMap[(tl,tc)]
                         
-                        if isGlobal.get((t, p), True) or \
+                        if scopeAnalyst.isGlobal.get((t, p), True) or \
                                 not is_token_subtype(tt, Token.Name):
                             context_tokens.append(t)
                          
                         if t == token and p == pos and \
-                                not isGlobal.get((t, p), True):
+                                not scopeAnalyst.isGlobal.get((t, p), True):
                             context_tokens.append('#')
                             
                     seen[(token, def_scope)] = True
@@ -267,72 +402,105 @@ def renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly,
         return context
     
     
-    def passOne(pth, nameOrigin, token, def_scope, seen):
-        if pth == nameOrigin.get((token, def_scope), None) and \
+    def passOne(pth, scopeAnalyst, token, def_scope, seen):
+        if pth == scopeAnalyst.nameOrigin.get((token, def_scope), None) and \
                 not seen.get((token, def_scope), False):
             return True
         return False
     
     
-    def passTwo(pth, nameOrigin, token, def_scope, seen):
-        if pth != nameOrigin[(token, def_scope)] and \
+    def passTwo(pth, scopeAnalyst, token, def_scope, seen):
+        if pth != scopeAnalyst.nameOrigin[(token, def_scope)] and \
                 not seen.get((token, def_scope), False):
             return True
         return False
 
 
-    context = traversal(iBuilder_ugly, name2defScope, name2pth, 
-                  isGlobal, nameOrigin, context, passOne)
+    context = traversal(scopeAnalyst, iBuilder, context, passOne)
     
     if twoLines:
-        context = traversal(iBuilder_ugly, name2defScope, name2pth, 
-                    isGlobal, nameOrigin, context, passTwo)
+        context = traversal(scopeAnalyst, iBuilder, context, passTwo)
+    
+    (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
     
     shas = {}
-    reverse_shas = {}
+    name_candidates = {}
+    
+    for (token, def_scope), context_tokens in context.iteritems():
+        concat_str = ''.join(context_tokens)
+        renaming = shas.setdefault(concat_str, sha(concat_str, debug))
         
-    for line_idx, line in enumerate(iBuilder_ugly.tokens):
-            
-        new_line = []
-        for token_idx, (_token_type, token) in enumerate(line):
-  
-            (l,c) = iBuilder_ugly.tokMap[(line_idx, token_idx)]
-            pos = iBuilder_ugly.flatMap[(l,c)]
-                
-            try:
-                # name2scope only exists for Token.Name tokens
-                def_scope = name2defScope[(token, pos)]
-                use_scope = name2useScope[(token, pos)]
-                  
-                # context only exists for non-global names
-                concat_str = ''.join(context[(token, def_scope)])
-                    
-                # Compute SHA1 hash of the context tokens
-                sha_str = sha(concat_str, debug)
-                  
-                # Replace name by SHA1 hash
-                new_token = shas.setdefault(concat_str, sha_str)
-                    
-                # Compute reverse mapping
-                reverse_shas.setdefault((sha_str, use_scope), set([]))
-                reverse_shas[(sha_str, use_scope)].add(token)
-                    
-                # Detect collisions
-                if len(reverse_shas[(sha_str, use_scope)]) > 1:
-                    # Two different names from the same use_scope
-                    # have the same hash. Rename one by prepending
-                    # the variable/function name to the hash
-                    sha_str = token + '_' + sha_str
-                    new_token = sha_str
-                    
-                new_line.append(new_token)
-                    
-            except KeyError:
-                # Everything except non-global names stays the same
-                new_line.append(token)
-           
-        hash_renaming.append(' '.join(new_line) + "\n")
+        name_candidates.setdefault((token, def_scope), {})
+        
+        for (line_num, line_idx) in name_positions[(token, def_scope)]:
+            (l,c) = iBuilder.tokMap[(line_num, line_idx)]
+            p = iBuilder.flatMap[(l,c)]
+            use_scope = scopeAnalyst.name2useScope[(token, p)]
+        
+            name_candidates[(token, def_scope)].setdefault(use_scope, {})
+            name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
+            name_candidates[(token, def_scope)][use_scope][renaming].add(1)
 
-    return hash_renaming
+    renaming_map = computeFreqLenRenaming(name_candidates,
+                                          name_positions,
+                                          lambda e:e)
+    
+#     for (k, use_scope), renaming in renaming_map.iteritems():
+#         print k
+#         print renaming, use_scope
+#     
+#     print 
+
+    hash_renaming = rename(iBuilder, name_positions, renaming_map)
+    
+    return '\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in hash_renaming]) + '\n'
+
+    
+#     reverse_shas = {}
+#         
+#     for line_idx, line in enumerate(iBuilder.tokens):
+#             
+#         new_line = []
+#         for token_idx, (_token_type, token) in enumerate(line):
+#   
+#             (l,c) = iBuilder.tokMap[(line_idx, token_idx)]
+#             pos = iBuilder.flatMap[(l,c)]
+#                 
+#             try:
+#                 # name2scope only exists for Token.Name tokens
+#                 def_scope = scopeAnalyst.name2defScope[(token, pos)]
+#                 use_scope = scopeAnalyst.name2useScope[(token, pos)]
+#                   
+#                 # context only exists for non-global names
+#                 concat_str = ''.join(context[(token, def_scope)])
+#                     
+#                 # Compute SHA1 hash of the context tokens
+#                 sha_str = sha(concat_str, debug)
+#                   
+#                 # Replace name by SHA1 hash
+#                 new_token = shas.setdefault(concat_str, sha_str)
+#                     
+#                 # Compute reverse mapping
+#                 reverse_shas.setdefault((sha_str, use_scope), set([]))
+#                 reverse_shas[(sha_str, use_scope)].add(token)
+#                     
+#                 # Detect collisions
+#                 if len(reverse_shas[(sha_str, use_scope)]) > 1:
+#                     # Two different names from the same use_scope
+#                     # have the same hash. Rename one by prepending
+#                     # the variable/function name to the hash
+#                     sha_str = token + '_' + sha_str
+#                     new_token = sha_str
+#                     
+#                 new_line.append(new_token)
+#                     
+#             except KeyError:
+#                 # Everything except non-global names stays the same
+#                 new_line.append(token)
+#            
+#         hash_renaming.append(' '.join(new_line) + "\n")
+# 
+#     return hash_renaming
 
 
