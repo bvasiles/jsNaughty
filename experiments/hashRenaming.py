@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 from tools import Preprocessor, IndexBuilder, Beautifier, Lexer, ScopeAnalyst
 from renamingStrategies import renameUsingHashDefLine
+from one import rename, writeTmpLines
 
     
 input_file = os.path.abspath(sys.argv[1])
@@ -25,11 +26,20 @@ scopeAnalyst = ScopeAnalyst(os.path.join(
                          os.path.dirname(os.path.realpath(__file__)), 
                          'tmp.b.js'))
 
-renaming = renameUsingHashDefLine(scopeAnalyst, 
+hash_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                    iBuilder, 
                                    twoLines=False,
                                    debug=mode)
-with open(output_file, 'w') as f:
-    f.writelines(renaming)
+
+writeTmpLines(hash_renaming, output_file)
+ 
+# clear = Beautifier()
+# ok = clear.run(tmp_path, os.path.join(output_path, o_path))
+# if not ok:
+#     return False
+# 
+# 
+# with open(output_file, 'w') as f:
+#     f.writelines(renaming)
 
 

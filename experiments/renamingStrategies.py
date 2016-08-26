@@ -1,6 +1,8 @@
 from pygments.token import Token, is_token_subtype
 import hashlib
 
+from one import prepareHelpers, computeFreqLenRenaming, rename
+
 
 def generateScopeIds(num_scopes, except_ids):
     ids = []
@@ -96,8 +98,7 @@ def sha(concat_str, debug=False):
         return '<<' + concat_str + '>>'
     
     
-def renameUsingHashAllPrec(scopeAnalyst, 
-                           iBuilder_ugly,
+def renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly,
                            debug=False):
     '''
     More complicated renaming: collect the context around  
@@ -203,7 +204,7 @@ def renameUsingHashAllPrec(scopeAnalyst,
 
     return hash_renaming
 
-
+                
 
 def renameUsingHashDefLine(scopeAnalyst, 
                            iBuilder, 
@@ -212,12 +213,6 @@ def renameUsingHashDefLine(scopeAnalyst,
     '''
     '''
 
-#     name2defScope = scopeAnalyst.resolve_scope()
-#     isGlobal = scopeAnalyst.isGlobal
-#     name2useScope = scopeAnalyst.resolve_use_scope()
-#     name2pth = scopeAnalyst.resolve_path()
-#     nameOrigin = scopeAnalyst.nameOrigin
-              
     hash_renaming = []
                  
     context = {}
@@ -234,6 +229,7 @@ def renameUsingHashDefLine(scopeAnalyst,
                 
                 try:
                     def_scope = scopeAnalyst.name2defScope[(token, pos)]
+#                     use_scope = scopeAnalyst.name2useScope[(token, pos)]
                     pth = scopeAnalyst.name2pth[(token, pos)]
                 except KeyError:
                     continue
@@ -289,52 +285,79 @@ def renameUsingHashDefLine(scopeAnalyst,
     if twoLines:
         context = traversal(scopeAnalyst, iBuilder, context, passTwo)
     
+    (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
+    
     shas = {}
-    reverse_shas = {}
+    name_candidates = {}
+    
+    for (token, def_scope), context_tokens in context.iteritems():
+        concat_str = ''.join(context_tokens)
+        renaming = shas.setdefault(concat_str, sha(concat_str, debug))
         
-    for line_idx, line in enumerate(iBuilder.tokens):
-            
-        new_line = []
+        name_candidates.setdefault((token, def_scope), {})
         
-        for token_idx, (_token_type, token) in enumerate(line):
-  
-            (l,c) = iBuilder.tokMap[(line_idx, token_idx)]
-            pos = iBuilder.flatMap[(l,c)]
-                
-            try:
-                # name2scope only exists for Token.Name tokens
-                def_scope = scopeAnalyst.name2defScope[(token, pos)]
-                use_scope = scopeAnalyst.name2useScope[(token, pos)]
-                  
-                # context only exists for non-global names
-                concat_str = ''.join(context[(token, def_scope)])
-                    
-                # Compute SHA1 hash of the context tokens
-                sha_str = sha(concat_str, debug)
-                  
-                # Replace name by SHA1 hash
-                new_token = shas.setdefault(concat_str, sha_str)
-                    
-                # Compute reverse mapping
-                reverse_shas.setdefault((sha_str, def_scope), set([]))
-                reverse_shas[(sha_str, def_scope)].add(use_scope)
-                    
-                # Detect collisions
-                if len(reverse_shas[(sha_str, def_scope)]) > 1:
-                    # Two different names from the same use_scope
-                    # have the same hash. Rename one by prepending
-                    # the identifier name to the hash
-                    sha_str = token + '_' + sha_str
-                    new_token = sha_str
-                    
-                new_line.append(new_token)
-                    
-            except KeyError:
-                # Everything except non-global names stays the same
-                new_line.append(token)
-           
-        hash_renaming.append(' '.join(new_line) + "\n")
+        for (line_num, line_idx) in name_positions[(token, def_scope)]:
+            (l,c) = iBuilder.tokMap[(line_num, line_idx)]
+            p = iBuilder.flatMap[(l,c)]
+            use_scope = scopeAnalyst.name2useScope[(token, p)]
+        
+            name_candidates[(token, def_scope)].setdefault(use_scope, {})
+            name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
+            name_candidates[(token, def_scope)][use_scope][renaming].add(1)
 
-    return hash_renaming
+
+
+    renaming_map = computeFreqLenRenaming(name_candidates,
+                                          name_positions,
+                                          lambda e:e)
+
+    return rename(iBuilder, name_positions, renaming_map)
+
+    
+#     reverse_shas = {}
+#         
+#     for line_idx, line in enumerate(iBuilder.tokens):
+#             
+#         new_line = []
+#         for token_idx, (_token_type, token) in enumerate(line):
+#   
+#             (l,c) = iBuilder.tokMap[(line_idx, token_idx)]
+#             pos = iBuilder.flatMap[(l,c)]
+#                 
+#             try:
+#                 # name2scope only exists for Token.Name tokens
+#                 def_scope = scopeAnalyst.name2defScope[(token, pos)]
+#                 use_scope = scopeAnalyst.name2useScope[(token, pos)]
+#                   
+#                 # context only exists for non-global names
+#                 concat_str = ''.join(context[(token, def_scope)])
+#                     
+#                 # Compute SHA1 hash of the context tokens
+#                 sha_str = sha(concat_str, debug)
+#                   
+#                 # Replace name by SHA1 hash
+#                 new_token = shas.setdefault(concat_str, sha_str)
+#                     
+#                 # Compute reverse mapping
+#                 reverse_shas.setdefault((sha_str, use_scope), set([]))
+#                 reverse_shas[(sha_str, use_scope)].add(token)
+#                     
+#                 # Detect collisions
+#                 if len(reverse_shas[(sha_str, use_scope)]) > 1:
+#                     # Two different names from the same use_scope
+#                     # have the same hash. Rename one by prepending
+#                     # the variable/function name to the hash
+#                     sha_str = token + '_' + sha_str
+#                     new_token = sha_str
+#                     
+#                 new_line.append(new_token)
+#                     
+#             except KeyError:
+#                 # Everything except non-global names stays the same
+#                 new_line.append(token)
+#            
+#         hash_renaming.append(' '.join(new_line) + "\n")
+# 
+#     return hash_renaming
 
 
