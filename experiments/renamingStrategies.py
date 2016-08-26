@@ -458,6 +458,8 @@ def renameUsingHashDefLine(scopeAnalyst,
     renaming_map = computeFreqLenRenaming(name_candidates,
                                           name_positions,
                                           lambda e:e)
+    
+    print renaming_map
 
     return rename(iBuilder, name_positions, renaming_map)
 
