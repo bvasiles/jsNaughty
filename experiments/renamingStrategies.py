@@ -10,12 +10,7 @@ def rename(iBuilder,
     
     draft_translation = deepcopy(iBuilder.tokens)
     
-#     for (name, def_scope), renaming in renaming_map.iteritems():
-#         for (line_num, line_idx) in name_positions.get((name, def_scope),[]):
-#             (token_type, _name) = draft_translation[line_num][line_idx]
-#             draft_translation[line_num][line_idx] = (token_type, renaming)
-
-    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+    for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
             (token_type, _name) = draft_translation[line_num][line_idx]
             draft_translation[line_num][line_idx] = (token_type, renaming)
@@ -61,14 +56,6 @@ def prepareHelpers(iBuilder,
 #                 except KeyError:
 #                     pass
 
-#                         cond = True
-# #                         print (token, def_scope), line_num, line_idx
-                
-#                     cond = True
-#                 if cond:
-#                     print (token, def_scope), line_num, line_idx
-                
-
     return (name_positions, position_names)
            
 
@@ -86,9 +73,6 @@ def computeFreqLenRenaming(name_candidates,
 
     for key, val in name_candidates.iteritems():
         for use_scope, suggestions in val.iteritems():
-            print key
-            print '  ', use_scope
-            print '  ', suggestions.keys()
             
             if len(suggestions.keys()) == 1:
                 
@@ -106,12 +90,6 @@ def computeFreqLenRenaming(name_candidates,
 #                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
-                    # You can still get screwed here if name
-                    # was the suggestion for something else 
-                    # in this scope earlier. Ignoring for now
-    
-    print
-    print
     
     # For the remaining variables, choose the translation 
     # that has the longest name
@@ -140,9 +118,6 @@ def computeFreqLenRenaming(name_candidates,
                                  in suggestions.items()], 
                                 key=sorting_key) #lambda e:(-e[1],-len(e[0])))
         
-            print key
-            print '  ', candidates
-            
             if len(candidates) > 1:
 
                 (name, def_scope) = key
@@ -160,10 +135,6 @@ def computeFreqLenRenaming(name_candidates,
 #                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
-            
-    print
-    print
-            
             
     return renaming_map
 
@@ -378,7 +349,7 @@ def renameUsingHashDefLine(scopeAnalyst,
     '''
     '''
 
-    hash_renaming = []
+#     hash_renaming = []
                  
     context = {}
     
@@ -470,17 +441,15 @@ def renameUsingHashDefLine(scopeAnalyst,
             name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
             name_candidates[(token, def_scope)][use_scope][renaming].add(1)
 
-
-
     renaming_map = computeFreqLenRenaming(name_candidates,
                                           name_positions,
                                           lambda e:e)
     
-    for (k, use_scope), renaming in renaming_map.iteritems():
-        print k
-        print renaming, use_scope
-    
-    print 
+#     for (k, use_scope), renaming in renaming_map.iteritems():
+#         print k
+#         print renaming, use_scope
+#     
+#     print 
 
     return rename(iBuilder, name_positions, renaming_map)
 

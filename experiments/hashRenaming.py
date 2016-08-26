@@ -38,7 +38,7 @@ scopeAnalyst = ScopeAnalyst(os.path.join(
 
 hash_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                    iBuilder, 
-                                   twoLines=False,
+                                   twoLines=True,
                                    debug=mode)
 
 writeTmpLines(hash_renaming, output_file)
