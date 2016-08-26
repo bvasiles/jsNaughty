@@ -81,7 +81,9 @@ def computeFreqLenRenaming(name_candidates,
 
     for key, val in name_candidates.iteritems():
         for use_scope, suggestions in val.iteritems():
-            print key, use_scope, suggestions
+            print key
+            print '  ', use_scope
+            print '  ', suggestions.keys()
             
             if len(suggestions.keys()) == 1:
                 
