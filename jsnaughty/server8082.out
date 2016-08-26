@@ -1,0 +1,32 @@
+Defined parameters (per moses.ini or switch):
+	config: /data/bogdanv/deobfuscator/experiments/corpora/corpus.concat/train.hash_def_one_renaming/tuning/moses.ini 
+	distortion-limit: 0 
+	feature: UnknownWordPenalty WordPenalty PhrasePenalty PhraseDictionaryCompact name=TranslationModel0 num-features=4 path=/data/bogdanv/deobfuscator/experiments/corpora/corpus.concat/train.hash_def_one_renaming/model/phrase-table.minphr input-factor=0 output-factor=0 Distortion KENLM lazyken=0 name=LM0 factor=0 path=/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm order=5 
+	input-factors: 0 
+	mapping: 0 T 0 
+	n-best-list: - 10 
+	server: 
+	server-log: server8082.log 
+	server-port: 8082 
+	threads: 32 
+	weight: Distortion0= 0.00422568 LM0= 0.242577 WordPenalty0= 0.131798 PhrasePenalty0= -0.318432 TranslationModel0= -0.0517829 0.0934775 0.154983 0.00272399 UnknownWordPenalty0= 0 
+line=UnknownWordPenalty
+FeatureFunction: UnknownWordPenalty0 start: 0 end: 0
+line=WordPenalty
+FeatureFunction: WordPenalty0 start: 1 end: 1
+line=PhrasePenalty
+FeatureFunction: PhrasePenalty0 start: 2 end: 2
+line=PhraseDictionaryCompact name=TranslationModel0 num-features=4 path=/data/bogdanv/deobfuscator/experiments/corpora/corpus.concat/train.hash_def_one_renaming/model/phrase-table.minphr input-factor=0 output-factor=0
+FeatureFunction: TranslationModel0 start: 3 end: 6
+line=Distortion
+FeatureFunction: Distortion0 start: 7 end: 7
+line=KENLM lazyken=0 name=LM0 factor=0 path=/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm order=5
+FeatureFunction: LM0 start: 8 end: 8
+Loading UnknownWordPenalty0
+Loading WordPenalty0
+Loading PhrasePenalty0
+Loading Distortion0
+Loading LM0
+Loading TranslationModel0
+RUN SERVER at pid 0
+Exception: Unable to create Abyss channel switch from socket address.  Unable to bind socket to the socket address.  bind() failed with errno 98 (Address already in use)
