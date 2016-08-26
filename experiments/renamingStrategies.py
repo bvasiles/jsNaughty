@@ -451,7 +451,10 @@ def renameUsingHashDefLine(scopeAnalyst,
 #     
 #     print 
 
-    return rename(iBuilder, name_positions, renaming_map)
+    hash_renaming = rename(iBuilder, name_positions, renaming_map)
+    
+    return '\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in hash_renaming]) + '\n'
 
     
 #     reverse_shas = {}
