@@ -4,7 +4,17 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 from tools import Preprocessor, IndexBuilder, Beautifier, Lexer, ScopeAnalyst
 from renamingStrategies import renameUsingHashDefLine
-from one import rename, writeTmpLines
+
+
+def writeTmpLines(lines, 
+                  out_file_path):
+    
+    js_tmp = open(out_file_path, 'w')
+    js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in lines]).encode('utf8'))
+    js_tmp.write('\n')
+    js_tmp.close()
+
 
     
 input_file = os.path.abspath(sys.argv[1])
