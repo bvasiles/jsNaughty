@@ -471,7 +471,11 @@ def renameUsingHashDefLine(scopeAnalyst,
                                           name_positions,
                                           lambda e:e)
     
-    print renaming_map
+    for (k, use_scope), renaming in renaming_map.iteritems():
+        print k
+        print renaming, use_scope
+    
+    print 
 
     return rename(iBuilder, name_positions, renaming_map)
 
