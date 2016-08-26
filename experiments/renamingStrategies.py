@@ -10,8 +10,13 @@ def rename(iBuilder,
     
     draft_translation = deepcopy(iBuilder.tokens)
     
-    for (name, def_scope), renaming in renaming_map.iteritems():
-        for (line_num, line_idx) in name_positions.get((name, def_scope),[]):
+#     for (name, def_scope), renaming in renaming_map.iteritems():
+#         for (line_num, line_idx) in name_positions.get((name, def_scope),[]):
+#             (token_type, _name) = draft_translation[line_num][line_idx]
+#             draft_translation[line_num][line_idx] = (token_type, renaming)
+
+    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+        for (line_num, line_idx) in name_positions[(name, def_scope)]:
             (token_type, _name) = draft_translation[line_num][line_idx]
             draft_translation[line_num][line_idx] = (token_type, renaming)
 
