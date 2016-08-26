@@ -182,31 +182,36 @@ training_sample_path = os.path.abspath(sys.argv[2])
 output_path = Folder(sys.argv[3]).create()
 num_threads = int(sys.argv[4])
 
-with open(training_sample_path, 'r') as f:
-
-    reader = UnicodeReader(f)
-
-    f1 = 'corpus.orig.js'
-    f2 = 'corpus.no_renaming.js'
+f1 = 'corpus.orig.js'
+f2 = 'corpus.no_renaming.js'
 #     f3 = 'corpus.basic_renaming.js'
 #     f4 = 'corpus.hash_renaming.js'
-    f5 = 'corpus.hash_def_one_renaming.js'
-    f6 = 'corpus.hash_def_two_renaming.js'
-    flog = 'log_' + os.path.basename(training_sample_path)
- 
-    try:
-        for f in [f1, f2, f5, flog]: #f3, f4, f6]:
-            os.remove(os.path.join(output_path, f))
-    except:
-        pass
+f5 = 'corpus.hash_def_one_renaming.js'
+f6 = 'corpus.hash_def_two_renaming.js'
+flog = 'log_' + os.path.basename(training_sample_path)
+
+try:
+    for f in [f1, f2, f5, flog]: #f3, f4, f6]:
+        os.remove(os.path.join(output_path, f))
+except:
+    pass
+
+with open(training_sample_path, 'r') as f, \
+        open(os.path.join(output_path, f1), 'w') as f_orig, \
+        open(os.path.join(output_path, f2), 'w') as f_no_renaming, \
+        open(os.path.join(output_path, f5), 'w') as f_hash_def_one_renaming, \
+        open(os.path.join(output_path, f6), 'w') as f_hash_def_two_renaming, \
+        open(os.path.join(output_path, flog), 'w') as g:
+#         open(os.path.join(output_path, f3), 'a') as f_basic_renaming, \
+#         open(os.path.join(output_path, f4), 'a') as f_hash_renaming, \:
+
+    reader = UnicodeReader(f)
+    writer = UnicodeWriter(g)
 
     pool = multiprocessing.Pool(processes=num_threads)
 
     for result in pool.imap_unordered(processFile, reader):
       
-        with open(os.path.join(output_path, flog), 'a') as g:
-            writer = UnicodeWriter(g)
-  
             if result[1] is not None:
                 (js_file_path,
                  orig, 
@@ -217,24 +222,12 @@ with open(training_sample_path, 'r') as f:
                 hash_def_two_renaming) = result
           
                 try:
-                    with open(os.path.join(output_path, f1), 'a') \
-                            as f_orig, \
-                        open(os.path.join(output_path, f2), 'a') \
-                            as f_no_renaming, \
-                        open(os.path.join(output_path, f5), 'a') \
-                            as f_hash_def_one_renaming, \
-                        open(os.path.join(output_path, f6), 'a') \
-                            as f_hash_def_two_renaming:
-#                         open(os.path.join(output_path, f3), 'a') \
-#                             as f_basic_renaming, \
-#                         open(os.path.join(output_path, f4), 'a') \
-#                             as f_hash_renaming, \
-                        f_orig.writelines(orig)
-                        f_no_renaming.writelines(no_renaming)
-#                         f_basic_renaming.writelines(basic_renaming)
-#                         f_hash_renaming.writelines(hash_renaming)
-                        f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                        f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                    f_orig.writelines(orig)
+                    f_no_renaming.writelines(no_renaming)
+#                     f_basic_renaming.writelines(basic_renaming)
+#                     f_hash_renaming.writelines(hash_renaming)
+                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
                     
                     writer.writerow([js_file_path, 'OK'])
         
