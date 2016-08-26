@@ -42,9 +42,7 @@ def processFile(row):
                   'path_tmp_b': 'tmp_%d.b.js' % pid,
                   'path_tmp_b_a': 'tmp_%d.b.a.js' % pid,
                   'path_tmp_u': 'tmp_%d.u.js' % pid,
-                  'path_tmp_u_a': 'tmp_%d.u.a.js' % pid,
-                  'path_orig': os.path.join(output_path, '%s.js' % base_name),
-                  'path_ugly': os.path.join(output_path, '%s.u.js' % base_name)}
+                  'path_tmp_u_a': 'tmp_%d.u.a.js' % pid}
 
     
     try:        
