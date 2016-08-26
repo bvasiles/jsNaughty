@@ -23,6 +23,12 @@ def cleanup(temp_files):
         tryRemove(file_path)
     
 
+def cleanupProcessed(base_name):
+    temp_files = {'path_orig': os.path.join(output_path, '%s.js' % base_name),
+                  'path_ugly': os.path.join(output_path, '%s.u.js' % base_name)}
+    for file_path in temp_files.itervalues():
+        tryRemove(file_path)
+
 
 def processFile(row):
     
@@ -136,12 +142,14 @@ def processFile(row):
                        temp_files['path_orig'])
         if not ok:
             cleanup(temp_files)
+            cleanupProcessed(base_name)
             return (js_file_path, False, 'Beautifier fail')
         
         ok = clear.run(temp_files['path_tmp_u_a'], 
                        temp_files['path_ugly'])
         if not ok:
             cleanup(temp_files)
+            cleanupProcessed(base_name)
             return (js_file_path, False, 'Beautifier fail')
         
         
