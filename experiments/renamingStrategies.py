@@ -105,6 +105,8 @@ def computeFreqLenRenaming(name_candidates,
                     # was the suggestion for something else 
                     # in this scope earlier. Ignoring for now
     
+    print
+    print
     
     # For the remaining variables, choose the translation 
     # that has the longest name
@@ -133,6 +135,9 @@ def computeFreqLenRenaming(name_candidates,
                                  in suggestions.items()], 
                                 key=sorting_key) #lambda e:(-e[1],-len(e[0])))
         
+            print key
+            print '  ', candidates
+            
             if len(candidates) > 1:
 
                 (name, def_scope) = key
