@@ -157,10 +157,10 @@ def processFile(l):
                                                    twoLines=False,
                                                    debug=False)
 
-#         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
-#                                                    iBuilder_ugly, 
-#                                                    twoLines=True,
-#                                                    debug=False)
+        hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
+                                                    iBuilder_ugly, 
+                                                    twoLines=True,
+                                                    debug=False)
 
         cleanup(temp_files)
         return (js_file_path,
@@ -168,8 +168,8 @@ def processFile(l):
                 no_renaming, 
 #                 basic_renaming, 
 #                 hash_renaming,
-                hash_def_one_renaming)#,
-#                 hash_def_two_renaming)
+                hash_def_one_renaming,
+                hash_def_two_renaming)
         
     except Exception, e:
         cleanup(temp_files)
@@ -191,7 +191,7 @@ with open(training_sample_path, 'r') as f:
 #     f3 = 'corpus.basic_renaming.js'
 #     f4 = 'corpus.hash_renaming.js'
     f5 = 'corpus.hash_def_one_renaming.js'
-#     f6 = 'corpus.hash_def_two_renaming.js'
+    f6 = 'corpus.hash_def_two_renaming.js'
     flog = 'log_' + os.path.basename(training_sample_path)
  
     try:
@@ -213,8 +213,8 @@ with open(training_sample_path, 'r') as f:
                  no_renaming, 
 #                  basic_renaming, 
 #                  hash_renaming,
-                 hash_def_one_renaming) = result#,
-#                  hash_def_two_renaming) = result
+                 hash_def_one_renaming,
+                hash_def_two_renaming) = result
           
                 try:
                     with open(os.path.join(output_path, f1), 'a') \
@@ -222,19 +222,19 @@ with open(training_sample_path, 'r') as f:
                         open(os.path.join(output_path, f2), 'a') \
                             as f_no_renaming, \
                         open(os.path.join(output_path, f5), 'a') \
-                            as f_hash_def_one_renaming:#, \
+                            as f_hash_def_one_renaming, \
+                        open(os.path.join(output_path, f6), 'a') \
+                            as f_hash_def_two_renaming:
 #                         open(os.path.join(output_path, f3), 'a') \
 #                             as f_basic_renaming, \
 #                         open(os.path.join(output_path, f4), 'a') \
 #                             as f_hash_renaming, \
-#                         open(os.path.join(output_path, f6), 'a') \
-#                             as f_hash_def_two_renaming:
                         f_orig.writelines(orig)
                         f_no_renaming.writelines(no_renaming)
 #                         f_basic_renaming.writelines(basic_renaming)
 #                         f_hash_renaming.writelines(hash_renaming)
                         f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-#                         f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                        f_hash_def_two_renaming.writelines(hash_def_two_renaming)
                     
                     writer.writerow([js_file_path, 'OK'])
         
