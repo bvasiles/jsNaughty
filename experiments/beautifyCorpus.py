@@ -33,7 +33,6 @@ def cleanupProcessed(base_name):
 def processFile(row):
     
     js_file_path = os.path.join(corpus_root, row[0])
-    print js_file_path
     
     pid = int(multiprocessing.current_process().ident)
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
