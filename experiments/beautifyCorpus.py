@@ -6,7 +6,7 @@ import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
 from tools import Uglifier, IndexBuilder, JSNice, \
                     Beautifier, Lexer, Aligner, \
-                    Normalizer, Dos2Unix
+                    Normalizer, Dos2Unix, Preprocessor
 from pygments.token import Token, is_token_subtype
 from folderManager import Folder
 
@@ -73,16 +73,25 @@ def processFile(row):
 #         except:
 #             cleanup(temp_files)
 #             return (js_file_path, False, 'Lexer fail')
+
+
+        # Strip comments, replace literals, etc
+        try:
+            prepro = Preprocessor(os.path.join(corpus_root, 
+                                               js_file_path))
+            prepro.write_temp_file(temp_files['path_tmp'])
+        except:
+            cleanup(temp_files)
+            return (js_file_path, None, 'Preprocessor fail')
         
         
         # - and another time through uglifyjs pretty print only 
         clear = Beautifier()
-        ok = clear.run(js_file_path, 
+        ok = clear.run(temp_files['path_tmp'], 
                        temp_files['path_tmp_b'])
         if not ok:
             cleanup(temp_files)
             return (js_file_path, False, 'Beautifier fail')
-        
         
         # Minify
         ugly = Uglifier()
