@@ -33,6 +33,7 @@ def cleanupProcessed(base_name):
 def processFile(row):
     
     js_file_path = os.path.join(corpus_root, row[0])
+    print js_file_path
     
     pid = int(multiprocessing.current_process().ident)
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
@@ -47,36 +48,36 @@ def processFile(row):
     
     try:        
         # Pass through beautifier to fix layout:
-        # - once through JSNice without renaming
-        jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
-        
-        (ok, _out, _err) = jsNiceBeautifier.run(js_file_path,
-                                               temp_files['path_tmp'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, False, 'JSNice Beautifier fail')
-
-
-        # Weird JSNice renamings despite --no-rename
-        try:
-            before = set([token for (token, token_type) in 
-                          Lexer(js_file_path).tokenList
-                          if is_token_subtype(token_type, Token.Name)]) 
-            after = set([token for (token, token_type) in 
-                          Lexer(temp_files['path_tmp']).tokenList
-                          if is_token_subtype(token_type, Token.Name)])
-             
-            if not before == after:
-                return (js_file_path, False, 'Weird JSNice renaming')
-             
-        except:
-            cleanup(temp_files)
-            return (js_file_path, False, 'Lexer fail')
+#         # - once through JSNice without renaming
+#         jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
+#         
+#         (ok, _out, _err) = jsNiceBeautifier.run(js_file_path,
+#                                                temp_files['path_tmp'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, False, 'JSNice Beautifier fail')
+# 
+# 
+#         # Weird JSNice renamings despite --no-rename
+#         try:
+#             before = set([token for (token, token_type) in 
+#                           Lexer(js_file_path).tokenList
+#                           if is_token_subtype(token_type, Token.Name)]) 
+#             after = set([token for (token, token_type) in 
+#                           Lexer(temp_files['path_tmp']).tokenList
+#                           if is_token_subtype(token_type, Token.Name)])
+#              
+#             if not before == after:
+#                 return (js_file_path, False, 'Weird JSNice renaming')
+#              
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, False, 'Lexer fail')
         
         
         # - and another time through uglifyjs pretty print only 
         clear = Beautifier()
-        ok = clear.run(temp_files['path_tmp'], 
+        ok = clear.run(js_file_path, 
                        temp_files['path_tmp_b'])
         if not ok:
             cleanup(temp_files)
@@ -137,14 +138,14 @@ def processFile(row):
         
         # Store original and uglified versions
         ok = clear.run(temp_files['path_tmp_b_a'], 
-                       temp_files['path_orig'])
+                       os.path.join(output_path, '%s.js' % base_name))
         if not ok:
             cleanup(temp_files)
             cleanupProcessed(base_name)
             return (js_file_path, False, 'Beautifier fail')
         
         ok = clear.run(temp_files['path_tmp_u_a'], 
-                       temp_files['path_ugly'])
+                       os.path.join(output_path, '%s.u.js' % base_name))
         if not ok:
             cleanup(temp_files)
             cleanupProcessed(base_name)
