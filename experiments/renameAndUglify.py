@@ -93,10 +93,20 @@ def processFile(l):
         # Minify
         ugly = Uglifier()
         ok = ugly.run(temp_files['path_tmp_b'], 
-                      temp_files['path_tmp_u'])
+                      temp_files['path_tmp_u_n'])
         if not ok:
             cleanup(temp_files)
             return (js_file_path, None, 'Uglifier fail')
+        # Normalize
+        norm = Normalizer()
+        ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                 temp_files['path_tmp_u_n']),
+                      False, 
+                      temp_files['path_tmp_u'])
+        if not ok:
+            cleanup(temp_files)
+            return (js_file_path, None, 'Normalizer fail')
+        
         
         
         # Num tokens before vs after
