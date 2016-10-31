@@ -201,9 +201,9 @@ def processFile(l):
         # More complicated renaming: collect the context around  
         # each name (global variables, API calls, punctuation)
         # and build a hash of the concatenation.
-        hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
-                                                iBuilder_ugly,
-                                                debug=True)
+#         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
+#                                                 iBuilder_ugly,
+#                                                 debug=True)
         
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
@@ -221,7 +221,7 @@ def processFile(l):
                 no_renaming, 
                 basic_renaming,
                 normalized, 
-                hash_renaming,
+#                 hash_renaming,
                 hash_def_one_renaming,
                 hash_def_two_renaming)
         
@@ -240,7 +240,7 @@ Folder(os.path.join(output_path, 'orig')).create()
 Folder(os.path.join(output_path, 'no_renaming')).create()
 Folder(os.path.join(output_path, 'basic_renaming')).create()
 Folder(os.path.join(output_path, 'normalized')).create()
-Folder(os.path.join(output_path, 'hash_renaming')).create()
+# Folder(os.path.join(output_path, 'hash_renaming')).create()
 Folder(os.path.join(output_path, 'hash_def_one_renaming')).create()
 Folder(os.path.join(output_path, 'hash_def_two_renaming')).create()
 
@@ -270,7 +270,7 @@ with open(training_sample_path, 'r') as f, \
              no_renaming, 
              basic_renaming, 
              normalized,
-             hash_renaming,
+#              hash_renaming,
              hash_def_one_renaming,
              hash_def_two_renaming) = result
             
@@ -287,8 +287,8 @@ with open(training_sample_path, 'r') as f, \
                 with open(os.path.join(output_path, 'normalized', js_file_path), 'w') as f_normalized:
                     f_normalized.writelines(normalized)
                     
-                with open(os.path.join(output_path, 'hash_renaming', js_file_path), 'w') as f_hash_renaming:
-                    f_hash_renaming.writelines(hash_renaming)
+#                 with open(os.path.join(output_path, 'hash_renaming', js_file_path), 'w') as f_hash_renaming:
+#                     f_hash_renaming.writelines(hash_renaming)
                     
                 with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_one_renaming:
                     f_hash_def_one_renaming.writelines(hash_def_one_renaming)
