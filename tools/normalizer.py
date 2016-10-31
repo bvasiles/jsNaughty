@@ -21,6 +21,8 @@ class Normalizer:
                                 cwd=self.normalizer_dir)
 
         out, err = proc.communicate()
+        
+        print err
 
         if not proc.returncode:
             ok = True
