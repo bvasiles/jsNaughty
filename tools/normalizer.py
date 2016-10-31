@@ -12,10 +12,10 @@ class Normalizer:
             self.normalizer_dir = normalizer_js_path
         
         
-    def run(self, in_file_path, out_file_path=None):
+    def run(self, in_file_path, rename=True, out_file_path=None):
         ok = False
         
-        command = ['node', 'normalize.js', in_file_path]
+        command = ['node', 'normalize.js', in_file_path, str(rename).lower()]
         proc = subprocess.Popen(command, 
                                 stderr=PIPE, stdout=PIPE, 
                                 cwd=self.normalizer_dir)

@@ -130,7 +130,8 @@ def processFile(l):
         # Normalize
         norm = Normalizer()
         ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_tmp_b']), 
+                                 temp_files['path_tmp_b']),
+                      False, 
                       temp_files['path_tmp_u_n'])
         if not ok:
             cleanup(temp_files)
