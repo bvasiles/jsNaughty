@@ -54,18 +54,26 @@ def processFile(l):
         
         # Pass through beautifier to fix layout:
         # - once through JSNice without renaming
-        jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
+#         jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
+#         
+#         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp'], 
+#                                                 temp_files['path_tmp_b_n'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'JSNice Beautifier fail')
         
-        (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp'], 
-                                                temp_files['path_tmp_b_n'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'JSNice Beautifier fail')
         
+#         # - and another time through uglifyjs pretty print only 
+#         clear = Beautifier()
+#         ok = clear.run(temp_files['path_tmp_b_n'], 
+#                        temp_files['path_tmp_b'])
+#         if not ok:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'Beautifier fail')
         
-        # - and another time through uglifyjs pretty print only 
+#         # JSNice is down! 
         clear = Beautifier()
-        ok = clear.run(temp_files['path_tmp_b_n'], 
+        ok = clear.run(temp_files['path_tmp'], 
                        temp_files['path_tmp_b'])
         if not ok:
             cleanup(temp_files)
