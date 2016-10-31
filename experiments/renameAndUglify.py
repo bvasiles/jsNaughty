@@ -182,17 +182,17 @@ def processFile(l):
         # and build a hash of the concatenation.
         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
                                                 iBuilder_ugly,
-                                                debug=False)
+                                                debug=True)
         
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=False,
-                                                   debug=False)
+                                                   debug=True)
 
         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                     iBuilder_ugly, 
                                                     twoLines=True,
-                                                    debug=False)
+                                                    debug=True)
 
         cleanup(temp_files)
         return (js_file_path,
