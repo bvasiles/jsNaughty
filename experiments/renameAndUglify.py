@@ -239,46 +239,46 @@ with open(training_sample_path, 'r') as f, \
 
 #     for result in pool.imap_unordered(processFile, reader):
     for row in reader:
-        for result in processFile(row):
+        result = processFile(row)
       
-            if result[1] is not None:
-                (js_file_path,
-                 orig, 
-                 no_renaming, 
-                 basic_renaming, 
-                 normalized,
-                 hash_renaming,
-                 hash_def_one_renaming,
-                 hash_def_two_renaming) = result
+        if result[1] is not None:
+            (js_file_path,
+             orig, 
+             no_renaming, 
+             basic_renaming, 
+             normalized,
+             hash_renaming,
+             hash_def_one_renaming,
+             hash_def_two_renaming) = result
+            
+            try:
+                with open(os.path.join(output_path, 'orig', js_file_path), 'w') as f_orig:
+                    f_orig.writelines(orig)
                 
-                try:
-                    with open(os.path.join(output_path, 'orig', js_file_path), 'w') as f_orig:
-                        f_orig.writelines(orig)
-                    
-                    with open(os.path.join(output_path, 'no_renaming', js_file_path), 'w') as f_no_renaming:
-                        f_no_renaming.writelines(no_renaming)
-                    
-                    with open(os.path.join(output_path, 'basic_renaming', js_file_path), 'w') as f_basic_renaming:
-                        f_basic_renaming.writelines(basic_renaming)
-                    
-                    with open(os.path.join(output_path, 'normalized', js_file_path), 'w') as f_normalized:
-                        f_normalized.writelines(normalized)
-                        
-                    with open(os.path.join(output_path, 'hash_renaming', js_file_path), 'w') as f_hash_renaming:
-                        f_hash_renaming.writelines(hash_renaming)
-                        
-                    with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_one_renaming:
-                        f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                        
-                    with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_two_renaming:
-                        f_hash_def_two_renaming.writelines(hash_def_two_renaming)
-                                                
-                    
-                    writer.writerow([js_file_path, 'OK'])
-        
-                except Exception, e:
-                    writer.writerow([js_file_path, str(e)])
+                with open(os.path.join(output_path, 'no_renaming', js_file_path), 'w') as f_no_renaming:
+                    f_no_renaming.writelines(no_renaming)
                 
-            else:
-                writer.writerow([result[0], result[2]])
+                with open(os.path.join(output_path, 'basic_renaming', js_file_path), 'w') as f_basic_renaming:
+                    f_basic_renaming.writelines(basic_renaming)
+                
+                with open(os.path.join(output_path, 'normalized', js_file_path), 'w') as f_normalized:
+                    f_normalized.writelines(normalized)
+                    
+                with open(os.path.join(output_path, 'hash_renaming', js_file_path), 'w') as f_hash_renaming:
+                    f_hash_renaming.writelines(hash_renaming)
+                    
+                with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_one_renaming:
+                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                    
+                with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_two_renaming:
+                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
+                                            
+                
+                writer.writerow([js_file_path, 'OK'])
+    
+            except Exception, e:
+                writer.writerow([js_file_path, str(e)])
+            
+        else:
+            writer.writerow([result[0], result[2]])
 
