@@ -293,7 +293,7 @@ with open(training_sample_path, 'r') as f, \
                 with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_one_renaming:
                     f_hash_def_one_renaming.writelines(hash_def_one_renaming)
                     
-                with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_two_renaming:
+                with open(os.path.join(output_path, 'hash_def_two_renaming', js_file_path), 'w') as f_hash_def_two_renaming:
                     f_hash_def_two_renaming.writelines(hash_def_two_renaming)
                                             
                 
