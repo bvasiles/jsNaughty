@@ -135,12 +135,12 @@ def processFile(l):
             cleanup(temp_files)
             return (js_file_path, None, 'Normalizer fail')
         
-        try:
-            lex_norm = Lexer(temp_files['path_tmp_u_n'])
-            iBuilder_norm = IndexBuilder(lex_norm.tokenList)
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'IndexBuilder fail')
+#         try:
+        lex_norm = Lexer(temp_files['path_tmp_u_n'])
+        iBuilder_norm = IndexBuilder(lex_norm.tokenList)
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'IndexBuilder fail')
         
         for line_idx, line in enumerate(iBuilder_norm.tokens):
             normalized.append(' '.join([t for (_tt,t) in line]) + "\n")
