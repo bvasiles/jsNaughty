@@ -237,11 +237,11 @@ with open(training_sample_path, 'r') as f, \
     reader = UnicodeReader(f)
     writer = UnicodeWriter(g)
 
-#     pool = multiprocessing.Pool(processes=num_threads)
+    pool = multiprocessing.Pool(processes=num_threads)
 
-#     for result in pool.imap_unordered(processFile, reader):
-    for row in reader:
-        result = processFile(row)
+    for result in pool.imap_unordered(processFile, reader):
+#     for row in reader:
+#         result = processFile(row)
       
         if result[1] is not None:
             (js_file_path,
