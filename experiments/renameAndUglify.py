@@ -74,10 +74,20 @@ def processFile(l):
 #         # JSNice is down! 
         clear = Beautifier()
         ok = clear.run(temp_files['path_tmp'], 
-                       temp_files['path_tmp_b'])
+                       temp_files['path_tmp_b_n'])
         if not ok:
             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
+        # Normalize
+        norm = Normalizer()
+        ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                 temp_files['path_tmp_b_n']),
+                      False, 
+                      temp_files['path_tmp_b'])
+        if not ok:
+            cleanup(temp_files)
+            return (js_file_path, None, 'Normalizer fail')
+        
         
         
         # Minify
@@ -131,7 +141,7 @@ def processFile(l):
         norm = Normalizer()
         ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
                                  temp_files['path_tmp_b']),
-                      False, 
+                      True, 
                       temp_files['path_tmp_u_n'])
         if not ok:
             cleanup(temp_files)
