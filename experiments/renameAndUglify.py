@@ -115,15 +115,15 @@ def processFile(l):
             cleanup(temp_files)
             return (js_file_path, None, 'Aligner fail')
         
-        try:
-            lex_clear = Lexer(temp_files['path_tmp_b_a'])
-            iBuilder_clear = IndexBuilder(lex_clear.tokenList)
-            
-            lex_ugly = Lexer(temp_files['path_tmp_u_a'])
-            iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'IndexBuilder fail')
+#         try:
+        lex_clear = Lexer(temp_files['path_tmp_b_a'])
+        iBuilder_clear = IndexBuilder(lex_clear.tokenList)
+        
+        lex_ugly = Lexer(temp_files['path_tmp_u_a'])
+        iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
+#         except:
+#             cleanup(temp_files)
+#             return (js_file_path, None, 'IndexBuilder fail')
         
         
         
@@ -237,7 +237,9 @@ with open(training_sample_path, 'r') as f, \
 
     pool = multiprocessing.Pool(processes=num_threads)
 
-    for result in pool.imap_unordered(processFile, reader):
+#     for result in pool.imap_unordered(processFile, reader):
+    for row in reader:
+        for result in processFile(row):
       
             if result[1] is not None:
                 (js_file_path,
