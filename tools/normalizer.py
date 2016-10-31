@@ -22,8 +22,6 @@ class Normalizer:
 
         out, err = proc.communicate()
         
-        print err
-
         if not proc.returncode:
             ok = True
             if out_file_path is not None:
