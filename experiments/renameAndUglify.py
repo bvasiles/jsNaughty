@@ -244,16 +244,28 @@ Folder(os.path.join(output_path, 'normalized')).create()
 Folder(os.path.join(output_path, 'hash_def_one_renaming')).create()
 Folder(os.path.join(output_path, 'hash_def_two_renaming')).create()
 
+
+seen = set(Folder(os.path.join(output_path, 'orig')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(output_path, 'no_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(output_path, 'basic_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(output_path, 'normalized')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(output_path, 'hash_def_one_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(output_path, 'hash_def_two_renaming')).baseFileNames('*.js'))
+
+print len(seen)
+print seen.pop()
+exit()
+
 flog = 'log_' + os.path.basename(training_sample_path)
 
-try:
-    for f in [flog]: #f3, f4, f6]:
-        os.remove(os.path.join(output_path, f))
-except:
-    pass
+# try:
+#     for f in [flog]: #f3, f4, f6]:
+#         os.remove(os.path.join(output_path, f))
+# except:
+#     pass
 
 with open(training_sample_path, 'r') as f, \
-        open(os.path.join(output_path, flog), 'w') as g:
+        open(os.path.join(output_path, flog), 'a') as g:
 
     reader = UnicodeReader(f)
     writer = UnicodeWriter(g)
