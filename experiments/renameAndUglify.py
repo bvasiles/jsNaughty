@@ -264,8 +264,8 @@ for row in reader:
     seen.add(row[0])
 
 print len(seen), 'already processed'
-print seen.pop()
-exit()
+# print seen.pop()
+# exit()
 
 # try:
 #     for f in [flog]: #f3, f4, f6]:
