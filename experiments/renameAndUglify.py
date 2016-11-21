@@ -1,5 +1,6 @@
 import os
 import sys
+from scopeAnalysis import js_file_path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 import multiprocessing
@@ -30,6 +31,9 @@ def cleanup(temp_files):
 def processFile(l):
     
     js_file_path = l[0]
+    
+    if js_file_path in seen:
+        return (js_file_path, None, 'Skipped')
     
     pid = int(multiprocessing.current_process().ident)
     
@@ -252,9 +256,9 @@ intersection(Folder(os.path.join(output_path, 'normalized')).baseFileNames('*.js
 intersection(Folder(os.path.join(output_path, 'hash_def_one_renaming')).baseFileNames('*.js')).\
 intersection(Folder(os.path.join(output_path, 'hash_def_two_renaming')).baseFileNames('*.js'))
 
-print len(seen)
-print seen.pop()
-exit()
+print len(seen), 'already processed'
+# print seen.pop()
+# exit()
 
 flog = 'log_' + os.path.basename(training_sample_path)
 
