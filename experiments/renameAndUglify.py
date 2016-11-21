@@ -248,18 +248,24 @@ Folder(os.path.join(output_path, 'hash_def_one_renaming')).create()
 Folder(os.path.join(output_path, 'hash_def_two_renaming')).create()
 
 
-seen = set(Folder(os.path.join(output_path, 'orig')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'no_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'basic_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'normalized')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'hash_def_one_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'hash_def_two_renaming')).baseFileNames('*.js'))
-
-print len(seen), 'already processed'
-# print seen.pop()
-# exit()
+# seen = set(Folder(os.path.join(output_path, 'orig')).baseFileNames('*.js')).\
+# intersection(Folder(os.path.join(output_path, 'no_renaming')).baseFileNames('*.js')).\
+# intersection(Folder(os.path.join(output_path, 'basic_renaming')).baseFileNames('*.js')).\
+# intersection(Folder(os.path.join(output_path, 'normalized')).baseFileNames('*.js')).\
+# intersection(Folder(os.path.join(output_path, 'hash_def_one_renaming')).baseFileNames('*.js')).\
+# intersection(Folder(os.path.join(output_path, 'hash_def_two_renaming')).baseFileNames('*.js'))
 
 flog = 'log_' + os.path.basename(training_sample_path)
+
+
+seen = set([])
+reader = UnicodeReader(open(os.path.join(output_path, flog), 'r'))
+for row in reader:
+    seen.add(row[0])
+
+print len(seen), 'already processed'
+print seen.pop()
+exit()
 
 # try:
 #     for f in [flog]: #f3, f4, f6]:
