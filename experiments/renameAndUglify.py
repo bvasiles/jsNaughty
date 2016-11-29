@@ -259,9 +259,12 @@ flog = 'log_' + os.path.basename(training_sample_path)
 
 
 seen = set([])
-reader = UnicodeReader(open(os.path.join(output_path, flog), 'r'))
-for row in reader:
-    seen.add(row[0])
+try:
+    reader = UnicodeReader(open(os.path.join(output_path, flog), 'r'))
+    for row in reader:
+        seen.add(row[0])
+except:
+    pass
 
 print len(seen), 'already processed'
 # print seen.pop()
