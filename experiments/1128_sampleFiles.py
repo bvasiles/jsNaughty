@@ -4,289 +4,140 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Uglifier, Preprocessor, IndexBuilder, JSNice, \
-                    Beautifier, Lexer, Aligner, ScopeAnalyst, Normalizer
-
-from renamingStrategies import renameUsingHashDefLine, \
-            renameUsingScopeId, renameUsingHashAllPrec
-                                
-
+from tools import Lexer, IndexBuilder #, Aligner
+import random
 from folderManager import Folder
 
 
-def tryRemove(pth):
-    try:
-        os.remove(pth)
-    except OSError:
-        pass
 
-    
-def cleanup(temp_files):
-    for file_path in temp_files.itervalues():
-        tryRemove(file_path)
-    
+def processFile(js_file_path):
 
-
-def processFile(l):
-    
-    js_file_path = l[0]
-    
-    if js_file_path in seen:
-        return (js_file_path, None, 'Skipped')
-    
-    pid = int(multiprocessing.current_process().ident)
-    
-    # Temp files to be created during processing
-    temp_files = {'path_tmp': 'tmp_%d.js' % pid,
-                  'path_tmp_b': 'tmp_%d.b.js' % pid,
-                  'path_tmp_b_n': 'tmp_%d.b.n.js' % pid,
-                  'path_tmp_u': 'tmp_%d.u.js' % pid,
-                  'path_tmp_u_n': 'tmp_%d.u.n.js' % pid,
-                  'path_tmp_b_a': 'tmp_%d.b.a.js' % pid,
-                  'path_tmp_u_a': 'tmp_%d.u.a.js' % pid}
-    
     try:        
-        # Strip comments, replace literals, etc
-        try:
-            prepro = Preprocessor(os.path.join(corpus_root, js_file_path))
-            prepro.write_temp_file(temp_files['path_tmp'])
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Preprocessor fail')
-        
-        
-        # Pass through beautifier to fix layout:
-        # - once through JSNice without renaming
-#         jsNiceBeautifier = JSNice(flags=['--no-types', '--no-rename'])
-#         
-#         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp'], 
-#                                                 temp_files['path_tmp_b_n'])
-#         if not ok:
-#             cleanup(temp_files)
-#             return (js_file_path, None, 'JSNice Beautifier fail')
-        
-        
-#         # - and another time through uglifyjs pretty print only 
-#         clear = Beautifier()
-#         ok = clear.run(temp_files['path_tmp_b_n'], 
-#                        temp_files['path_tmp_b'])
-#         if not ok:
-#             cleanup(temp_files)
-#             return (js_file_path, None, 'Beautifier fail')
-        
-#         # JSNice is down! 
-        clear = Beautifier()
-        ok = clear.run(temp_files['path_tmp'], 
-                       temp_files['path_tmp_b_n'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Beautifier fail')
-        # Normalize
-        norm = Normalizer()
-        ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_tmp_b_n']),
-                      False, 
-                      temp_files['path_tmp_b'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Normalizer fail')
-        
-        
-        
-        # Minify
-        ugly = Uglifier()
-        ok = ugly.run(temp_files['path_tmp_b'], 
-                      temp_files['path_tmp_u_n'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Uglifier fail')
-        # Normalize
-        norm = Normalizer()
-        ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_tmp_u_n']),
-                      False, 
-                      temp_files['path_tmp_u'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Normalizer fail')
-        
-        
         
         # Num tokens before vs after
         try:
-            tok_clear = Lexer(temp_files['path_tmp_b']).tokenList
-            tok_ugly = Lexer(temp_files['path_tmp_u']).tokenList
+            tok1 = Lexer(os.path.join(files_root, 'orig', js_file_path)).tokenList
+            tok2 = Lexer(os.path.join(files_root, 'no_renaming', js_file_path)).tokenList
+            tok3 = Lexer(os.path.join(files_root, 'basic_renaming', js_file_path)).tokenList
+            tok4 = Lexer(os.path.join(files_root, 'normalized', js_file_path)).tokenList
+            tok5 = Lexer(os.path.join(files_root, 'hash_def_one_renaming', js_file_path)).tokenList
+            tok6 = Lexer(os.path.join(files_root, 'hash_def_two_renaming', js_file_path)).tokenList
         except:
-            cleanup(temp_files)
             return (js_file_path, None, 'Lexer fail')
         
         # For now only work with minified files that have
         # the same number of tokens as the originals
-        if not len(tok_clear) == len(tok_ugly):
-            cleanup(temp_files)
+        if not len(set([len(tok1), len(tok2), len(tok3), len(tok4), len(tok5), len(tok6)])) == 1:
             return (js_file_path, None, 'Num tokens mismatch')
         
-        
-        # Align minified and clear files, in case the beautifier 
-        # did something weird
-        try:
-            aligner = Aligner()
-            # This is already the baseline corpus, no (smart) renaming yet
-            aligner.align(temp_files['path_tmp_b'], 
-                          temp_files['path_tmp_u'])
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Aligner fail')
+#         # Align minified and clear files, in case the beautifier 
+#         # did something weird
+#         try:
+#             aligner = Aligner()
+#             # This is already the baseline corpus, no (smart) renaming yet
+#             aligner.align(temp_files['path_tmp_b'], 
+#                           temp_files['path_tmp_u'])
+#         except:
+#             return (js_file_path, None, 'Aligner fail')
         
         try:
-            lex_clear = Lexer(temp_files['path_tmp_b_a'])
-            iBuilder_clear = IndexBuilder(lex_clear.tokenList)
-            
-            lex_ugly = Lexer(temp_files['path_tmp_u_a'])
-            iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
+            iBuilder1 = IndexBuilder(tok1)
+            iBuilder2 = IndexBuilder(tok2)
+            iBuilder3 = IndexBuilder(tok3)
+            iBuilder4 = IndexBuilder(tok4)
+            iBuilder5 = IndexBuilder(tok5)
+            iBuilder6 = IndexBuilder(tok6)
         except:
-            cleanup(temp_files)
             return (js_file_path, None, 'IndexBuilder fail')
+
         
+        for _line_idx, line in enumerate(iBuilder1.tokens):
+            orig.append(' '.join([t for (_tt,t) in line]) + "\n")
         
+        for _line_idx, line in enumerate(iBuilder2.tokens):
+            no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
         
-        # Normalize
-        norm = Normalizer()
-        ok = norm.run(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_tmp_b']),
-                      True, 
-                      temp_files['path_tmp_u_n'])
-        if not ok:
-            cleanup(temp_files)
-            return (js_file_path, None, 'Normalizer fail')
+        for _line_idx, line in enumerate(iBuilder3.tokens):
+            basic_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
         
-        try:
-            lex_norm = Lexer(temp_files['path_tmp_u_n'])
-            iBuilder_norm = IndexBuilder(lex_norm.tokenList)
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'IndexBuilder fail')
-        
-        normalized = []
-        for line_idx, line in enumerate(iBuilder_norm.tokens):
+        for _line_idx, line in enumerate(iBuilder4.tokens):
             normalized.append(' '.join([t for (_tt,t) in line]) + "\n")
         
+        for _line_idx, line in enumerate(iBuilder5.tokens):
+            hash_def_one_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
+        
+        for _line_idx, line in enumerate(iBuilder6.tokens):
+            hash_def_two_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
         
         
-        # Compute scoping: name2scope is a dictionary where keys
-        # are (name, start_index) tuples and values are scope identifiers. 
-        # Note: start_index is a flat (unidimensional) index, 
-        # not a (line_chr_idx, col_chr_idx) index.
-        try:
-            scopeAnalyst = ScopeAnalyst(os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)), 
-                                 temp_files['path_tmp_u_a']))
-#             _name2defScope = scopeAnalyst.resolve_scope()
-#             _isGlobal = scopeAnalyst.isGlobal
-#             _name2useScope = scopeAnalyst.resolve_use_scope()
-        except:
-            cleanup(temp_files)
-            return (js_file_path, None, 'ScopeAnalyst fail')
-        
-        orig = []
-        no_renaming = []
-        
-        for line_idx, line in enumerate(iBuilder_ugly.tokens):
-            orig.append(' '.join([t for (_tt,t) in \
-                                  iBuilder_clear.tokens[line_idx]]) + "\n")
-            
-            no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
-            
-#         # Simple renaming: disambiguate overloaded names using scope id
-        basic_renaming = renameUsingScopeId(scopeAnalyst, 
-                                            iBuilder_ugly)
-        
-        # More complicated renaming: collect the context around  
-        # each name (global variables, API calls, punctuation)
-        # and build a hash of the concatenation.
-#         hash_renaming = renameUsingHashAllPrec(scopeAnalyst, 
-#                                                 iBuilder_ugly,
-#                                                 debug=True)
-        
-        hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
-                                                   iBuilder_ugly, 
-                                                   twoLines=False,
-                                                   debug=True)
-
-        hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
-                                                    iBuilder_ugly, 
-                                                    twoLines=True,
-                                                    debug=True)
-
-        cleanup(temp_files)
         return (js_file_path,
                 orig, 
                 no_renaming, 
                 basic_renaming,
                 normalized, 
-#                 hash_renaming,
                 hash_def_one_renaming,
                 hash_def_two_renaming)
         
     except Exception, e:
-        cleanup(temp_files)
         return (js_file_path, None, str(e))
     
     
-# corpus_root = os.path.abspath(sys.argv[1])
-# training_sample_path = os.path.abspath(sys.argv[2])
 
-output_path = os.path.abspath(sys.argv[1])
-num_threads = int(sys.argv[2])
-
-# Folder(os.path.join(output_path, 'orig')).create()
-# Folder(os.path.join(output_path, 'no_renaming')).create()
-# Folder(os.path.join(output_path, 'basic_renaming')).create()
-# Folder(os.path.join(output_path, 'normalized')).create()
-# # Folder(os.path.join(output_path, 'hash_renaming')).create()
-# Folder(os.path.join(output_path, 'hash_def_one_renaming')).create()
-# Folder(os.path.join(output_path, 'hash_def_two_renaming')).create()
-
+files_root = os.path.abspath(sys.argv[1])
+output_path = Folder(sys.argv[2]).create()
+sample_size = int(sys.argv[3])
+num_threads = int(sys.argv[4])
 
 flog = 'log_trainingSample.csv'
 
 in_log = set([])
-reader = UnicodeReader(open(os.path.join(output_path, flog), 'r'))
+reader = UnicodeReader(open(os.path.join(files_root, flog), 'r'))
 for row in reader:
     if row[1] == 'OK':
         in_log.add(row[0])
 
 print len(in_log), 'in log'
 
-on_disk = set(Folder(os.path.join(output_path, 'orig')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'no_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'basic_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'normalized')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'hash_def_one_renaming')).baseFileNames('*.js')).\
-intersection(Folder(os.path.join(output_path, 'hash_def_two_renaming')).baseFileNames('*.js'))
+on_disk = set(Folder(os.path.join(files_root, 'orig')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(files_root, 'no_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(files_root, 'basic_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(files_root, 'normalized')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(files_root, 'hash_def_one_renaming')).baseFileNames('*.js')).\
+intersection(Folder(os.path.join(files_root, 'hash_def_two_renaming')).baseFileNames('*.js'))
 
 print len(on_disk), 'on disk'
 
-# print seen.pop()
-exit()
 
-# try:
-#     for f in [flog]: #f3, f4, f6]:
-#         os.remove(os.path.join(output_path, f))
-# except:
-#     pass
+corpus_sample = random.sample(on_disk.intersection(in_log), sample_size)
 
-with open(training_sample_path, 'r') as f, \
-        open(os.path.join(output_path, flog), 'a') as g:
 
-    reader = UnicodeReader(f)
+f1 = 'corpus.orig.js'
+f2 = 'corpus.no_renaming.js'
+f3 = 'corpus.basic_renaming.js'
+f4 = 'corpus.normalized.js'
+f5 = 'corpus.hash_def_one_renaming.js'
+f6 = 'corpus.hash_def_two_renaming.js'
+glog = 'log_sample_%d.csv' % sample_size
+
+try:
+    for f in [f1, f2, f3, f4, f5, f6, glog]:
+        os.remove(os.path.join(output_path, f))
+except:
+    pass
+
+with open(os.path.join(output_path, glog), 'w') as g, \
+        open(os.path.join(output_path, f1), 'w') as f_orig, \
+        open(os.path.join(output_path, f2), 'w') as f_no_renaming, \
+        open(os.path.join(output_path, f3), 'w') as f_basic_renaming, \
+        open(os.path.join(output_path, f4), 'w') as f_normalized, \
+        open(os.path.join(output_path, f5), 'w') as f_hash_def_one_renaming, \
+        open(os.path.join(output_path, f6), 'w') as f_hash_def_two_renaming:
+
     writer = UnicodeWriter(g)
 
     pool = multiprocessing.Pool(processes=num_threads)
 
-    for result in pool.imap_unordered(processFile, reader):
-#     for row in reader:
-#         result = processFile(row)
+    for result in pool.imap_unordered(processFile, corpus_sample):
       
         if result[1] is not None:
             (js_file_path,
@@ -294,32 +145,16 @@ with open(training_sample_path, 'r') as f, \
              no_renaming, 
              basic_renaming, 
              normalized,
-#              hash_renaming,
              hash_def_one_renaming,
              hash_def_two_renaming) = result
             
             try:
-                with open(os.path.join(output_path, 'orig', js_file_path), 'w') as f_orig:
-                    f_orig.writelines(orig)
-                
-                with open(os.path.join(output_path, 'no_renaming', js_file_path), 'w') as f_no_renaming:
-                    f_no_renaming.writelines(no_renaming)
-                
-                with open(os.path.join(output_path, 'basic_renaming', js_file_path), 'w') as f_basic_renaming:
-                    f_basic_renaming.writelines(basic_renaming)
-                
-                with open(os.path.join(output_path, 'normalized', js_file_path), 'w') as f_normalized:
-                    f_normalized.writelines(normalized)
-                    
-#                 with open(os.path.join(output_path, 'hash_renaming', js_file_path), 'w') as f_hash_renaming:
-#                     f_hash_renaming.writelines(hash_renaming)
-                    
-                with open(os.path.join(output_path, 'hash_def_one_renaming', js_file_path), 'w') as f_hash_def_one_renaming:
-                    f_hash_def_one_renaming.writelines(hash_def_one_renaming)
-                    
-                with open(os.path.join(output_path, 'hash_def_two_renaming', js_file_path), 'w') as f_hash_def_two_renaming:
-                    f_hash_def_two_renaming.writelines(hash_def_two_renaming)
-                                            
+                f_orig.writelines(orig)
+                f_no_renaming.writelines(no_renaming)
+                f_basic_renaming.writelines(basic_renaming)
+                f_normalized.writelines(normalized)
+                f_hash_def_one_renaming.writelines(hash_def_one_renaming)
+                f_hash_def_two_renaming.writelines(hash_def_two_renaming)
                 
                 writer.writerow([js_file_path, 'OK'])
     
