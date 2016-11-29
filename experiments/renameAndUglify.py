@@ -211,12 +211,12 @@ def processFile(l):
         hash_def_one_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                    iBuilder_ugly, 
                                                    twoLines=False,
-                                                   debug=True)
+                                                   debug=False)
 
         hash_def_two_renaming = renameUsingHashDefLine(scopeAnalyst, 
                                                     iBuilder_ugly, 
                                                     twoLines=True,
-                                                    debug=True)
+                                                    debug=False)
 
         cleanup(temp_files)
         return (js_file_path,
