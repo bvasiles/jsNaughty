@@ -27,7 +27,6 @@ def processFile(js_file_path):
         
         # For now only work with minified files that have
         # the same number of tokens as the originals
-        print js_file_path, len(tok1), len(tok2), len(tok3), len(tok4), len(tok5), len(tok6)
         if not len(set([len(tok1), len(tok2), len(tok3), len(tok4), len(tok5), len(tok6)])) == 1:
             return (js_file_path, None, 'Num tokens mismatch')
         
