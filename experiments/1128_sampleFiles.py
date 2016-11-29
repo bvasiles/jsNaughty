@@ -236,7 +236,7 @@ def processFile(l):
 # corpus_root = os.path.abspath(sys.argv[1])
 # training_sample_path = os.path.abspath(sys.argv[2])
 
-output_path = Folder(sys.argv[1])
+output_path = os.path.abspath(sys.argv[1])
 num_threads = int(sys.argv[2])
 
 # Folder(os.path.join(output_path, 'orig')).create()
