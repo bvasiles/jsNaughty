@@ -99,10 +99,12 @@ flog = 'log_trainingSample.csv'
 
 in_log = set([])
 reader = UnicodeReader(open(os.path.join(files_root, flog), 'r'))
-for row in reader:
-    if row[1] == 'OK':
-        in_log.add(row[0])
-
+try:
+    for row in reader:
+        if row[1] == 'OK':
+            in_log.add(row[0])
+except:
+    pass
 print len(in_log), 'in log'
 
 on_disk = set(Folder(os.path.join(files_root, 'orig')).baseFileNames('*.js')).\
