@@ -27,6 +27,7 @@ def processFile(js_file_path):
         
         # For now only work with minified files that have
         # the same number of tokens as the originals
+        print js_file_path, len(tok1), len(tok2), len(tok3), len(tok4), len(tok5), len(tok6)
         if not len(set([len(tok1), len(tok2), len(tok3), len(tok4), len(tok5), len(tok6)])) == 1:
             return (js_file_path, None, 'Num tokens mismatch')
         
@@ -50,6 +51,12 @@ def processFile(js_file_path):
         except:
             return (js_file_path, None, 'IndexBuilder fail')
 
+        orig = [] 
+        no_renaming = [] 
+        basic_renaming = []
+        normalized = []
+        hash_def_one_renaming = []
+        hash_def_two_renaming = []
         
         for _line_idx, line in enumerate(iBuilder1.tokens):
             orig.append(' '.join([t for (_tt,t) in line]) + "\n")
