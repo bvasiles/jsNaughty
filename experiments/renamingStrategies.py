@@ -359,18 +359,23 @@ def renameUsingHashDefLine(scopeAnalyst,
     def traversal(scopeAnalyst, iBuilder, context, condition):
         
         seen = {}
-        
+        print("name2defScope---------------------------------------------------")
+        print(scopeAnalyst.name2defScope)
         for line_idx, line in enumerate(iBuilder.tokens):
-            
+            print("Traversing: " + str(line_idx) + " ----- " + str(line))
             for token_idx, (token_type, token) in enumerate(line):
                 (l,c) = iBuilder.tokMap[(line_idx,token_idx)]
                 pos = iBuilder.flatMap[(l,c)]
                 
+                #if(True):
                 try:
-                    def_scope = scopeAnalyst.name2defScope[(token, pos)]
-#                     use_scope = scopeAnalyst.name2useScope[(token, pos)]
-                    pth = scopeAnalyst.name2pth[(token, pos)]
+                    if(is_token_subtype(token_type, Token.Name)):
+                        print("NAME!!!!!!" + str(token))
+                        def_scope = scopeAnalyst.name2defScope[(token, pos)]
+#                       use_scope = scopeAnalyst.name2useScope[(token, pos)]
+                        pth = scopeAnalyst.name2pth[(token, pos)]
                 except KeyError:
+                    print("KEY ERROR! " + str(token_idx) + " -- " + str(token_type) + " -- " + str(token))
                     continue
                 
                 if not isValidContextToken((token_type, token)):
