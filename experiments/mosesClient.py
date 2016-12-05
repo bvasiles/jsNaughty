@@ -168,13 +168,13 @@ class MosesClient():
             print(ib_error)
             return(ib_error)
             
-        lex_ugly.write_temp_file(tempFile)
+        #lex_ugly.write_temp_file(tempFile)
         
         
         #Do Scope related tasks
         #a raw text version
         try:
-            scopeAnalyst = ScopeAnalyst(tempFile)
+            scopeAnalyst = ScopeAnalyst(beautFile)
         except:
             cleanup({"temp" : tempFile})
             print(sa_error)
@@ -192,7 +192,7 @@ class MosesClient():
         
         options = {}
         options["twoLines"] = False
-        options["debug"] = True
+        options["debug"] = False
         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
         
 
@@ -218,6 +218,15 @@ class MosesClient():
         translation = ""
 
         #Serial version
+        print("charPosition2Name----------------------------------------------------")
+        print(iBuilder_ugly.charPosition2Name)
+        print("name2CharPositions----------------------------------------------------")
+        print(iBuilder_ugly.name2CharPositions)
+        print("flatMap----------------------------------------------------")
+        print([iBuilder_ugly.flatMap[(line,col)] for (line, col) in iBuilder_ugly.name2CharPositions[u'e']])
+        print("revFlatMat----------------------------------------------------")
+        print(iBuilder_ugly.revFlatMat)
+        print("-------------------------------------------------------------")
         print(lex_ugly.collapsedText)
         print(renamedText)
         mosesParams["text"] = renamedText
@@ -235,7 +244,7 @@ class MosesClient():
             return(ms_error)
         
         #Send to output:
-        cleanup([preproFile, beautFile, tempFile])
+        #cleanup([preproFile, beautFile, tempFile])
         
     
         #Nov_29 Postprocessing steps:
