@@ -6,6 +6,7 @@ Created on Aug 21, 2016
 import os
 import sys
 import time
+import socket
 import multiprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
@@ -137,6 +138,9 @@ class MosesClient():
         tempFile = baseDir + str(transactionID) + "_temp.js"
         lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
         
+        if socket.gethostname() == 'bogdan.mac':
+            lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
+            
         preproFile = baseDir + str(transactionID) + "_prepro.js"
         beautFile = baseDir + str(transactionID) + "_beaut.js"
         start = time.time()
@@ -156,7 +160,7 @@ class MosesClient():
         ok = clear.run(preproFile, beautFile)
 
         if(not ok):
-            cleanup([preproFile, beautFile])
+            #cleanup([preproFile, beautFile])
             print(beaut_error)
             return(beaut_error)
         
