@@ -1,0 +1,13 @@
+function chunkData ( _5a1652ee , _6ef026f0 ) {
+var _fe8eefa5 = [ ] ;
+var _57051491 = _5a1652ee . length ;
+var _d28367bc = TOKEN_LITERAL_NUMBER ;
+for ( ; _d28367bc < _57051491 ; _d28367bc += _6ef026f0 ) {
+if ( _d28367bc + _6ef026f0 < _57051491 ) {
+_fe8eefa5 . push ( _5a1652ee . substring ( _d28367bc , _d28367bc + _6ef026f0 ) ) ;
+} else {
+_fe8eefa5 . push ( _5a1652ee . substring ( _d28367bc , _57051491 ) ) ;
+}
+}
+return _fe8eefa5 ;
+}
