@@ -1,3 +1,3 @@
 __all__ = ['mosesClient']
 
-from experiments.mosesClient import MosesClient
+from mosesClient import MosesClient
