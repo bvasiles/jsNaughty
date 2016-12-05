@@ -25,7 +25,6 @@ def results(request, output):
 def get_js(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        print(request.POST)
         # create a form instance and populate it with data from the request:
         form = JSForm(request.POST)
         # check whether it's valid:
