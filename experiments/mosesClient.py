@@ -278,7 +278,7 @@ class MosesClient():
         
         post_end = time.time()
         post_time = post_end - post_start
-        return("Preprocess Time: " + str(preprocessDuration) + "\n" + "Moses Time: " + str(moses_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
+        return("Preprocess Time: " + str(preprocessDuration) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
         #Use one of the scoping options
         #None
         #nc = processTranslationUnscoped(translation, iBuilder_ugly, 
