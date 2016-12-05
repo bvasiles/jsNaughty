@@ -1,1 +1,1 @@
-/Users/caseycas/jsnaughty/scopeAnalysis.py
+../../scopeAnalysis.py
