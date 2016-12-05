@@ -1188,7 +1188,6 @@ def processFile(l):
         rawText = Postprocessor(mresults["nbest"])
         translation_hash_renaming = rawText.getProcessedOutput()
 
-         
         nc = processTranslationScoped(translation_hash_renaming, 
                                       iBuilder_ugly, 
                                       scopeAnalyst, 
