@@ -2,7 +2,10 @@ from pygments.token import Token, is_token_subtype
 import hashlib
 from copy import deepcopy
 
-
+class Strategies():
+    SCOPE_ID = 1
+    HASH_ALL_PREC = 2
+    HASH_DEF_LINE = 3
 
 def rename(iBuilder, 
            name_positions, 
@@ -418,6 +421,9 @@ def renameUsingHashDefLine(scopeAnalyst,
 
     context = traversal(scopeAnalyst, iBuilder, context, passOne)
     
+    print("context-------------------------------------")
+    print(context)
+    
     if twoLines:
         context = traversal(scopeAnalyst, iBuilder, context, passTwo)
     
@@ -452,7 +458,10 @@ def renameUsingHashDefLine(scopeAnalyst,
 #     print 
 
     hash_renaming = rename(iBuilder, name_positions, renaming_map)
-    
+    print("lines-------------------------------------------------------")
+    print('\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in hash_renaming]))
+    print("lines-------------------------------------------------------")
     return '\n'.join([' '.join([token for (_token_type, token) in line]) 
                             for line in hash_renaming]) + '\n'
 
