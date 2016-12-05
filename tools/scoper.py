@@ -206,6 +206,7 @@ class ScopeAnalyst:
 #                         print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
 #                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
     
+                    print("Key:" + str(key) + " Start: " + str(start))
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
                     
