@@ -181,8 +181,7 @@ class MosesClient():
             return(sa_error)
         
         
-        end = time.time()
-        preprocessDuration = end - start
+
         #Do Rename related tasks
         #Nov_29 Update:
         #Needs to be written in a generic way
@@ -199,6 +198,10 @@ class MosesClient():
         with open("renameFile.txt", 'w') as renamingFile:
             renamingFile.writelines(renamedText)
  
+        end = time.time()
+        preprocessDuration = end - start
+        
+        start_m = time.time()
         
         #In our case, I don't think we need to actually do anything for no_renaming
         #no_renaming = []
@@ -233,6 +236,7 @@ class MosesClient():
         #mosesParams["text"] = lex_ugly.collapsedText
         mosesParams["align"] = "true"
         mosesParams["report-all-factors"] = "true"
+        
         try:
             results = proxy.translate(mosesParams)# __request("translate", mosesParams)
             #print(results)
@@ -246,7 +250,8 @@ class MosesClient():
         #Send to output:
         #cleanup([preproFile, beautFile, tempFile])
         
-    
+        m_end = time.time()
+        m_time = m_end - m_start
         #Nov_29 Postprocessing steps:
         #processTranslationScoped
         #Inputs: raw Moses Output text, IBuilder, scopeAnalyst, language model path -> If moses gives back a list of n best options we could
@@ -255,7 +260,8 @@ class MosesClient():
         #More Inputs: the text input into Moses (used to compare to the output after renaming), output_path -> where to save the file, base_name -> used to look up temp files.
         
         #Base_name is a problem to removing the temp files... (It references bogdan's original naming scheme)
-
+        post_start = time.time()
+        
         nc = processTranslationScoped(translation, 
                                       iBuilder_ugly, 
                                       scopeAnalyst, 
@@ -269,8 +275,10 @@ class MosesClient():
         #print(nc)
         postProcessedText = open(baseDir + "/jsnaughty_output/webTemp0.txt.lm.js", 'r').readlines()
         print(postProcessedText)
-                
-        return("Preprocess Time: " + str(preprocessDuration) + "\n" + "".join(postProcessedText))
+        
+        post_end = time.time()
+        post_time = post_end - post_start
+        return("Preprocess Time: " + str(preprocessDuration) + "\n" + "Moses Time: " + str(moses_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
         #Use one of the scoping options
         #None
         #nc = processTranslationUnscoped(translation, iBuilder_ugly, 
