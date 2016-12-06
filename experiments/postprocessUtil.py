@@ -4,6 +4,7 @@ Created on Aug 21, 2016
     - Copied postprocessing functions from Bogdan's runSimplifiedExperiment 
     to reference them from other files.
 '''
+import re
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -59,9 +60,10 @@ def writeTmpLines(lines,
 
 def prepareHelpers(iBuilder, 
                    scopeAnalyst=None):
-
-    # Collect names and their locations in various formats
-    # that will come in handy later:
+    '''
+    Collect names and their locations in various formats
+    that will come in handy later.
+    '''
     
     # Which locations [(line number, index within line)] does
     # a variable name appear at?
@@ -83,7 +85,7 @@ def prepareHelpers(iBuilder,
 #                 cond = False
                 if scopeAnalyst is not None:
                     name2defScope = scopeAnalyst.resolve_scope()
-                    isGlobal = scopeAnalyst.isGlobal
+#                     isGlobal = scopeAnalyst.isGlobal
             
 #                     if not False: #isGlobal.get((token, p), True):
                     try:
@@ -91,7 +93,9 @@ def prepareHelpers(iBuilder,
                         
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
+                        
                         position_names[line_num][line_idx] = (token, def_scope)
+                        
                     except KeyError:
                         pass
 
@@ -103,6 +107,7 @@ def prepareHelpers(iBuilder,
                 
                     name_positions.setdefault((token, def_scope), [])
                     name_positions[(token, def_scope)].append((line_num, line_idx))
+                    
                     position_names[line_num][line_idx] = (token, def_scope)
 
 #                     cond = True
@@ -174,6 +179,13 @@ def parseMosesOutput(moses_output,
     return name_candidates
 
 
+
+def isHash(candidate_name):
+    # _5a1652ee 
+    return candidate_name[0] == '_' and \
+        len(candidate_name) == 9 and \
+        re.match(r'(?:[a-z0-9]+)$', candidate_name[1:])
+        
 
 def computeFreqLenRenaming(name_candidates, 
                            name_positions,
@@ -320,6 +332,7 @@ def computeLMRenaming(name_candidates,
                     for line in draft_lines:
                         lmquery = LMQuery(lm_path=lm_path)
                         (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+                        print (lm_ok, lm_log_prob, _lm_err), line
                         
                         if not lm_ok:
                             lm_log_prob = -9999999999
@@ -353,6 +366,20 @@ def rename(iBuilder, name_positions, renaming_map):
         for (line_num, line_idx) in name_positions[(name, def_scope)]:
             (token_type, name) = draft_translation[line_num][line_idx]
             draft_translation[line_num][line_idx] = (token_type, renaming)
+
+    return draft_translation
+
+
+def renameIfNotHash(iBuilder, name_positions, renaming_map):
+    draft_translation = deepcopy(iBuilder.tokens)
+    
+    for (name, def_scope), renaming in renaming_map.iteritems():
+        for (line_num, line_idx) in name_positions[(name, def_scope)]:
+            (token_type, name) = draft_translation[line_num][line_idx]
+            if not isHash(renaming):
+                draft_translation[line_num][line_idx] = (token_type, renaming)
+            else:
+                draft_translation[line_num][line_idx] = (token_type, name)
 
     return draft_translation
 
@@ -594,3 +621,88 @@ def processTranslationUnscoped(translation, iBuilder, lm_path,
         
 
     return nc
+
+
+
+def processTranslationScopedServer(translation, 
+                                   iBuilder, 
+                                   scopeAnalyst, 
+                                   lm_path):
+    
+#     nc = []
+    
+    renaming_map = {}
+    
+    if translation is not None:
+
+        (name_positions, 
+         position_names) = prepareHelpers(iBuilder, scopeAnalyst)
+        
+        # Parse moses output
+        name_candidates = parseMosesOutput(translation,
+                                           iBuilder,
+                                           position_names)
+        # name_candidates is a dictionary of dictionaries: 
+        # keys are (name, None) (if scopeAnalyst=None) or 
+        # (name, def_scope) tuples (otherwise); 
+        # values are suggested translations with the sets 
+        # of line numbers on which they appear.
+        
+        renaming_map = computeFreqLenRenaming(name_candidates,
+                                              name_positions,
+                                              lambda e:(-e[1],-len(e[0])))
+        # renaming_map is a dictionary that maps tuples 
+        # (name, def_scope) to renamings
+        
+    return renameIfNotHash(iBuilder, name_positions, renaming_map)
+        
+#         r = summarizeScopedTranslation(renaming_map,
+#                                        f_path,
+#                                        'freqlen',
+#                                        output_path,
+#                                        base_name,
+#                                        name_candidates,
+#                                        name_positions,
+#                                        iBuilder,
+#                                        scopeAnalyst)
+#         if not r:
+#             return False
+#         nc += r
+    
+    
+#     nc = []
+#         
+#     f_base = os.path.basename(f_path)
+#     training_strategy = f_base.split('.')[1]
+#     tmp_path = '%s.%s.js' % (f_base[:-3], translation_strategy)
+#     o_path = '%s.%s.%s.js' % (base_name, training_strategy, translation_strategy)
+    
+#     print f_path, f_base, training_strategy, tmp_path, o_path, base_name
+    
+#     isGlobal = scopeAnalyst.isGlobal
+#     
+#     for (name, def_scope), renaming in renaming_map.iteritems():
+#             
+#         pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+#             
+#         (lin,col) = iBuilder.revFlatMat[pos]
+#         (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
+#         
+#         nc.append( ('%s.%s' % (training_strategy, translation_strategy), 
+#                     def_scope, 
+#                     tok_lin, tok_col, 
+#                     isGlobal.get((name, pos), True),
+#                     renaming,
+#                     ','.join(name_candidates[(name, def_scope)])) )
+    
+#     writeTmpLines(renameIfNotHash(iBuilder, name_positions, renaming_map), tmp_path)
+#     
+#     clear = Beautifier()
+#     ok = clear.run(tmp_path, os.path.join(output_path, o_path))
+#     if not ok:
+#         return False
+#     return nc
+#     
+# 
+#     return nc
+
