@@ -13,8 +13,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                 
 import xmlrpclib
 from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
-from renamingStrategies import renameUsingHashDefLine, Strategies
-from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped
+from renamingStrategies import renameUsingHashDefLine, Strategies, renameUsingScopeId, renameUsingHashAllPrec
+from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 
 prepro_error = "Preprocessor Failed"
@@ -87,6 +87,17 @@ def callRenamingFunction(type, scopeAnalyst, iBuilder_ugly, options):
             options["debug"] = False
         return renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly, options["twoLines"], options["debug"])
 
+
+def writeTmpLines(lines, 
+                  out_file_path):
+    
+    js_tmp = open(out_file_path, 'w')
+    js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
+                            for line in lines]).encode('utf8'))
+    js_tmp.write('\n')
+    js_tmp.close()
+
+
 class MosesClient():
     
     def getValidationErrors(self):
@@ -143,6 +154,9 @@ class MosesClient():
             
         preproFile = baseDir + str(transactionID) + "_prepro.js"
         beautFile = baseDir + str(transactionID) + "_beaut.js"
+        tmpFile = baseDir + str(transactionID) + "_tmp.js"
+        transFile = baseDir + str(transactionID) + "_trans.js"
+        
         start = time.time()
         # Strip comments, replace literals, etc
         try:
@@ -160,7 +174,7 @@ class MosesClient():
         ok = clear.run(preproFile, beautFile)
 
         if(not ok):
-            #cleanup([preproFile, beautFile])
+            cleanup([preproFile, beautFile])
             print(beaut_error)
             return(beaut_error)
         
@@ -266,18 +280,33 @@ class MosesClient():
         #Base_name is a problem to removing the temp files... (It references bogdan's original naming scheme)
         post_start = time.time()
         
-        nc = processTranslationScoped(translation, 
-                                      iBuilder_ugly, 
-                                      scopeAnalyst, 
-                                      lm_path, 
-                                      "renameFile.txt", 
-                                      baseDir + "/jsnaughty_output", 
-                                      base_name)
+#         nc = processTranslationScoped(translation, 
+#                                       iBuilder_ugly, 
+#                                       scopeAnalyst, 
+#                                       lm_path, 
+#                                       "renameFile.txt", 
+#                                       baseDir + "/jsnaughty_output", 
+#                                       base_name)
+        
+        processed_translation = processTranslationScopedServer(translation, 
+                                                              iBuilder_ugly, 
+                                                              scopeAnalyst, 
+                                                              lm_path)
+        
+        writeTmpLines(processed_translation, tmpFile)
+        
+        ok = clear.run(tmpFile, transFile)
+
+        if(not ok):
+            cleanup([preproFile, beautFile, tmpFile, transFile])
+            print(beaut_error)
+            return(beaut_error)
         
         print("Output Dir ------------------------------------------------")
         print(baseDir + "/jsnaughty_output")
         #print(nc)
-        postProcessedText = open(baseDir + "/jsnaughty_output/webTemp0.txt.lm.js", 'r').readlines()
+#         postProcessedText = open(baseDir + "/jsnaughty_output/webTemp0.txt.lm.js", 'r').readlines()
+        postProcessedText = open(transFile, 'r').readlines()
         print(postProcessedText)
         
         post_end = time.time()
