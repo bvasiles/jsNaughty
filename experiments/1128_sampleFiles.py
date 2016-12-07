@@ -51,9 +51,11 @@ def processFile(js_file_path):
             return (js_file_path, None, 'IndexBuilder fail')
 
         # Check that at least one variable was renamed during minification
-        orig_names = set([token for (token_type, token) in iBuilder1.tokens 
+        orig_names = set([token for line in iBuilder1.tokens 
+                          for (token_type, token) in line
                       if is_token_subtype(token_type, Token.Name)])
-        ugly_names = set([token for (token_type, token) in iBuilder2.tokens 
+        ugly_names = set([token for line in iBuilder2.tokens 
+                          for (token_type, token) in line
                       if is_token_subtype(token_type, Token.Name)])
         if not len(orig_names.difference(ugly_names)):
             return (js_file_path, None, 'Not minified')
