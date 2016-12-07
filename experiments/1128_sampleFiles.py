@@ -7,7 +7,7 @@ from unicodeManager import UnicodeReader, UnicodeWriter
 from tools import Lexer, IndexBuilder #, Aligner
 import random
 from folderManager import Folder
-
+from pygments.token import Token, is_token_subtype
 
 
 def processFile(js_file_path):
@@ -49,6 +49,14 @@ def processFile(js_file_path):
             iBuilder6 = IndexBuilder(tok6)
         except:
             return (js_file_path, None, 'IndexBuilder fail')
+
+        # Check that at least one variable was renamed during minification
+        orig_names = set([token for (token_type, token) in iBuilder1.tokens 
+                      if is_token_subtype(token_type, Token.Name)])
+        ugly_names = set([token for (token_type, token) in iBuilder2.tokens 
+                      if is_token_subtype(token_type, Token.Name)])
+        if not len(orig_names.difference(ugly_names)):
+            return (js_file_path, None, 'Not minified')
 
         orig = [] 
         no_renaming = [] 
