@@ -3,7 +3,7 @@ from django import forms
 class JSForm(forms.Form):
     #in_text = forms.Textarea(label = "Obfuscated Text")
     #in_text = forms.CharField(widget=forms.Textarea)
-    in_text = forms.CharField(widget=forms.Textarea, initial = "Enter your Javascript Here.")
+    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea'}), initial = "Enter your Javascript Here.", label = "")
     
 class LastJSInvalidForm(forms.Form):
     '''
