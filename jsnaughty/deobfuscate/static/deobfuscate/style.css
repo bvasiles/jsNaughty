@@ -1,1 +1,23 @@
-h2 {        background-color:#CCC;    border: 1px solid;    color:#39F;    text-align: center;    }
+.inline-div {
+    display:inline-block;
+    align:center;
+    width:45%;
+    clear:both;
+}
+.inline-txtarea {
+	margin: auto;
+    resize: none;
+    height: 300px;
+    width: 300px;
+    clear:both;
+	
+}
+
+
+h2 
+{
+	background-color:#CCC;    
+	border: 1px solid;    
+	color:#000000;    
+	text-align: center;
+}

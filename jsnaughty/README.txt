@@ -15,3 +15,6 @@ Running "python manage.py check --deploy" will sanity check your deployment opti
 To switch to development mode (localhost connections only)  run:
 "python deployment.py"
 "python manage.py runserver"
+
+Note: When you update static files such as .css file, you must run:
+"python manage.py collectstatic"
