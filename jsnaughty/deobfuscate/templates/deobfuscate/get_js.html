@@ -1,8 +1,20 @@
 {% extends "deobfuscate/base.html" %}
 {% block content %}
+
+<div class="inline-div">
+<h2> Input Javascript here: </h2>
 <form action="{% url 'deobfuscate:get_js'  %}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit" />
 </form>
+</div>
+
+
+<div class="inline-div">
+<h2>Behold, The Deobfuscated Javascript: </h2>
+<textarea class="inline-txtarea" rows = "{{ height }}" cols = "{{ width }}">
+{{ out_text }}
+</textarea>
+</div>
 {% endblock %}
