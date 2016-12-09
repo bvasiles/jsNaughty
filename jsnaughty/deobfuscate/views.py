@@ -30,6 +30,8 @@ def get_js(request):
         # check whether it's valid:
         if form.is_valid(): #(For performance, we don't want to rerun the beautifiers I think)
             # process the data in form.cleaned_data as required
+            #View testing.
+            #return render(request, 'deobfuscate/get_js.html', Context({'form': form, 'out_text': "Pull the lever!"}))
             rClient = MosesClient()
             #try:
             start = time.time()
@@ -45,15 +47,10 @@ def get_js(request):
                 return render(request, "deobfuscate/get_js.html", {'form': form})
             else:
                 # redirect to a new URL:
-                return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
-            #except:
-            #    form = JSForm()
-            #    
-            #    #Replace with the form again.
-            #    #TODO: Add in Error Text.
-            #    return render(request, "deobfuscate/get_js.html", {'form': form})
+                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
+                #return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
     # if a GET (or any other method) we'll create a blank form
     else:
         form = JSForm()
     #Replace with the form again.
-    return render(request, "deobfuscate/get_js.html", {'form': form})
+    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "It's time to..."}))
