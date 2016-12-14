@@ -27,6 +27,9 @@ class IndexBuilder:
         
         # - map from (line,col) position to (token_line, token_column)
         # position in the bidimensional list of tokens
+        # Also maps the prior whitespace character location to the token
+        # that follows it.  That is, this is not in a one-to-one mapping
+        # with tokMap.
         self.revTokMap = {}
 
         line = []
@@ -59,6 +62,7 @@ class IndexBuilder:
                 self.name2CharPositions.setdefault(token, []).append(p)
                 
             # Map character indices to token indices
+            #print("\'" + token + "\' " + str(p) + " " + str((line_tok_idx, col_tok_idx)))
             self.revTokMap[p] = (line_tok_idx, col_tok_idx)
             self.tokMap[(line_tok_idx, col_tok_idx)] = p
             
@@ -87,5 +91,44 @@ class IndexBuilder:
                 col_chr_idx += len(token)
             # The unidimensional index doesn't care about newlines
             flat_chr_idx += len(token)
+            
+
+
+
+    def __repr__(self):
+        return "IndexBuilder()"
+    
+    def __str__(self):
+        '''
+        # - map from (line,col) position to name
+        self.charPosition2Name = {}
+        # - map from name to list of (line,col) positions
+        self.name2CharPositions = {}
+        # - map from (line,col) position to flat position
+        self.flatMap = {}
+        # - map from flat position to (line,col)
+        self.revFlatMat = {}
+        # - map from (token_line, token_column) position in the 
+        # bidimensional list of tokens to (line,col) text position
+        self.tokMap = {}
+        # - map from (line,col) position to (token_line, token_column)
+        # position in the bidimensional list of tokens
+        self.revTokMap = {}
+        '''
+        output = []
+        output.append("--------------------charPosition2Name--------------------")
+        output.append(self.charPosition2Name.__str__())
+        output.append("--------------------name2CharPositions--------------------")
+        output.append(self.name2CharPositions.__str__())
+        output.append("--------------------flatMap--------------------")
+        output.append(self.flatMap.__str__())
+        output.append("--------------------revFlatMat--------------------")
+        output.append(self.revFlatMat.__str__())
+        output.append("--------------------tokMap--------------------")
+        output.append(sorted(self.tokMap.items(), key = lambda (x,y) : (y[0],y[1])).__str__())
+        output.append("--------------------revTokMap--------------------")
+        output.append(sorted(self.revTokMap.items(), key = lambda (x,y) : (y[0],y[1])).__str__())
+        return "\n".join(output)
+        
     
     

@@ -21,7 +21,7 @@ class Uglifier:
 #                 self.path = '/usr/local/bin/uglifyjs'
             if socket.gethostname() == 'bogdan.mac' or \
                     socket.gethostname() == 'godot' or \
-                    socket.gethostname() == 'Caseys-MacBook-Pro.local' :
+                    socket.gethostname() == 'Caseys-MacBook-Pro.local' or socket.gethostname()== 'campus-055-006.ucdavis.edu':
                 self.path = '/usr/local/bin/uglifyjs'
             else:
                 # Godeep & HPC1 Cluster
@@ -37,6 +37,7 @@ class Uglifier:
         command = [self.path, in_file_path] + \
                     self.flags + \
                     ['-o', out_file_path]
+        #print(command)
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
         _pc = proc.communicate()
     
