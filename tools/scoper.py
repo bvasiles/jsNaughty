@@ -127,6 +127,8 @@ class ScopeAnalyst:
         # that uses node.js to export the AST produced and used by 
         # UglifyJS internally to JSON format
         command = ['node', 'nodeScoper.js', in_file_path]
+        print(command)
+        print(scoper_dir)
         proc = subprocess.Popen(command, 
                                 stderr=PIPE, stdout=PIPE, 
                                 cwd=scoper_dir)
@@ -320,4 +322,38 @@ class ScopeAnalyst:
 
     def is_overloaded(self, v):
         return len(self.nameScopes.get(v, set([]))) > 1
+    
+    def __str__(self):
+        '''
+        self.name2defScope = {}
+        self.nameDefScope2pos = {}
+        self.name2useScope = {}
+        self.name2pth = {}
+        self.nameScope2pth = {}
+        
+        # For each name, record its scopes
+        self.nameScopes = {}
+        
+        self.isGlobal = {}
+        
+        self.nameOrigin = {}
+        '''
+        output = []
+        output.append("--------------------name2defScope--------------------")
+        output.append("\n".join([str(key) + " : " + str(len(item)) for key, item in self.name2defScope.items()]))
+        output.append("--------------------nameDefScope2pos--------------------")
+        output.append(self.nameDefScope2pos.__str__())
+        output.append("--------------------name2useScope--------------------")
+        output.append(self.name2useScope.__str__())
+        output.append("--------------------name2pth--------------------")
+        output.append(self.name2pth.__str__())
+        output.append("--------------------nameScope2pth--------------------")
+        output.append(self.nameScope2pth.__str__())
+        output.append("--------------------nameScopes--------------------")
+        output.append("\n".join([str(key) + " : " + str(len(item)) for key, item in self.nameScopes.items()]))
+        output.append("--------------------isGlobal--------------------")
+        output.append(self.isGlobal.__str__())
+        output.append("--------------------nameOrigin--------------------")
+        output.append(self.nameOrigin.__str__())
+        return "\n".join(output)
         
