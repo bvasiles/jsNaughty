@@ -34,13 +34,13 @@ def processFile(js_file_path):
     tokens = indexBuilder.tokens
     print 'RUNNING IndexBuilder:', len(tokens)>0
     
-    nice1 = JSNice()
-    (ok, _out, _err) = nice1.run(js_file_path)
-    print 'RUNNING JSNice:', ok
+    #nice1 = JSNice()
+    #(ok, _out, _err) = nice1.run(js_file_path)
+    #print 'RUNNING JSNice:', ok
     
-    nice2 = UnuglifyJS()
-    (ok, _out, _err) = nice2.run(js_file_path)
-    print 'RUNNING UnuglifyJS:', ok
+    #nice2 = UnuglifyJS()
+    #(ok, _out, _err) = nice2.run(js_file_path)
+    #print 'RUNNING UnuglifyJS:', ok
     
     _pid = multiprocessing.current_process().ident
     
@@ -164,7 +164,7 @@ def highlight(tokens, lc_list):
 # manager = multiprocessing.Manager()
 # ns = manager.Namespace()
 
-js_file_paths = ['test_file3.js']
+js_file_paths = ['testing/test_files/test_file1.obs.js']
 
 
 pool = multiprocessing.Pool(processes=4)
