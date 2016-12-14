@@ -15,7 +15,10 @@ class Acorn:
             if socket.gethostname() == 'bogdan.mac' or \
                     socket.gethostname() == 'godot':
                 self.path = '/usr/local/bin/acorn'
+            elif socket.gethostname() == 'Caseys-MacBook-Pro.local' or socket.gethostname()== 'campus-055-006.ucdavis.edu':
+                self.path = '/Users/caseycas/node_modules/acorn/bin/acorn'
             else:
+                print(socket.gethostname())
                 self.path = 'acorn'
         else:
             self.path = path
@@ -28,6 +31,7 @@ class Acorn:
         command = [self.path] + \
                     self.flags + \
                     [in_file_path]
+
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
         pc = proc.communicate()
     
