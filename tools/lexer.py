@@ -23,6 +23,8 @@ def writeTmpLines(lines, out_file_path):
     js_tmp.write('\n')
     js_tmp.close()
 
+
+
 def writeTextRep(lines):
     '''
     Complement to writeTmpLines, create an equivalent internal String
@@ -40,19 +42,19 @@ class Lexer:
         programText = open(js_file_path, 'r').read()
         lexer = get_lexer_for_filename(js_file_path)
         
-    
         # Tokenize input
         self.tokenList = list(lex(programText, lexer))
-        self.collapsedText = self.getTextRep()
-
+        self.collapsedText = self.get_text_rep()
 
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
         writeTmpLines(lines, out_file_path)
 
-    def getTextRep(self):
+    def get_text_rep(self):
         lines = formatTokens(self.tokenList)
         return writeTextRep(lines)
+        
+        
         
 class WebLexer:
     '''
@@ -65,12 +67,15 @@ class WebLexer:
     
         # Tokenize input
         self.tokenList = list(lex(programText, lexer))
+        self.collapsedText = self.get_text_rep()
         
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
         writeTmpLines(lines, out_file_path)
     
-
+    def get_text_rep(self):
+        lines = formatTokens(self.tokenList)
+        return writeTextRep(lines)
 
 
 

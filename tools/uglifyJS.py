@@ -46,7 +46,7 @@ class Uglifier:
     
         return uglifyjs_ok
     
-    def webRun(self, inputText):
+    def web_run(self, inputText):
         '''
         Variant that inputs from stdin and outputs to stdout.  Avoid the
         writing to file for more speed when running this as a web service.
@@ -54,14 +54,19 @@ class Uglifier:
         uglifyjs_ok = False
         
         # Call uglifyjs
-        command = [self.path, inputText] + self.flags
-        proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
-        out, err = proc.communicate()
+        command = [self.path] + self.flags
+        proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
+        out, err = proc.communicate(input=inputText)
+        
+#         print 'OUT:' + out
+#         print 'ERR:' + err
     
         if not proc.returncode:
             uglifyjs_ok = True
     
         return (uglifyjs_ok, out, err)
+
+
 
 class Beautifier(Uglifier):
 

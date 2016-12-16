@@ -4,7 +4,7 @@ import multiprocessing
 
 from pygments.lexers import get_lexer_for_filename
 from pygments import lex
-from tools import Acorn, IndexBuilder, JSNice, UnuglifyJS, ScopeAnalyst
+from tools import Acorn, IndexBuilder, JSNice, UnuglifyJS, ScopeAnalyst, Beautifier
 
 
 # import signal
@@ -24,6 +24,10 @@ def processFile(js_file_path):
     
     # Load in the minified file
     minified = open(js_file_path).read()
+    
+    b = Beautifier()
+    (ok, out, err) = b.web_run(minified)
+#     print out
     
     # Create lexer
     lexer = get_lexer_for_filename(js_file_path)
