@@ -27,7 +27,7 @@ for idx, suffix in enumerate(suffixes):
 set -e
 set -u
 #
-/home/bogdanv/mosesdecoder/bin/processPhraseTableMin -in %s -nscores 4 -out %s -threads %s > %s
+/home/bogdanv/mosesdecoder/bin/processPhraseTableMin -in %s -nscores 4 -out %s -threads %s >& %s &
 ''' % (os.path.join(root_path, variant), \
        os.path.join(root_path, variant, "stdout-%j.txt"), \
        os.path.join(root_path, variant, "stderr-%j.txt"), \
