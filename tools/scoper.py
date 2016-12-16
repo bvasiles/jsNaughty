@@ -23,9 +23,6 @@ def scopepaths(nested, root_pth):
         # encounter it) its root path, in the same format as the 
         # pointers: '$["body"][0]["definitions"][0]...'
         # `join_ref_key` converts a list of nodes in this format.
-#         if key == 'scope':
-#             v = join_ref_key(root_pth)
-#             value['pth'] = v
 
         # AST nodes are either dictionaries or lists. Each is 
         # unpacked differently. Descend in the tree until reaching 
@@ -43,10 +40,6 @@ def scopepaths(nested, root_pth):
                 scopepaths(subdict, root_pth)
             root_pth.pop()
 
-#        else:
-#            print '****', value 
-
-   
     # Ascend back
     if root_pth:
         root_pth.pop()
@@ -68,8 +61,6 @@ def keypaths(nested):
                 for subkey, subvalue in keypaths(subdict):
                     yield [key, idx] + subkey, subvalue
         else:
-#             if value == 'calendarEventId':
-#                 print '***', [key], value
             yield [key], value
             
 
@@ -80,7 +71,6 @@ def split_ref_key(str_key):
     to a list of nodes. It's the reverse of `join_ref_key`.
     '''
     if str_key == '$':
-#        print 'EUREKA'
         return []
 
     return [int(e) if e.isdigit() else e \
@@ -153,7 +143,6 @@ class ScopeAnalyst:
         
         # Annotate scope nodes with depth
         scopepaths(self.ast, [])
-#        print 'ROOT:', self.ast.keys()
         self.ast['pth'] = '$'
       
         # Extract names and scopes
@@ -167,43 +156,15 @@ class ScopeAnalyst:
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
                 
-#
-#                    refs = parent.get('thedef',{}).get('references',[])
-#                    if len(refs):
-#                       print '\t', 'REFS:', len(refs), self.__ref_or_not(parent.get('thedef',{})['references'][0]).get('pth','')
-##                    print '\t', 'REFS:', len(parent.get('thedef',{}).get('references',[]))
-##                    print '\t\t', 'ref:', parent.get('thedef',{}).get('scope',{}).get('pth','')
-##                    print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
-##                    print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
-
                 # ... but only if they have `scope`, `thedef`,
                 # and `start` siblings
                 if parent.has_key('scope') and \
                         parent.has_key('thedef') and \
                         parent.has_key('start'):
                     
-#                    if key == 't':
-#                        print
-#                        print parent['scope'].keys()
-
- 
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start'])
                     
-#                     if True: #key == 't':
-#     #                     parent = self.__get_ref_key(pth[:-1])
-#                         print '\n\n\n', key, start, pth
-#                         print parent.keys()
-#                         print '\n\t', 'SCOPE:', parent.get('scope',{}).keys()
-#                         print '\t\t', 'pth:', parent.get('scope',{}).get('pth','')
-#                         print '\t\t', '$ref:', parent.get('scope',{}).get('$ref','')
-#                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('scope',{})).get('pth','')
-#         #                    print '---'
-#                         print '\t', 'THEDEF:', parent.get('thedef',{}).keys()
-#                         print '\t\t', 'scope:', parent.get('thedef',{}).get('scope',{}).get('pth','')
-#                         print '\t\t', '$ref:', parent.get('thedef',{}).get('$ref','')
-#                         print '\t\t', '$ref -->:', self.__ref_or_not(parent.get('thedef',{})).get('pth','')
-    
                     print("Key:" + str(key) + " Start: " + str(start))
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
@@ -225,13 +186,6 @@ class ScopeAnalyst:
                     
                     depth = parent.get('pth', None)
                     self.name2pth[(key, start)] = depth
-                    
-#                    if key == 't':
-#                        print '\t', 'DEF_SCOPE:', def_scope 
-#                    #    print 'start', start
-#                    #    print 'use_scope', use_scope
-#                    #    print 'def_scope', def_scope
-#                    #    print 'depth', depth
                     
                     self.nameScope2pth.setdefault((key, def_scope), [])
                     self.nameScope2pth[(key, def_scope)].append(depth)
