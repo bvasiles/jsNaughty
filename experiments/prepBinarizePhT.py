@@ -24,8 +24,8 @@ for idx, suffix in enumerate(suffixes):
 #SBATCH -J %s
 #SBATCH -n %s
 #
-set -e
-set -u
+#set -e
+#set -u
 #
 /home/bogdanv/mosesdecoder/bin/processPhraseTableMin -in %s -nscores 4 -out %s -threads %s >& %s &
 ''' % (os.path.join(root_path, variant), \
