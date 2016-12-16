@@ -1,3 +1,7 @@
+'''
+Split JS files into training, tuning, and testing
+'''
+
 import os
 import random
 
