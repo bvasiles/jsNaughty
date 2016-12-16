@@ -1,3 +1,7 @@
+'''
+Select a random sample from a corpus folder.
+'''
+
 import os
 import random
 from shutil import copyfile
