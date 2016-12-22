@@ -323,7 +323,7 @@ class ScopeAnalyst:
         
 
 
-class ScopeAnalystWeb(ScopeAnalyst):
+class WebScopeAnalyst(ScopeAnalyst):
 
     def __init__(self, input_text, scoper_js_path=None):
         if scoper_js_path is None:
