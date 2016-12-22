@@ -13,5 +13,3 @@ toplevel.figure_out_scope({"screw_ie8": true});
 
 console.log(JSON.stringify(JSON.decycle(toplevel), undefined, 2))
 
-
-

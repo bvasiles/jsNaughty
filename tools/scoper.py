@@ -220,6 +220,7 @@ class ScopeAnalyst:
         
         
         self.json_repr = self.__run(in_file_path, scoper_dir)
+#         self.json_repr = self.__web_run(open(in_file_path).read(), scoper_dir)
 
         self.__init_ast()
             
@@ -319,4 +320,39 @@ class ScopeAnalyst:
         output.append("--------------------nameOrigin--------------------")
         output.append(self.nameOrigin.__str__())
         return "\n".join(output)
+        
+
+
+class ScopeAnalystWeb(ScopeAnalyst):
+
+    def __init__(self, input_text, scoper_js_path=None):
+        if scoper_js_path is None:
+            import os
+            scoper_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'web_scoper'))
+        else:
+            scoper_dir = scoper_js_path
+        
+        self.json_repr = self.__web_run(input_text, scoper_dir)
+
+        self._ScopeAnalyst__init_ast()
+
+
+    def __web_run(self, input_text, scoper_dir):
+        # This is a hack at the moment. I wrote a simple JS script
+        # that uses node.js to export the AST produced and used by 
+        # UglifyJS internally to JSON format
+        command = ['node', 'nodeScoper.js']
+
+        proc = subprocess.Popen(command, 
+                                stderr=PIPE, stdout=PIPE, stdin=PIPE, 
+                                cwd=scoper_dir)
+        out, _err = proc.communicate(input=input_text)
+        
+        if proc.returncode:
+            raise Exception, _err
+        
+        return out
+    
+    
+        
         

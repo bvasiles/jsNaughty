@@ -5,6 +5,7 @@ import multiprocessing
 from pygments.lexers import get_lexer_for_filename
 from pygments import lex
 from tools import Acorn, IndexBuilder, JSNice, UnuglifyJS, ScopeAnalyst, Beautifier
+from tools.scoper import ScopeAnalystWeb
 
 
 # import signal
@@ -52,7 +53,11 @@ def processFile(js_file_path):
     # are (name, start_index) tuples and values are scope identifiers. 
     # Note: start_index is a flat (unidimensional) index, 
     # not a (line_chr_idx, col_chr_idx) index.
-    scopeAnalyst = ScopeAnalyst(js_file_path)
+#     scopeAnalyst = ScopeAnalyst(js_file_path)
+#     name2defScope = scopeAnalyst.resolve_scope()
+#     isGlobal = scopeAnalyst.isGlobal
+    
+    scopeAnalyst = ScopeAnalystWeb(minified)
     name2defScope = scopeAnalyst.resolve_scope()
     isGlobal = scopeAnalyst.isGlobal
     
