@@ -4,9 +4,8 @@ import multiprocessing
 
 from pygments.lexers import get_lexer_for_filename
 from pygments import lex
-from tools import Acorn, IndexBuilder, JSNice, UnuglifyJS, ScopeAnalyst, Beautifier
-from tools.scoper import ScopeAnalystWeb
-
+from tools import Acorn, IndexBuilder, JSNice, UnuglifyJS, \
+                    ScopeAnalyst, WebScopeAnalyst, Beautifier
 
 # import signal
 #SIGALRM is only usable on a unix platform
@@ -57,7 +56,7 @@ def processFile(js_file_path):
 #     name2defScope = scopeAnalyst.resolve_scope()
 #     isGlobal = scopeAnalyst.isGlobal
     
-    scopeAnalyst = ScopeAnalystWeb(minified)
+    scopeAnalyst = WebScopeAnalyst(minified)
     name2defScope = scopeAnalyst.resolve_scope()
     isGlobal = scopeAnalyst.isGlobal
     

@@ -38,13 +38,17 @@ def writeTextRep(lines):
 
 class Lexer:
 
+    def __tokenize(self, programText, lexer):
+        # Tokenize input
+        self.tokenList = list(lex(programText, lexer))
+        self.collapsedText = self.get_text_rep()
+
+
     def __init__(self, js_file_path):
         programText = open(js_file_path, 'r').read()
         lexer = get_lexer_for_filename(js_file_path)
         
-        # Tokenize input
-        self.tokenList = list(lex(programText, lexer))
-        self.collapsedText = self.get_text_rep()
+        self.__tokenize(programText, lexer)
 
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
@@ -56,7 +60,7 @@ class Lexer:
         
         
         
-class WebLexer:
+class WebLexer(Lexer):
     '''
     Variant that takes raw Text instead of input file
     '''
@@ -65,17 +69,8 @@ class WebLexer:
         programText = inputText
         lexer = get_lexer_for_filename("jsFile.js")
     
-        # Tokenize input
-        self.tokenList = list(lex(programText, lexer))
-        self.collapsedText = self.get_text_rep()
-        
-    def write_temp_file(self, out_file_path):
-        lines = formatTokens(self.tokenList)
-        writeTmpLines(lines, out_file_path)
+        self._Lexer__tokenize(programText, lexer)
     
-    def get_text_rep(self):
-        lines = formatTokens(self.tokenList)
-        return writeTextRep(lines)
 
 
 
