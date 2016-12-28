@@ -8,6 +8,7 @@ from pygments.token import Token, String, is_token_subtype
 from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
 from experiments.renamingStrategies import renameUsingHashDefLine
 from folderManager.folder import Folder
+from experiments.mosesClient import writeTmpLines
 from experiments.postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 class defobfuscate_tests(unittest.TestCase):
@@ -120,7 +121,7 @@ class defobfuscate_tests(unittest.TestCase):
         #print(self.obsfuscatedTextFiles[0])
         #This doesn't work when run inside pyDev for some weird reason.
         sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[0])
-        #print(sa1)
+        print(sa1)
         #Not really sure how to test this effectively.
         
         #Check (using minified file) if identifier name maps to different variables if
@@ -220,7 +221,7 @@ class defobfuscate_tests(unittest.TestCase):
         print("Original Lexed Text ---------------------------------------------------")
         print(self.obsLexed[0].tokenList)
         print("Original Lexed Text ---------------------------------------------------")
-        #1)
+        #1) + 5)
         i = 0
         for token_type, token in self.obsLexed[0].tokenList:
             if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
@@ -236,6 +237,87 @@ class defobfuscate_tests(unittest.TestCase):
             #except:
             #    print("Past end: " + str((token_type, token)))
             i += 1
+        #2)
+        for token_type, token in p1_combined:
+            self.assertTrue("<<" not in token)
+            
+        #3) + 4)
+        #Weird note: the scope analyst does not find scopes correctly on the post-processed file...
+        #Data structures needed:
+        #Map from original variables to new variables
+        #In old variables.  
+        #1) All instances of a variable in a scope.
+        #2) All variables in a scope.
+        
+        #Build mapping from old to new names. (TODO remove some maybe?)
+        oldNameList = []
+        newNameList = []
+        i = 0
+        for token_type, token in self.obsLexed[0].tokenList:
+            if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
+                continue
+            if(is_token_subtype(token_type, Token.Name)):
+                oldNameList.append(token)
+                newNameList.append(p1_combined[i][1])
+                
+            i += 1
+        
+        #name2defScope? name2useScope? name2pth?
+        orderedVars = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
+        print("Scoped Variables")
+        print(orderedVars)
+        #Remove variable indexes from old and new list that aren't tracked by scoper. (Is this right?)
+        toRemove = []
+        trackingIndex = 0
+        for (var, loc) in orderedVars:
+            while(oldNameList[trackingIndex] != var):
+                oldNameList = oldNameList[:trackingIndex] + oldNameList[trackingIndex+1:]
+                newNameList = newNameList[:trackingIndex] + newNameList[trackingIndex+1:]
+            trackingIndex += 1
+            
+        
+        
+        scopeMap = {}
+        #Build map linking scopes to indexes in the old and new list.
+        curIndex = 0
+        for key in orderedVars:
+            scope = sa1.name2useScope[key]
+            if(scope in scopeMap): #Existing Scope?
+                scopeMap[scope].append(curIndex)
+            else:
+                scopeMap[scope] = [curIndex]
+            curIndex += 1
+                
+        print("OldName ---------------------- New Name")
+        for j in range(0,len(oldNameList)):
+            print(oldNameList[j] + " ----- " + newNameList[j])
+        print("OldName ---------------------- New Name")
+        
+        for scope in scopeMap.keys():
+            print("Scope:    " + str(scope) + "    " + str(scopeMap[scope]))
+            if(len(scopeMap[scope]) > 1): #No conflicts if only one var in scope
+                #Iterate over all pairs in the scope.
+                for i in range(0,len(scopeMap[scope])-1):
+                    for j in range(i+1, len(scopeMap[scope])):
+                        fIndex = scopeMap[scope][i]
+                        sIndex = scopeMap[scope][j]
+                        print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
+                        #names that are the same in the original scope must be the same in the new scope
+                        #and names that are different in the original scope must be the different in the new scope
+                        self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
+                
+
+            
+        #writeTmpLines(p1, os.path.join(self.testDir.path, "consistency_check.txt"))
+        #clear = Beautifier()
+        #clear.run(os.path.join(self.testDir.path, "consistency_check.txt"), os.path.join(self.testDir.path, "b_consistency_check.txt"))
+        #sap1 = ScopeAnalyst( os.path.join(self.testDir.path, "b_consistency_check.txt"))
+        #print("Post Process SA ------------------------------------------------")
+        #print(sap1)
+        #print("Post Process SA ------------------------------------------------")
+        
+
+        
         #lm_path = ...
         #Read in moses output
         
