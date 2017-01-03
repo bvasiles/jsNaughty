@@ -1,65 +1,66 @@
 from pygments.token import Token, is_token_subtype
 import hashlib
 from copy import deepcopy
+from tools import prepHelpers
+
 
 class Strategies():
     SCOPE_ID = 1
     HASH_ALL_PREC = 2
     HASH_DEF_LINE = 3
 
-def rename(iBuilder, 
-           name_positions, 
-           renaming_map):
-    
-    draft_translation = deepcopy(iBuilder.tokens)
-    
-    for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
-        for (line_num, line_idx) in name_positions[(name, def_scope)]:
-            (token_type, _name) = draft_translation[line_num][line_idx]
-            draft_translation[line_num][line_idx] = (token_type, renaming)
 
-    return draft_translation
+# def rename(iBuilder, 
+#            name_positions, 
+#            renaming_map):
+#     
+#     draft_translation = deepcopy(iBuilder.tokens)
+#     
+#     for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+#         for (line_num, line_idx) in name_positions[(name, def_scope)]:
+#             (token_type, _name) = draft_translation[line_num][line_idx]
+#             draft_translation[line_num][line_idx] = (token_type, renaming)
+# 
+#     return draft_translation
 
 
-
-
-def prepareHelpers(iBuilder, 
-                   scopeAnalyst):
-
-    # Collect names and their locations in various formats
-    # that will come in handy later:
-    
-    # Which locations [(line number, index within line)] does
-    # a variable name appear at?
-    name_positions = {}
-    
-    # Which variable name is at a location specified by 
-    # [line number][index within line]?
-    position_names = {}
-    
-    for line_num, line in enumerate(iBuilder.tokens):
-        position_names.setdefault(line_num, {})
-        
-        for line_idx, (token_type, token) in enumerate(line):
-            
-            if is_token_subtype(token_type, Token.Name):
-                (l,c) = iBuilder.tokMap[(line_num, line_idx)]
-                p = iBuilder.flatMap[(l,c)]
-                
-                name2defScope = scopeAnalyst.resolve_scope()
-                isGlobal = scopeAnalyst.isGlobal
-        
-#                 try:
-                if not isGlobal.get((token, p), True):
-                    def_scope = name2defScope[(token, p)]
-                    
-                    name_positions.setdefault((token, def_scope), [])
-                    name_positions[(token, def_scope)].append((line_num, line_idx))
-                    position_names[line_num][line_idx] = (token, def_scope)
-#                 except KeyError:
-#                     pass
-
-    return (name_positions, position_names)
+# def prepareHelpers(iBuilder, 
+#                    scopeAnalyst):
+# 
+#     # Collect names and their locations in various formats
+#     # that will come in handy later:
+#     
+#     # Which locations [(line number, index within line)] does
+#     # a variable name appear at?
+#     name_positions = {}
+#     
+#     # Which variable name is at a location specified by 
+#     # [line number][index within line]?
+#     position_names = {}
+#     
+#     for line_num, line in enumerate(iBuilder.tokens):
+#         position_names.setdefault(line_num, {})
+#         
+#         for line_idx, (token_type, token) in enumerate(line):
+#             
+#             if is_token_subtype(token_type, Token.Name):
+#                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
+#                 p = iBuilder.flatMap[(l,c)]
+#                 
+#                 name2defScope = scopeAnalyst.resolve_scope()
+#                 isGlobal = scopeAnalyst.isGlobal
+#         
+# #                 try:
+#                 if not isGlobal.get((token, p), True):
+#                     def_scope = name2defScope[(token, p)]
+#                     
+#                     name_positions.setdefault((token, def_scope), [])
+#                     name_positions[(token, def_scope)].append((line_num, line_idx))
+#                     position_names[line_num][line_idx] = (token, def_scope)
+# #                 except KeyError:
+# #                     pass
+# 
+#     return (name_positions, position_names)
            
 
 
@@ -93,6 +94,10 @@ def computeFreqLenRenaming(name_candidates,
 #                     print (key, use_scope), name
                     renaming_map[(key, use_scope)] = name
                     seen[(name, use_scope)] = True
+                    # You can still get screwed here if name
+                    # was the suggestion for something else 
+                    # in this scope earlier. Ignoring for now
+    
     
     # For the remaining variables, choose the translation 
     # that has the longest name
@@ -432,7 +437,8 @@ def renameUsingHashDefLine(scopeAnalyst,
     if twoLines:
         context = traversal(scopeAnalyst, iBuilder, context, passTwo)
     
-    (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
+#     (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
+    (name_positions, _position_names) = prepHelpers(iBuilder, scopeAnalyst)
     
     shas = {}
     name_candidates = {}

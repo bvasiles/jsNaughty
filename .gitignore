@@ -2,3 +2,7 @@
 *.swp
 .npmignore
 .travis.yml
+data/corpus.10000_350klines.tar
+data
+experiments/corpora
+experiments/test_corpus.lm

@@ -1,12 +1,14 @@
 __all__ = ['acorn', 'indexer', 'jsNice', 'lmQuery', 'moses', \
            'scoper', 'uglifyJS', 'unuglifyJS', 'preprocessor', \
            'miniChecker', 'lexer', 'aligner', 'dos2unix', \
-           'postprocessor', 'normalizer']
+           'postprocessor', 'normalizer', 'helpers', 'mosesParser', \
+           'mosesOutputFormatter', 'renamer', 'summarizer', \
+           'consistency']
 from tools.acorn import Acorn
 from tools.indexer import IndexBuilder
 from tools.jsNice import JSNice
 from tools.lmQuery import LMQuery
-from tools.moses import MosesDecoder
+from tools.moses import MosesDecoder, WebMosesDecoder
 from tools.scoper import ScopeAnalyst, WebScopeAnalyst
 from tools.uglifyJS import Uglifier, Beautifier
 from tools.unuglifyJS import UnuglifyJS
@@ -17,3 +19,9 @@ from tools.lexer import Lexer, WebLexer
 from tools.aligner import Aligner
 from tools.dos2unix import Dos2Unix
 from tools.normalizer import Normalizer
+from tools.helpers import prepHelpers, writeTmpLines
+from tools.mosesOutputFormatter import WebMosesOutputFormatter
+from tools.mosesParser import MosesParser
+from tools.renamer import Renamer
+from tools.summarizer import TranslationSummarizer
+from tools.consistency import ConsistencyResolver

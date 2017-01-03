@@ -93,7 +93,12 @@ class IndexBuilder:
             flat_chr_idx += len(token)
             
 
-
+    def get_text(self):
+        tokens = []
+        for _line_idx, line in enumerate(self.tokens):
+            tokens.append(' '.join([t for (_tt,t) in line]) + "\n")
+        return '\n'.join(tokens)
+            
 
     def __repr__(self):
         return "IndexBuilder()"

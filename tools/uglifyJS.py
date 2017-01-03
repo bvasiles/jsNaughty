@@ -15,17 +15,20 @@ class Uglifier:
             self.flags = flags
         
         if path is None:
-#             if socket.gethostname() == 'godeep':
-#                 self.path = 'uglifyjs'
-#             else:
-#                 self.path = '/usr/local/bin/uglifyjs'
-            if socket.gethostname() == 'bogdan.mac' or \
-                    socket.gethostname() == 'godot' or \
-                    socket.gethostname() == 'Caseys-MacBook-Pro.local' or socket.gethostname()== 'campus-055-006.ucdavis.edu':
-                self.path = '/usr/local/bin/uglifyjs'
-            else:
-                # Godeep & HPC1 Cluster
+            if socket.gethostname() == 'godeep':
+                # Add HPC1 cluster here
                 self.path = 'uglifyjs'
+            else:
+                self.path = '/usr/local/bin/uglifyjs'
+
+#             if socket.gethostname() == 'bogdan.mac' or \
+#                     socket.gethostname() == 'godot' or \
+#                     socket.gethostname() == 'Caseys-MacBook-Pro.local' or \
+#                     socket.gethostname()== 'campus-055-006.ucdavis.edu':
+#                 self.path = '/usr/local/bin/uglifyjs'
+#             else:
+#                 # Godeep & HPC1 Cluster
+#                 self.path = 'uglifyjs'
         else:
             self.path = path
         
@@ -58,9 +61,6 @@ class Uglifier:
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
         out, err = proc.communicate(input=inputText)
         
-#         print 'OUT:' + out
-#         print 'ERR:' + err
-    
         if not proc.returncode:
             uglifyjs_ok = True
     

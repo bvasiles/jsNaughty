@@ -109,10 +109,14 @@ def formatTokens(tokenList):
     return lines
 
 
+def formatLines(lines):
+    return '\n'.join([' '.join([token for (_token_type, token) in line]) 
+                      for line in lines])
+
+
 def writeTmpLines(lines, out_file_path):
     js_tmp = open(out_file_path, 'w')
-    js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
-                            for line in lines]).encode('utf8'))
+    js_tmp.write(formatLines(lines).encode('utf8'))
     js_tmp.write('\n')
     js_tmp.close()
     
@@ -120,16 +124,17 @@ def writeTmpLines(lines, out_file_path):
 
 class Preprocessor:
 
-    def __init__(self, js_file_path):
+    def __preprocess(self, js_text):
         # lex
-        lexer = get_lexer_for_filename(js_file_path)
-    
+#         lexer = get_lexer_for_filename(js_file_path)
+        self.lexer = get_lexer_for_filename("jsFile.js")
+        
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
-        programText = replaceSciNotNum(open(js_file_path, 'r').read())
+        programText = replaceSciNotNum(js_text)
     
         # Tokenize input
-        self.tokenList = list(lex(programText, lexer))
+        self.tokenList = list(lex(programText, self.lexer))
 
         # Remove comments
         self.tokenList = tokensExceptTokenType(self.tokenList, Token.Comment)
@@ -144,7 +149,11 @@ class Preprocessor:
                                           'TOKEN_LITERAL_STRING')
         self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
                                           'TOKEN_LITERAL_NUMBER')
+        
 
+    def __init__(self, js_file_path):
+        self.__preprocess(open(js_file_path, 'r').read())
+    
 
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
@@ -152,37 +161,13 @@ class Preprocessor:
         
     def __str__(self):
         lines = formatTokens(self.tokenList)
-        return '\n'.join([' '.join([token for (_token_type, token) in line]) for line in lines])
+        return formatLines(lines)
     
 
 class WebPreprocessor(Preprocessor):
     
     def __init__(self, js_text):
-        # lex
-        lexer = get_lexer_for_filename("jsFile.js")
+        self._Preprocessor__preprocess(js_text)
     
-        # FIXME: right now I'm replacing all numbers in 
-        # scientific notation by 1. Replace by actual value
-        programText = replaceSciNotNum(js_text)
-    
-        # Tokenize input
-        self.tokenList = list(lex(programText, lexer))
 
-        # Remove comments
-        self.tokenList = tokensExceptTokenType(self.tokenList, Token.Comment)
-    
-        # Replace .1 by 0.1
-        self.tokenList = fixIncompleteDecimals(self.tokenList)
-        
-        # Strip annotations and literals
-        self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
-
-        self.tokenList = tokensReplaceTokenOfType(self.tokenList, String, 
-                                          'TOKEN_LITERAL_STRING')
-        self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
-                                          'TOKEN_LITERAL_NUMBER')
-
-    def __str__(self):
-        lines = formatTokens(self.tokenList)
-        return '\n'.join([' '.join([token for (_token_type, token) in line]) for line in lines])
     
