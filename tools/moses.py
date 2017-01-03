@@ -1,7 +1,7 @@
 import subprocess
 PIPE = subprocess.PIPE
 import socket
-from tools import WebMosesOutputFormatter
+from mosesOutputFormatter import WebMosesOutputFormatter
 # from pygments.token import Token, is_token_subtype
 
 
