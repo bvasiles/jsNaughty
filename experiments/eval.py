@@ -6,7 +6,6 @@ Created on Dec 22, 2016
 
 import os
 import sys
-from tools.scoper import WebScopeAnalyst
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 import multiprocessing
@@ -15,7 +14,7 @@ from tools import Uglifier, Preprocessor, IndexBuilder, \
                     Beautifier, Lexer, Aligner, ScopeAnalyst, \
                     UnuglifyJS, JSNice, LMQuery, MosesDecoder, \
                     prepHelpers, TranslationSummarizer, WebMosesDecoder, \
-                    WebMosesOutputFormatter
+                    WebMosesOutputFormatter, WebScopeAnalyst
 
 from renamingStrategies import renameUsingHashDefLine
 
