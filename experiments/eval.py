@@ -14,7 +14,8 @@ from tools import Uglifier, Preprocessor, IndexBuilder, \
                     Beautifier, Lexer, Aligner, ScopeAnalyst, \
                     UnuglifyJS, JSNice, LMQuery, MosesDecoder, \
                     prepHelpers, TranslationSummarizer, WebMosesDecoder, \
-                    WebMosesOutputFormatter, WebScopeAnalyst
+                    WebMosesOutputFormatter, WebScopeAnalyst, \
+                    WebPreprocessor, Postprocessor, WebLexer
 
 from renamingStrategies import renameUsingHashDefLine
 
@@ -23,7 +24,6 @@ from pygments.token import Token, is_token_subtype
 from copy import deepcopy
 
 import xmlrpclib
-from tools import WebPreprocessor, Postprocessor, WebLexer
 from postprocessUtil import processTranslationScoped, processTranslationUnscoped
 
 

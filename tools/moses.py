@@ -1,7 +1,7 @@
 import subprocess
 PIPE = subprocess.PIPE
 import socket
-from tools import WebMosesParser
+from tools import Postprocessor
 # from pygments.token import Token, is_token_subtype
 
 
@@ -58,7 +58,7 @@ class WebMosesDecoder:
         
         try:
             mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
-            parser = WebMosesParser()
+            parser = Postprocessor()
             moses_output = parser.getProcessedOutput(mresults["nbest"])
             return (True, moses_output, "")
         
