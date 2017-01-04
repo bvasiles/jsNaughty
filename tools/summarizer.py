@@ -13,8 +13,7 @@ class TranslationSummarizer:
                         renaming_map,
                         name_candidates,
                         iBuilder,
-                        scopeAnalyst,
-                        prefix):
+                        scopeAnalyst):
         
         nc = []
         
@@ -29,20 +28,18 @@ class TranslationSummarizer:
             (lin,col) = iBuilder.revFlatMat[pos]
             (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
             
-            nc.append( (prefix,
-                             def_scope, 
-                             tok_lin, tok_col, 
-                             isGlobal.get((name, pos), True),
-                             renaming,
-                             ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
+            nc.append( (def_scope, 
+                        tok_lin, tok_col, 
+                        isGlobal.get((name, pos), True),
+                        renaming,
+                        ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
         
         return nc
 
     
     def compute_summary_unscoped(self,
                                  iBuilder,
-                                 scopeAnalyst,
-                                 prefix):
+                                 scopeAnalyst):
         
         nc = []
         
@@ -57,12 +54,11 @@ class TranslationSummarizer:
                 (lin,col) = iBuilder.revFlatMat[pos]
                 (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
         
-                nc.append( (prefix, 
-                                 def_scope, 
-                                 tok_lin, tok_col, 
-                                 isGlobal.get((name, pos), True),
-                                 name,
-                                 '') )
+                nc.append( (def_scope, 
+                            tok_lin, tok_col, 
+                            isGlobal.get((name, pos), True),
+                            name,
+                            '') )
                 
         return nc
     

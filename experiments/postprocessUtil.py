@@ -361,11 +361,10 @@ def processTranslationScoped(translation,
         print '\nrenaming_map\n', renaming_map
 
         ts = TranslationSummarizer()
-        r = ts.compute_summary_scoped(renaming_map,
-                                       name_candidates,
-                                       iBuilder,
-                                       scopeAnalyst,
-                                       'lm')
+        r = [['lm']+x for x in ts.compute_summary_scoped(renaming_map,
+                                                         name_candidates,
+                                                         iBuilder,
+                                                         scopeAnalyst)]
         print 'Done: ts.compute_summary_scoped(cs.computeLMRenaming(...))'
         
         if not r:
@@ -389,13 +388,12 @@ def processTranslationScoped(translation,
 #         nc += r
         
         
-        r = ts.compute_summary_scoped(cs.computeFreqLenRenaming(name_candidates,
+        r = [['freqlen']+x for x in ts.compute_summary_scoped(cs.computeFreqLenRenaming(name_candidates,
                                                               name_positions,
                                                               lambda e:(-e[1],-len(e[0]))),
                                        name_candidates,
                                        iBuilder,
-                                       scopeAnalyst,
-                                       'freqlen')
+                                       scopeAnalyst)]
         print 'Done: ts.compute_summary_scoped(cs.computeFreqLenRenaming(...))'
         if not r:
             return False
