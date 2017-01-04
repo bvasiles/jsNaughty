@@ -15,9 +15,10 @@ from tools import Uglifier, Preprocessor, IndexBuilder, \
                     UnuglifyJS, JSNice, LMQuery, MosesDecoder, \
                     prepHelpers, TranslationSummarizer, WebMosesDecoder, \
                     WebMosesOutputFormatter, WebScopeAnalyst, \
-                    WebPreprocessor, Postprocessor, WebLexer
+                    WebPreprocessor, Postprocessor, WebLexer, \
+                    MosesParser, ConsistencyResolver, PreRenamer, PostRenamer
 
-from renamingStrategies import renameUsingHashDefLine
+# from renamingStrategies import renameUsingHashDefLine
 
 from folderManager import Folder
 from pygments.token import Token, is_token_subtype
@@ -776,11 +777,10 @@ def processFile(l):
     temp_files = {'minified': '%s.u.js' % base_name,
                   'n2p': '%s.n2p.js' % base_name}
     
-    for strategy in ['lm.js', 'len.js', 'freqlen.js']:
-        for renaming in ['no_renaming', 'basic_renaming', 'normalized', 
-                         'hash_def_one_renaming', 'hash_def_two_renaming']:
-            temp_files['%s_%s' % (renaming, strategy)] = \
-                    '%s.%s.%s' % (base_name, renaming, strategy)
+    for c_strategy in consistency_strategies:
+        for r_strategy in renaming_strategies.keys():
+            temp_files['%s_%s' % (r_strategy, c_strategy)] = \
+                    '%s.%s.%s.js' % (base_name, r_strategy, c_strategy)
                     
 #             temp_files['%s_%s' % (renaming, strategy)] = \
 #                     'tmp_%d.%s.%s' % (pid, renaming, strategy)
@@ -847,7 +847,7 @@ def processFile(l):
 #             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
         
-        
+            
 #         # Pass through beautifier to fix layout
 #         clear = Beautifier()
 #         ok = clear.run(temp_files['path_tmp'], 
@@ -1070,8 +1070,10 @@ def processFile(l):
             return (js_file_path, None, 'ScopeAnalyst fail')
          
          
- 
-#         # Baseline translation: No renaming, no scoping
+        ################################################
+        # Baseline translation: No renaming, no scoping
+        ################################################
+
 #         no_renaming = []
 #         for _line_idx, line in enumerate(iBuilder_ugly.tokens):
 #             no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
@@ -1079,18 +1081,98 @@ def processFile(l):
 # #         with open(temp_files['f2'], 'w') as f_no_renaming:
 # #             f_no_renaming.writelines(no_renaming)
  
-        lx = WebLexer(iBuilder_ugly.get_text())
 #         print 'Done: WebLexer(iBuilder_ugly.get_text())'
         
-        md = WebMosesDecoder(renaming_strategies['no_renaming'])
- 
-        (ok, translation_no_renaming, err) = md.run(lx.collapsedText)
-        if not ok:
-            return (js_file_path, None, 'Moses fail: no_renaming')
-#         print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
+        for r_strategy, proxy in renaming_strategies.iteritems():
         
-#         print translation_no_renaming
+            md = WebMosesDecoder(proxy)
             
+            # Apply renaming
+            try:
+                preRen = PreRenamer()
+                after_text = preRen.rename(r_strategy, 
+                                          scopeAnalyst, 
+                                          iBuilder_ugly)
+                
+                print '\n', r_strategy
+                print after_text
+                
+                (ok, beautified_after_text, _err) = clear.web_run(after_text)
+                if not ok:
+                    return (js_file_path, None, 'Beautifier fail')
+                
+                a_lexer = WebLexer(beautified_after_text)
+                a_iBuilder = IndexBuilder(a_lexer.tokenList)
+                a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
+                
+            except:
+                return (js_file_path, None, 'Renaming fail')
+            
+            lx = WebLexer(a_iBuilder.get_text())
+            
+            (ok, translation, _err) = md.run(lx.collapsedText)
+            if not ok:
+                return (js_file_path, None, 'Moses translation fail')
+            
+    #         print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
+    #         print translation
+            
+            (name_positions, 
+             position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+
+            nc = []
+             
+            if translation is not None:
+                # Parse moses output
+                mp = MosesParser()
+                
+                name_candidates = mp.parse(translation,
+                                           a_iBuilder,
+                                           position_names,
+                                           a_scopeAnalyst)
+                # name_candidates is a dictionary of dictionaries: 
+                # keys are (name, None) (if scopeAnalyst=None) or 
+                # (name, def_scope) tuples (otherwise); 
+                # values are suggested translations with the sets 
+                # of line numbers on which they appear.
+                
+        #         print 'name_candidates\n'
+        #         for key, val in name_candidates.iteritems():
+        #             print key
+        #             for k,v in val.iteritems():
+        #                 print '  ', k, v
+                
+                cs = ConsistencyResolver()
+                ts = TranslationSummarizer()
+                
+                for c_strategy in consistency_strategies:
+                    
+                    renaming_map = cs.computeRenaming(c_strategy,
+                                                      name_candidates,
+                                                      name_positions,
+                                                      a_iBuilder,
+                                                      lm_path)
+#         print '\nrenaming_map\n', renaming_map
+
+                    r = [[c_strategy] + x 
+                         for x in ts.compute_summary_scoped(renaming_map,
+                                                            name_candidates,
+                                                            a_iBuilder,
+                                                            a_scopeAnalyst)]
+            #         print 'Done: ts.compute_summary_scoped(cs.computeLMRenaming(...))'
+                    
+                    if not r:
+                        return False
+                    nc += r
+                
+            
+#             nc = processTranslationScoped(translation, 
+#                                           iBuilder_ugly, 
+#                                           scopeAnalyst, 
+#                                           lm_path)
+            if nc:
+                candidates += [[r_strategy] + x for x in nc]
+         
 #         wof = WebMosesOutputFormatter()
 #         translation_no_renaming = wof.formatOutput(mresults["nbest"])
 #         print 'Done: WebMosesOutputFormatter().formatOutput(mresults["nbest"])'
@@ -1113,14 +1195,10 @@ def processFile(l):
  
  
  
-        nc = processTranslationScoped(translation_no_renaming, 
-                                      iBuilder_ugly, 
-                                      scopeAnalyst, 
-                                      lm_path)
-        if nc:
-            candidates += [['no_renaming'] + x for x in nc]
          
-         
+        ################################################
+        # Hash-based renaming, one line
+        ################################################
          
 #         # More complicated renaming: collect the context around  
 #         # each name (global variables, API calls, punctuation)
@@ -1247,13 +1325,13 @@ if __name__=="__main__":
 #     except:
 #         pass
 
-#     consistency_strategies = ['js', 'lm.js', 'len.js', 'freqlen.js']
+    consistency_strategies = ['lm', 'freqlen'] #'len', 
     
     renaming_strategies = {'no_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"), 
-                           'normalized':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40002/RPC2"),
-                           'basic_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40003/RPC2"),
-                           'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40004/RPC2"),
-                           'hash_def_two_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40005/RPC2")}
+                           'normalized':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                           'basic_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                           'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                           'hash_def_two_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
 #     proxy_one = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8081/RPC2")
 #     proxy_two = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8082/RPC2")

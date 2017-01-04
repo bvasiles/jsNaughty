@@ -16,7 +16,34 @@ class ConsistencyResolver:
 #     def __init__(self):
 #         self.renaming_map = {}
 #         self.seen = {}
+    
+    
+    def computeRenaming(self,
+                        strategy,
+                        name_candidates,
+                        name_positions,
+                        iBuilder=None,
+                        lm_path=None):
         
+        if strategy == 'lm':
+            return self.computeLMRenaming(name_candidates, 
+                                          name_positions,
+                                          iBuilder, 
+                                          lm_path)
+        
+        elif strategy == 'freqlen':
+            return self.computeFreqLenRenaming(name_candidates, 
+                                               name_positions, 
+                                               lambda e:(-e[1],-len(e[0])))
+        
+        elif strategy == 'len':
+            return self.computeFreqLenRenaming(name_candidates, 
+                                               name_positions, 
+                                               lambda e:-len(e[0]))
+        else:
+            return {}
+    
+    
     def computeLMRenaming(self,
                           name_candidates, 
                           name_positions,
@@ -26,7 +53,7 @@ class ConsistencyResolver:
         renaming_map = {}
         seen = {}
         
-        print #len(name_candidates.items())
+#         print #len(name_candidates.items())
      
         # There is no uncertainty about the translation for
         # variables that have a single candidate translation

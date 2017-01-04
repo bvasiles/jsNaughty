@@ -22,6 +22,6 @@ from tools.normalizer import Normalizer
 from tools.helpers import prepHelpers, writeTmpLines
 from tools.mosesOutputFormatter import WebMosesOutputFormatter
 from tools.mosesParser import MosesParser
-from tools.renamer import Renamer
+from tools.renamer import PostRenamer, PreRenamer
 from tools.summarizer import TranslationSummarizer
 from tools.consistency import ConsistencyResolver
