@@ -767,18 +767,26 @@ def processFile(l):
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
-    pid = int(multiprocessing.current_process().ident)
+#     pid = int(multiprocessing.current_process().ident)
     
     print js_file_path
     
-    temp_files = {'in': 'tmp_%d.u.js' % pid,
-                  'n2p': 'tmp_%d.n2p.js' % pid}
+#     temp_files = {'minified': 'tmp_%d.u.js' % pid,
+#                   'n2p': 'tmp_%d.n2p.js' % pid}
+    temp_files = {'minified': '%s.u.js' % base_name,
+                  'n2p': '%s.n2p.js' % base_name}
     
     for strategy in ['lm.js', 'len.js', 'freqlen.js']:
         for renaming in ['no_renaming', 'basic_renaming', 'normalized', 
                          'hash_def_one_renaming', 'hash_def_two_renaming']:
             temp_files['%s_%s' % (renaming, strategy)] = \
-                    'tmp_%d.%s.%s' % (pid, renaming, strategy)
+                    '%s.%s.%s' % (base_name, renaming, strategy)
+                    
+#             temp_files['%s_%s' % (renaming, strategy)] = \
+#                     'tmp_%d.%s.%s' % (pid, renaming, strategy)
+    
+    for k,v in temp_files.iteritems():
+        temp_files[k] = os.path.join(output_path, v)
     
     
 #                   'no_renaming': 'tmp_%d.no_renaming.js' % pid,
@@ -935,7 +943,8 @@ def processFile(l):
         # From now on only work with path_tmp_b_a and path_tmp_u_a
         ############################################################
         
-        print beautified_text
+        with open(temp_files['minified'], 'w') as f:
+            f.write(minified_text)
         
 #         # Store original and uglified versions
 #         ok = clear.run(temp_files['path_tmp_b_a'], 
