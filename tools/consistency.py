@@ -217,6 +217,8 @@ class ConsistencyResolver:
             
         token_lines = []
         
+        print 'first half------------------------------------------'
+        
         for key, pos in name_positions.iteritems():
             token_lines.append((key, \
                                 len(set([line_num \
