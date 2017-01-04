@@ -58,8 +58,10 @@ class WebMosesDecoder:
         
         try:
             mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
+            
             parser = WebMosesOutputFormatter()
             moses_output = parser.formatOutput(mresults["nbest"])
+            
             return (True, moses_output, "")
         
         except Exception as err:

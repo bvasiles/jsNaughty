@@ -36,6 +36,7 @@ class ConsistencyResolver:
                           
             (name, def_scope) = key
             candidate_name = val.keys()[0]
+            print (name, def_scope), candidate_name
              
             if not self.seen.has_key((candidate_name, def_scope)):
                 renaming_map[key] = candidate_name
