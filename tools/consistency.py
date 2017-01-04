@@ -79,7 +79,7 @@ class ConsistencyResolver:
                 (name, def_scope) = key
                 unseen_candidates = [candidate_name 
                                      for (candidate_name, _occurs) in candidates
-                                     if not self.seen.has_key((candidate_name, def_scope))]
+                                     if not seen.has_key((candidate_name, def_scope))]
                  
                 if len(unseen_candidates):
                      
@@ -150,7 +150,7 @@ class ConsistencyResolver:
              
             # Don't use the same translation for different
             # variables within the same scope.
-            if not self.seen.has_key((candidate_name, def_scope)):
+            if not seen.has_key((candidate_name, def_scope)):
                 renaming_map[key] = candidate_name
                 seen[(candidate_name, def_scope)] = True
                  
@@ -183,7 +183,7 @@ class ConsistencyResolver:
                 (name, def_scope) = key
                 unseen_candidates = [candidate_name 
                                      for (candidate_name, _occurs) in candidates
-                                     if not self.seen.has_key((candidate_name, def_scope))]
+                                     if not seen.has_key((candidate_name, def_scope))]
                  
                 if len(unseen_candidates):
                     candidate_name = unseen_candidates[0]
