@@ -362,7 +362,7 @@ def processTranslationScoped(translation,
                                             lm_path)
 #         print '\nrenaming_map\n', renaming_map
 
-        r = [['lm'] + x for x in ts.compute_summary_scoped(renaming_map,
+        r = [['lm'] + list(x) for x in ts.compute_summary_scoped(renaming_map,
                                                            name_candidates,
                                                            iBuilder,
                                                            scopeAnalyst)]
@@ -392,7 +392,7 @@ def processTranslationScoped(translation,
                                                 name_positions,
                                                 lambda e:(-e[1],-len(e[0])))
         
-        r = [['freqlen'] + x for x in ts.compute_summary_scoped(renaming_map,
+        r = [['freqlen'] + list(x) for x in ts.compute_summary_scoped(renaming_map,
                                                                 name_candidates,
                                                                 iBuilder,
                                                                 scopeAnalyst)]

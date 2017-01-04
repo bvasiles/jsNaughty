@@ -27,7 +27,7 @@ class LMQuery:
         echo = subprocess.Popen(['echo', line], stdout=PIPE)
         print("LM Query: " + " ".join([self.query_path, 
                                '-n', '-s', #'sentence', 
-                               self.lm_path]))
+                               self.lm_path]) + line)
         proc = subprocess.Popen([self.query_path, 
                                '-n', '-s', #'sentence', 
                                self.lm_path], 
