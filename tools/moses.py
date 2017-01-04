@@ -56,8 +56,12 @@ class WebMosesDecoder:
     def run(self, collapsed_text):
         self.mosesParams["text"] = collapsed_text
         
+        print 'Translating:\n', collapsed_text 
+        
         try:
             mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
+            
+            print mresults
             
             parser = WebMosesOutputFormatter()
             moses_output = parser.formatOutput(mresults["nbest"])

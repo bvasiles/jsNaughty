@@ -1037,7 +1037,7 @@ def processFile(l):
         # not a (line_chr_idx, col_chr_idx) index.
         try:
             scopeAnalyst = WebScopeAnalyst(minified_text)
-            print 'DONE: WebScopeAnalyst(minified_text)'
+            print 'Done: WebScopeAnalyst(minified_text)'
         except:
 #             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
