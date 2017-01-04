@@ -346,15 +346,18 @@ def processTranslationScoped(translation,
         # values are suggested translations with the sets 
         # of line numbers on which they appear.
         
-        print name_candidates
+        print 'name_candidates', name_candidates
         
         ts = TranslationSummarizer()
         cs = ConsistencyResolver()
-
-        r = ts.compute_summary_scoped(cs.computeLMRenaming(name_candidates,
+        
+        renaming_map = cs.computeLMRenaming(name_candidates,
                                                          name_positions,
                                                          iBuilder,
-                                                         lm_path),
+                                                         lm_path)
+        print 'renaming_map', renaming_map
+
+        r = ts.compute_summary_scoped(renaming_map,
                                        name_candidates,
                                        iBuilder,
                                        scopeAnalyst,
