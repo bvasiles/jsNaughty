@@ -227,7 +227,9 @@ class ConsistencyResolver:
         # Sort names by how many lines they appear 
         # on in the input, descending
         token_lines = sorted(token_lines, key=lambda e: -e[1])
-    #     print token_lines
+        
+        print 'token_lines------------------------------------------'
+        print token_lines
         
         for key, _num_lines in token_lines:
             
