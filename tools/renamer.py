@@ -100,6 +100,8 @@ class PreRenamer:
         scopes = set(name2defScope.values())
         scope2id = dict(zip(scopes, generateScopeIds(len(scopes), except_ids)))
     
+        print scope2id
+    
         renaming = []
             
         for line_idx, line in enumerate(iBuilder_ugly.tokens):
