@@ -327,8 +327,8 @@ class PreRenamer:
     
         context = traversal(scopeAnalyst, iBuilder, context, passOne)
         
-#         print("context-------------------------------------")
-#         print(context)
+        print("context-------------------------------------")
+        print(context)
         
         if twoLines:
             context = traversal(scopeAnalyst, iBuilder, context, passTwo)
