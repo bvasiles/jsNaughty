@@ -106,11 +106,11 @@ class PreRenamer:
             
         for line_idx, line in enumerate(iBuilder_ugly.tokens):
             
-            print line_idx, line
+#             print line_idx, line
              
             new_line = []
             for token_idx, (token_type, token) in enumerate(line):
-                print '  ', token_idx, (token_type, token)
+#                 print '  ', token_idx, (token_type, token)
                 try:
                     (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
                     pos = iBuilder_ugly.flatMap[(l,c)]
@@ -130,7 +130,7 @@ class PreRenamer:
              
             renaming.append(' '.join(new_line) + "\n")
         
-        print 'renamingUsingScopeId:', renaming
+#         print 'renamingUsingScopeId:', renaming
         return renaming
     
     
@@ -393,7 +393,7 @@ class PreRenamer:
             return iBuilder.get_text()
         
         elif r_strategy == 'basic_renaming':
-            return self.collapse(self.renameUsingScopeId(scopeAnalyst, 
+            return '\n'.join(self.renameUsingScopeId(scopeAnalyst, 
                                                          iBuilder))
         
         elif r_strategy == 'hash_def_one_renaming':
