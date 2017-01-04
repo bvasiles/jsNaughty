@@ -25,6 +25,8 @@ class ConsistencyResolver:
         
         renaming_map = {}
         seen = {}
+        
+        print len(name_candidates.items())
      
         # There is no uncertainty about the translation for
         # variables that have a single candidate translation
