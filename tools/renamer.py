@@ -110,6 +110,7 @@ class PreRenamer:
              
             new_line = []
             for token_idx, (token_type, token) in enumerate(line):
+                print '  ', token_idx, (token_type, token)
                 try:
                     (l,c) = iBuilder_ugly.tokMap[(line_idx,token_idx)]
                     pos = iBuilder_ugly.flatMap[(l,c)]
