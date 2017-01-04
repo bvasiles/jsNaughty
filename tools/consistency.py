@@ -177,6 +177,12 @@ class ConsistencyResolver:
                                name_positions,
                                sorting_key):
      
+        print("name_candidates-------------------------------------")
+        print(name_candidates)
+        
+        print("name_positions-------------------------------------")
+        print(name_positions)
+     
         renaming_map = {}
         seen = {}
      
