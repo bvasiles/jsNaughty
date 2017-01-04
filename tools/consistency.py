@@ -26,7 +26,7 @@ class ConsistencyResolver:
         renaming_map = {}
         seen = {}
         
-        print len(name_candidates.items())
+        print #len(name_candidates.items())
      
         # There is no uncertainty about the translation for
         # variables that have a single candidate translation
@@ -45,7 +45,7 @@ class ConsistencyResolver:
             else:
                 renaming_map[(name, def_scope)] = name
                 
-        print '--', renaming_map
+        print '\n--', renaming_map
              
         # For the remaining variables, choose the translation that 
         # gives the highest language model log probability

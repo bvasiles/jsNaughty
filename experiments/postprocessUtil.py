@@ -349,17 +349,18 @@ def processTranslationScoped(translation,
         
         print 'name_candidates\n'
         for key, val in name_candidates.iteritems():
-            print key, val
+            print key
+            for k,v in val.iteritems():
+                print '  ', k, v
         
-        ts = TranslationSummarizer()
         cs = ConsistencyResolver()
-        
         renaming_map = cs.computeLMRenaming(name_candidates,
                                                          name_positions,
                                                          iBuilder,
                                                          lm_path)
         print '\nrenaming_map\n', renaming_map
 
+        ts = TranslationSummarizer()
         r = ts.compute_summary_scoped(renaming_map,
                                        name_candidates,
                                        iBuilder,
