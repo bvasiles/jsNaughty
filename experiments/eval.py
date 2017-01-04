@@ -1057,14 +1057,14 @@ def processFile(l):
         
         md = WebMosesDecoder(renaming_strategies['no_renaming'])
  
-        (ok, mresults, err) = md.run(lx.collapsedText)
+        (ok, translation_no_renaming, err) = md.run(lx.collapsedText)
         if not ok:
             return (js_file_path, None, 'Moses fail: no_renaming')
         print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
             
-        wof = WebMosesOutputFormatter()
-        translation_no_renaming = wof.formatOutput(mresults["nbest"])
-        print 'Done: WebMosesOutputFormatter().formatOutput(mresults["nbest"])'
+#         wof = WebMosesOutputFormatter()
+#         translation_no_renaming = wof.formatOutput(mresults["nbest"])
+#         print 'Done: WebMosesOutputFormatter().formatOutput(mresults["nbest"])'
         
 #         ts = TranslationSummarizer()
 #         nc = ts.compute_summary_unscoped(iBuilder_ugly, scopeAnalyst, prefix)
