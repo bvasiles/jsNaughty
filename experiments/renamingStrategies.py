@@ -25,7 +25,7 @@ class Strategies():
 
 
 # def prepareHelpers(iBuilder, 
-#                    scopeAnalyst):
+#                    scopeAnalyst):21
 # 
 #     # Collect names and their locations in various formats
 #     # that will come in handy later:

@@ -1086,6 +1086,7 @@ def processFile(l):
         for r_strategy, proxy in renaming_strategies.iteritems():
         
             md = WebMosesDecoder(proxy)
+            print '\n', r_strategy
             
             # Apply renaming
             try:
@@ -1094,7 +1095,6 @@ def processFile(l):
                                           scopeAnalyst, 
                                           iBuilder_ugly)
                 
-                print '\n', r_strategy
                 print after_text
                 
                 (ok, beautified_after_text, _err) = clear.web_run(after_text)
