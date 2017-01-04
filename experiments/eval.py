@@ -939,9 +939,6 @@ def processFile(l):
 #             cleanup(temp_files)
             return (js_file_path, None, 'IndexBuilder fail')
         
-        ############################################################ 
-        # From now on only work with path_tmp_b_a and path_tmp_u_a
-        ############################################################
         
         with open(temp_files['minified'], 'w') as f:
             f.write(minified_text)
@@ -959,6 +956,9 @@ def processFile(l):
 #             cleanup(temp_files)
 #             return (js_file_path, None, 'Beautifier fail')
         
+        ######################## 
+        #     Nice2Predict
+        ########################
         
         # BV: Next block left out until I figure out the pipe issue
         # BV: Update: I couldn't pipe input to N2P. TODO: FIX
@@ -999,20 +999,19 @@ def processFile(l):
 # #             return (js_file_path, None, 'Beautifier fail')
 # 
 # 
-#         try:
-#             lexer = WebLexer(n2p_text_beautified)
-#             iBuilder = IndexBuilder(lexer.tokenList)
-#             scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
-#         except:
-# #             cleanup(temp_files)
-#             return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
-#         
-#         ts = TranslationSummarizer()
-#         candidates += ts.compute_summary_unscoped(iBuilder, 
-#                                                   scopeAnalyst, 
-#                                                   'Nice2Predict')
+        try:
+            n2p_lexer = WebLexer(n2p_text_beautified)
+            n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
+            n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
+        except:
+#             cleanup(temp_files)
+            return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+         
+        ts = TranslationSummarizer()
+        candidates += [['n2p', ''] + x 
+                       for x in ts.compute_summary_unscoped(n2p_iBuilder, 
+                                                            n2p_scopeAnalyst)]
             
-    
     
 #         # Run the JSNice from http://www.jsnice.org
 #         jsNice = JSNice()
