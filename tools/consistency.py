@@ -250,6 +250,9 @@ class ConsistencyResolver:
     #                     print (key, use_scope), name
                         renaming_map[(key, use_scope)] = name
                         seen[(name, use_scope)] = True
+        
+        print 'renaming_map-----------------------------------'
+        print renaming_map
                 
         return renaming_map
 
