@@ -1334,6 +1334,8 @@ if __name__=="__main__":
                            'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
                            'hash_def_two_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
+    renaming_strategies = {'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
+    
 #     proxy_one = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8081/RPC2")
 #     proxy_two = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8082/RPC2")
 #     proxy_nr = 

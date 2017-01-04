@@ -96,7 +96,7 @@ class IndexBuilder:
     def get_text(self):
         tokens = []
         for _line_idx, line in enumerate(self.tokens):
-            tokens.append(' '.join([t for (_tt,t) in line]) + "\n")
+            tokens.append(' '.join([t for (_tt,t) in line]))
         return '\n'.join(tokens)
             
 
