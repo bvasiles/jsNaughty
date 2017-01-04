@@ -165,7 +165,7 @@ class ScopeAnalyst:
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start'])
                     
-                    print("Key:" + str(key) + " Start: " + str(start))
+                    #print("Key:" + str(key) + " Start: " + str(start))
                     use_scope = self.__get_use_scope(parent['scope'])
                     self.name2useScope[(key, start)] = use_scope
                     

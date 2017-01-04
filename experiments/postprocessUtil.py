@@ -357,6 +357,8 @@ def processTranslationScoped(translation,
                                        iBuilder,
                                        scopeAnalyst,
                                        'lm')
+        print 'Done: ts.compute_summary_scoped(cs.computeLMRenaming(...))'
+        
         if not r:
             return False
         nc += r
@@ -385,6 +387,7 @@ def processTranslationScoped(translation,
                                        iBuilder,
                                        scopeAnalyst,
                                        'freqlen')
+        print 'Done: ts.compute_summary_scoped(cs.computeFreqLenRenaming(...))'
         if not r:
             return False
         nc += r

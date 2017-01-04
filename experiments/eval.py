@@ -1037,6 +1037,7 @@ def processFile(l):
         # not a (line_chr_idx, col_chr_idx) index.
         try:
             scopeAnalyst = WebScopeAnalyst(minified_text)
+            print 'DONE: WebScopeAnalyst(minified_text)'
         except:
 #             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
@@ -1052,15 +1053,18 @@ def processFile(l):
 # #             f_no_renaming.writelines(no_renaming)
  
         lx = WebLexer(iBuilder_ugly.get_text())
+        print 'Done: WebLexer(iBuilder_ugly.get_text())'
         
         md = WebMosesDecoder(renaming_strategies['no_renaming'])
  
         (ok, mresults, err) = md.run(lx.collapsedText)
         if not ok:
             return (js_file_path, None, 'Moses fail: no_renaming')
+        print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
             
         wof = WebMosesOutputFormatter()
         translation_no_renaming = wof.formatOutput(mresults["nbest"])
+        print 'Done: WebMosesOutputFormatter().formatOutput(mresults["nbest"])'
         
 #         ts = TranslationSummarizer()
 #         nc = ts.compute_summary_unscoped(iBuilder_ugly, scopeAnalyst, prefix)
