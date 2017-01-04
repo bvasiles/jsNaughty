@@ -69,6 +69,7 @@ class WebMosesDecoder:
             return (True, moses_output, "")
         
         except Exception as err:
+            print 'Translation failed'
             return (False, None, err)
 
 
