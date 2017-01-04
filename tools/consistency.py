@@ -43,6 +43,8 @@ class ConsistencyResolver:
                  
             else:
                 renaming_map[(name, def_scope)] = name
+                
+        print '--', renaming_map
              
         # For the remaining variables, choose the translation that 
         # gives the highest language model log probability
@@ -53,7 +55,9 @@ class ConsistencyResolver:
             token_lines.append((key, \
                                 len(set([line_num \
                                      for (line_num, _line_idx) in pos]))))
-             
+            
+        print '\ntoken_lines\n', token_lines
+        
         # Sort names by how many lines they appear 
         # on in the input, descending
         token_lines = sorted(token_lines, key=lambda e: -e[1])
