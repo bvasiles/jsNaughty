@@ -49,6 +49,7 @@ class Uglifier:
     
         return uglifyjs_ok
     
+    
     def web_run(self, inputText):
         '''
         Variant that inputs from stdin and outputs to stdout.  Avoid the

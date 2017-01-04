@@ -28,11 +28,11 @@ class TranslationSummarizer:
             (lin,col) = iBuilder.revFlatMat[pos]
             (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
             
-            nc.append( (def_scope, 
+            nc.append( [def_scope, 
                         tok_lin, tok_col, 
                         isGlobal.get((name, pos), True),
                         renaming,
-                        ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
+                        ','.join(name_candidates[(name, def_scope)][use_scope].keys())] )
         
         return nc
 
@@ -54,11 +54,11 @@ class TranslationSummarizer:
                 (lin,col) = iBuilder.revFlatMat[pos]
                 (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
         
-                nc.append( (def_scope, 
+                nc.append( [def_scope, 
                             tok_lin, tok_col, 
                             isGlobal.get((name, pos), True),
                             name,
-                            '') )
+                            ''] )
                 
         return nc
     

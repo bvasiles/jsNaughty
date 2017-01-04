@@ -29,16 +29,16 @@ from postprocessUtil import processTranslationScoped, processTranslationUnscoped
 
 
 
-# def tryRemove(pth):
-#     try:
-#         os.remove(pth)
-#     except OSError:
-#         pass
-# 
-#     
-# def cleanup(temp_files):
-#     for file_path in temp_files: #.itervalues():
-#         tryRemove(file_path)
+def tryRemove(pth):
+    try:
+        os.remove(pth)
+    except OSError:
+        pass
+ 
+     
+def cleanup(temp_files):
+    for file_path in temp_files: #.itervalues():
+        tryRemove(file_path)
 
 
 # def cleanupRenamed(pid):
@@ -770,6 +770,23 @@ def processFile(l):
     pid = int(multiprocessing.current_process().ident)
     
     print js_file_path
+    
+    temp_files = {'in': 'tmp_%d.u.js' % pid,
+                  'n2p': 'tmp_%d.n2p.js' % pid}
+    
+    for strategy in ['lm.js', 'len.js', 'freqlen.js']:
+        for renaming in ['no_renaming', 'basic_renaming', 'normalized', 
+                         'hash_def_one_renaming', 'hash_def_two_renaming']:
+            temp_files['%s_%s' % (renaming, strategy)] = \
+                    'tmp_%d.%s.%s' % (pid, renaming, strategy)
+    
+    
+#                   'no_renaming': 'tmp_%d.no_renaming.js' % pid,
+#                   'basic_renaming': 'tmp_%d.basic_renaming.js' % pid,
+#                   'normalized': 'tmp_%d.normalized.js' % pid,
+#                   'hash_one': 'tmp_%d.hash_def_one_renaming.js' % pid,
+#                   'hash_two': 'tmp_%d.hash_def_two_renaming.js' % pid}
+ 
 
 #     temp_files = {'path_tmp': 'tmp_%d.js' % pid,
 #                   'path_tmp_b': 'tmp_%d.b.js' % pid,
@@ -797,10 +814,6 @@ def processFile(l):
 #                   'path_jsnice': os.path.join(output_path, 
 #                                               '%s.jsnice.js' % base_name)}
     
-#     for strategy in ['js', 'lm.js', 'len.js', 'freqlen.js']:
-#         for renaming in ['no_renaming', 'hash_def_one_renaming']:
-#             temp_files['path_tmp_%s_%s' % (renaming, strategy)] = \
-#                     'tmp_%d.%s.%s' % (pid, renaming, strategy)
 
 
     candidates = []
@@ -821,7 +834,7 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
-        (ok, beautified_text, err) = clear.web_run(prepro_text)
+        (ok, beautified_text, _err) = clear.web_run(prepro_text)
         if not ok:
 #             cleanup(temp_files)
             return (js_file_path, None, 'Beautifier fail')
@@ -870,7 +883,7 @@ def processFile(l):
          
         # Minify
         ugly = Uglifier()
-        (ok, minified_text, err) = ugly.web_run(beautified_text)
+        (ok, minified_text, _err) = ugly.web_run(beautified_text)
         if not ok:
 #             cleanup(temp_files)
             return (js_file_path, None, 'Uglifier fail')
@@ -922,13 +935,15 @@ def processFile(l):
         # From now on only work with path_tmp_b_a and path_tmp_u_a
         ############################################################
         
+        print beautified_text
+        
 #         # Store original and uglified versions
 #         ok = clear.run(temp_files['path_tmp_b_a'], 
 #                        temp_files['path_orig'])
 #         if not ok:
 #             cleanup(temp_files)
 #             return (js_file_path, None, 'Beautifier fail')
-#         
+#          
 #         ok = clear.run(temp_files['path_tmp_u_a'], 
 #                        temp_files['path_ugly'])
 #         if not ok:
@@ -1256,7 +1271,7 @@ if __name__=="__main__":
                     
                     for r in candidates:
                         cw.writerow([js_file_path]+
-                                    [str(x).replace("\"","") for x in list(r)])
+                                    [str(x).replace("\"","") for x in r])
                 else:
                     writer.writerow([result[0], result[2]])
              
