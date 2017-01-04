@@ -1061,6 +1061,8 @@ def processFile(l):
         if not ok:
             return (js_file_path, None, 'Moses fail: no_renaming')
         print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
+        
+        print translation_no_renaming
             
 #         wof = WebMosesOutputFormatter()
 #         translation_no_renaming = wof.formatOutput(mresults["nbest"])
