@@ -357,23 +357,21 @@ class PreRenamer:
                 name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
                 name_candidates[(token, def_scope)][use_scope][renaming].add(1)
     
-        print("name_candidates-------------------------------------")
-        print(name_candidates)
+#         print("name_candidates-------------------------------------")
+#         print(name_candidates)
     
         cs = ConsistencyResolver()
         renaming_map = cs.computeFreqLenRenaming(name_candidates,
                                               name_positions,
                                               lambda e:e)
         
-        for (k, use_scope), renaming in renaming_map.iteritems():
-            print k
-            print renaming, use_scope
-          
-        print
+#         for (k, use_scope), renaming in renaming_map.iteritems():
+#             print k
+#             print renaming, use_scope
+#           
+#         print
     
-        ren = PostRenamer(iBuilder)
-    
-        hash_renaming = ren.apply_renaming(name_positions, renaming_map)
+        hash_renaming = self.apply_renaming(iBuilder, name_positions, renaming_map)
         
 #         print hash_renaming
         return hash_renaming
@@ -434,6 +432,22 @@ class PreRenamer:
     def collapse(self, renaming):
         return '\n'.join([' '.join([token for (_token_type, token) in line]) 
                                 for line in renaming]) + '\n'
+    
+    
+    def apply_renaming(self,
+                       iBuilder,
+                       name_positions, 
+                       renaming_map):
+    
+        draft_translation = deepcopy(iBuilder.tokens)
+        
+        for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+            for (line_num, line_idx) in name_positions[(name, def_scope)]:
+                (token_type, _name) = draft_translation[line_num][line_idx]
+                draft_translation[line_num][line_idx] = (token_type, renaming)
+     
+        return draft_translation
+    
     
     
     def rename(self, 
