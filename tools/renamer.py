@@ -100,7 +100,7 @@ class PreRenamer:
         scopes = set(name2defScope.values())
         scope2id = dict(zip(scopes, generateScopeIds(len(scopes), except_ids)))
     
-        print scope2id
+#         print scope2id
     
         renaming = []
             

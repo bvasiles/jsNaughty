@@ -1089,7 +1089,8 @@ def processFile(l):
             print '\n', r_strategy
             
             # Apply renaming
-            try:
+            if True:
+#             try:
                 preRen = PreRenamer()
                 after_text = preRen.rename(r_strategy, 
                                           scopeAnalyst, 
@@ -1105,8 +1106,8 @@ def processFile(l):
                 a_iBuilder = IndexBuilder(a_lexer.tokenList)
                 a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
                 
-            except:
-                return (js_file_path, None, 'Renaming fail')
+#             except:
+#                 return (js_file_path, None, 'Renaming fail')
             
             lx = WebLexer(a_iBuilder.get_text())
             
