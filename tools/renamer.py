@@ -130,6 +130,7 @@ class PreRenamer:
              
             renaming.append(' '.join(new_line) + "\n")
         
+        print 'renamingUsingScopeId:', renaming
         return renaming
     
     
