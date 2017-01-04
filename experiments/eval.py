@@ -961,20 +961,24 @@ def processFile(l):
         
         
         # BV: Next block left out until I figure out the pipe issue
-#         # Run the JSNice from http://www.nice2predict.org
-#         unuglifyJS = UnuglifyJS()
-#         (ok, n2p_text, _err) = unuglifyJS.web_run(minified_text)
-#         if not ok:
-# #             cleanup(temp_files)
-#             return (js_file_path, None, 'Nice2Predict fail')
+        # BV: Update: I couldn't pipe input to N2P. TODO: FIX
+        # Run the JSNice from http://www.nice2predict.org
+        unuglifyJS = UnuglifyJS()
+        (ok, n2p_text, _err) = unuglifyJS.run(temp_files['minified'])
+        if not ok:
+#             cleanup(temp_files)
+            return (js_file_path, None, 'Nice2Predict fail')
 # 
 #         
-#         (ok, n2p_text_beautified, err) = clear.web_run(n2p_text)
-#         if not ok:
-# #             cleanup(temp_files)
-#             return (js_file_path, None, 'Beautifier fail')
-#         
-#         
+        (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
+        if not ok:
+#             cleanup(temp_files)
+            return (js_file_path, None, 'Beautifier fail')
+        
+        with open(temp_files['n2p'], 'w') as f:
+            f.write(n2p_text_beautified)
+         
+         
 # #         ok = clear.run(temp_files['path_tmp_unugly'], 
 # #                        temp_files['path_tmp_unugly_1'])
 # #         if not ok:
@@ -1061,7 +1065,7 @@ def processFile(l):
         # not a (line_chr_idx, col_chr_idx) index.
         try:
             scopeAnalyst = WebScopeAnalyst(minified_text)
-            print 'Done: WebScopeAnalyst(minified_text)'
+#             print 'Done: WebScopeAnalyst(minified_text)'
         except:
 #             cleanup(temp_files)
             return (js_file_path, None, 'ScopeAnalyst fail')
@@ -1077,16 +1081,16 @@ def processFile(l):
 # #             f_no_renaming.writelines(no_renaming)
  
         lx = WebLexer(iBuilder_ugly.get_text())
-        print 'Done: WebLexer(iBuilder_ugly.get_text())'
+#         print 'Done: WebLexer(iBuilder_ugly.get_text())'
         
         md = WebMosesDecoder(renaming_strategies['no_renaming'])
  
         (ok, translation_no_renaming, err) = md.run(lx.collapsedText)
         if not ok:
             return (js_file_path, None, 'Moses fail: no_renaming')
-        print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
+#         print 'Done: WebMosesDecoder(renaming_strategies[\'no_renaming\'])'
         
-        print translation_no_renaming
+#         print translation_no_renaming
             
 #         wof = WebMosesOutputFormatter()
 #         translation_no_renaming = wof.formatOutput(mresults["nbest"])
