@@ -936,53 +936,53 @@ def processFile(l):
 #             return (js_file_path, None, 'Beautifier fail')
         
         
-        
-        # Run the JSNice from http://www.nice2predict.org
-        unuglifyJS = UnuglifyJS()
-        (ok, n2p_text, _err) = unuglifyJS.web_run(minified_text)
-        if not ok:
-#             cleanup(temp_files)
-            return (js_file_path, None, 'Nice2Predict fail')
-
-        
-        (ok, n2p_text_beautified, err) = clear.web_run(n2p_text)
-        if not ok:
-#             cleanup(temp_files)
-            return (js_file_path, None, 'Beautifier fail')
-        
-        
-#         ok = clear.run(temp_files['path_tmp_unugly'], 
-#                        temp_files['path_tmp_unugly_1'])
+        # BV: Next block left out until I figure out the pipe issue
+#         # Run the JSNice from http://www.nice2predict.org
+#         unuglifyJS = UnuglifyJS()
+#         (ok, n2p_text, _err) = unuglifyJS.web_run(minified_text)
 #         if not ok:
-#             cleanup(temp_files)
+# #             cleanup(temp_files)
+#             return (js_file_path, None, 'Nice2Predict fail')
+# 
+#         
+#         (ok, n2p_text_beautified, err) = clear.web_run(n2p_text)
+#         if not ok:
+# #             cleanup(temp_files)
 #             return (js_file_path, None, 'Beautifier fail')
 #         
-#         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_unugly_1'], 
-#                                                 temp_files['path_tmp_unugly_2'])
-#         if not ok:
-#             cleanup(temp_files)
-#             print js_file_path, _err
-#             return (js_file_path, None, 'JSNice Beautifier fail')
-#     
-#         ok = clear.run(temp_files['path_tmp_unugly_2'], 
-#                        temp_files['path_unugly'])
-#         if not ok:
-#             cleanup(temp_files)
-#             return (js_file_path, None, 'Beautifier fail')
-
-
-        try:
-            lexer = WebLexer(n2p_text_beautified)
-            iBuilder = IndexBuilder(lexer.tokenList)
-            scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
-        except:
-#             cleanup(temp_files)
-            return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
-        
-        ts = TranslationSummarizer()
-        candidates += ts.compute_summary_unscoped(iBuilder, 
-                                                  scopeAnalyst, 
-                                                  'Nice2Predict')
+#         
+# #         ok = clear.run(temp_files['path_tmp_unugly'], 
+# #                        temp_files['path_tmp_unugly_1'])
+# #         if not ok:
+# #             cleanup(temp_files)
+# #             return (js_file_path, None, 'Beautifier fail')
+# #         
+# #         (ok, _out, _err) = jsNiceBeautifier.run(temp_files['path_tmp_unugly_1'], 
+# #                                                 temp_files['path_tmp_unugly_2'])
+# #         if not ok:
+# #             cleanup(temp_files)
+# #             print js_file_path, _err
+# #             return (js_file_path, None, 'JSNice Beautifier fail')
+# #     
+# #         ok = clear.run(temp_files['path_tmp_unugly_2'], 
+# #                        temp_files['path_unugly'])
+# #         if not ok:
+# #             cleanup(temp_files)
+# #             return (js_file_path, None, 'Beautifier fail')
+# 
+# 
+#         try:
+#             lexer = WebLexer(n2p_text_beautified)
+#             iBuilder = IndexBuilder(lexer.tokenList)
+#             scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
+#         except:
+# #             cleanup(temp_files)
+#             return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+#         
+#         ts = TranslationSummarizer()
+#         candidates += ts.compute_summary_unscoped(iBuilder, 
+#                                                   scopeAnalyst, 
+#                                                   'Nice2Predict')
             
     
     
