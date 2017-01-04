@@ -4,24 +4,27 @@ Created on Dec 22, 2016
 @author: bogdanv
 '''
 
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
-                                             os.path.pardir)))
-from tools import LMQuery
+# import os
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+#                                              os.path.pardir)))
+from lmQuery import LMQuery
 
 
 class ConsistencyResolver:
     
-    def __init__(self):
-        self.renaming_map = {}
-        self.seen = {}
+#     def __init__(self):
+#         self.renaming_map = {}
+#         self.seen = {}
         
     def computeLMRenaming(self,
                           name_candidates, 
                           name_positions,
                           iBuilder, 
                           lm_path):
+        
+        renaming_map = {}
+        seen = {}
      
         # There is no uncertainty about the translation for
         # variables that have a single candidate translation
@@ -33,11 +36,11 @@ class ConsistencyResolver:
             candidate_name = val.keys()[0]
              
             if not self.seen.has_key((candidate_name, def_scope)):
-                self.renaming_map[key] = candidate_name
-                self.seen[(candidate_name, def_scope)] = True
+                renaming_map[key] = candidate_name
+                seen[(candidate_name, def_scope)] = True
                  
             else:
-                self.renaming_map[(name, def_scope)] = name
+                renaming_map[(name, def_scope)] = name
              
         # For the remaining variables, choose the translation that 
         # gives the highest language model log probability
@@ -110,14 +113,14 @@ class ConsistencyResolver:
                     candidate_names = sorted(log_probs, key=lambda e:-e[1])
                     candidate_name = candidate_names[0][0]
                      
-                    self.renaming_map[key] = candidate_name
-                    self.seen[(candidate_name, def_scope)] = True
+                    renaming_map[key] = candidate_name
+                    seen[(candidate_name, def_scope)] = True
                      
                 else:
-                    self.renaming_map[key] = name
-                    self.seen[key] = True
+                    renaming_map[key] = name
+                    seen[key] = True
                 
-        return self.renaming_map
+        return renaming_map
     
 
 
@@ -125,6 +128,9 @@ class ConsistencyResolver:
                                name_candidates, 
                                name_positions,
                                sorting_key):
+     
+        renaming_map = {}
+        seen = {}
      
         # There is no uncertainty about the translation for
         # variables that have a single candidate translation
@@ -138,11 +144,11 @@ class ConsistencyResolver:
             # Don't use the same translation for different
             # variables within the same scope.
             if not self.seen.has_key((candidate_name, def_scope)):
-                self.renaming_map[key] = candidate_name
-                self.seen[(candidate_name, def_scope)] = True
+                renaming_map[key] = candidate_name
+                seen[(candidate_name, def_scope)] = True
                  
             else:
-                self.renaming_map[key] = name
+                renaming_map[key] = name
              
         # For the remaining variables, choose the translation 
         # that has the longest name
@@ -175,12 +181,12 @@ class ConsistencyResolver:
                 if len(unseen_candidates):
                     candidate_name = unseen_candidates[0]
                      
-                    self.renaming_map[key] = candidate_name
-                    self.seen[(candidate_name, def_scope)] = True
+                    renaming_map[key] = candidate_name
+                    seen[(candidate_name, def_scope)] = True
                 else:
-                    self.renaming_map[key] = name
-                    self.seen[(name, def_scope)] = True
+                    renaming_map[key] = name
+                    seen[(name, def_scope)] = True
                  
-        return self.renaming_map
+        return renaming_map
 
 
