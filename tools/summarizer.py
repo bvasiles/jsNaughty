@@ -6,8 +6,7 @@ Created on Dec 22, 2016
 
 class TranslationSummarizer:
     
-    def __init__(self):
-        self.nc = []
+#     def __init__(self):
         
         
     def compute_summary_scoped(self,
@@ -16,6 +15,8 @@ class TranslationSummarizer:
                         iBuilder,
                         scopeAnalyst,
                         prefix):
+        
+        nc = []
         
         isGlobal = scopeAnalyst.isGlobal
     
@@ -28,20 +29,22 @@ class TranslationSummarizer:
             (lin,col) = iBuilder.revFlatMat[pos]
             (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
             
-            self.nc.append( (prefix,
+            nc.append( (prefix,
                              def_scope, 
                              tok_lin, tok_col, 
                              isGlobal.get((name, pos), True),
                              renaming,
                              ','.join(name_candidates[(name, def_scope)][use_scope].keys())) )
         
-        return self.nc
+        return nc
 
     
     def compute_summary_unscoped(self,
                                  iBuilder,
                                  scopeAnalyst,
                                  prefix):
+        
+        nc = []
         
         nameOrigin = scopeAnalyst.nameOrigin
         isGlobal = scopeAnalyst.isGlobal
@@ -54,14 +57,14 @@ class TranslationSummarizer:
                 (lin,col) = iBuilder.revFlatMat[pos]
                 (tok_lin, tok_col) = iBuilder.revTokMap[(lin,col)]
         
-                self.nc.append( (prefix, 
+                nc.append( (prefix, 
                                  def_scope, 
                                  tok_lin, tok_col, 
                                  isGlobal.get((name, pos), True),
                                  name,
                                  '') )
                 
-        return self.nc
+        return nc
     
     
     

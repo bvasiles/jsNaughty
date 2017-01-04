@@ -33,7 +33,9 @@ class ConsistencyResolver:
         for (key, val) in [(key, val) 
                      for key, val in name_candidates.items() 
                      if len(val.keys()) == 1]:
-                          
+            
+            print '(key, val)', (key, val)
+            
             (name, def_scope) = key
             candidate_name = val.keys()[0]
             print (name, def_scope), candidate_name
