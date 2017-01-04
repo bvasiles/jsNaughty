@@ -177,11 +177,11 @@ class ConsistencyResolver:
                                name_positions,
                                sorting_key):
      
-        print("name_candidates-------------------------------------")
-        print(name_candidates)
+#         print("name_candidates-------------------------------------")
+#         print(name_candidates)
         
-        print("name_positions-------------------------------------")
-        print(name_positions)
+#         print("name_positions-------------------------------------")
+#         print(name_positions)
      
         renaming_map = {}
         seen = {}
@@ -217,7 +217,7 @@ class ConsistencyResolver:
             
         token_lines = []
         
-        print 'first half------------------------------------------'
+#         print 'first half------------------------------------------'
         
         for key, pos in name_positions.iteritems():
             token_lines.append((key, \
@@ -228,8 +228,8 @@ class ConsistencyResolver:
         # on in the input, descending
         token_lines = sorted(token_lines, key=lambda e: -e[1])
         
-        print 'token_lines------------------------------------------'
-        print token_lines
+#         print 'token_lines------------------------------------------'
+#         print token_lines
         
         for key, _num_lines in token_lines:
             
@@ -261,8 +261,8 @@ class ConsistencyResolver:
                         renaming_map[(key, use_scope)] = name
                         seen[(name, use_scope)] = True
         
-        print 'renaming_map-----------------------------------'
-        print renaming_map
+#         print 'renaming_map-----------------------------------'
+#         print renaming_map
                 
         return renaming_map
 

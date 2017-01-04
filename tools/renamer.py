@@ -327,14 +327,14 @@ class PreRenamer:
     
         context = traversal(scopeAnalyst, iBuilder, context, passOne)
         
-        print("context-------------------------------------")
-        print(context)
+#         print("context-------------------------------------")
+#         print(context)
         
         if twoLines:
             context = traversal(scopeAnalyst, iBuilder, context, passTwo)
             
-        print("context-------------------------------------")
-        print(context)
+#         print("context-------------------------------------")
+#         print(context)
         
     #     (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
         (name_positions, _position_names) = prepHelpers(iBuilder, scopeAnalyst)
@@ -357,25 +357,25 @@ class PreRenamer:
                 name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
                 name_candidates[(token, def_scope)][use_scope][renaming].add(1)
     
-        print("name_candidates-------------------------------------")
-        print(name_candidates)
+#         print("name_candidates-------------------------------------")
+#         print(name_candidates)
     
         cs = ConsistencyResolver()
         renaming_map = cs.computeFreqLenRenaming(name_candidates,
                                               name_positions,
                                               lambda e:e)
         
-        for (k, use_scope), renaming in renaming_map.iteritems():
-            print k
-            print renaming, use_scope
-         
-        print
+#         for (k, use_scope), renaming in renaming_map.iteritems():
+#             print k
+#             print renaming, use_scope
+#          
+#         print
     
         ren = PostRenamer(iBuilder)
     
         hash_renaming = ren.apply_renaming(name_positions, renaming_map)
         
-        print hash_renaming
+#         print hash_renaming
         return hash_renaming
         
 #         print("lines-------------------------------------------------------")
