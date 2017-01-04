@@ -1096,11 +1096,12 @@ def processFile(l):
                                           scopeAnalyst, 
                                           iBuilder_ugly)
                 
-                print after_text
                 
                 (ok, beautified_after_text, _err) = clear.web_run(after_text)
                 if not ok:
                     return (js_file_path, None, 'Beautifier fail')
+                
+                print beautified_after_text
                 
                 a_lexer = WebLexer(beautified_after_text)
                 a_iBuilder = IndexBuilder(a_lexer.tokenList)
@@ -1334,7 +1335,7 @@ if __name__=="__main__":
                            'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
                            'hash_def_two_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
-    renaming_strategies = {'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
+#     renaming_strategies = {'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
 #     proxy_one = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8081/RPC2")
 #     proxy_two = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8082/RPC2")
