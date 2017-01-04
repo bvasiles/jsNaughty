@@ -369,6 +369,7 @@ class PreRenamer:
     
         hash_renaming = ren.apply_renaming(name_positions, renaming_map)
         
+        print hash_renaming
         return hash_renaming
         
 #         print("lines-------------------------------------------------------")
@@ -393,7 +394,7 @@ class PreRenamer:
             return iBuilder.get_text()
         
         elif r_strategy == 'basic_renaming':
-            return '\n'.join(self.renameUsingScopeId(scopeAnalyst, 
+            return ''.join(self.renameUsingScopeId(scopeAnalyst, 
                                                          iBuilder))
         
         elif r_strategy == 'hash_def_one_renaming':
