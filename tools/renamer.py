@@ -359,11 +359,11 @@ class PreRenamer:
                                               name_positions,
                                               lambda e:e)
         
-    #     for (k, use_scope), renaming in renaming_map.iteritems():
-    #         print k
-    #         print renaming, use_scope
-    #     
-    #     print
+        for (k, use_scope), renaming in renaming_map.iteritems():
+            print k
+            print renaming, use_scope
+         
+        print
     
         ren = PostRenamer(iBuilder)
     
@@ -377,42 +377,6 @@ class PreRenamer:
 #                                 for line in hash_renaming]))
 #         print("lines-------------------------------------------------------")
 
-        
-    def collapse(self, renaming):
-        return '\n'.join([' '.join([token for (_token_type, token) in line]) 
-                                for line in renaming]) + '\n'
-    
-    
-    def rename(self, 
-               r_strategy,
-               scopeAnalyst, 
-               iBuilder, 
-               debug=False):
-        
-        if r_strategy == 'no_renaming' or \
-                r_strategy == 'normalized':
-            return iBuilder.get_text()
-        
-        elif r_strategy == 'basic_renaming':
-            return ''.join(self.renameUsingScopeId(scopeAnalyst, 
-                                                         iBuilder))
-        
-        elif r_strategy == 'hash_def_one_renaming':
-            return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
-                                                             iBuilder,
-                                                             twoLines=False,
-                                                             debug=debug))
-        
-        elif r_strategy == 'hash_def_two_renaming':
-            return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
-                                                             iBuilder, 
-                                                             twoLines=True,
-                                                             debug=debug))
-        
-        else:
-            return iBuilder.get_text()
-        
-        
         
     #     reverse_shas = {}
     #         
@@ -460,3 +424,40 @@ class PreRenamer:
     #      
     #         return hash_renaming
 
+
+    def collapse(self, renaming):
+        return '\n'.join([' '.join([token for (_token_type, token) in line]) 
+                                for line in renaming]) + '\n'
+    
+    
+    def rename(self, 
+               r_strategy,
+               scopeAnalyst, 
+               iBuilder, 
+               debug=False):
+        
+        if r_strategy == 'no_renaming' or \
+                r_strategy == 'normalized':
+            return iBuilder.get_text()
+        
+        elif r_strategy == 'basic_renaming':
+            return ''.join(self.renameUsingScopeId(scopeAnalyst, 
+                                                         iBuilder))
+        
+        elif r_strategy == 'hash_def_one_renaming':
+            return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
+                                                             iBuilder,
+                                                             twoLines=False,
+                                                             debug=debug))
+        
+        elif r_strategy == 'hash_def_two_renaming':
+            return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
+                                                             iBuilder, 
+                                                             twoLines=True,
+                                                             debug=debug))
+        
+        else:
+            return iBuilder.get_text()
+        
+        
+        
