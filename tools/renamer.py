@@ -105,6 +105,8 @@ class PreRenamer:
         renaming = []
             
         for line_idx, line in enumerate(iBuilder_ugly.tokens):
+            
+            print line_idx, line
              
             new_line = []
             for token_idx, (token_type, token) in enumerate(line):
