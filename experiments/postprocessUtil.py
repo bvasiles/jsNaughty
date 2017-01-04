@@ -339,14 +339,17 @@ def processTranslationScoped(translation,
         
         name_candidates = mp.parse(translation,
                                    iBuilder,
-                                   position_names)
+                                   position_names,
+                                   scopeAnalyst)
         # name_candidates is a dictionary of dictionaries: 
         # keys are (name, None) (if scopeAnalyst=None) or 
         # (name, def_scope) tuples (otherwise); 
         # values are suggested translations with the sets 
         # of line numbers on which they appear.
         
-        print 'name_candidates\n', name_candidates
+        print 'name_candidates\n'
+        for key, val in name_candidates.iteritems():
+            print key, val
         
         ts = TranslationSummarizer()
         cs = ConsistencyResolver()
