@@ -346,6 +346,8 @@ def processTranslationScoped(translation,
         # values are suggested translations with the sets 
         # of line numbers on which they appear.
         
+        print name_candidates
+        
         ts = TranslationSummarizer()
         cs = ConsistencyResolver()
 
