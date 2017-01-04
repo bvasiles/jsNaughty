@@ -1055,7 +1055,7 @@ def processFile(l):
         lx = WebLexer(iBuilder_ugly.get_text())
         print 'Done: WebLexer(iBuilder_ugly.get_text())'
         
-        md = WebMosesDecoder(renaming_strategies['basic_renaming'])
+        md = WebMosesDecoder(renaming_strategies['no_renaming'])
  
         (ok, translation_no_renaming, err) = md.run(lx.collapsedText)
         if not ok:
