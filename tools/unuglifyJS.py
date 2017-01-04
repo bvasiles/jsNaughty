@@ -53,6 +53,8 @@ class UnuglifyJS:
         command = [self.path] + self.flags
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
         out, err = proc.communicate(input=input_text)
+        
+        print out, err
     
         if not proc.returncode:
             unuglifyjs_ok = True
