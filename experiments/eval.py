@@ -1091,7 +1091,7 @@ def processFile(l):
                                       scopeAnalyst, 
                                       lm_path)
         if nc:
-            candidates += nc
+            candidates += ['no_renaming' + x for x in nc]
          
          
          

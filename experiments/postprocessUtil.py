@@ -4,22 +4,22 @@ Created on Aug 21, 2016
     - Copied postprocessing functions from Bogdan's runSimplifiedExperiment 
     to reference them from other files.
 '''
-import re
+# import re
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 
-from tools import  IndexBuilder, prepHelpers, MosesParser, \
-                    Beautifier, Lexer, ScopeAnalyst, \
-                    UnuglifyJS, JSNice, LMQuery, MosesDecoder, \
+from tools import  prepHelpers, MosesParser, \
                     TranslationSummarizer, ConsistencyResolver
+#                     IndexBuilder, Beautifier, Lexer, ScopeAnalyst, \
+#                     UnuglifyJS, JSNice, LMQuery, MosesDecoder, \
 
-from renamingStrategies import renameUsingHashDefLine
+# from renamingStrategies import renameUsingHashDefLine
 
-from folderManager import Folder
-from pygments.token import Token, is_token_subtype
-from copy import deepcopy
+# from folderManager import Folder
+# from pygments.token import Token, is_token_subtype
+# from copy import deepcopy
 
 
 # 
@@ -347,25 +347,26 @@ def processTranslationScoped(translation,
         # values are suggested translations with the sets 
         # of line numbers on which they appear.
         
-        print 'name_candidates\n'
-        for key, val in name_candidates.iteritems():
-            print key
-            for k,v in val.iteritems():
-                print '  ', k, v
+#         print 'name_candidates\n'
+#         for key, val in name_candidates.iteritems():
+#             print key
+#             for k,v in val.iteritems():
+#                 print '  ', k, v
         
         cs = ConsistencyResolver()
-        renaming_map = cs.computeLMRenaming(name_candidates,
-                                                         name_positions,
-                                                         iBuilder,
-                                                         lm_path)
-        print '\nrenaming_map\n', renaming_map
-
         ts = TranslationSummarizer()
-        r = [['lm']+x for x in ts.compute_summary_scoped(renaming_map,
-                                                         name_candidates,
-                                                         iBuilder,
-                                                         scopeAnalyst)]
-        print 'Done: ts.compute_summary_scoped(cs.computeLMRenaming(...))'
+        
+        renaming_map = cs.computeLMRenaming(name_candidates,
+                                            name_positions,
+                                            iBuilder,
+                                            lm_path)
+#         print '\nrenaming_map\n', renaming_map
+
+        r = [['lm'] + x for x in ts.compute_summary_scoped(renaming_map,
+                                                           name_candidates,
+                                                           iBuilder,
+                                                           scopeAnalyst)]
+#         print 'Done: ts.compute_summary_scoped(cs.computeLMRenaming(...))'
         
         if not r:
             return False
@@ -387,14 +388,15 @@ def processTranslationScoped(translation,
 #             return False
 #         nc += r
         
+        renaming_map = cs.computeFreqLenRenaming(name_candidates,
+                                                name_positions,
+                                                lambda e:(-e[1],-len(e[0])))
         
-        r = [['freqlen']+x for x in ts.compute_summary_scoped(cs.computeFreqLenRenaming(name_candidates,
-                                                              name_positions,
-                                                              lambda e:(-e[1],-len(e[0]))),
-                                       name_candidates,
-                                       iBuilder,
-                                       scopeAnalyst)]
-        print 'Done: ts.compute_summary_scoped(cs.computeFreqLenRenaming(...))'
+        r = [['freqlen'] + x for x in ts.compute_summary_scoped(renaming_map,
+                                                                name_candidates,
+                                                                iBuilder,
+                                                                scopeAnalyst)]
+#         print 'Done: ts.compute_summary_scoped(cs.computeFreqLenRenaming(...))'
         if not r:
             return False
         nc += r
