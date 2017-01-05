@@ -282,7 +282,7 @@ def processFile(l):
                                                       lm_path)
                     
                     postRen = PostRenamer()
-                    renaming_map = postRen.updateRenamingMap(name_positions, 
+                    renaming_map = postRen.updateRenamingMap(a_name_positions, 
                                                              position_names, 
                                                              temp_renaming_map, 
                                                              r_strategy)
