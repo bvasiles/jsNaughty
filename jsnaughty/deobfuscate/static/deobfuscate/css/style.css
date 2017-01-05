@@ -1,0 +1,14 @@
+html, body, .container {
+  height: 100%;
+}
+
+.inline-txtarea {
+	margin: auto;
+    resize: none;
+    height: 100%;
+    width: 100%;
+    clear:both;
+	
+}
+
+

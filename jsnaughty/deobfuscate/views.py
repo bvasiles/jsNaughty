@@ -53,4 +53,4 @@ def get_js(request):
     else:
         form = JSForm()
     #Replace with the form again.
-    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "It's time to..."}))
+    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "It's time to...", 'height' : 7}))
