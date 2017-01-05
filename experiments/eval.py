@@ -283,13 +283,20 @@ def processFile(l):
                                                       a_iBuilder,
                                                       lm_path)
                     
+                    print 'old renaming_map ------'
+                    for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
+                        print name, renaming
+                    
                     postRen = PostRenamer()
                     renaming_map = postRen.updateRenamingMap(a_name_positions, 
                                                              position_names, 
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-                    
+                    print 'new renaming_map ------'
+                    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+                        print name, renaming
+                        
 #         print '\nrenaming_map\n', renaming_map
 
                     r = [[c_strategy] + x 
