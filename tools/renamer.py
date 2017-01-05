@@ -78,6 +78,10 @@ class PostRenamer:
                           r_strategy):
         new_renaming_map = {}
         
+        for k, v in name_positions.iteritems():
+            print k, v
+        print
+        
         for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
             print (name, def_scope)
             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
