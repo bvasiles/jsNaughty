@@ -41,6 +41,8 @@ class Normalizer:
 
         out, err = proc.communicate(input=input_text)
         
+        print out, err
+        
         if not proc.returncode:
             ok = True
             if out_file_path is not None:
