@@ -15,7 +15,7 @@ from normalizer import Normalizer
 from config import RenamingStrategies
 from indexer import IndexBuilder
 from lexer import WebLexer
- 
+from uglifyJS import Beautifier 
  
 
 class PostRenamer:
@@ -543,7 +543,12 @@ class PreRenamer:
             # Fall back on input in those cases
             isGlobal = scopeAnalyst.isGlobal
             
-            iB = IndexBuilder(WebLexer(out).tokenList)
+            clear = Beautifier()
+            (ok, b_out, _err) = clear.web_run(out)
+            if not ok:
+                return text
+            
+            iB = IndexBuilder(WebLexer(b_out).tokenList)
             iB_copy = deepcopy(iB)
             for line_num, line in enumerate(iB.tokens):
                 for line_idx, (token_type, token) in enumerate(line):
