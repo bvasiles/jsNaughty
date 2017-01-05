@@ -26,7 +26,7 @@ class PostRenamer:
     
     def __isRef(self, name):
         # _ref15
-        return len(name) >= 5 and name[0:4] == '_ref' and name[4:].isnum()
+        return len(name) >= 5 and name[0:4] == '_ref' and name[4:].isdigit()
 
 
     def renameIfValid(self,
