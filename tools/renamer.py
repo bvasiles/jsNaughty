@@ -14,72 +14,136 @@ from consistency import ConsistencyResolver
 from normalizer import Normalizer
 
 
-def isHash(name):
-    # _45e4313f
-    return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
-
-
-def generateScopeIds(num_scopes, except_ids):
-    ids = []
-    idx = 0
-    while len(ids) < num_scopes:
-        if idx not in except_ids:
-            ids.append(idx)
-        idx += 1
-    return ids
-
-
-def isValidContextToken((token_type, token)):
-    # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
-    # Token.Operator
-    # Token.Punctuation
-    # Token.Keyword.*
-    if token != u'TOKEN_LITERAL_NUMBER' and \
-            token != u'TOKEN_LITERAL_STRING':
-#                  and \
-#                     (is_token_subtype(token_type, Token.Name) or \
-#                     is_token_subtype(token_type, Token.Punctuation) or \
-#                     is_token_subtype(token_type, Token.Operator)):
-        return True
-    return False
  
- 
-def sha(concat_str, debug=False):
-    if not debug:
-        return '_' + hashlib.sha1(concat_str).hexdigest()[:8]
-    else:
-        return '<<' + concat_str + '>>'
-    
-    
  
 
 class PostRenamer:
     
-    def __init__(self, iBuilder):
-        self.draft_translation = deepcopy(iBuilder.tokens)
-        
-        
-    def apply_renaming(self,
+    def __isHash(self, name):
+        # _45e4313f
+        return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
+    
+    
+    def __isRef(self, name):
+        # _ref15
+        return len(name) >= 5 and name[0:4] == '_ref' and name[4:].isnum()
+
+
+    def renameIfValid(self,
+                       iBuilder,
                        name_positions, 
                        renaming_map, 
+                       is_invalid,
                        fallback_renaming_map={}):
+        
+        draft_translation = deepcopy(iBuilder.tokens)
     
         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
             for (line_num, line_idx) in name_positions[(name, def_scope)]:
-                (token_type, token) = self.draft_translation[line_num][line_idx]
-                if not isHash(renaming):
-                    self.draft_translation[line_num][line_idx] = (token_type, renaming)
+                (token_type, token) = draft_translation[line_num][line_idx]
+                if not is_invalid(renaming):
+                    draft_translation[line_num][line_idx] = (token_type, renaming)
                 else:
-                    self.draft_translation[line_num][line_idx] = (token_type, \
+                    draft_translation[line_num][line_idx] = (token_type, \
                                  fallback_renaming_map.get((name, def_scope), token))
     
-        return self.draft_translation
+        return draft_translation
+    
+    
+    def __is_invalid(self,
+                     renaming,
+                     r_strategy):
+        if r_strategy == 'no_renaming':
+            return False
+            
+        elif r_strategy == 'normalized':
+            return self.__isRef(renaming)
+        
+        elif r_strategy == 'basic_renaming':
+            return False
+        
+        elif r_strategy == 'hash_def_one_renaming' or \
+                r_strategy == 'hash_def_two_renaming':
+            return self.__isHash(renaming)
+        
+        else:
+            return False
+
+        
+    
+    def updateRenamingMap(self,
+                          name_positions, 
+                          position_names,
+                          renaming_map,
+                          r_strategy):
+        new_renaming_map = {}
+        
+        for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+            if not self.__is_invalid(renaming, r_strategy):
+                new_renaming_map[((name, def_scope), use_scope)] = renaming
+            else:
+                (line_num, line_idx) = name_positions[(name, def_scope)][0]
+                (old_name, def_scope) = position_names[line_num][line_idx]
+                
+                new_renaming_map[((name, def_scope), use_scope)] = old_name
+                
+        return new_renaming_map
+        
+
+    
+#     def renameIfNotHashed(self,
+#                        name_positions, 
+#                        renaming_map, 
+#                        fallback_renaming_map={}):
+#     
+#         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+#             for (line_num, line_idx) in name_positions[(name, def_scope)]:
+#                 (token_type, token) = self.draft_translation[line_num][line_idx]
+#                 if not self.isHash(renaming):
+#                     self.draft_translation[line_num][line_idx] = (token_type, renaming)
+#                 else:
+#                     self.draft_translation[line_num][line_idx] = (token_type, \
+#                                  fallback_renaming_map.get((name, def_scope), token))
+#     
+#         return self.draft_translation
 
 
 
 
 class PreRenamer:
     
+    def __isValidContextToken(self, (token_type, token)):
+        # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
+        # Token.Operator
+        # Token.Punctuation
+        # Token.Keyword.*
+        if token != u'TOKEN_LITERAL_NUMBER' and \
+                token != u'TOKEN_LITERAL_STRING':
+    #                  and \
+    #                     (is_token_subtype(token_type, Token.Name) or \
+    #                     is_token_subtype(token_type, Token.Punctuation) or \
+    #                     is_token_subtype(token_type, Token.Operator)):
+            return True
+        return False
+    
+    
+    def __generateScopeIds(self, num_scopes, except_ids):
+        ids = []
+        idx = 0
+        while len(ids) < num_scopes:
+            if idx not in except_ids:
+                ids.append(idx)
+            idx += 1
+        return ids
+    
+    
+    def __sha(self, concat_str, debug=False):
+        if not debug:
+            return '_' + hashlib.sha1(concat_str).hexdigest()[:8]
+        else:
+            return '<<' + concat_str + '>>'
+    
+ 
     def renameUsingScopeId(self, 
                            scopeAnalyst, 
                            iBuilder_ugly):
@@ -99,7 +163,7 @@ class PreRenamer:
             
         # Compute shorter def_scope identifiers
         scopes = set(name2defScope.values())
-        scope2id = dict(zip(scopes, generateScopeIds(len(scopes), except_ids)))
+        scope2id = dict(zip(scopes, self.__generateScopeIds(len(scopes), except_ids)))
     
 #         print scope2id
     
@@ -190,11 +254,11 @@ class PreRenamer:
                         context[(token, def_scope)] += context_tokens
                               
                     else:
-                        if isValidContextToken((token_type, token)):
+                        if self.__isValidContextToken((token_type, token)):
                             line_context.append((token, pos))
          
                 except KeyError:
-                    if isValidContextToken((token_type, token)):
+                    if self.__isValidContextToken((token_type, token)):
                         line_context.append((token, pos))
                          
         shas = {}
@@ -217,7 +281,7 @@ class PreRenamer:
                     concat_str = ''.join(context[(token, def_scope)])
                       
                     # Compute SHA1 hash of the context tokens
-                    sha_str = sha(concat_str, debug)
+                    sha_str = self.__sha(concat_str, debug)
                     
                     # Replace name by SHA1 hash
                     new_token = shas.setdefault(concat_str, sha_str)
@@ -280,7 +344,7 @@ class PreRenamer:
 #                         print("KEY ERROR! " + str(token_idx) + " -- " + str(token_type) + " -- " + str(token))
                         continue
                     
-                    if not isValidContextToken((token_type, token)):
+                    if not self.__isValidContextToken((token_type, token)):
                         continue
                     
                     if scopeAnalyst.isGlobal.get((token, pos), True):
@@ -345,7 +409,7 @@ class PreRenamer:
         
         for (token, def_scope), context_tokens in context.iteritems():
             concat_str = ''.join(context_tokens)
-            renaming = shas.setdefault(concat_str, sha(concat_str, debug))
+            renaming = shas.setdefault(concat_str, self.__sha(concat_str, debug))
             
             name_candidates.setdefault((token, def_scope), {})
             
@@ -453,8 +517,8 @@ class PreRenamer:
     
     def rename(self, 
                r_strategy,
-               scopeAnalyst, 
                iBuilder, 
+               scopeAnalyst, 
                debug=False):
         
         if r_strategy == 'no_renaming':
