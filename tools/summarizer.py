@@ -20,6 +20,9 @@ class TranslationSummarizer:
         isGlobal = scopeAnalyst.isGlobal
         
         print 'computing summary---------------'
+        for k,v in scopeAnalyst.nameDefScope2pos.iteritems():
+            print '   #', k, v
+            
         for key, renaming in renaming_map.iteritems():
             
             ((name, def_scope), use_scope) = key
