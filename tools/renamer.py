@@ -26,7 +26,7 @@ class PostRenamer:
     
     def __isRef(self, name):
         # _ref15
-        return len(name) >= 5 and name[0:4] == '_ref' and name[4:].isdigit()
+        return len(name) >= 4 and name[0:4] == '_ref' and name[4:].isdigit()
 
 
     def get_text(self):
