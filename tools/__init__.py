@@ -3,7 +3,7 @@ __all__ = ['acorn', 'indexer', 'jsNice', 'lmQuery', 'moses', \
            'miniChecker', 'lexer', 'aligner', 'dos2unix', \
            'postprocessor', 'normalizer', 'helpers', 'mosesParser', \
            'mosesOutputFormatter', 'renamer', 'summarizer', \
-           'consistency']
+           'consistency', 'config']
 from tools.acorn import Acorn
 from tools.indexer import IndexBuilder
 from tools.jsNice import JSNice
@@ -25,3 +25,4 @@ from tools.mosesParser import MosesParser
 from tools.renamer import PostRenamer, PreRenamer
 from tools.summarizer import TranslationSummarizer
 from tools.consistency import ConsistencyResolver
+from tools.config import RenamingStrategies, ConsistencyStrategies

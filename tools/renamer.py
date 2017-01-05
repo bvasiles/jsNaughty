@@ -12,22 +12,28 @@ import hashlib
 from helpers import prepHelpers
 from consistency import ConsistencyResolver
 from normalizer import Normalizer
-
-
+from config import RenamingStrategies
+from indexer import IndexBuilder
+from lexer import WebLexer
  
  
 
 class PostRenamer:
     
+    def __init__(self):
+        self.RS = RenamingStrategies()
+    
     def __isHash(self, name):
         # _45e4313f
         return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
-    
     
     def __isRef(self, name):
         # _ref15
         return len(name) >= 4 and name[0:4] == '_ref' and name[4:].isdigit()
 
+    def __isScopeId(self, name):
+        # a_16
+        return len(name.split('_')) > 0 and name.split('_')[-1].isdigit()
 
     def get_text(self):
         tokens = []
@@ -58,17 +64,17 @@ class PostRenamer:
     def __is_invalid(self,
                      renaming,
                      r_strategy):
-        if r_strategy == 'no_renaming':
+        if r_strategy == self.RS.NONE:
             return False
             
-        elif r_strategy == 'normalized':
+        elif r_strategy == self.RS.NORMALIZED:
             return self.__isRef(renaming)
         
-        elif r_strategy == 'basic_renaming':
-            return False
+        elif r_strategy == self.RS.SCOPE_ID:
+            return self.__isScopeId(renaming)
         
-        elif r_strategy == 'hash_def_one_renaming' or \
-                r_strategy == 'hash_def_two_renaming':
+        elif r_strategy == self.RS.HASH_ONE or \
+                r_strategy == self.RS.HASH_TWO:
             return self.__isHash(renaming)
         
         else:
@@ -104,27 +110,14 @@ class PostRenamer:
         return new_renaming_map
         
 
-    
-#     def renameIfNotHashed(self,
-#                        name_positions, 
-#                        renaming_map, 
-#                        fallback_renaming_map={}):
-#     
-#         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
-#             for (line_num, line_idx) in name_positions[(name, def_scope)]:
-#                 (token_type, token) = self.draft_translation[line_num][line_idx]
-#                 if not self.isHash(renaming):
-#                     self.draft_translation[line_num][line_idx] = (token_type, renaming)
-#                 else:
-#                     self.draft_translation[line_num][line_idx] = (token_type, \
-#                                  fallback_renaming_map.get((name, def_scope), token))
-#     
-#         return self.draft_translation
 
 
 
 
 class PreRenamer:
+    
+    def __init__(self):
+        self.RS = RenamingStrategies()
     
     def __isValidContextToken(self, (token_type, token)):
         # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
@@ -535,28 +528,46 @@ class PreRenamer:
                scopeAnalyst, 
                debug=False):
         
-        if r_strategy == 'no_renaming':
+        if r_strategy == self.RS.NONE:
             return iBuilder.get_text()
             
-        elif r_strategy == 'normalized':
+        elif r_strategy == self.RS.NORMALIZED:
             text = iBuilder.get_text()
+            
             norm = Normalizer()
             (ok, out, _err) = norm.web_run(text, rename=True)
             if not ok:
                 return text
-            return out
+            
+            # The normalization affects global variables too
+            # Fall back on input in those cases
+            isGlobal = scopeAnalyst.isGlobal
+            
+            iB = IndexBuilder(WebLexer(out).tokenList)
+            iB_copy = deepcopy(iB)
+            for line_num, line in enumerate(iB.tokens):
+                for line_idx, (token_type, token) in enumerate(line):
+                    if is_token_subtype(token_type, Token.Name):
+                        (l,c) = iB.tokMap[(line_num, line_idx)]
+                        p = iB.flatMap[(l,c)]
+                        if isGlobal.get((token, p), True):
+                            iB_copy.tokenList[line_num][line_idx] = \
+                                iBuilder.tokenList[line_num][line_idx]
+            
+            return iB_copy.get_text()
+
         
-        elif r_strategy == 'basic_renaming':
+        elif r_strategy == self.RS.SCOPE_ID:
             return ''.join(self.renameUsingScopeId(scopeAnalyst, 
                                                          iBuilder))
         
-        elif r_strategy == 'hash_def_one_renaming':
+        elif r_strategy == self.RS.HASH_ONE:
             return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
                                                              iBuilder,
                                                              twoLines=False,
                                                              debug=debug))
         
-        elif r_strategy == 'hash_def_two_renaming':
+        elif r_strategy == self.RS.HASH_TWO:
             return self.collapse(self.renameUsingHashDefLine(scopeAnalyst, 
                                                              iBuilder, 
                                                              twoLines=True,

@@ -5,6 +5,7 @@ Created on Dec 22, 2016
 '''
 
 from pygments.token import Token, is_token_subtype
+import os
 
 
 def prepHelpers(iBuilder, 
@@ -63,3 +64,14 @@ def writeTmpLines(lines,
     js_tmp.write('\n')
     js_tmp.close()
 
+
+def tryRemove(pth):
+    try:
+        os.remove(pth)
+    except OSError:
+        pass
+  
+      
+def cleanup(temp_files):
+    for file_path in temp_files: #.itervalues():
+        tryRemove(file_path)

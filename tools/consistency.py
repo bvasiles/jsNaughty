@@ -9,11 +9,13 @@ Created on Dec 22, 2016
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
 #                                              os.path.pardir)))
 from lmQuery import LMQuery
+from config import ConsistencyStrategies
 
 
 class ConsistencyResolver:
     
-#     def __init__(self):
+    def __init__(self):
+        self.CS = ConsistencyStrategies()
 #         self.renaming_map = {}
 #         self.seen = {}
     
@@ -25,18 +27,18 @@ class ConsistencyResolver:
                         iBuilder=None,
                         lm_path=None):
         
-        if strategy == 'lm':
+        if strategy == self.CS.LM:
             return self.computeLMRenaming(name_candidates, 
                                           name_positions,
                                           iBuilder, 
                                           lm_path)
         
-        elif strategy == 'freqlen':
+        elif strategy == self.CS.FREQLEN:
             return self.computeFreqLenRenaming(name_candidates, 
                                                name_positions, 
                                                lambda e:(-e[1],-len(e[0])))
         
-        elif strategy == 'len':
+        elif strategy == self.CS.LEN:
             return self.computeFreqLenRenaming(name_candidates, 
                                                name_positions, 
                                                lambda e:-len(e[0]))
