@@ -91,7 +91,7 @@ class PostRenamer:
                 new_renaming_map[((name, def_scope), use_scope)] = renaming
             else:
                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
-                (old_name, def_scope) = position_names[line_num][line_idx]
+                (old_name, _def_scope) = position_names[line_num][line_idx]
                 
                 new_renaming_map[((name, def_scope), use_scope)] = old_name
         
