@@ -30,4 +30,3 @@ class ConsistencyStrategies:
         return [self.LM,
                 self.FREQLEN]
         
-    

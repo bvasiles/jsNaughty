@@ -287,6 +287,7 @@ if __name__=="__main__":
                RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
                RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
                RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
+    proxies = {RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
     with open(testing_sample_path, 'r') as f:
     
