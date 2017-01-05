@@ -295,7 +295,9 @@ if __name__=="__main__":
     
 #         pool = multiprocessing.Pool(processes=num_threads)
         
-        for result in processFile(reader.next()): #pool.imap_unordered(processFile, reader):
+        result = processFile(reader.next())
+        if True:
+#         for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:
