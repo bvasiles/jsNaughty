@@ -463,7 +463,7 @@ class PreRenamer:
         elif r_strategy == 'normalized':
             text = iBuilder.get_text()
             norm = Normalizer()
-            (ok, out, _err) = norm.web_run(True, text)
+            (ok, out, _err) = norm.web_run(text, rename=True)
             if not ok:
                 return text
             return out
