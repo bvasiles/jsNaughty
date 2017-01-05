@@ -18,11 +18,13 @@ class TranslationSummarizer:
         nc = []
         
         isGlobal = scopeAnalyst.isGlobal
-    
+        
+        print 'computing summary---------------'
         for key, renaming in renaming_map.iteritems():
             
             ((name, def_scope), use_scope) = key
                 
+            print ' * nameDefScope2pos', (name, def_scope)
             pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
                 
             (lin,col) = iBuilder.revFlatMat[pos]
