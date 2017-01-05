@@ -78,6 +78,7 @@ class PostRenamer:
                           r_strategy):
         new_renaming_map = {}
         
+        print 'name_positions---------------'
         for k, v in name_positions.iteritems():
             print k, v
         print
