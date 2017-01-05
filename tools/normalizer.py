@@ -41,7 +41,7 @@ class Normalizer:
 
         out, err = proc.communicate(input=input_text)
         
-        print out, err
+#         print out, err
         
         if not proc.returncode:
             ok = True
