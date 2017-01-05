@@ -1,6 +1,7 @@
 import subprocess
 PIPE = subprocess.PIPE
 import socket
+from mosesOutputFormatter import WebMosesOutputFormatter
 # from pygments.token import Token, is_token_subtype
 
 
@@ -42,6 +43,33 @@ class MosesDecoder:
 
 
         
+class WebMosesDecoder:
+
+    def __init__(self, proxy):
+        self.proxy = proxy
         
-    
+        self.mosesParams = {}
+        #self.mosesParams["align"] = "true"
+        #self.mosesParams["report-all-factors"] = "true"
+
+
+    def run(self, collapsed_text):
+        self.mosesParams["text"] = collapsed_text
         
+#         print 'Translating:\n', collapsed_text 
+        
+        try:
+            mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
+            
+#             print mresults
+            
+            parser = WebMosesOutputFormatter()
+            moses_output = parser.formatOutput(mresults["nbest"])
+            
+            return (True, moses_output, "")
+        
+        except Exception as err:
+#             print 'Translation failed'
+            return (False, None, err)
+
+
