@@ -31,7 +31,7 @@ for idx, suffix in enumerate(suffixes):
 #     idx_wp = moses_ini.index("WordPenalty\n")
 #     moses_ini[idx_wp] = "#WordPenalty\n"
     idx_wp = moses_ini.index("WordPenalty0= -1\n")
-    moses_ini[idx_wp] = "WordPenalty0= 0.0113015" #"WordPenalty0= 0\n"
+    moses_ini[idx_wp] = "WordPenalty0= 0.0113015\n" #"WordPenalty0= 0\n"
     
     
 #     idx_wp = moses_ini.index("Distortion\n")
