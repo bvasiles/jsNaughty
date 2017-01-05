@@ -545,6 +545,7 @@ class PreRenamer:
             
             clear = Beautifier()
             (ok, b_out, _err) = clear.web_run(out)
+            print b_out, _err
             if not ok:
                 return text
             
