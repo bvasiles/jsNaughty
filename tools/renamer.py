@@ -29,25 +29,30 @@ class PostRenamer:
         return len(name) >= 5 and name[0:4] == '_ref' and name[4:].isdigit()
 
 
-    def renameIfValid(self,
+    def get_text(self):
+        tokens = []
+        for _line_idx, line in enumerate(self.tokens):
+            tokens.append(' '.join([t for (_tt,t) in line]))
+        return '\n'.join(tokens)
+
+
+    def applyRenaming(self,
                        iBuilder,
                        name_positions, 
-                       renaming_map, 
-                       is_invalid,
-                       fallback_renaming_map={}):
+                       renaming_map):
         
         draft_translation = deepcopy(iBuilder.tokens)
     
         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
             for (line_num, line_idx) in name_positions[(name, def_scope)]:
-                (token_type, token) = draft_translation[line_num][line_idx]
-                if not is_invalid(renaming):
-                    draft_translation[line_num][line_idx] = (token_type, renaming)
-                else:
-                    draft_translation[line_num][line_idx] = (token_type, \
-                                 fallback_renaming_map.get((name, def_scope), token))
+                (token_type, _token) = draft_translation[line_num][line_idx]
+                draft_translation[line_num][line_idx] = (token_type, renaming)
+                
+        tokens = []
+        for _line_idx, line in enumerate(draft_translation):
+            tokens.append(' '.join([t for (_tt,t) in line]))
     
-        return draft_translation
+        return '\n'.join(tokens)
     
     
     def __is_invalid(self,
@@ -78,14 +83,14 @@ class PostRenamer:
                           r_strategy):
         new_renaming_map = {}
         
-        print 'name_positions---------------'
-        for k, v in name_positions.iteritems():
-            print k, v
-        print
+#         print 'name_positions---------------'
+#         for k, v in name_positions.iteritems():
+#             print k, v
+#         print
         
         for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
-            print (name, def_scope)
-            print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
+#             print (name, def_scope)
+#             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
             
             if not self.__is_invalid(renaming, r_strategy):
                 new_renaming_map[((name, def_scope), use_scope)] = renaming
@@ -95,7 +100,7 @@ class PostRenamer:
                 
                 new_renaming_map[((name, def_scope), use_scope)] = old_name
         
-        print 'map updated---------------'
+#         print 'map updated---------------'
         return new_renaming_map
         
 

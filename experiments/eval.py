@@ -275,7 +275,7 @@ def processFile(l):
                 
                 for c_strategy in consistency_strategies:
                     
-                    print 'c_strategy ------', c_strategy
+#                     print 'c_strategy ------', c_strategy
                     
                     temp_renaming_map = cs.computeRenaming(c_strategy,
                                                       name_candidates,
@@ -283,9 +283,9 @@ def processFile(l):
                                                       a_iBuilder,
                                                       lm_path)
                     
-                    print 'old renaming_map ------'
-                    for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
-                        print name, renaming
+#                     print 'old renaming_map ------'
+#                     for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
+#                         print name, renaming
                     
                     postRen = PostRenamer()
                     renaming_map = postRen.updateRenamingMap(a_name_positions, 
@@ -293,9 +293,18 @@ def processFile(l):
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-                    print 'new renaming_map ------'
-                    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
-                        print name, renaming
+                    renamed_text = postRen.applyRenaming(a_iBuilder, 
+                                                         a_name_positions, 
+                                                         renaming_map)
+                    (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
+                    if not ok:
+                        return (js_file_path, None, 'Beautifier fail')
+                    with open(temp_files['%s_%s' % (r_strategy, c_strategy)], 'w') as f:
+                        f.write(beautified_renamed_text)
+                    
+#                     print 'new renaming_map ------'
+#                     for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+#                         print name, renaming
                         
 #         print '\nrenaming_map\n', renaming_map
 
