@@ -1104,7 +1104,7 @@ def processFile(l):
                 if not ok:
                     return (js_file_path, None, 'Beautifier fail')
                 
-#                 print beautified_after_text
+                print beautified_after_text
                 with open(temp_files['%s' % (r_strategy)], 'w') as f:
                     f.write(beautified_after_text)
                 
@@ -1340,7 +1340,7 @@ if __name__=="__main__":
                            'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
                            'hash_def_two_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
-#     renaming_strategies = {'hash_def_one_renaming':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
+    renaming_strategies = {'normalized':xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
     
 #     proxy_one = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8081/RPC2")
 #     proxy_two = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:8082/RPC2")
