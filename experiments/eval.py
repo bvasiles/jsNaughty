@@ -158,7 +158,8 @@ def processFile(l):
         
             md = WebMosesDecoder(proxy)
             
-            try:
+#             try:
+            if True:
                 # Rename input prior to translation
                 preRen = PreRenamer()
                 after_text = preRen.rename(r_strategy, 
@@ -178,8 +179,8 @@ def processFile(l):
                 a_iBuilder = IndexBuilder(a_lexer.tokenList)
                 a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
                 
-            except:
-                return (js_file_path, None, 'Renaming fail')
+#             except:
+#                 return (js_file_path, None, 'Renaming fail')
             
             lx = WebLexer(a_iBuilder.get_text())
             
