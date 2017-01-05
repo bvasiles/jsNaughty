@@ -551,8 +551,8 @@ class PreRenamer:
                         (l,c) = iB.tokMap[(line_num, line_idx)]
                         p = iB.flatMap[(l,c)]
                         if isGlobal.get((token, p), True):
-                            iB_copy.tokenList[line_num][line_idx] = \
-                                iBuilder.tokenList[line_num][line_idx]
+                            iB_copy.tokens[line_num][line_idx] = \
+                                iBuilder.tokens[line_num][line_idx]
             
             return iB_copy.get_text()
 
