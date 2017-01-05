@@ -292,9 +292,9 @@ if __name__=="__main__":
     
         reader = UnicodeReader(f)
     
-        pool = multiprocessing.Pool(processes=num_threads)
+#         pool = multiprocessing.Pool(processes=num_threads)
         
-        for result in pool.imap_unordered(processFile, reader):
+        for result in processFile(reader.next()): #pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:
