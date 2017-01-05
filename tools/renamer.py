@@ -542,6 +542,9 @@ class PreRenamer:
             # The normalization affects global variables too
             # Fall back on input in those cases
             isGlobal = scopeAnalyst.isGlobal
+            print 'isGlobal------'
+            for key,val in isGlobal.iteritems():
+                print key,val
             
             clear = Beautifier()
             (ok, b_out, _err) = clear.web_run(out)
