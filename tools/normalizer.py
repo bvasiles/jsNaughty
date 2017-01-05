@@ -29,4 +29,23 @@ class Normalizer:
                     f.write(out)
     
         return (ok, out, err)
+    
+    
+    def web_run(self, input_text, rename=True, out_file_path=None):
+        ok = False
         
+        command = ['node', 'normalize.js', str(rename).lower()]
+        proc = subprocess.Popen(command, 
+                                stderr=PIPE, stdout=PIPE, stdin=PIPE,
+                                cwd=self.normalizer_dir)
+
+        out, err = proc.communicate(input=input_text)
+        
+        if not proc.returncode:
+            ok = True
+            if out_file_path is not None:
+                with open(out_file_path, 'w') as f:
+                    f.write(out)
+    
+        return (ok, out, err)
+    

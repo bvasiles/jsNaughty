@@ -11,6 +11,7 @@ from pygments.token import Token, is_token_subtype
 import hashlib
 from helpers import prepHelpers
 from consistency import ConsistencyResolver
+from normalizer import Normalizer
 
 
 def isHash(name):
@@ -456,9 +457,16 @@ class PreRenamer:
                iBuilder, 
                debug=False):
         
-        if r_strategy == 'no_renaming' or \
-                r_strategy == 'normalized':
+        if r_strategy == 'no_renaming':
             return iBuilder.get_text()
+            
+        elif r_strategy == 'normalized':
+            text = iBuilder.get_text()
+            norm = Normalizer()
+            (ok, out, _err) = norm.run(text, False)
+            if not ok:
+                return text
+            return out
         
         elif r_strategy == 'basic_renaming':
             return ''.join(self.renameUsingScopeId(scopeAnalyst, 

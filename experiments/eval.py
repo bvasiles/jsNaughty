@@ -777,8 +777,11 @@ def processFile(l):
     temp_files = {'minified': '%s.u.js' % base_name,
                   'n2p': '%s.n2p.js' % base_name}
     
-    for c_strategy in consistency_strategies:
-        for r_strategy in renaming_strategies.keys():
+    for r_strategy in renaming_strategies.keys():
+        temp_files['%s' % (r_strategy)] = \
+                    '%s.%s.js' % (base_name, r_strategy)
+                    
+        for c_strategy in consistency_strategies:
             temp_files['%s_%s' % (r_strategy, c_strategy)] = \
                     '%s.%s.%s.js' % (base_name, r_strategy, c_strategy)
                     
@@ -1101,7 +1104,9 @@ def processFile(l):
                 if not ok:
                     return (js_file_path, None, 'Beautifier fail')
                 
-                print beautified_after_text
+#                 print beautified_after_text
+                with open(temp_files['%s' % (r_strategy)], 'w') as f:
+                    f.write(beautified_after_text)
                 
                 a_lexer = WebLexer(beautified_after_text)
                 a_iBuilder = IndexBuilder(a_lexer.tokenList)
