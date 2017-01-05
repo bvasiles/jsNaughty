@@ -275,6 +275,8 @@ def processFile(l):
                 
                 for c_strategy in consistency_strategies:
                     
+                    print 'c_strategy ------', c_strategy
+                    
                     temp_renaming_map = cs.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,

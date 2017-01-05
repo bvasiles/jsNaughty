@@ -94,7 +94,8 @@ class PostRenamer:
                 (old_name, def_scope) = position_names[line_num][line_idx]
                 
                 new_renaming_map[((name, def_scope), use_scope)] = old_name
-                
+        
+        print 'map updated---------------'
         return new_renaming_map
         
 
