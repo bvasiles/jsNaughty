@@ -79,6 +79,9 @@ class PostRenamer:
         new_renaming_map = {}
         
         for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+            print (name, def_scope)
+            print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
+            
             if not self.__is_invalid(renaming, r_strategy):
                 new_renaming_map[((name, def_scope), use_scope)] = renaming
             else:
