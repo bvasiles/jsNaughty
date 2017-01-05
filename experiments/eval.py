@@ -44,7 +44,8 @@ def processFile(l):
     
     candidates = []
     
-    try:
+    if True:
+#     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
@@ -261,8 +262,8 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-    except Exception, e:
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
