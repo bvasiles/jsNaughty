@@ -15,7 +15,8 @@ from normalizer import Normalizer
 from config import RenamingStrategies
 from indexer import IndexBuilder
 from lexer import WebLexer
-from uglifyJS import Beautifier 
+from uglifyJS import Beautifier
+from scoper import WebScopeAnalyst 
  
 
 class PostRenamer:
@@ -541,11 +542,6 @@ class PreRenamer:
             
             # The normalization affects global variables too
             # Fall back on input in those cases
-            isGlobal = scopeAnalyst.isGlobal
-            print 'isGlobal------'
-            for key,val in isGlobal.iteritems():
-                print key,val
-            
             clear = Beautifier()
             (ok, b_out, _err) = clear.web_run(out)
             print b_out, _err
@@ -554,13 +550,20 @@ class PreRenamer:
             
             iB = IndexBuilder(WebLexer(b_out).tokenList)
             iB_copy = deepcopy(iB)
+
+            sA = WebScopeAnalyst(b_out)
+            isGlobal = sA.isGlobal
+            print 'isGlobal------'
+            for key,val in isGlobal.iteritems():
+                print key,val
+            
             for line_num, line in enumerate(iB.tokens):
                 for line_idx, (token_type, token) in enumerate(line):
                     if is_token_subtype(token_type, Token.Name):
                         (l,c) = iB.tokMap[(line_num, line_idx)]
                         p = iB.flatMap[(l,c)]
-                        print token, isGlobal.get((token, p), False)
-                        if isGlobal.get((token, p), False):
+                        print token, isGlobal.get((token, p), True)
+                        if isGlobal.get((token, p), True):
                             iB_copy.tokens[line_num][line_idx] = \
                                 iBuilder.tokens[line_num][line_idx]
             
