@@ -14,10 +14,10 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     prepHelpers, TranslationSummarizer, WebMosesDecoder, \
                     WebScopeAnalyst, WebPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
-                    PostRenamer, RenamingStrategies, ConsistencyStrategies
+                    PostRenamer, RenamingStrategies, ConsistencyStrategies, \
+                    MosesProxy
 
 from folderManager import Folder
-import xmlrpclib
 
 
 def processFile(l):
@@ -44,8 +44,8 @@ def processFile(l):
     
     candidates = []
     
-    if True:
-#     try:
+#     if True:
+    try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
@@ -262,8 +262,8 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-#     except Exception, e:
-#         return (js_file_path, None, str(e).replace("\n", ""))
+    except Exception, e:
+        return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
@@ -282,22 +282,18 @@ if __name__=="__main__":
     CS = ConsistencyStrategies() 
     RS = RenamingStrategies()
     
-    proxies = {RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"), 
-               RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
-               RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
-               RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
-               RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
-    proxies = {RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")}
+    proxies = MosesProxy().proxies 
+    
     
     with open(testing_sample_path, 'r') as f:
     
         reader = UnicodeReader(f)
     
-#         pool = multiprocessing.Pool(processes=num_threads)
+        pool = multiprocessing.Pool(processes=num_threads)
         
-        result = processFile(reader.next())
-        if True:
-#         for result in pool.imap_unordered(processFile, reader):
+#         result = processFile(reader.next())
+#         if True:
+        for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:

@@ -25,4 +25,4 @@ from tools.mosesParser import MosesParser
 from tools.renamer import PostRenamer, PreRenamer
 from tools.summarizer import TranslationSummarizer
 from tools.consistency import ConsistencyResolver
-from tools.config import RenamingStrategies, ConsistencyStrategies
+from tools.config import RenamingStrategies, ConsistencyStrategies, MosesProxy

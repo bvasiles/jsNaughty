@@ -544,7 +544,7 @@ class PreRenamer:
             # Fall back on input in those cases
             clear = Beautifier()
             (ok, b_out, _err) = clear.web_run(out)
-            print b_out, _err
+#             print b_out, _err
             if not ok:
                 return text
             
@@ -553,16 +553,17 @@ class PreRenamer:
 
             sA = WebScopeAnalyst(b_out)
             isGlobal = sA.isGlobal
-            print 'isGlobal------'
-            for key,val in isGlobal.iteritems():
-                print key,val
+#             print 'isGlobal------'
+#             for key,val in isGlobal.iteritems():
+#                 print key,val
             
             for line_num, line in enumerate(iB.tokens):
                 for line_idx, (token_type, token) in enumerate(line):
                     if is_token_subtype(token_type, Token.Name):
                         (l,c) = iB.tokMap[(line_num, line_idx)]
                         p = iB.flatMap[(l,c)]
-                        print token, isGlobal.get((token, p), True)
+#                         print token, isGlobal.get((token, p), True)
+
                         if isGlobal.get((token, p), True):
                             iB_copy.tokens[line_num][line_idx] = \
                                 iBuilder.tokens[line_num][line_idx]

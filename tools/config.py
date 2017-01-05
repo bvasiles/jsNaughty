@@ -12,13 +12,13 @@ class RenamingStrategies:
     HASH_TWO = 'hash_def_two_renaming'
     
     def all(self):
-        return [self.NORMALIZED]
+#         return [self.NORMALIZED]
         
-#         return [self.NONE, 
-#                 self.NORMALIZED,
-#                 self.SCOPE_ID,
-#                 self.HASH_ONE,
-#                 self.HASH_TWO]
+        return [self.NONE, 
+                self.NORMALIZED,
+                self.SCOPE_ID,
+                self.HASH_ONE,
+                self.HASH_TWO]
     
     
 class ConsistencyStrategies:
@@ -30,3 +30,19 @@ class ConsistencyStrategies:
         return [self.LM,
                 self.FREQLEN]
         
+
+import xmlrpclib
+
+class MosesProxy:
+    def __init__(self):
+        RS = RenamingStrategies()
+        
+        self.proxies = {
+                        RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"), 
+                        RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                        RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                        RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"),
+                        RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2")
+                        }
+
+            
