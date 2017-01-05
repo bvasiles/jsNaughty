@@ -12,7 +12,7 @@ class RenamingStrategies:
     HASH_TWO = 'hash_def_two_renaming'
     
     def all(self):
-        return [self.SCOPE_ID]
+        return [self.NORMALIZED]
         
 #         return [self.NONE, 
 #                 self.NORMALIZED,
