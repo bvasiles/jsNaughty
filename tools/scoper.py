@@ -111,7 +111,7 @@ class ScopeAnalyst:
         # that uses node.js to export the AST produced and used by 
         # UglifyJS internally to JSON format
         command = ['node', 'nodeScoper.js', in_file_path]
-
+        print(command)
         proc = subprocess.Popen(command, 
                                 stderr=PIPE, stdout=PIPE, 
                                 cwd=scoper_dir)
@@ -304,21 +304,21 @@ class ScopeAnalyst:
         '''
         output = []
         output.append("--------------------name2defScope--------------------")
-        output.append("\n".join([str(key) + " : " + str(len(item)) for key, item in self.name2defScope.items()]))
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.name2defScope.items()]))
         output.append("--------------------nameDefScope2pos--------------------")
-        output.append(self.nameDefScope2pos.__str__())
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.nameDefScope2pos.items()]))
         output.append("--------------------name2useScope--------------------")
-        output.append(self.name2useScope.__str__())
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.name2useScope.items()]))
         output.append("--------------------name2pth--------------------")
-        output.append(self.name2pth.__str__())
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.name2pth.items()]))
         output.append("--------------------nameScope2pth--------------------")
-        output.append(self.nameScope2pth.__str__())
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.nameScope2pth.items()]))
         output.append("--------------------nameScopes--------------------")
-        output.append("\n".join([str(key) + " : " + str(len(item)) for key, item in self.nameScopes.items()]))
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.nameScopes.items()]))
         output.append("--------------------isGlobal--------------------")
         output.append(self.isGlobal.__str__())
         output.append("--------------------nameOrigin--------------------")
-        output.append(self.nameOrigin.__str__())
+        output.append("\n".join([str(key) + " : " + str(item) for key, item in self.nameOrigin.items()]))
         return "\n".join(output)
         
 

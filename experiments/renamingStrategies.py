@@ -76,7 +76,15 @@ def computeFreqLenRenaming(name_candidates,
 
     for key, val in name_candidates.iteritems():
         for use_scope, suggestions in val.iteritems():
-            
+            if(key[0] == u'u'):
+                print("U-Debug-------------------------")
+                print(key)
+                print(val)
+                print(use_scope)
+                print(suggestions)
+                print("U-Debug-------------------------")
+            #else:
+            #   print("Other key: " + str(key))
             if len(suggestions.keys()) == 1:
                 
                 candidate_name = suggestions.keys()[0]
@@ -427,7 +435,8 @@ def renameUsingHashDefLine(scopeAnalyst,
     context = traversal(scopeAnalyst, iBuilder, context, passOne)
     
     print("context-------------------------------------")
-    print(context)
+    print("\n".join([key[0] + " : " + " ".join(item)  for key,item in context.items()]))
+    #print(context)
     
     if twoLines:
         context = traversal(scopeAnalyst, iBuilder, context, passTwo)
@@ -438,8 +447,15 @@ def renameUsingHashDefLine(scopeAnalyst,
     name_candidates = {}
     
     for (token, def_scope), context_tokens in context.iteritems():
+
         concat_str = ''.join(context_tokens)
         renaming = shas.setdefault(concat_str, sha(concat_str, debug))
+        
+        if(token == u'u'):
+            print(token)
+            print(concat_str)
+            print(def_scope)
+            print(name_positions.get((token, def_scope), "Empty"))
         
         name_candidates.setdefault((token, def_scope), {})
         
@@ -447,14 +463,23 @@ def renameUsingHashDefLine(scopeAnalyst,
             (l,c) = iBuilder.tokMap[(line_num, line_idx)]
             p = iBuilder.flatMap[(l,c)]
             use_scope = scopeAnalyst.name2useScope[(token, p)]
+            if(token == u'u'):
+                print(u'u' + ": " + str(use_scope))
         
             name_candidates[(token, def_scope)].setdefault(use_scope, {})
             name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
             name_candidates[(token, def_scope)][use_scope][renaming].add(1)
 
+        if(token == u'u'):
+            print("Name Candidate: " + str(name_candidates.get((token, def_scope), "Empty")))
+
     renaming_map = computeFreqLenRenaming(name_candidates,
                                           name_positions,
                                           lambda e:e)
+    
+    print("Renaming_map-------------------------------")
+    print("\n".join([key[0][0] + " : " + item for key,item in renaming_map.items()]))
+    #print(renaming_map)
     
 #     for (k, use_scope), renaming in renaming_map.iteritems():
 #         print k
