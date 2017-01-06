@@ -28,7 +28,8 @@ def processFile(row):
                   'path_hash_lm': os.path.join(results_root, 
                                                '%s.hash_def_one_renaming.lm.js' % base_name)}
 
-    try:
+#     try:
+    if True:
         
         def load(pth):
             lexer = Lexer(pth)
@@ -136,8 +137,8 @@ def processFile(row):
         return (js_file_path, all_ok, method)
         
 
-    except Exception, e:
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
     
