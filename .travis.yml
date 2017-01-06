@@ -9,7 +9,7 @@ install:
 
 script:
   - pwd
-  - python deobfuscator/testing/deobfuscate_tests.py
+  - python ./testing/deobfuscate_tests.py
 
 notifications:
   email: false
