@@ -15,11 +15,10 @@ import glob
 
 
 
-def processClear(variant):
+def processFile(corpus):
     ok = False
-        
-    command = ['/home/ccasal/mosesphrasefilter/Bin/Linux/Index/IndexSA.O32', 
-               os.path.join(root_path, variant, 'corpus', 'corpus.clear')]
+    
+    command = ['/home/ccasal/mosesphrasefilter/Bin/Linux/Index/IndexSA.O32', corpus]
     #print(command)
     proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
     out, err = proc.communicate()
@@ -27,25 +26,7 @@ def processClear(variant):
     if not proc.returncode:
         ok = True
     
-    return (ok, variant, out, err)
-
-
-    
-def processUgly(variant):
-    ok = False
-        
-    command = ['/home/ccasal/mosesphrasefilter/Bin/Linux/Index/IndexSA.O32', 
-               os.path.join(root_path, variant, 'corpus', 'corpus.ugly')]
-    #print(command)
-    proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE)
-    out, err = proc.communicate()
-
-    if not proc.returncode:
-        ok = True
-    
-    return (ok, variant, out, err)
-    
-
+    return (ok, corpus, out, err)
 
 
 if __name__=="__main__":
@@ -61,23 +42,19 @@ if __name__=="__main__":
     suffixes = [f[7:-3] for f in corpus_files]
     
     variants = ["train." + suffix for suffix in suffixes]
+    corpora = [os.path.join(root_path, variant, 'corpus', 'corpus.clear') 
+                    for variant in variants[:1]] + \
+            [os.path.join(root_path, variant, 'corpus', 'corpus.ugly') 
+                    for variant in variants]
     
     pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processClear, variants[:1]):
-        (ok, variant, out, err) = result
+    for result in pool.imap_unordered(processFile, corpora):
+        (ok, corpus, out, err) = result
         
-        with open(os.path.join(root_path, variant, 'corpus', 'clear.out'), 'w') as f, \
-                open(os.path.join(root_path, variant, 'corpus', 'clear.err'), 'w') as g:
+        with open('%s.out' % corpus, 'w') as f, \
+                open('%s.err' % corpus, 'w') as g:
             f.write(out)
             g.write(err)
         
-        
-    for result in pool.imap_unordered(processUgly, variants):
-        (ok, variant, out, err) = result
-        
-        with open(os.path.join(root_path, variant, 'corpus', 'ugly.out'), 'w') as f, \
-                open(os.path.join(root_path, variant, 'corpus', 'ugly.err'), 'w') as g:
-            f.write(out)
-            g.write(err)
          
