@@ -30,7 +30,6 @@ def cleanup(temp_files):
 def processFile(l):
     
     js_file_path = l[0]
-    print js_file_path
     
     if js_file_path in seen:
         return (js_file_path, None, 'Skipped')
