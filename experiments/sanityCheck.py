@@ -15,6 +15,7 @@ def processFile(row):
     js_file_path = row[0]
     status = row[1]
     if not status == 'OK':
+        print 'status not ok'
         return (js_file_path, None, 'Incomplete')
     
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
