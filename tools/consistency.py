@@ -1,7 +1,7 @@
 '''
 Created on Dec 22, 2016
 
-@author: bogdanv
+@author: Bogdan Vasilescu
 '''
 
 # import os
@@ -10,7 +10,12 @@ Created on Dec 22, 2016
 #                                              os.path.pardir)))
 from lmQuery import LMQuery
 from config import ConsistencyStrategies
-from renamer import PostRenamer
+# from renamer import PostRenamer
+
+
+def isHash(name):
+    # _45e4313f
+    return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
 
 
 class ConsistencyResolver:
@@ -92,9 +97,8 @@ class ConsistencyResolver:
         for key, pos in name_positions.iteritems():
             
             # Give 0 weight to names that remained hashed after translation
-            PR = PostRenamer()
             (name, _def_scope) = key
-            if PR._isHash(name):
+            if isHash(name):
                 token_lines.append((key, 0))
             else:
                 token_lines.append((key, \
@@ -232,9 +236,8 @@ class ConsistencyResolver:
         for key, pos in name_positions.iteritems():
             
             # Give 0 weight to names that remained hashed after translation
-            PR = PostRenamer()
             (name, _def_scope) = key
-            if PR._isHash(name):
+            if isHash(name):
                 token_lines.append((key, 0))
             else:
                 token_lines.append((key, \

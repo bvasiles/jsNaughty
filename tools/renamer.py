@@ -1,7 +1,7 @@
 '''
 Created on Dec 22, 2016
 
-@author: bogdanv
+@author: Bogdan Vasilescu
 '''
 
 # from pygments.token import Token, is_token_subtype
