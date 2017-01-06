@@ -20,7 +20,7 @@ class defobfuscate_tests(unittest.TestCase):
         Don't run Moses server here (just incremental tests)
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
-        self.testDir = Folder("./test_files/")
+        self.testDir = Folder("./testing/test_files/")
         self.clearTextFiles = self.testDir.baseFileNames("*.orig.js")
         self.obsfuscatedTextFiles = self.testDir.baseFileNames("*.obs.js")
         self.postTextFiles = self.testDir.baseFileNames("*.post_input.js")
