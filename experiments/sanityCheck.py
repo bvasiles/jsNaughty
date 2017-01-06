@@ -42,12 +42,12 @@ def processFile(row):
             
             return (iBuilder, scopeAnalyst)
 
-        try:
-            (iBuilder_orig, scopeAnalyst_orig) = load(temp_files['path_orig'])
-        except Exception, e:
-            return (js_file_path, None, 'Orig fail')
+#         try:
+        (iBuilder_orig, scopeAnalyst_orig) = load(temp_files['path_orig'])
+#         except Exception, e:
+#             return (js_file_path, None, 'Orig fail')
         
-        print 'Here'
+#         print 'Here'
         
         data = {}
         
