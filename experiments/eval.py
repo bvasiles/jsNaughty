@@ -213,7 +213,7 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
                 
-                cs = ConsistencyResolver()
+                cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
@@ -223,7 +223,7 @@ def processFile(l):
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
-                    temp_renaming_map = cs.computeRenaming(c_strategy,
+                    temp_renaming_map = cr.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
                                                       a_iBuilder,

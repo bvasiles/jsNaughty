@@ -9,7 +9,9 @@ from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexe
 from experiments.renamingStrategies import renameUsingHashDefLine
 from folderManager.folder import Folder
 # from experiments.mosesClient import writeTmpLines
-from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
+# from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
+from tools import prepHelpers, MosesParser, ConsistencyResolver, TranslationSummarizer, ConsistencyStrategies, PostRenamer
+
 
 class defobfuscate_tests(unittest.TestCase):
     
@@ -212,7 +214,50 @@ class defobfuscate_tests(unittest.TestCase):
         lm_path = ""
         ib1 = IndexBuilder(self.obsLexed[0].tokenList)
         sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[0])
-        p1 = processTranslationScopedServer(self.postText[0], ib1, sa1, lm_path)
+        
+        (a_name_positions, 
+             a_position_names) = prepHelpers(ib1, sa1)
+        
+        translation = self.postText[0]
+
+        # Parse moses output
+        mp = MosesParser()
+        
+        name_candidates = mp.parse(translation,
+                                   ib1,
+                                   a_position_names,
+                                   sa1)
+        # name_candidates is a dictionary of dictionaries: 
+        # keys are (name, None) (if scopeAnalyst=None) or 
+        # (name, def_scope) tuples (otherwise); 
+        # values are suggested translations with the sets 
+        # of line numbers on which they appear.
+        
+        cr = ConsistencyResolver()
+        ts = TranslationSummarizer()
+        CS = ConsistencyStrategies()
+        c_strategy = CS.FREQLEN
+        
+        temp_renaming_map = cr.computeRenaming(c_strategy,
+                                                  name_candidates,
+                                                  a_name_positions,
+                                                  ib1,
+                                                  lm_path)
+                
+#             # Fall back on original names in input, if 
+#             # no translation was suggested
+        postRen = PostRenamer()
+#             renaming_map = postRen.updateRenamingMap(a_name_positions, 
+#                                                      position_names, 
+#                                                      temp_renaming_map, 
+#                                                      r_strategy)
+                
+            # Apply renaming map and save output for future inspection
+        p1 = postRen.applyRenaming(ib1, 
+                                                 a_name_positions, 
+                                                 temp_renaming_map)
+        
+#         p1 = processTranslationScopedServer(self.postText[0], ib1, sa1, lm_path)
         print("Post Processed Text ---------------------------------------------------")
         p1_combined = reduce(lambda x,y: x+y, p1)
         print(p1_combined)
