@@ -167,7 +167,7 @@ with open(file_list_path, 'r') as f:
     
 #     for result in pool.imap_unordered(processFile, reader):
     for result in processFile(reader.next()):
-        print result
+        print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
             writer = UnicodeWriter(g)
