@@ -12,7 +12,7 @@ import multiprocessing
 import subprocess
 PIPE = subprocess.PIPE
 import glob
-
+import shutil
 
 
 def processFile(corpus):
@@ -42,8 +42,9 @@ if __name__=="__main__":
     suffixes = [f[7:-3] for f in corpus_files]
     
     variants = ["train." + suffix for suffix in suffixes]
-    corpora = [os.path.join(root_path, variant, 'corpus', 'corpus.clear') 
-                    for variant in variants[:1]] + \
+    chosen_one = variants[0]
+    
+    corpora = [os.path.join(root_path, chosen_one, 'corpus', 'corpus.clear')] + \
             [os.path.join(root_path, variant, 'corpus', 'corpus.ugly') 
                     for variant in variants]
     
@@ -57,4 +58,17 @@ if __name__=="__main__":
             f.write(out)
             g.write(err)
         
-         
+    # Copy the trees for the clear corpus
+    src = os.path.join(root_path, "train."+suffixes[0], \
+                       "corpus", "corpus.clear")
+    for variant in variants[1:]:
+        for f in ['corpus.clear.id_voc', \
+                  'corpus.clear.sa_corpus', \
+                  'corpus.clear.sa_offset', \
+                  'corpus.clear.sa_suffix']:
+            src = os.path.join(root_path, chosen_one, 'corpus', f)
+            dst = os.path.join(root_path, variant, 'corpus', f)
+            shutil.copy(src, dst)
+        
+    
+    
