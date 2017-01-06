@@ -166,7 +166,8 @@ with open(file_list_path, 'r') as f:
 #     pool = multiprocessing.Pool(processes=num_threads)
     
 #     for result in pool.imap_unordered(processFile, reader):
-    for result in processFile(reader.next()):
+    for row in reader:
+        result = processFile(row)
         print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
