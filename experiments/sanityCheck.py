@@ -159,9 +159,10 @@ with open(file_list_path, 'r') as f:
 
 #     result = processFile(reader.next())
 
-    pool = multiprocessing.Pool(processes=num_threads)
+#     pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processFile, reader):
+#     for result in pool.imap_unordered(processFile, reader):
+    for result in processFile(reader.next()):
     
         with open(os.path.join(results_root, flog), 'a') as g:
             writer = UnicodeWriter(g)
