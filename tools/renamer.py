@@ -24,15 +24,15 @@ class PostRenamer:
     def __init__(self):
         self.RS = RenamingStrategies()
     
-    def __isHash(self, name):
+    def _isHash(self, name):
         # _45e4313f
         return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
     
-    def __isRef(self, name):
+    def _isRef(self, name):
         # _ref15
         return len(name) >= 4 and name[0:4] == '_ref' and name[4:].isdigit()
 
-    def __isScopeId(self, name):
+    def _isScopeId(self, name):
         # a_16
         return len(name.split('_')) > 0 and name.split('_')[-1].isdigit()
 
@@ -69,14 +69,14 @@ class PostRenamer:
             return False
             
         elif r_strategy == self.RS.NORMALIZED:
-            return self.__isRef(renaming)
+            return self._isRef(renaming)
         
         elif r_strategy == self.RS.SCOPE_ID:
-            return self.__isScopeId(renaming)
+            return self._isScopeId(renaming)
         
         elif r_strategy == self.RS.HASH_ONE or \
                 r_strategy == self.RS.HASH_TWO:
-            return self.__isHash(renaming)
+            return self._isHash(renaming)
         
         else:
             return False

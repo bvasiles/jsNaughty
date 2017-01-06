@@ -10,6 +10,7 @@ Created on Dec 22, 2016
 #                                              os.path.pardir)))
 from lmQuery import LMQuery
 from config import ConsistencyStrategies
+from renamer import PostRenamer
 
 
 class ConsistencyResolver:
@@ -89,7 +90,14 @@ class ConsistencyResolver:
         token_lines = []
         
         for key, pos in name_positions.iteritems():
-            token_lines.append((key, \
+            
+            # Give 0 weight to names that remained hashed after translation
+            PR = PostRenamer()
+            (name, _def_scope) = key
+            if PR._isHash(name):
+                token_lines.append((key, 0))
+            else:
+                token_lines.append((key, \
                                 len(set([line_num \
                                      for (line_num, _line_idx) in pos]))))
             
@@ -222,10 +230,17 @@ class ConsistencyResolver:
 #         print 'first half------------------------------------------'
         
         for key, pos in name_positions.iteritems():
-            token_lines.append((key, \
+            
+            # Give 0 weight to names that remained hashed after translation
+            PR = PostRenamer()
+            (name, _def_scope) = key
+            if PR._isHash(name):
+                token_lines.append((key, 0))
+            else:
+                token_lines.append((key, \
                                 len(set([line_num \
                                      for (line_num, _line_idx) in pos]))))
-            
+                        
         # Sort names by how many lines they appear 
         # on in the input, descending
         token_lines = sorted(token_lines, key=lambda e: -e[1])
