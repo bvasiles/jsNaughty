@@ -96,14 +96,9 @@ class ConsistencyResolver:
         
         for key, pos in name_positions.iteritems():
             
-            # Give 0 weight to names that remained hashed after translation
-            (name, _def_scope) = key
-            if isHash(name):
-                token_lines.append((key, 0))
-            else:
-                token_lines.append((key, \
-                                len(set([line_num \
-                                     for (line_num, _line_idx) in pos]))))
+            token_lines.append((key, \
+                            len(set([line_num \
+                                 for (line_num, _line_idx) in pos]))))
             
         # Sort names by how many lines they appear 
         # on in the input, descending
@@ -134,37 +129,43 @@ class ConsistencyResolver:
                     if len(unseen_candidates):
                         
                         for candidate_name in unseen_candidates:
-                            line_nums = set([num \
-                                for (num,idx) in name_positions[key]])
                             
-                            draft_lines = []
+                            # Give no weight to names that remained hashed after translation
+                            if isHash(candidate_name):
+                                log_probs.append((candidate_name, -9999999999))
                             
-                            for line_num in line_nums:
-                                draft_line = [token for (_token_type, token) 
-                                              in iBuilder.tokens[line_num]]
-                                for line_idx in [idx 
-                                                 for (num, idx) in name_positions[key] 
-                                                 if num == line_num]:
-                                    draft_line[line_idx] = candidate_name
-                                    
-                                draft_lines.append(' '.join(draft_line))
-                                
-                                
-                            line_log_probs = []
-                            for line in draft_lines:
-                                lmquery = LMQuery(lm_path=lm_path)
-                                (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
-                                
-                                if not lm_ok:
-                                    lm_log_prob = -9999999999
-                                line_log_probs.append(lm_log_prob)
-        
-                            if not len(line_log_probs):
-                                lm_log_prob = -9999999999
                             else:
-                                lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+                                line_nums = set([num \
+                                    for (num,idx) in name_positions[key]])
+                                
+                                draft_lines = []
+                                
+                                for line_num in line_nums:
+                                    draft_line = [token for (_token_type, token) 
+                                                  in iBuilder.tokens[line_num]]
+                                    for line_idx in [idx 
+                                                     for (num, idx) in name_positions[key] 
+                                                     if num == line_num]:
+                                        draft_line[line_idx] = candidate_name
+                                        
+                                    draft_lines.append(' '.join(draft_line))
+                                    
+                                    
+                                line_log_probs = []
+                                for line in draft_lines:
+                                    lmquery = LMQuery(lm_path=lm_path)
+                                    (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+                                    
+                                    if not lm_ok:
+                                        lm_log_prob = -9999999999
+                                    line_log_probs.append(lm_log_prob)
             
-                            log_probs.append((candidate_name, lm_log_prob))
+                                if not len(line_log_probs):
+                                    lm_log_prob = -9999999999
+                                else:
+                                    lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+                
+                                log_probs.append((candidate_name, lm_log_prob))
                         
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
@@ -234,13 +235,7 @@ class ConsistencyResolver:
 #         print 'first half------------------------------------------'
         
         for key, pos in name_positions.iteritems():
-            
-            # Give 0 weight to names that remained hashed after translation
-            (name, _def_scope) = key
-            if isHash(name):
-                token_lines.append((key, 0))
-            else:
-                token_lines.append((key, \
+            token_lines.append((key, \
                                 len(set([line_num \
                                      for (line_num, _line_idx) in pos]))))
                         
@@ -268,7 +263,8 @@ class ConsistencyResolver:
                     (name, _def_scope) = key
                     unseen_candidates = [candidate_name 
                                          for (candidate_name, _occurs) in candidates
-                                         if not seen.has_key((candidate_name, use_scope))]
+                                         if not seen.has_key((candidate_name, use_scope))
+                                         and not isHash(candidate_name)]
                     
                     if len(unseen_candidates):
                         candidate_name = unseen_candidates[0]
