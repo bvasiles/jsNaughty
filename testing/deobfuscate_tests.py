@@ -9,7 +9,7 @@ from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexe
 from experiments.renamingStrategies import renameUsingHashDefLine
 from folderManager.folder import Folder
 from experiments.mosesClient import writeTmpLines
-from experiments.postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
+from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 class defobfuscate_tests(unittest.TestCase):
     
