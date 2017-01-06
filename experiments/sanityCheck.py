@@ -15,7 +15,7 @@ def processFile(row):
     js_file_path = row[0]
     status = row[1]
     if not status == 'OK':
-        print 'status not ok'
+#         print 'status not ok'
         return (js_file_path, None, 'Incomplete')
     
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
@@ -168,7 +168,7 @@ with open(file_list_path, 'r') as f:
 #     for result in pool.imap_unordered(processFile, reader):
     for row in reader:
         result = processFile(row)
-        print 'result', result
+#         print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
             writer = UnicodeWriter(g)

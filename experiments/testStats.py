@@ -84,15 +84,16 @@ ignored = set([])
 
 for row in reader:
     # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
+    # Update 1/6/17 4664436.js;basic_renaming;lm;$[body][0][definitions][0][name][thedef][references][2][scope][variables][_values][$T][scope];3;6;False;frame;frame
     file_name = row[0]
     
     if sanity.get(file_name, False):
     
-        strategy = row[1]
+        strategy = '.'.join(row[1:3]) if len(row[2]) else row[1] #row[1]
         strategies.add(strategy)
         
-        tok_lin = int(row[3])
-        tok_col = int(row[4])
+        tok_lin = int(row[4]) #int(row[3])
+        tok_col = int(row[5]) #int(row[4])
         scope = (tok_lin,tok_col) #row[2]
     
     #     glb = row[5]
@@ -103,9 +104,9 @@ for row in reader:
     #     if i > -1:
     #         scope = scope[:i+len('[functions][_values]')]
             
-        translated_name = row[6]
+        translated_name = row[7] #row[6]
     #     ugly_name = row[4] if len(row[4]) else None
-        alternatives = row[7] if len(row[7]) else None
+        alternatives = row[8] if len(row[8]) else None #row[7] if len(row[7]) else None
         
         if translated_name != 'TOKEN_LITERAL_STRING' and \
                 translated_name != 'TOKEN_LITERAL_NUMBER':
