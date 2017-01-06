@@ -44,8 +44,8 @@ def processFile(l):
     
     candidates = []
     
-    if True:
-#     try:
+#     if True:
+    try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
@@ -262,8 +262,8 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-#     except Exception, e:
-#         return (js_file_path, None, str(e).replace("\n", ""))
+    except Exception, e:
+        return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
@@ -289,11 +289,11 @@ if __name__=="__main__":
     
         reader = UnicodeReader(f)
     
-#         pool = multiprocessing.Pool(processes=num_threads)
+        pool = multiprocessing.Pool(processes=num_threads)
         
-        result = processFile(reader.next())
-        if True:
-#         for result in pool.imap_unordered(processFile, reader):
+#         result = processFile(reader.next())
+#         if True:
+        for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:
