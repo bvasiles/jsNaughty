@@ -31,22 +31,24 @@ for idx, suffix in enumerate(suffixes):
 #     idx_wp = moses_ini.index("WordPenalty\n")
 #     moses_ini[idx_wp] = "#WordPenalty\n"
     idx_wp = moses_ini.index("WordPenalty0= -1\n")
-    moses_ini[idx_wp] = "WordPenalty0= 0.0113015\n" #"WordPenalty0= 0\n"
+#     moses_ini[idx_wp] = "WordPenalty0= 0.0113015\n"
+    moses_ini[idx_wp] = "WordPenalty0= 0\n"
     
     
 #     idx_wp = moses_ini.index("Distortion\n")
 #     moses_ini[idx_wp] = "#Distortion\n"
     idx_wp = moses_ini.index("Distortion0= 0.3\n")
-    moses_ini[idx_wp] = "Distortion0= 0.0272844\n" #"Distortion0= 0\n"
+#     moses_ini[idx_wp] = "Distortion0= 0.0272844\n" #"Distortion0= 0\n"
+    moses_ini[idx_wp] = "Distortion0= 0\n"
     
-    idx_wp = moses_ini.index("LM0= 0.5\n")
-    moses_ini[idx_wp] = "LM0= 0.137444\n"
+#     idx_wp = moses_ini.index("LM0= 0.5\n")
+#     moses_ini[idx_wp] = "LM0= 0.137444\n"
     
-    idx_wp = moses_ini.index("PhrasePenalty0= 0.2\n")
-    moses_ini[idx_wp] = "PhrasePenalty0= -0.449541\n"
+#     idx_wp = moses_ini.index("PhrasePenalty0= 0.2\n")
+#     moses_ini[idx_wp] = "PhrasePenalty0= -0.449541\n"
     
-    idx_wp = moses_ini.index("TranslationModel0= 0.2 0.2 0.2 0.2\n")
-    moses_ini[idx_wp] = "TranslationModel0= 0.0280461 0.0140369 0.26206 0.0702867\n"
+#     idx_wp = moses_ini.index("TranslationModel0= 0.2 0.2 0.2 0.2\n")
+#     moses_ini[idx_wp] = "TranslationModel0= 0.0280461 0.0140369 0.26206 0.0702867\n"
     
     
     l_phr_dict = [l for l in moses_ini \
