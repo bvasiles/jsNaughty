@@ -249,7 +249,6 @@ class defobfuscate_tests(unittest.TestCase):
         # of line numbers on which they appear.
         
         cr = ConsistencyResolver()
-        ts = TranslationSummarizer()
         CS = ConsistencyStrategies()
         c_strategy = CS.FREQLEN
         
@@ -268,9 +267,15 @@ class defobfuscate_tests(unittest.TestCase):
 #                                                      r_strategy)
                 
             # Apply renaming map and save output for future inspection
-        p1 = postRen.applyRenaming(ib1, 
-                                                 a_name_positions, 
-                                                 temp_renaming_map)
+        renamed_text = postRen.applyRenaming(ib1, 
+                                             a_name_positions, 
+                                             temp_renaming_map)
+        
+#         clear = Beautifier()
+#         (_ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
+        a_lexer = WebLexer(renamed_text)
+        a_iBuilder = IndexBuilder(a_lexer.tokenList)
+        p1 = a_iBuilder.tokens
         
 #         p1 = processTranslationScopedServer(self.postText[0], ib1, sa1, lm_path)
         print("Post Processed Text ---------------------------------------------------")
@@ -278,6 +283,7 @@ class defobfuscate_tests(unittest.TestCase):
         print(p1_combined)
         print("Post Processed Text ---------------------------------------------------")
         #Without re-running the beautifer for spacing, this is missing whitespace.
+
         print("Original Lexed Text ---------------------------------------------------")
         print(self.obsLexed[0].tokenList)
         print("Original Lexed Text ---------------------------------------------------")
