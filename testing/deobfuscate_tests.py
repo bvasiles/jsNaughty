@@ -8,7 +8,7 @@ from pygments.token import Token, String, is_token_subtype
 from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
 from experiments.renamingStrategies import renameUsingHashDefLine
 from folderManager.folder import Folder
-from experiments.mosesClient import writeTmpLines
+# from experiments.mosesClient import writeTmpLines
 from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 class defobfuscate_tests(unittest.TestCase):
