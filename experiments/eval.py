@@ -27,7 +27,8 @@ def processFile(l):
     
 #     print js_file_path
     
-    temp_files = {'minified': '%s.u.js' % base_name,
+    temp_files = {'orig': '%s.js' % base_name,
+                  'minified': '%s.u.js' % base_name,
                   'n2p': '%s.n2p.js' % base_name}
     
     for r_strategy in RS.all():
@@ -100,13 +101,16 @@ def processFile(l):
         if beautified_text == minified_text:
             return (js_file_path, None, 'Not minified')
 
-        
+            
         try:
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
         except:
             return (js_file_path, None, 'IndexBuilder fail')
         
         
+        with open(temp_files['orig'], 'w') as f:
+            f.write(beautified_text)
+            
         with open(temp_files['minified'], 'w') as f:
             f.write(minified_text)
         
