@@ -6,11 +6,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 #from tools import IndexBuilder, ScopeAnalyst, Lexer
 from pygments.token import Token, String, is_token_subtype
 from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
-from experiments.renamingStrategies import renameUsingHashDefLine
+# from experiments.renamingStrategies import renameUsingHashDefLine
 from folderManager.folder import Folder
 # from experiments.mosesClient import writeTmpLines
 # from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
-from tools import prepHelpers, MosesParser, ConsistencyResolver, TranslationSummarizer, ConsistencyStrategies, PostRenamer
+from tools import prepHelpers, MosesParser, ConsistencyResolver, \
+                    TranslationSummarizer, ConsistencyStrategies, \
+                    PreRenamer, PostRenamer, RenamingStrategies
 
 
 class defobfuscate_tests(unittest.TestCase):
@@ -151,6 +153,9 @@ class defobfuscate_tests(unittest.TestCase):
         self.assertTrue(sa1.isGlobal[(u'i', 85)] ==  False)
         self.assertTrue(True)
         
+        
+        
+        
     def testHashDefRenaming(self):
         '''
         TODO: Test the hashing functions are using the context correctly for both one and two line
@@ -161,12 +166,19 @@ class defobfuscate_tests(unittest.TestCase):
         #print(self.obsfuscatedTextFiles[0])
         ib1 = IndexBuilder(self.obsLexed[0].tokenList)
         sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[0])
-        oneLine1 = renameUsingHashDefLine(sa1, ib1, False, True)
-        twoLine1 = renameUsingHashDefLine(sa1, ib1, True, True)
-        #print("OneLine1------------------------------------------------")
-        #print(oneLine1)
-        #print("TwoLine1------------------------------------------------")
-        #print(twoLine1)
+        
+        RS = RenamingStrategies()
+        preRen = PreRenamer()
+        oneLine1 = preRen.rename(RS.HASH_ONE, ib1, sa1, True)
+        twoLine1 = preRen.rename(RS.HASH_TWO, ib1, sa1, True)
+        
+#         oneLine1 = renameUsingHashDefLine(sa1, ib1, False, True)
+#         twoLine1 = renameUsingHashDefLine(sa1, ib1, True, True)
+        
+        print("OneLine1------------------------------------------------")
+        print(oneLine1)
+        print("TwoLine1------------------------------------------------")
+        print(twoLine1)
         
         #One line tests
         lines = oneLine1.split("\n")
@@ -194,6 +206,9 @@ class defobfuscate_tests(unittest.TestCase):
         self.assertTrue(lines[20] == "Vector2d : <<function#(,){(#,{>>")
         
         self.assertTrue(True)
+    
+    
+    
     
     def testPostprocessing(self):
         '''
