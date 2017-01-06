@@ -8,5 +8,8 @@ before_script:
 install:
 
 script:
-  # Your test script goes here
+  - pwd
   - python deobfuscator/testing/deobfuscate_tests.py
+
+notifications:
+  email: false
