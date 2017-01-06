@@ -46,6 +46,7 @@ def processFile(row):
         except Exception, e:
             return (js_file_path, None, 'Orig fail')
         
+        print 'Here'
         
         data = {}
         
