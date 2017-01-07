@@ -84,7 +84,8 @@ ignored = set([])
 
 for row in reader:
     # 1436583.js;hash_def_one_renaming.freqlen;$[body][0][definitions][0][value][body][2][body][right][variables][_values][$n][scope];9;8;False;config;config
-    # Update 1/6/17 4664436.js;basic_renaming;lm;$[body][0][definitions][0][name][thedef][references][2][scope][variables][_values][$T][scope];3;6;False;frame;frame
+    # Update 1/6/17 
+    # 4664436.js;basic_renaming;lm;$[body][0][definitions][0][name][thedef][references][2][scope][variables][_values][$T][scope];3;6;False;frame;frame
     file_name = row[0]
     
     if sanity.get(file_name, False):

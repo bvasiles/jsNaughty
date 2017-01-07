@@ -11,7 +11,7 @@ from tools import IndexBuilder, Lexer, ScopeAnalyst
 
 def processFile(row):
     
-    print row
+#     print row
     js_file_path = row[0]
     status = row[1]
     if not status == 'OK':
