@@ -131,7 +131,8 @@ class ConsistencyResolver:
                         for candidate_name in unseen_candidates:
                             
                             # Give no weight to names that remained hashed after translation
-                            if isHash(candidate_name):
+                            if isHash(candidate_name) or \
+                                    name==candidate_name:
                                 log_probs.append((candidate_name, -9999999999))
                             
                             else:
@@ -264,7 +265,8 @@ class ConsistencyResolver:
                     unseen_candidates = [candidate_name 
                                          for (candidate_name, _occurs) in candidates
                                          if not seen.has_key((candidate_name, use_scope))
-                                         and not isHash(candidate_name)]
+                                         and not isHash(candidate_name)
+                                         and not candidate_name==name]
                     
                     if len(unseen_candidates):
                         candidate_name = unseen_candidates[0]
