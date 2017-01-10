@@ -14,8 +14,8 @@ def processFile(l):
     candidates = []
         
     try:
-#         lexer = Lexer(os.path.join(results_path, js_file_name))
-#         iBuilder = IndexBuilder(lexer.tokenList)
+        lexer = Lexer(os.path.join(results_path, js_file_name))
+        iBuilder = IndexBuilder(lexer.tokenList)
         
         scopeAnalyst = ScopeAnalyst(os.path.join(results_path, 
                                                  js_file_name))
@@ -26,8 +26,8 @@ def processFile(l):
         for (name, def_scope) in nameOrigin.iterkeys():
             pos = nameDefScope2pos[(name, def_scope)]
             
-#             (lin,col) = iBuilder.revFlatMat[pos]
-#             scope = iBuilder.revTokMap[(lin,col)]
+            (lin,col) = iBuilder.revFlatMat[pos]
+            scope = iBuilder.revTokMap[(lin,col)]
             
             glb = isGlobal.get((name, pos), True)
             
