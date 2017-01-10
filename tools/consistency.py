@@ -249,7 +249,7 @@ class ConsistencyResolver:
         
         for key, _num_lines in token_lines:
             
-            for use_scope, suggestions in name_candidates[key].iteritems():
+            for use_scope, suggestions in name_candidates.get(key,{}).iteritems(): #[key].iteritems():
     #             suggestions[name_translation] = set([line numbers])
             
                 # Sort candidates by how many lines in the translation

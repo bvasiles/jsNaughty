@@ -431,7 +431,7 @@ class PreRenamer:
                 name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
                 name_candidates[(token, def_scope)][use_scope][renaming].add(1)
     
-                print (token, def_scope)
+            print (token, def_scope)
     
         cs = ConsistencyResolver()
         renaming_map = cs.computeFreqLenRenaming(name_candidates,
