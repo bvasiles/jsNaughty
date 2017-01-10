@@ -19,7 +19,8 @@ import xmlrpclib
 from tools import IndexBuilder, Beautifier, prepHelpers, WebMosesDecoder, \
                     WebScopeAnalyst, WebPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
-                    PostRenamer, RenamingStrategies, ConsistencyStrategies
+                    PostRenamer, RenamingStrategies, ConsistencyStrategies, \
+                    MosesProxy
 
 
 prepro_error = "Preprocessor Failed"
@@ -143,7 +144,16 @@ class MosesClient():
     
     #TODO: Double check what cleanup does..
     def deobfuscateJS(self, obfuscatedCode, transactionID):
-        proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40012/RPC2")
+        
+        RS = RenamingStrategies()
+        CS = ConsistencyStrategies()
+        
+        r_strategy = RS.HASH_ONE
+        c_strategy = CS.LM
+        
+        proxy = MosesProxy().proxies[r_strategy]
+        
+#         proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40012/RPC2")
 #         proxy2 = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40013/RPC2")
 #         proxies = [proxy, proxy2]
         
@@ -222,12 +232,6 @@ class MosesClient():
 #         options["twoLines"] = False
 #         options["debug"] = False
 #         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
-        
-        RS = RenamingStrategies()
-        CS = ConsistencyStrategies()
-        
-        r_strategy = RS.HASH_ONE
-        c_strategy = CS.LM
         
         try:
 #         if True:
