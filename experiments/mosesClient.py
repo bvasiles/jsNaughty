@@ -11,7 +11,7 @@ import socket
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
-import xmlrpclib
+# import xmlrpclib
 # from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
 # from renamingStrategies import renameUsingHashDefLine, Strategies, renameUsingScopeId, renameUsingHashAllPrec
 # from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
