@@ -282,6 +282,10 @@ if __name__=="__main__":
     
     flog = 'log_test_' + os.path.basename(corpus_root)
     c_path = 'candidates.csv'
+    
+    with open(os.path.join(output_path, flog), 'w') as g, \
+            open(os.path.join(output_path, c_path), 'w') as c:
+        pass
 
     CS = ConsistencyStrategies() 
     RS = RenamingStrategies()
@@ -299,8 +303,8 @@ if __name__=="__main__":
 #         if True:
         for result in pool.imap_unordered(processFile, reader):
         
-            with open(os.path.join(output_path, flog), 'w') as g, \
-                    open(os.path.join(output_path, c_path), 'w') as c:
+            with open(os.path.join(output_path, flog), 'a') as g, \
+                    open(os.path.join(output_path, c_path), 'a') as c:
                 writer = UnicodeWriter(g)
                 cw = UnicodeWriter(c)
          
