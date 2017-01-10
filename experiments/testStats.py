@@ -204,7 +204,7 @@ for file_name in orig.iterkeys():
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
         
-        print file_name, def_scope, len(coverage[file_name][def_scope])
+        print file_name, def_scope #, len(coverage[file_name][def_scope])
         try:
             if len(coverage[file_name][def_scope]) == num_non_trivial:
     
