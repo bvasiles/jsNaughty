@@ -31,7 +31,7 @@ def processFile(l):
             
             glb = isGlobal.get((name, pos), True)
             
-            print name, def_scope, pos, scope, glb #, (lin,col)
+#             print name, def_scope, pos, scope, glb #, (lin,col)
             
 #             if not isGlobal.get((name, pos), True):
 #                 scope = def_scope.replace("\"","")
@@ -49,9 +49,9 @@ def processFile(l):
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
-    print 'candidates------------------'
-    for candidate in candidates:
-        print candidate
+#     print 'candidates------------------'
+#     for candidate in candidates:
+#         print candidate
     
     return (js_file_name, 'OK', candidates)
         

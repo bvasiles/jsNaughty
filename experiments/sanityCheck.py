@@ -116,7 +116,7 @@ def processFile(row):
             all_ok = check(temp_files['path_ugly'], data)
             if not all_ok:
                 method = 'u'
-        except Exception, e:
+        except: # Exception, e:
             return (js_file_path, None, 'Ugly fail')
         
 
@@ -124,7 +124,7 @@ def processFile(row):
             all_ok = check(temp_files['path_unugly'], data)
             if not all_ok:
                 method = 'n2p'
-        except Exception, e:
+        except: # Exception, e:
             return (js_file_path, None, 'N2P fail')
 
 
@@ -132,7 +132,7 @@ def processFile(row):
             all_ok = check(temp_files['path_hash_lm'], data)
             if not all_ok:
                 method = 'hash.lm'
-        except Exception, e:
+        except: # Exception, e:
             return (js_file_path, None, 'Hash fail')
         
 
@@ -163,11 +163,11 @@ with open(file_list_path, 'r') as f:
 
 #     result = processFile(reader.next())
 
-#     pool = multiprocessing.Pool(processes=num_threads)
+    pool = multiprocessing.Pool(processes=num_threads)
     
-#     for result in pool.imap_unordered(processFile, reader):
-    for row in reader:
-        result = processFile(row)
+    for result in pool.imap_unordered(processFile, reader):
+#     for row in reader:
+#         result = processFile(row)
 #         print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
