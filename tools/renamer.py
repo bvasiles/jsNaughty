@@ -415,6 +415,7 @@ class PreRenamer:
         shas = {}
         name_candidates = {}
         
+        print("name_candidates-------------------------------------")
         for (token, def_scope), context_tokens in context.iteritems():
             concat_str = ''.join(context_tokens)
             renaming = shas.setdefault(concat_str, self.__sha(concat_str, debug))
@@ -430,8 +431,7 @@ class PreRenamer:
                 name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
                 name_candidates[(token, def_scope)][use_scope][renaming].add(1)
     
-#         print("name_candidates-------------------------------------")
-#         print(name_candidates)
+                print (token, def_scope)
     
         cs = ConsistencyResolver()
         renaming_map = cs.computeFreqLenRenaming(name_candidates,
