@@ -119,6 +119,8 @@ for row in reader:
             coverage.setdefault(file_name, {})
             coverage[file_name].setdefault(scope, set([]))
             coverage[file_name][scope].add(strategy)
+            
+            print file_name, scope, strategy, (translated_name, alternatives)
                 
         #                                               ugly_name, 
         #     print file_name, strategy, scope, (translated_name, alternatives)
