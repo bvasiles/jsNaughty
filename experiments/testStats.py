@@ -49,6 +49,10 @@ def processFile(l):
     except:
         return (js_file_name, None, 'ScopeAnalyst fail')
     
+    print 'candidates------------------'
+    for candidate in candidates:
+        print candidate
+    
     return (js_file_name, 'OK', candidates)
         
 
