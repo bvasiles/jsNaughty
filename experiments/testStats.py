@@ -31,7 +31,7 @@ def processFile(l):
             
             glb = isGlobal.get((name, pos), True)
             
-#            print name, def_scope, pos, (lin,col), scope, glb
+            print name, def_scope, pos, scope, glb #, (lin,col)
             
 #             if not isGlobal.get((name, pos), True):
 #                 scope = def_scope.replace("\"","")
@@ -120,7 +120,7 @@ for row in reader:
             coverage[file_name].setdefault(scope, set([]))
             coverage[file_name][scope].add(strategy)
             
-            print file_name, scope, strategy, (translated_name, alternatives)
+#             print file_name, scope, strategy, (translated_name, alternatives)
                 
         #                                               ugly_name, 
         #     print file_name, strategy, scope, (translated_name, alternatives)
