@@ -33,17 +33,18 @@ def prepHelpers(iBuilder,
                 
                 if scopeAnalyst is not None:
                     name2defScope = scopeAnalyst.resolve_scope()
-                    isGlobal = scopeAnalyst.isGlobal
             
-#                     try:
-                    if not isGlobal.get((token, p), True):
+#                     isGlobal = scopeAnalyst.isGlobal
+#                     if not isGlobal.get((token, p), True):
+
+                    try:
                         def_scope = name2defScope[(token, p)]
                         
                         name_positions.setdefault((token, def_scope), [])
                         name_positions[(token, def_scope)].append((line_num, line_idx))
                         position_names[line_num][line_idx] = (token, def_scope)
-#                     except KeyError:
-#                         pass
+                    except KeyError:
+                        pass
 
                 else:
                     def_scope = None
