@@ -14,8 +14,8 @@ def processFile(l):
     candidates = []
         
     try:
-        lexer = Lexer(os.path.join(results_path, js_file_name))
-        iBuilder = IndexBuilder(lexer.tokenList)
+#         lexer = Lexer(os.path.join(results_path, js_file_name))
+#         iBuilder = IndexBuilder(lexer.tokenList)
         
         scopeAnalyst = ScopeAnalyst(os.path.join(results_path, 
                                                  js_file_name))
@@ -26,8 +26,8 @@ def processFile(l):
         for (name, def_scope) in nameOrigin.iterkeys():
             pos = nameDefScope2pos[(name, def_scope)]
             
-            (lin,col) = iBuilder.revFlatMat[pos]
-            scope = iBuilder.revTokMap[(lin,col)]
+#             (lin,col) = iBuilder.revFlatMat[pos]
+#             scope = iBuilder.revTokMap[(lin,col)]
             
             glb = isGlobal.get((name, pos), True)
             
@@ -165,7 +165,7 @@ for result in pool.imap_unordered(processFile, w):
         for (def_scope, name, glb) in candidates:
             orig[file_name][def_scope] = (name, glb)
 
-#             print file_name, def_scope, (name, glb)
+#             print file_name, (name, glb)
 #             orig[file_name].setdefault(def_scope, [])
 #             orig[file_name][def_scope].append(name)
     
@@ -204,11 +204,11 @@ for file_name in orig.iterkeys():
     
     for def_scope, (name, glb) in orig[file_name].iteritems():
         
-#         print file_name, def_scope, len(coverage[file_name][def_scope])
+        print file_name, def_scope, len(coverage[file_name][def_scope])
         try:
             if len(coverage[file_name][def_scope]) == num_non_trivial:
     
-    #             print '\t', name, def_scope, glb
+                print '\t', name, def_scope, glb
                 num_names += 1
                 
                 if glb:
@@ -216,11 +216,10 @@ for file_name in orig.iterkeys():
                 else:
                     num_loc_names += 1
                 
-                (translated_name, alternatives) =  \
-                    data[file_name]['no_renaming.lm'].values()[0]
-                    
-        #         if translated_name != name:
-        #             num_mini_names += 1
+#                 (translated_name, alternatives) =  \
+#                     data[file_name]['no_renaming.lm'].values()[0]
+#                 if translated_name != name:
+#                     num_mini_names += 1
                 
                 num_strategies = 0
                 
