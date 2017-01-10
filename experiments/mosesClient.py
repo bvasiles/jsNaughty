@@ -149,7 +149,7 @@ class MosesClient():
         CS = ConsistencyStrategies()
         
         r_strategy = RS.HASH_ONE
-        c_strategy = CS.LM
+        c_strategy = CS.FREQLEN # or CS.LM?
         
         proxy = MosesProxy().proxies[r_strategy]
         
