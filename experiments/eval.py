@@ -213,6 +213,19 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
                 
+                # Update name_candidates with some default values 
+                # (in this case the translation without any renaming)
+                # if the translation is empty
+                if r_strategy == RS.NONE:
+                    # RS.NONE should always be first, by construction
+                    name_candidates_default = name_candidates
+                else:
+                    for key, val in name_candidates.iteritems():
+                        for use_scope, suggestions in val.iteritems():
+                            if not len(suggestions):
+                                name_candidates[k][use_scope] = \
+                                    name_candidates_default.get(key, {}).get(use_scope, {})
+                                
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
                 
@@ -290,7 +303,7 @@ if __name__=="__main__":
     CS = ConsistencyStrategies() 
     RS = RenamingStrategies()
     
-    proxies = MosesProxy().proxies 
+    proxies = MosesProxy().getProxies() 
     
     
     with open(testing_sample_path, 'r') as f:

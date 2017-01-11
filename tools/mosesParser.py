@@ -71,10 +71,10 @@ class MosesParser:
                 k = (name, def_scope)
                 
                 # Record the line number (we will give more weight
-                # to names that appear on many translation lines) 
+                # to names that appear on many translation lines)
                 self.name_candidates.setdefault(k, {})
                 self.name_candidates[k].setdefault(use_scope, {})
                 self.name_candidates[k][use_scope].setdefault(name_translation, set([]))
-                self.name_candidates[k][use_scope][name_translation].add(n) 
+                self.name_candidates[k][use_scope][name_translation].add(n)
                     
         return self.name_candidates
