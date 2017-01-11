@@ -74,7 +74,8 @@ class ConsistencyResolver:
                     
                     (name, _def_scope) = key
                     
-                    if not seen.has_key((candidate_name, use_scope)):
+                    if not seen.has_key((candidate_name, use_scope)) and \
+                            not isHash(candidate_name):
     #                     print (key, use_scope), candidate_name
                         renaming_map[(key, use_scope)] = candidate_name
                         seen[(candidate_name, use_scope)] = True
@@ -114,7 +115,7 @@ class ConsistencyResolver:
                 # they appear on, and by name length, both descending
                 candidates = sorted([(name_translation, len(line_nums)) \
                                      for (name_translation, line_nums) \
-                                     in suggestions.items()], 
+                                        in suggestions.items()], 
                                     key=lambda e:(-e[1],-len(e[0])))
             
                 if len(candidates) > 1:
@@ -124,49 +125,49 @@ class ConsistencyResolver:
                     (name, _def_scope) = key
                     unseen_candidates = [candidate_name 
                                          for (candidate_name, _occurs) in candidates
-                                         if not seen.has_key((candidate_name, use_scope))]
+                                         if not seen.has_key((candidate_name, use_scope))
+                                         and not isHash(candidate_name)]
                     
                     if len(unseen_candidates):
                         
                         for candidate_name in unseen_candidates:
                             
                             # Give no weight to names that remained hashed after translation
-                            if isHash(candidate_name) or \
-                                    name==candidate_name:
-                                log_probs.append((candidate_name, -9999999999))
+#                             if name==candidate_name:
+#                                 log_probs.append((candidate_name, -9999999999))
                             
-                            else:
-                                line_nums = set([num \
-                                    for (num,idx) in name_positions[key]])
+#                             else:
+                            line_nums = set([num \
+                                for (num,idx) in name_positions[key]])
+                            
+                            draft_lines = []
+                            
+                            for line_num in line_nums:
+                                draft_line = [token for (_token_type, token) 
+                                              in iBuilder.tokens[line_num]]
+                                for line_idx in [idx 
+                                                 for (num, idx) in name_positions[key] 
+                                                 if num == line_num]:
+                                    draft_line[line_idx] = candidate_name
+                                    
+                                draft_lines.append(' '.join(draft_line))
                                 
-                                draft_lines = []
                                 
-                                for line_num in line_nums:
-                                    draft_line = [token for (_token_type, token) 
-                                                  in iBuilder.tokens[line_num]]
-                                    for line_idx in [idx 
-                                                     for (num, idx) in name_positions[key] 
-                                                     if num == line_num]:
-                                        draft_line[line_idx] = candidate_name
-                                        
-                                    draft_lines.append(' '.join(draft_line))
-                                    
-                                    
-                                line_log_probs = []
-                                for line in draft_lines:
-                                    lmquery = LMQuery(lm_path=lm_path)
-                                    (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
-                                    
-                                    if not lm_ok:
-                                        lm_log_prob = -9999999999
-                                    line_log_probs.append(lm_log_prob)
-            
-                                if not len(line_log_probs):
+                            line_log_probs = []
+                            for line in draft_lines:
+                                lmquery = LMQuery(lm_path=lm_path)
+                                (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+                                
+                                if not lm_ok:
                                     lm_log_prob = -9999999999
-                                else:
-                                    lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
-                
-                                log_probs.append((candidate_name, lm_log_prob))
+                                line_log_probs.append(lm_log_prob)
+        
+                            if not len(line_log_probs):
+                                lm_log_prob = -9999999999
+                            else:
+                                lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+            
+                            log_probs.append((candidate_name, lm_log_prob))
                         
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
@@ -265,8 +266,8 @@ class ConsistencyResolver:
                     unseen_candidates = [candidate_name 
                                          for (candidate_name, _occurs) in candidates
                                          if not seen.has_key((candidate_name, use_scope))
-                                         and not isHash(candidate_name)
-                                         and not candidate_name==name]
+                                         and not isHash(candidate_name)]
+#                                          and not candidate_name==name]
                     
                     if len(unseen_candidates):
                         candidate_name = unseen_candidates[0]
