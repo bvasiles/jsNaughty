@@ -45,8 +45,8 @@ def processFile(l):
     
     candidates = []
     
-    if True:
-#     try:
+#     if True:
+    try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
@@ -164,25 +164,25 @@ def processFile(l):
             md = WebMosesDecoder(proxy)
             
 #             try:
-            if True:
-                # Rename input prior to translation
-                preRen = PreRenamer()
-                after_text = preRen.rename(r_strategy, 
-                                          iBuilder_ugly,
-                                          scopeAnalyst)
-                
-                (ok, beautified_after_text, _err) = clear.web_run(after_text)
-                if not ok:
-                    return (js_file_path, None, 'Beautifier fail')
-                
+#             if True:
+            # Rename input prior to translation
+            preRen = PreRenamer()
+            after_text = preRen.rename(r_strategy, 
+                                      iBuilder_ugly,
+                                      scopeAnalyst)
+            
+            (ok, beautified_after_text, _err) = clear.web_run(after_text)
+            if not ok:
+                return (js_file_path, None, 'Beautifier fail')
+            
 #                 print beautified_after_text
-                # Save renamed input to disk for future inspection
-                with open(temp_files['%s' % (r_strategy)], 'w') as f:
-                    f.write(beautified_after_text)
-                
-                a_lexer = WebLexer(beautified_after_text)
-                a_iBuilder = IndexBuilder(a_lexer.tokenList)
-                a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
+            # Save renamed input to disk for future inspection
+            with open(temp_files['%s' % (r_strategy)], 'w') as f:
+                f.write(beautified_after_text)
+            
+            a_lexer = WebLexer(beautified_after_text)
+            a_iBuilder = IndexBuilder(a_lexer.tokenList)
+            a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
                 
 #             except:
 #                 return (js_file_path, None, 'Renaming fail')
@@ -203,7 +203,7 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
-                print r_strategy
+#                 print r_strategy
                 
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
@@ -215,14 +215,13 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-                print 'name_candidates before ----------'
-                for key, val in name_candidates.iteritems():
-                    print key, val
-                    for use_scope, suggestions in val.iteritems():
-                        print '\t', use_scope
-                        for name_translation, lines in suggestions.iteritems():
-                            print '\t\t', name_translation, lines
-                    
+#                 print 'name_candidates before ----------'
+#                 for key, val in name_candidates.iteritems():
+#                     print key, val
+#                     for use_scope, suggestions in val.iteritems():
+#                         print '\t', use_scope
+#                         for name_translation, lines in suggestions.iteritems():
+#                             print '\t\t', name_translation, lines
                     
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
@@ -242,18 +241,13 @@ def processFile(l):
                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
-# #                             for name_translation in suggestions.iterkeys():
-#                                 set_line_nums_default = name_candidates_default.get(key, {}).get(use_scope, {}).get(name_translation, set([]))
-#                                 name_candidates[k][use_scope][name_translation].update(set_line_nums_default)
-                                
-                print 'name_candidates after ----------'
-                for key, val in name_candidates.iteritems():
-                    print key, val
-                    for use_scope, suggestions in val.iteritems():
-                        print '\t', use_scope
-                        for name_translation, lines in suggestions.iteritems():
-                            print '\t\t', name_translation, lines
-                                
+#                 print 'name_candidates after ----------'
+#                 for key, val in name_candidates.iteritems():
+#                     print key, val
+#                     for use_scope, suggestions in val.iteritems():
+#                         print '\t', use_scope
+#                         for name_translation, lines in suggestions.iteritems():
+#                             print '\t\t', name_translation, lines
                                 
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
@@ -308,8 +302,8 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-#     except Exception, e:
-#         return (js_file_path, None, str(e).replace("\n", ""))
+    except Exception, e:
+        return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
@@ -341,9 +335,9 @@ if __name__=="__main__":
     
         pool = multiprocessing.Pool(processes=num_threads)
         
-        result = processFile(reader.next())
-        if True:
-#         for result in pool.imap_unordered(processFile, reader):
+#         result = processFile(reader.next())
+#         if True:
+        for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:
