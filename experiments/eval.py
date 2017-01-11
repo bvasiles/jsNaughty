@@ -45,8 +45,8 @@ def processFile(l):
     
     candidates = []
     
-#     if True:
-    try:
+    if True:
+#     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
@@ -163,8 +163,8 @@ def processFile(l):
         
             md = WebMosesDecoder(proxy)
             
-            try:
-#             if True:
+#             try:
+            if True:
                 # Rename input prior to translation
                 preRen = PreRenamer()
                 after_text = preRen.rename(r_strategy, 
@@ -184,8 +184,8 @@ def processFile(l):
                 a_iBuilder = IndexBuilder(a_lexer.tokenList)
                 a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
                 
-            except:
-                return (js_file_path, None, 'Renaming fail')
+#             except:
+#                 return (js_file_path, None, 'Renaming fail')
             
             lx = WebLexer(a_iBuilder.get_text())
             
@@ -305,8 +305,8 @@ def processFile(l):
         return (js_file_path, 'OK', candidates)
 
 
-    except Exception, e:
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
@@ -338,9 +338,9 @@ if __name__=="__main__":
     
         pool = multiprocessing.Pool(processes=num_threads)
         
-#         result = processFile(reader.next())
-#         if True:
-        for result in pool.imap_unordered(processFile, reader):
+        result = processFile(reader.next())
+        if True:
+#         for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
                     open(os.path.join(output_path, c_path), 'a') as c:
