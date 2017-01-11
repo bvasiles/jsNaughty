@@ -283,18 +283,6 @@ class MosesClient():
         #proxyMap = self.splitTexts(lex_ugly.collapsedText, proxies)
         translation = ""
 
-        #Serial version
-        print("charPosition2Name----------------------------------------------------")
-        print(iBuilder_ugly.charPosition2Name)
-        print("name2CharPositions----------------------------------------------------")
-        print(iBuilder_ugly.name2CharPositions)
-        print("flatMap----------------------------------------------------")
-        print([iBuilder_ugly.flatMap[(line,col)] for (line, col) in iBuilder_ugly.name2CharPositions[u'e']])
-        print("revFlatMat----------------------------------------------------")
-        print(iBuilder_ugly.revFlatMat)
-        print("-------------------------------------------------------------")
-        print(lex_ugly.collapsedText)
-        print(renamedText)
         mosesParams["text"] = renamedText
         #mosesParams["text"] = lex_ugly.collapsedText
         mosesParams["align"] = "true"
@@ -337,6 +325,7 @@ class MosesClient():
         if translation is not None:
             # Parse moses output
             mp = MosesParser()
+            print(translation)
                 
             name_candidates = mp.parse(translation,
                                        a_iBuilder,
