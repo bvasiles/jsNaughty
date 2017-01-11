@@ -1,0 +1,23 @@
+var geom2d = function ( ) {
+var t = numeric . sum , n = numeric . numberEquals ;
+var maybeInsertedBrackets = 10 ;
+function literalsAreCompatible ( MenuClientID , updateLiteral ) {
+this . x = MenuClientID ;
+this . y = updateLiteral ;
+}
+u ( literalsAreCompatible , {
+dotProduct : function e ( c ) {
+return t ( [ this . x * c . x , this . y * c . y ] ) ;
+} ,
+equals : function equals ( array1 , accuracy ) {
+return n ( this . x , array1 . x , accuracy ) && n ( this . y , array1 . y , accuracy ) ;
+}
+} ) ;
+function u ( destination , source ) {
+for ( var property in source ) destination [ property ] = source [ property ] ;
+return destination ;
+}
+return {
+Vector2d : literalsAreCompatible
+} ;
+} ( ) ;

@@ -53,11 +53,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="{% url 'deobfuscate:index' %}">Home</a>
+                     <a href="{% url 'deobfuscate:get_js' %}">Home</a>
                     </li>
                     <li>
-                     <a href="{% url 'deobfuscate:get_js' %}">Deobsfuscation Tool</a>
+                     <a href="{% url 'deobfuscate:team' %}">Team</a>
                     </li>
+                    <li>
+                    <a href="{% url 'deobfuscate:about' %}">About</a>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
