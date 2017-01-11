@@ -230,14 +230,17 @@ def processFile(l):
                 if r_strategy == RS.NONE:
                     # RS.NONE should always be first, by construction
                     name_candidates_default = name_candidates
+#                     scopeAnalyst_default = scopeAnalyst
                 else:
                     for key, val in name_candidates_default.iteritems():
                         for use_scope, suggestions in val.iteritems():
                             for name_translation, lines in suggestions.iteritems():
-                                name_candidates.setdefault(key, {})
-                                name_candidates[key].setdefault(use_scope, {})
-                                name_candidates[key][use_scope].setdefault(name_translation, set([]))
-                                name_candidates[key][use_scope][name_translation].update(lines)
+                                orig_key = preRen.simple_inverse_map.get(key, key)
+                                
+                                name_candidates.setdefault(orig_key, {})
+                                name_candidates[orig_key].setdefault(use_scope, {})
+                                name_candidates[orig_key][use_scope].setdefault(name_translation, set([]))
+                                name_candidates[orig_key][use_scope][name_translation].update(lines)
                                 
 # #                             for name_translation in suggestions.iterkeys():
 #                                 set_line_nums_default = name_candidates_default.get(key, {}).get(use_scope, {}).get(name_translation, set([]))
