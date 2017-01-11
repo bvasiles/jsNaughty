@@ -203,6 +203,8 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
+                print r_strategy
+                
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
                                            a_position_names,
@@ -212,7 +214,16 @@ def processFile(l):
                 # (name, def_scope) tuples (otherwise); 
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
-                
+
+                print 'name_candidates before ----------'
+                for key, val in name_candidates.iteritems():
+                    print key, val
+                    for use_scope, suggestions in val.iteritems():
+                        print '\t', use_scope
+                        for name_translation, lines in suggestions.iteritems():
+                            print '\t\t', name_translation, lines
+                    
+                    
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
                 # if the translation is empty
@@ -220,11 +231,26 @@ def processFile(l):
                     # RS.NONE should always be first, by construction
                     name_candidates_default = name_candidates
                 else:
-                    for key, val in name_candidates.iteritems():
+                    for key, val in name_candidates_default.iteritems():
                         for use_scope, suggestions in val.iteritems():
-                            for name_translation in suggestions.iterkeys():
-                                set_line_nums_default = name_candidates_default.get(key, {}).get(use_scope, {}).get(name_translation, set([]))
-                                name_candidates[k][use_scope][name_translation].update(set_line_nums_default)
+                            for name_translation, lines in suggestions.iteritems():
+                                name_candidates.setdefault(key, {})
+                                name_candidates[key].setdefault(use_scope, {})
+                                name_candidates[key][use_scope].setdefault(name_translation, set([]))
+                                name_candidates[key][use_scope][name_translation].update(lines)
+                                
+# #                             for name_translation in suggestions.iterkeys():
+#                                 set_line_nums_default = name_candidates_default.get(key, {}).get(use_scope, {}).get(name_translation, set([]))
+#                                 name_candidates[k][use_scope][name_translation].update(set_line_nums_default)
+                                
+                print 'name_candidates after ----------'
+                for key, val in name_candidates.iteritems():
+                    print key, val
+                    for use_scope, suggestions in val.iteritems():
+                        print '\t', use_scope
+                        for name_translation, lines in suggestions.iteritems():
+                            print '\t\t', name_translation, lines
+                                
                                 
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
