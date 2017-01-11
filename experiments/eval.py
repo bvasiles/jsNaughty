@@ -159,7 +159,7 @@ def processFile(l):
          position_names) = prepHelpers(iBuilder_ugly, scopeAnalyst)
 
         # Try different renaming strategies (hash, etc)
-        for r_strategy, proxy in proxies.iteritems():
+        for r_strategy, proxy in proxies:
         
             md = WebMosesDecoder(proxy)
             
