@@ -222,9 +222,9 @@ def processFile(l):
                 else:
                     for key, val in name_candidates.iteritems():
                         for use_scope, suggestions in val.iteritems():
-                            if not len(suggestions):
-                                name_candidates[k][use_scope] = \
-                                    name_candidates_default.get(key, {}).get(use_scope, {})
+                            for name_translation in suggestions.iterkeys():
+                                set_line_nums_default = name_candidates_default.get(key, {}).get(use_scope, {}).get(name_translation, set([]))
+                                name_candidates[k][use_scope][name_translation].update(set_line_nums_default)
                                 
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
