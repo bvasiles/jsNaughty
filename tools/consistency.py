@@ -113,7 +113,7 @@ class ConsistencyResolver:
             for use_scope, suggestions in name_candidates[key].iteritems():
     #             suggestions[name_translation] = set([line numbers])
             
-                print ' *', '...', use_scope[-50:]
+                print ' *', '...', use_scope[-50:], suggestions
             
                 # Sort candidates by how many lines in the translation
                 # they appear on, and by name length, both descending
@@ -158,10 +158,10 @@ class ConsistencyResolver:
                                     
                                 draft_lines.append(' '.join(draft_line))
                                 
-                            
-#                             for line in draft_lines:
-#                                 print line
-#                             print
+                                
+                            print '   ^ draft lines -----'
+                            for line in draft_lines:
+                                print line
                                 
                             line_log_probs = []
                             for line in draft_lines:
