@@ -25,9 +25,6 @@ class LMQuery:
         
         #E.G. echo "_fe8eefa5 . push ( _5a1652ee . substring ( i , iStrlen ) ) ;" | /home/bogdanv/mosesdecoder/bin/query -n -s /data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm
         echo = subprocess.Popen(['echo', line], stdout=PIPE)
-        print("LM Query: " + " ".join([self.query_path, 
-                               '-n', '-s', #'sentence', 
-                               self.lm_path]) + " " + line)
         proc = subprocess.Popen([self.query_path, 
                                '-n', '-s', #'sentence', 
                                self.lm_path], 
@@ -37,8 +34,8 @@ class LMQuery:
         if not proc.returncode:
             lm_ok = True
             
-            print out
-            print err
+#             print out
+#             print err
             
             # Total: -14.223319 OOV: 0
             # Perplexity including OOVs:    38.05123735142437
@@ -49,5 +46,9 @@ class LMQuery:
             lines = out.split('\n')
             logProb = float(lines[0].split(' ')[1])
             # oovProb = int(lines[0].split(' ')[-1])
+
+            print("LM Query: " + " ".join([self.query_path, 
+                               '-n', '-s', #'sentence', 
+                               self.lm_path]) + " " + line + ' ---> ' + str(logProb))
             
         return (lm_ok, logProb, err)

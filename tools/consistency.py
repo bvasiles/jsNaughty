@@ -108,12 +108,12 @@ class ConsistencyResolver:
         
         for key, _num_lines in token_lines:
             
-            print 'LM-ing', key[0], key[1][-50:], _num_lines
+            print 'LM-ing', key[0], '...', key[1][-50:], _num_lines
             
             for use_scope, suggestions in name_candidates[key].iteritems():
     #             suggestions[name_translation] = set([line numbers])
             
-                print ' *', use_scope[-50:]
+                print ' *', '...', use_scope[-50:]
             
                 # Sort candidates by how many lines in the translation
                 # they appear on, and by name length, both descending
@@ -158,8 +158,10 @@ class ConsistencyResolver:
                                     
                                 draft_lines.append(' '.join(draft_line))
                                 
-                            print draft_lines
-                            print
+                            
+#                             for line in draft_lines:
+#                                 print line
+#                             print
                                 
                             line_log_probs = []
                             for line in draft_lines:
