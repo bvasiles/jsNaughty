@@ -49,8 +49,8 @@ class WebMosesDecoder:
         self.proxy = proxy
         
         self.mosesParams = {}
-        #self.mosesParams["align"] = "true"
-        #self.mosesParams["report-all-factors"] = "true"
+        self.mosesParams["align"] = "true"
+        self.mosesParams["report-all-factors"] = "true"
 
 
     def run(self, collapsed_text):
