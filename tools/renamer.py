@@ -120,8 +120,8 @@ class PreRenamer:
     def __init__(self):
         self.RS = RenamingStrategies()
 
-        self.simple_direct_map = {}
-        self.simple_inverse_map = {}
+#         self.simple_direct_map = {}
+#         self.simple_inverse_map = {}
     
     
     def __isValidContextToken(self, (token_type, token)):
@@ -442,9 +442,9 @@ class PreRenamer:
                                               name_positions,
                                               lambda e:e)
         
-        for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
-            self.simple_direct_map[(name, def_scope)] = (renaming, def_scope)
-            self.simple_inverse_map[(renaming, def_scope)] = (name, def_scope)
+#         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+#             self.simple_direct_map[(name, def_scope)] = (renaming, def_scope)
+#             self.simple_inverse_map[(renaming, def_scope)] = (name, def_scope)
             
         
 #         for (k, use_scope), renaming in renaming_map.iteritems():

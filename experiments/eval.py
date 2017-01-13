@@ -161,8 +161,6 @@ def processFile(l):
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
         
-            md = WebMosesDecoder(proxy)
-            
 #             try:
 #             if True:
             # Rename input prior to translation
@@ -190,6 +188,7 @@ def processFile(l):
             lx = WebLexer(a_iBuilder.get_text())
             
             # Translate renamed input
+            md = WebMosesDecoder(proxy)
             (ok, translation, _err) = md.run(lx.collapsedText)
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
@@ -217,9 +216,9 @@ def processFile(l):
 
                 print 'name_candidates before ----------'
                 for key, val in name_candidates.iteritems():
-                    print key#, val
+                    print key[0], key[1][-50:]#, val
                     for use_scope, suggestions in val.iteritems():
-                        print '\t', use_scope[-50:]
+                        print '\t...', use_scope[-50:]
                         for name_translation, lines in suggestions.iteritems():
                             print '\t\t', name_translation, lines
                     
@@ -229,12 +228,22 @@ def processFile(l):
                 if r_strategy == RS.NONE:
                     # RS.NONE should always be first, by construction
                     name_candidates_default = name_candidates
-#                     scopeAnalyst_default = scopeAnalyst
+                    scopeAnalyst_default = a_scopeAnalyst
+                    iBuilder_default = a_iBuilder
                 else:
-                    for orig_key, val in name_candidates_default.iteritems():
+                    for key_default, val in name_candidates_default.iteritems():
+#                         (name_default, def_scope_default) = key_default
+                        
+                        pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
+                        (lin, col) = iBuilder_default.revFlatMat[pos_default]
+                        (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
+                        
+                        (name, def_scope) = a_position_names[line_num][line_idx]
+                        key = (name, def_scope)
+                        
                         for use_scope, suggestions in val.iteritems():
                             for name_translation, lines in suggestions.iteritems():
-                                key = preRen.simple_direct_map.get(orig_key, orig_key)
+#                                 key = preRen.simple_direct_map.get(key_default, key_default)
                                 
                                 name_candidates.setdefault(key, {})
                                 name_candidates[key].setdefault(use_scope, {})
@@ -243,9 +252,9 @@ def processFile(l):
                                 
                 print 'name_candidates after ----------'
                 for key, val in name_candidates.iteritems():
-                    print key#, val
+                    print key[0], key[1][-50:]#, val
                     for use_scope, suggestions in val.iteritems():
-                        print '\t', use_scope[-50:]
+                        print '\t...', use_scope[-50:]
                         for name_translation, lines in suggestions.iteritems():
                             print '\t\t', name_translation, lines
                                 
