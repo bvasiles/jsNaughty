@@ -14,12 +14,14 @@ class RenamingStrategies:
     def all(self):
 #         return [self.NORMALIZED]
         
-        return [self.NONE, 
-                self.NORMALIZED,
-                self.SCOPE_ID,
-                self.HASH_ONE,
-                self.HASH_TWO]
+#         return [self.NONE, 
+#                 self.NORMALIZED,
+#                 self.SCOPE_ID,
+#                 self.HASH_ONE,
+#                 self.HASH_TWO]
     
+        return [self.NONE, 
+                self.HASH_ONE]
     
 class ConsistencyStrategies:
     LM = 'lm'
