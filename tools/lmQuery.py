@@ -38,7 +38,7 @@ class LMQuery:
             lm_ok = True
             
             print out
-            print
+            print err
             
             # Total: -14.223319 OOV: 0
             # Perplexity including OOVs:    38.05123735142437
