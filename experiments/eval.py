@@ -215,9 +215,9 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-#                 print 'name_candidates before ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key, val
+                print 'name_candidates before ----------'
+                for key, val in name_candidates.iteritems():
+                    print key, val
 #                     for use_scope, suggestions in val.iteritems():
 #                         print '\t', use_scope
 #                         for name_translation, lines in suggestions.iteritems():
@@ -241,9 +241,9 @@ def processFile(l):
                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
-#                 print 'name_candidates after ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key, val
+                print 'name_candidates after ----------'
+                for key, val in name_candidates.iteritems():
+                    print key, val
 #                     for use_scope, suggestions in val.iteritems():
 #                         print '\t', use_scope
 #                         for name_translation, lines in suggestions.iteritems():
@@ -264,6 +264,9 @@ def processFile(l):
                                                       a_name_positions,
                                                       a_iBuilder,
                                                       lm_path)
+                    print 'temp_renaming_map-------------'
+                    for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
+                        print (name, def_scope), renaming
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
@@ -272,6 +275,10 @@ def processFile(l):
                                                              position_names, 
                                                              temp_renaming_map, 
                                                              r_strategy)
+                    
+                    print 'renaming_map-------------'
+                    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+                        print (name, def_scope), renaming
                     
                     # Apply renaming map and save output for future inspection
                     renamed_text = postRen.applyRenaming(a_iBuilder, 
