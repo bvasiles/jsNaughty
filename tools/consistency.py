@@ -162,10 +162,11 @@ class ConsistencyResolver:
                             print '   ^ draft lines -----'
                             for line in draft_lines:
                                 print line
+                            print
                                 
                             line_log_probs = []
                             for line in draft_lines:
-                                print ' --', line
+#                                 print ' --', line
                                 
                                 lmquery = LMQuery(lm_path=lm_path)
                                 (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
@@ -181,8 +182,14 @@ class ConsistencyResolver:
             
                             log_probs.append((candidate_name, lm_log_prob))
                         
+                        
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
+
+                        print '   ^ log probs -------'                        
+                        for (candidate_name, lm_log_prob) in candidate_names:
+                            print (candidate_name, lm_log_prob)
+                        print
                         
     #                     print (key, use_scope), candidate_name
                         renaming_map[(key, use_scope)] = candidate_name
