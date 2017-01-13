@@ -49,8 +49,9 @@ class WebMosesDecoder:
         self.proxy = proxy
         
         self.mosesParams = {}
-        self.mosesParams["align"] = "true"
-        self.mosesParams["report-all-factors"] = "true"
+#         self.mosesParams["align"] = "true"
+#         self.mosesParams["report-all-factors"] = "true"
+        self.mosesParams["output-hypo-score"] = "true"
 
 
     def run(self, collapsed_text):
@@ -63,7 +64,8 @@ class WebMosesDecoder:
             
             print '\nmoses-----------------'
             for k,v in mresults.iteritems():
-                print k,v
+                print k
+                print '\t',v
 #             print mresults
             
             parser = WebMosesOutputFormatter()
