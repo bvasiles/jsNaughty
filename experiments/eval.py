@@ -196,7 +196,7 @@ def processFile(l):
             print '\ntranslation-------------'
             print translation
             
-            exit()
+#             exit()
             
             (a_name_positions, 
              a_position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)

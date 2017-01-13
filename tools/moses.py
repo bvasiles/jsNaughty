@@ -51,8 +51,8 @@ class WebMosesDecoder:
         self.mosesParams = {}
 #         self.mosesParams["align"] = "true"
 #         self.mosesParams["report-all-factors"] = "true"
-        self.mosesParams["output-hypo-score"] = "true"
-        self.mosesParams["translation-details"] = "details"
+#         self.mosesParams["output-hypo-score"] = "true"
+#         self.mosesParams["translation-details"] = "details"
 
 
     def run(self, collapsed_text):
