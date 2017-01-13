@@ -193,6 +193,9 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
+            print '\ntranslation-------------'
+            print translation
+            
             (a_name_positions, 
              a_position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)
 
@@ -202,7 +205,7 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
-#                 print r_strategy
+                print '\nr_strategy-----------', r_strategy
                 
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
@@ -214,7 +217,7 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-                print 'name_candidates before ----------'
+                print '\nname_candidates before ----------'
                 for key, val in name_candidates.iteritems():
                     print key[0], key[1][-50:]#, val
                     for use_scope, suggestions in val.iteritems():
@@ -250,7 +253,7 @@ def processFile(l):
                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
-                print 'name_candidates after ----------'
+                print '\nname_candidates after ----------'
                 for key, val in name_candidates.iteritems():
                     print key[0], key[1][-50:]#, val
                     for use_scope, suggestions in val.iteritems():
@@ -266,6 +269,8 @@ def processFile(l):
                 # Try different strategies to resolve inconsistencies, if any
                 for c_strategy in CS.all():
                     
+                    print '\nc_strategy----------', c_strategy
+                    
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
                     temp_renaming_map = cr.computeRenaming(c_strategy,
@@ -273,7 +278,7 @@ def processFile(l):
                                                       a_name_positions,
                                                       a_iBuilder,
                                                       lm_path)
-                    print 'temp_renaming_map-------------'
+                    print '\ntemp_renaming_map-------------'
                     for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
                         print (name, def_scope[-50:]), renaming
                     
@@ -285,7 +290,7 @@ def processFile(l):
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-                    print 'renaming_map-------------'
+                    print '\nrenaming_map-------------'
                     for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
                         print (name, def_scope[-50:]), renaming
                     

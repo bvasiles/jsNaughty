@@ -16,8 +16,10 @@ class MosesParser:
               iBuilder,
               position_names,
               scopeAnalyst=None):
-            
+        
+        print '\nmoses output-----------------'    
         for line in moses_output.split('\n'):
+            print line
         
             translations = {}
             
