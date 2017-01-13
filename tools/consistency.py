@@ -108,8 +108,12 @@ class ConsistencyResolver:
         
         for key, _num_lines in token_lines:
             
+            print 'LM-ing', key[0], key[1][-50:], _num_lines
+            
             for use_scope, suggestions in name_candidates[key].iteritems():
     #             suggestions[name_translation] = set([line numbers])
+            
+                print ' *', use_scope[-50:]
             
                 # Sort candidates by how many lines in the translation
                 # they appear on, and by name length, both descending
@@ -132,6 +136,8 @@ class ConsistencyResolver:
                         
                         for candidate_name in unseen_candidates:
                             
+                            print '  candidate:', candidate_name
+                            
                             # Give no weight to names that remained hashed after translation
 #                             if name==candidate_name:
 #                                 log_probs.append((candidate_name, -9999999999))
@@ -152,9 +158,13 @@ class ConsistencyResolver:
                                     
                                 draft_lines.append(' '.join(draft_line))
                                 
+                            print draft_lines
+                            print
                                 
                             line_log_probs = []
                             for line in draft_lines:
+                                print ' --', line
+                                
                                 lmquery = LMQuery(lm_path=lm_path)
                                 (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
                                 
