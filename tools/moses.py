@@ -61,6 +61,9 @@ class WebMosesDecoder:
         try:
             mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
             
+            print '\nmoses-----------------'
+            for k,v in mresults.iteritems():
+                print k,v
 #             print mresults
             
             parser = WebMosesOutputFormatter()
