@@ -77,10 +77,18 @@ def processFile(l):
         # did something weird
         try:
             aligner = Aligner()
-            (beautified_text, minified_text) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
+            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
                                                                  WebLexer(tmp_minified_text).tokenList)
         except:
             return (js_file_path, None, 'Aligner fail')
+        
+        # Pass through beautifier to fix layout
+        (ok, beautified_text, _err) = clear.web_run(aligned_clear)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
+        (ok, minified_text, _err) = clear.web_run(aligned_minified)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
         
         print beautified_text
         print
