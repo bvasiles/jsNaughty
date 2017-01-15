@@ -20,16 +20,6 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
 from folderManager import Folder
 
 
-# import re
-# scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
-# def replaceSciNotNum(text):
-#     """
-#     The JS parser from UglifyJS fails on scientific notation
-#     Use this to replace all scinot numbers (currently by 1)
-#     TODO: replace by actual number, not 1
-#     """
-#     return scinot.sub(lambda x: float[x.group()], text)
-
 
 def processFile(l):
     
@@ -99,8 +89,8 @@ def processFile(l):
         # did something weird
         try:
             aligner = Aligner()
-            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
-                                                                 WebLexer(tmp_minified_text).tokenList)
+            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(replaceSciNotNum(tmp_beautified_text)).tokenList,
+                                                                 WebLexer(replaceSciNotNum(tmp_minified_text)).tokenList)
         except:
             return (js_file_path, None, 'Aligner fail')
         
