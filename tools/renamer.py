@@ -7,7 +7,7 @@ Created on Dec 22, 2016
 # from pygments.token import Token, is_token_subtype
 # import hashlib
 from copy import deepcopy
-from pygments.token import Token, is_token_subtype
+from pygments.token import Token, String, Number, is_token_subtype
 import hashlib
 from helpers import prepHelpers
 from consistency import ConsistencyResolver
@@ -129,6 +129,7 @@ class PreRenamer:
         # Token.Operator
         # Token.Punctuation
         # Token.Keyword.*
+        return True
         if token != u'TOKEN_LITERAL_NUMBER' and \
                 token != u'TOKEN_LITERAL_STRING':
     #                  and \
@@ -193,6 +194,11 @@ class PreRenamer:
                     pos = iBuilder_ugly.flatMap[(l,c)]
                     def_scope = name2defScope[(token, pos)]
                 except KeyError:
+#                     if is_token_subtype(token_type, String):
+#                         new_line.append('TOKEN_LITERAL_STRING')
+#                     elif is_token_subtype(token_type, Number):
+#                         new_line.append('TOKEN_LITERAL_NUMBER')
+#                     else:
                     new_line.append(token)
                     continue
      
@@ -203,6 +209,11 @@ class PreRenamer:
                     # Append def_scope id to name
                     new_line.append('%s_%d' % (token, scope2id[def_scope]))
                 else:
+#                     if is_token_subtype(token_type, String):
+#                         new_line.append('TOKEN_LITERAL_STRING')
+#                     elif is_token_subtype(token_type, Number):
+#                         new_line.append('TOKEN_LITERAL_NUMBER')
+#                     else:
                     new_line.append(token)
              
             renaming.append(' '.join(new_line) + "\n")
@@ -516,12 +527,29 @@ class PreRenamer:
                                 for line in renaming]) + '\n'
     
     
+    
+    def strip_literals(self, iBuilder):
+        tokens = []
+        for line in iBuilder.tokens:
+            new_line = []
+            for (token_type, token) in line:
+                if is_token_subtype(token_type, String):
+                    new_line.append('TOKEN_LITERAL_STRING')
+                elif is_token_subtype(token_type, Number):
+                    new_line.append('TOKEN_LITERAL_NUMBER')
+                else:
+                    new_line.append(token)
+            tokens.append(new_line)
+        return tokens
+        
+        
     def apply_renaming(self,
                        iBuilder,
                        name_positions, 
                        renaming_map):
     
         draft_translation = deepcopy(iBuilder.tokens)
+#         draft_translation = self.strip_literals(iBuilder)
         
         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
             for (line_num, line_idx) in name_positions[(name, def_scope)]:
@@ -532,6 +560,9 @@ class PreRenamer:
     
     
     
+                        
+    
+    
     def rename(self, 
                r_strategy,
                iBuilder, 
@@ -540,9 +571,11 @@ class PreRenamer:
         
         if r_strategy == self.RS.NONE:
             return iBuilder.get_text()
+#             return iBuilder.get_text_wo_literals()
             
         elif r_strategy == self.RS.NORMALIZED:
             text = iBuilder.get_text()
+#             text = iBuilder.get_text_wo_literals()
             
             norm = Normalizer()
             (ok, out, _err) = norm.web_run(text, rename=True)

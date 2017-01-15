@@ -27,7 +27,6 @@ def processFile(js_file_path):
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
-        # Num tokens before vs after
         try:
             lex_clear = WebLexer(beautified_text)
             tok1 = lex_clear.tokenList

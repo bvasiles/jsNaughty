@@ -12,7 +12,7 @@ import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
 from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     prepHelpers, TranslationSummarizer, WebMosesDecoder, \
-                    WebScopeAnalyst, WebPreprocessor, WebLexer, \
+                    WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
                     MosesProxy
@@ -51,7 +51,7 @@ def processFile(l):
         
         # Strip comments, replace literals, etc
         try:
-            prepro = WebPreprocessor(js_text)
+            prepro = WebLMPreprocessor(js_text)
             prepro_text = str(prepro)
         except:
             return (js_file_path, None, 'Preprocessor fail')
@@ -185,7 +185,8 @@ def processFile(l):
 #             except:
 #                 return (js_file_path, None, 'Renaming fail')
             
-            lx = WebLexer(a_iBuilder.get_text())
+#             lx = WebLexer(a_iBuilder.get_text())
+            lx = WebLexer(a_iBuilder.get_text_wo_literals())
             
             # Translate renamed input
             md = WebMosesDecoder(proxy)

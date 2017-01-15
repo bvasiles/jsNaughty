@@ -1,4 +1,5 @@
-from pygments.token import Token, String, is_token_subtype
+from pygments.token import Token, String, Number, is_token_subtype
+from preprocessor import tokensReplaceTokenOfType
 
 
 class IndexBuilder:
@@ -91,12 +92,30 @@ class IndexBuilder:
                 col_chr_idx += len(token)
             # The unidimensional index doesn't care about newlines
             flat_chr_idx += len(token)
-            
 
+            
     def get_text(self):
         tokens = []
         for _line_idx, line in enumerate(self.tokens):
-            tokens.append(' '.join([t for (_tt,t) in line]))
+            tokens.append(' '.join([t for (_tt,t) in line ]))
+        return '\n'.join(tokens)
+
+
+    def get_text_wo_literals(self):
+        tokens = []
+            
+        for _line_idx, line in enumerate(self.tokens):
+            x = []
+            for (tt,t) in line:
+                if is_token_subtype(tt, String):
+                    x.append('TOKEN_LITERAL_STRING')
+                elif is_token_subtype(tt, Number):
+                    x.append('TOKEN_LITERAL_NUMBER')
+                else:
+                    x.append(t)
+
+            tokens.append(' '.join(x))
+            
         return '\n'.join(tokens)
             
 
