@@ -111,12 +111,12 @@ class ConsistencyResolver:
         
         for key, _num_lines in token_lines:
             
-            print 'LM-ing', key[0], '...', key[1][-50:], _num_lines
+#             print 'LM-ing', key[0], '...', key[1][-50:], _num_lines
             
             for use_scope, suggestions in name_candidates[key].iteritems():
     #             suggestions[name_translation] = set([line numbers])
             
-                print ' *', '...', use_scope[-50:], suggestions
+#                 print ' *', '...', use_scope[-50:], suggestions
             
                 # Sort candidates by how many lines in the translation
                 # they appear on, and by name length, both descending
@@ -139,7 +139,7 @@ class ConsistencyResolver:
                         
                         for candidate_name in unseen_candidates:
                             
-                            print '\n  candidate:', candidate_name
+#                             print '\n  candidate:', candidate_name
                             
                             # Give no weight to names that remained hashed after translation
 #                             if name==candidate_name:
@@ -162,10 +162,10 @@ class ConsistencyResolver:
                                 draft_lines.append(' '.join(draft_line))
                                 
                                 
-                            print '   ^ draft lines -----'
-                            for line in draft_lines:
-                                print '    ', line
-                            print
+#                             print '   ^ draft lines -----'
+#                             for line in draft_lines:
+#                                 print '    ', line
+#                             print
                                 
                             line_log_probs = []
                             for line in draft_lines:
@@ -189,10 +189,10 @@ class ConsistencyResolver:
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
 
-                        print '\n   ^ log probs -------'                        
-                        for (candidate_name, lm_log_prob) in candidate_names:
-                            print (candidate_name, lm_log_prob)
-                        print
+#                         print '\n   ^ log probs -------'                        
+#                         for (candidate_name, lm_log_prob) in candidate_names:
+#                             print (candidate_name, lm_log_prob)
+#                         print
                         
     #                     print (key, use_scope), candidate_name
                         renaming_map[(key, use_scope)] = candidate_name
