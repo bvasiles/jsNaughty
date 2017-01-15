@@ -164,9 +164,13 @@ def processFile(l):
          
         (_name_positions, \
          position_names) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+         
+        print 'Helpers'
 
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
+            
+            print r_strategy
         
 #             try:
 #             if True:
@@ -192,8 +196,12 @@ def processFile(l):
 #             except:
 #                 return (js_file_path, None, 'Renaming fail')
             
+            print 'Lexing'
+            
 #             lx = WebLexer(a_iBuilder.get_text())
             lx = WebLexer(a_iBuilder.get_text_wo_literals())
+            
+            print a_iBuilder.get_text_wo_literals()
             
             # Translate renamed input
             md = WebMosesDecoder(proxy)

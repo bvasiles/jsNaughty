@@ -1,5 +1,4 @@
 from pygments.token import Token, String, Number, is_token_subtype
-from preprocessor import tokensReplaceTokenOfType
 
 
 class IndexBuilder:
