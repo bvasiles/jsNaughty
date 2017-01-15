@@ -61,6 +61,9 @@ class ConsistencyResolver:
         renaming_map = {}
         seen = {}
         
+        lm_cache = {}
+        lm_query = LMQuery(lm_path=lm_path)
+        
 #         print #len(name_candidates.items())
      
         # There is no uncertainty about the translation for
@@ -168,8 +171,8 @@ class ConsistencyResolver:
                             for line in draft_lines:
 #                                 print ' --', line
                                 
-                                lmquery = LMQuery(lm_path=lm_path)
-                                (lm_ok, lm_log_prob, _lm_err) = lmquery.run(line)
+                                (lm_ok, lm_log_prob, _lm_err) = \
+                                    lm_cache.setdefault(line, lm_query.run(line))
                                 
                                 if not lm_ok:
                                     lm_log_prob = -9999999999
