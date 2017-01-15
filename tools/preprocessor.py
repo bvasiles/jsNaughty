@@ -122,9 +122,9 @@ def writeTmpLines(lines, out_file_path):
     
     
 
-class Preprocessor:
-
-    def __preprocess(self, js_text):
+class LMPreprocessor:
+    
+    def __basics(self, js_text):
         # lex
 #         lexer = get_lexer_for_filename(js_file_path)
         self.lexer = get_lexer_for_filename("jsFile.js")
@@ -145,10 +145,9 @@ class Preprocessor:
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
 
-        self.tokenList = tokensReplaceTokenOfType(self.tokenList, String, 
-                                          'TOKEN_LITERAL_STRING')
-        self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
-                                          'TOKEN_LITERAL_NUMBER')
+
+    def __preprocess(self, js_text):
+        self.__basics(js_text)
         
 
     def __init__(self, js_file_path):
@@ -163,6 +162,17 @@ class Preprocessor:
         lines = formatTokens(self.tokenList)
         return formatLines(lines)
     
+    
+class Preprocessor(LMPreprocessor):
+    
+    def __preprocess(self, js_text):
+        self.__basics(js_text)
+
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, String, 
+                                          'TOKEN_LITERAL_STRING')
+        self.tokenList = tokensReplaceTokenOfType(self.tokenList, Number, 
+                                          'TOKEN_LITERAL_NUMBER')
+                
 
 class WebPreprocessor(Preprocessor):
     
@@ -170,4 +180,8 @@ class WebPreprocessor(Preprocessor):
         self._Preprocessor__preprocess(js_text)
     
 
+class WebLMPreprocessor(LMPreprocessor):
     
+    def __init__(self, js_text):
+        self._LMPreprocessor__preprocess(js_text)
+        

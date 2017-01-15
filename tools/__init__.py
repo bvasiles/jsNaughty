@@ -12,7 +12,7 @@ from tools.moses import MosesDecoder, WebMosesDecoder
 from tools.scoper import ScopeAnalyst, WebScopeAnalyst
 from tools.uglifyJS import Uglifier, Beautifier
 from tools.unuglifyJS import UnuglifyJS
-from tools.preprocessor import Preprocessor, WebPreprocessor
+from tools.preprocessor import Preprocessor, LMPreprocessor, WebPreprocessor, WebLMPreprocessor
 from tools.postprocessor import Postprocessor
 from tools.miniChecker import MiniChecker
 from tools.lexer import Lexer, WebLexer

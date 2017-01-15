@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Lexer, IndexBuilder #, Aligner
+from tools import IndexBuilder, Beautifier, WebLexer, WebLMPreprocessor
 from folderManager import Folder
 
 
@@ -12,9 +12,25 @@ def processFile(js_file_path):
 
     try:        
         
+        js_text = open(os.path.join(files_root, js_file_path), 'r').read()
+        
+        # Strip comments, replace literals, etc
+        try:
+            prepro = WebLMPreprocessor(js_text)
+            prepro_text = str(prepro)
+        except:
+            return (js_file_path, None, 'Preprocessor fail')
+         
+        # Pass through beautifier to fix layout
+        clear = Beautifier()
+        (ok, beautified_text, _err) = clear.web_run(prepro_text)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
+        
         # Num tokens before vs after
         try:
-            tok1 = Lexer(os.path.join(files_root, js_file_path)).tokenList
+            lex_clear = WebLexer(beautified_text)
+            tok1 = lex_clear.tokenList
         except:
             return (js_file_path, None, 'Lexer fail')
         
