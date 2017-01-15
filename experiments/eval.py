@@ -15,7 +15,7 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy
+                    MosesProxy, Aligner
 
 from folderManager import Folder
 
@@ -62,16 +62,35 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
-        (ok, beautified_text, _err) = clear.web_run(prepro_text)
+        (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
             
         # Minify
         ugly = Uglifier()
-        (ok, minified_text, _err) = ugly.web_run(beautified_text)
+        (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
+        
+        
+        # Align minified and clear files, in case the beautifier 
+        # did something weird
+        try:
+            aligner = Aligner()
+            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
+                                                                 WebLexer(tmp_minified_text).tokenList)
+        except:
+            return (js_file_path, None, 'Aligner fail')
+        
+        # Pass through beautifier to fix layout
+        (ok, beautified_text, _err) = clear.web_run(aligned_clear)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
+        (ok, minified_text, _err) = clear.web_run(aligned_minified)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
+
         
         # Num tokens before vs after
         try:
@@ -87,19 +106,7 @@ def processFile(l):
         # the same number of tokens as the originals
         if not len(tok_clear) == len(tok_ugly):
             return (js_file_path, None, 'Num tokens mismatch')
-        
-        
-#         # Align minified and clear files, in case the beautifier 
-#         # did something weird
-#         try:
-#             aligner = Aligner()
-#             # This is already the baseline corpus, no (smart) renaming yet
-#             aligner.align(temp_files['path_tmp_b'], 
-#                           temp_files['path_tmp_u'])
-#         except:
-#             cleanup(temp_files)
-#             return (js_file_path, None, 'Aligner fail')
-        
+                
         
         if beautified_text == minified_text:
             return (js_file_path, None, 'Not minified')

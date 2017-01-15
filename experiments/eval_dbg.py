@@ -73,6 +73,7 @@ def processFile(l):
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
         
+        
         # Align minified and clear files, in case the beautifier 
         # did something weird
         try:
