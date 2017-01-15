@@ -66,7 +66,7 @@ def processFile(l):
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         
         
-        print 'OK:', ok, 'ERR:', _err
+        print '\nOK:', ok, 'ERR:', _err
         print tmp_beautified_text
         
         if not ok:
@@ -76,6 +76,10 @@ def processFile(l):
         # Minify
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
+        
+        print '\nOK:', ok, 'ERR:', _err
+        print tmp_minified_text
+        
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
         
