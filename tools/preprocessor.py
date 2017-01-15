@@ -160,7 +160,7 @@ class LMPreprocessor:
         
     def __str__(self):
         lines = formatTokens(self.tokenList)
-        return formatLines(lines)
+        return formatLines(lines).encode('utf8')
     
     
 class Preprocessor(LMPreprocessor):
