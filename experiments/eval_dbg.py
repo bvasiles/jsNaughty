@@ -66,7 +66,7 @@ def processFile(l):
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         
         
-        print _err
+        print 'OK:', ok, 'ERR:', _err
         print tmp_beautified_text
         
         if not ok:
