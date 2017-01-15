@@ -93,6 +93,11 @@ def processFile(l):
         except:
             return (js_file_path, None, 'Aligner fail')
         
+        print '\nAligned clear'
+        print aligned_clear
+        print '\nAligned minified'
+        print aligned_minified
+        
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
         if not ok:
