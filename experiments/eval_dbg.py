@@ -57,12 +57,18 @@ def processFile(l):
         except:
             return (js_file_path, None, 'Preprocessor fail')
         
-#         print 'Preprocessor'
+        print 'Preprocessor'
+        print prepro_text
         
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
+        
+        
+        print _err
+        print tmp_beautified_text
+        
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
