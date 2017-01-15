@@ -12,7 +12,8 @@ def replaceSciNotNum(text):
     Use this to replace all scinot numbers (currently by 1)
     TODO: replace by actual number, not 1
     """
-    return scinot.sub(lambda x: float(x.group()), text)
+#     return scinot.sub(lambda x: float(x.group()), text)
+    return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: float(x.group()), text)
 
 
 def tokensExceptTokenType(tokens, 
