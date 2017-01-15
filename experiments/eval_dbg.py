@@ -15,7 +15,7 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy, Aligner, replaceSciNotNum
+                    MosesProxy, Aligner
 
 from folderManager import Folder
 
@@ -68,7 +68,7 @@ def processFile(l):
         
         
         print '\nOK:', ok, 'ERR:', _err
-        print replaceSciNotNum(tmp_beautified_text)
+        print tmp_beautified_text
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -79,7 +79,7 @@ def processFile(l):
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         
         print '\nOK:', ok, 'ERR:', _err
-        print replaceSciNotNum(tmp_minified_text)
+        print tmp_minified_text
         
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
@@ -89,8 +89,8 @@ def processFile(l):
         # did something weird
         try:
             aligner = Aligner()
-            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(replaceSciNotNum(tmp_beautified_text)).tokenList,
-                                                                 WebLexer(replaceSciNotNum(tmp_minified_text)).tokenList)
+            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
+                                                                 WebLexer(tmp_minified_text).tokenList)
         except:
             return (js_file_path, None, 'Aligner fail')
         
@@ -98,6 +98,7 @@ def processFile(l):
         print aligned_clear
         print '\nAligned minified'
         print aligned_minified
+        print
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)

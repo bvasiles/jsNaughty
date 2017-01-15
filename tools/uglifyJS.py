@@ -1,6 +1,7 @@
 import subprocess
 PIPE = subprocess.PIPE
 import socket
+from preprocessor import replaceSciNotNum
 
 
 class Uglifier:
@@ -65,7 +66,7 @@ class Uglifier:
         if not proc.returncode:
             uglifyjs_ok = True
     
-        return (uglifyjs_ok, out, err)
+        return (uglifyjs_ok, replaceSciNotNum(out), err)
 
 
 
