@@ -40,12 +40,18 @@ output_path = Folder(sys.argv[2]).create()
 ok_files_path = os.path.abspath(sys.argv[3])
 num_threads = int(sys.argv[4])
 
+is_not_minified = set([])
+reader = UnicodeReader(open('isMinified.csv', 'r'))
+for row in reader:
+    if row[1] == 'False':
+        is_not_minified.add(row[0])
 
 ok_files = set([])
 reader = UnicodeReader(open(ok_files_path, 'r'))
 for row in reader:
-    if row[1] == 'OK':
-        ok_files.add(row[0])
+    fname = row[0]
+    if row[1] == 'OK' and fname in is_not_minified:
+        ok_files.add(fname)
 print len(ok_files), 'files'
 
 
