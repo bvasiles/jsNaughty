@@ -25,6 +25,8 @@ def processFile(l):
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
+    print js_file_path
+    
 #     print js_file_path
     
     temp_files = {'orig': '%s.js' % base_name,
@@ -55,6 +57,8 @@ def processFile(l):
             prepro_text = str(prepro)
         except:
             return (js_file_path, None, 'Preprocessor fail')
+        
+        print 'Preprocessor'
         
         
         # Pass through beautifier to fix layout
@@ -107,6 +111,7 @@ def processFile(l):
         except:
             return (js_file_path, None, 'IndexBuilder fail')
         
+        print 'Writing'
         
         with open(temp_files['orig'], 'w') as f:
             f.write(beautified_text)
@@ -139,6 +144,8 @@ def processFile(l):
             n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
         except:
             return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+        
+        print 'n2p'
         
         # Save some translation stats to compare different methods
         ts = TranslationSummarizer()
