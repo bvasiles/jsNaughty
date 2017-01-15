@@ -17,9 +17,9 @@ class MosesParser:
               position_names,
               scopeAnalyst=None):
         
-        print '\nmoses output-----------------'    
+#         print '\nmoses output-----------------'    
         for line in moses_output.split('\n'):
-            print line
+#             print line
         
             translations = {}
             
@@ -80,3 +80,4 @@ class MosesParser:
                 self.name_candidates[k][use_scope][name_translation].add(n)
                     
         return self.name_candidates
+
