@@ -4,6 +4,13 @@ from pygments.token import is_token_subtype
 from pygments.lexers import get_lexer_for_filename
 
 
+def num(s):
+    try:
+        return int(s)
+    except ValueError:
+        return float(s)
+    
+    
 import re
 scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
 def replaceSciNotNum(text):
@@ -13,7 +20,7 @@ def replaceSciNotNum(text):
     TODO: replace by actual number, not 1
     """
 #     return scinot.sub(lambda x: float(x.group()), text)
-    return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(float(x.group())), text)
+    return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(num(x.group())), text)
 
 
 def tokensExceptTokenType(tokens, 
