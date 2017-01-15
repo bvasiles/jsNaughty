@@ -63,11 +63,11 @@ class WebMosesDecoder:
         try:
             mresults = self.proxy.translate(self.mosesParams)# __request("translate", mosesParams)
             
-            print '\nmoses-----------------'
-            for k,v in mresults.iteritems():
-                print k
-                print '\t',v
-#             print mresults
+#             print '\nmoses-----------------'
+#             for k,v in mresults.iteritems():
+#                 print k
+#                 print '\t',v
+##             print mresults
             
             parser = WebMosesOutputFormatter()
             moses_output = parser.formatOutput(mresults["nbest"])
