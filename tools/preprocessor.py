@@ -13,7 +13,7 @@ def replaceSciNotNum(text):
     TODO: replace by actual number, not 1
     """
 #     return scinot.sub(lambda x: float(x.group()), text)
-    return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: float(str(x.group())), text)
+    return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(float(x.group())), text)
 
 
 def tokensExceptTokenType(tokens, 
