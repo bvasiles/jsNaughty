@@ -15,7 +15,7 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy, Aligner
+                    MosesProxy, Aligner, replaceSciNotNum
 
 from folderManager import Folder
 
@@ -67,7 +67,7 @@ def processFile(l):
         
         
         print '\nOK:', ok, 'ERR:', _err
-        print tmp_beautified_text
+        print replaceSciNotNum(tmp_beautified_text)
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -78,7 +78,7 @@ def processFile(l):
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         
         print '\nOK:', ok, 'ERR:', _err
-        print tmp_minified_text
+        print replaceSciNotNum(tmp_minified_text)
         
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
