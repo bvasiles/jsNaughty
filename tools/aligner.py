@@ -56,7 +56,49 @@ class Aligner:
                 else:
                     if token_type != Token.Text:
                         ugly_line.append(token)
+    
+    
+    def web_align(self, tokens_clear, tokens_ugly):
+        '''
+        Since we only do minification the alignment is trivial.
+        However, the beautifier [uglifyjs -b] may hard wrap lines
+        at different positions (seems to be length dependent; minified
+        lines tend to be shorter because the variables and functions
+        have shorter names). Here I postprocess the beautified
+        files to realign the lines, if necessary.
+        '''
         
+        # Also remove all newlines from list of clear tokens
+        clear_deq = deque([token for (token_type, token) in tokens_clear 
+                 if token_type != Token.Text])
+        
+        # Where to save aligned files
+        js_clear_aligned = []
+        js_ugly_aligned = []
+
+        ugly_line = []
+        
+        for (token_type, token) in tokens_ugly:
+            if '\n' in token:
+                # The ugly line remains as it is
+                str_ugly_line = ' '.join(ugly_line).strip()
+                
+                # The clear line is adjusted to the same number 
+                # of tokens as the ugly line
+                clear_line = [clear_deq.popleft() \
+                                for _i in range(len(ugly_line))]
+                str_clear_line = ' '.join(clear_line).strip()
+                
+                js_ugly_aligned.append(str_ugly_line.encode('utf8'))
+                js_clear_aligned.append(str_clear_line.encode('utf8'))
+                
+                ugly_line = []
+   
+            else:
+                if token_type != Token.Text:
+                    ugly_line.append(token)
+        
+        return ('\n'.join(js_clear_aligned), '\n'.join(js_ugly_aligned))
 
 
 if __name__ == "__main__":
