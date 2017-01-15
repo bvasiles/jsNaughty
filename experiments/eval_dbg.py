@@ -15,20 +15,20 @@ from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
                     WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy, Aligner
+                    MosesProxy, Aligner, replaceSciNotNum
 
 from folderManager import Folder
 
 
-import re
-scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
-def replaceSciNotNum(text):
-    """
-    The JS parser from UglifyJS fails on scientific notation
-    Use this to replace all scinot numbers (currently by 1)
-    TODO: replace by actual number, not 1
-    """
-    return scinot.sub(lambda x: float[x.group()], text)
+# import re
+# scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
+# def replaceSciNotNum(text):
+#     """
+#     The JS parser from UglifyJS fails on scientific notation
+#     Use this to replace all scinot numbers (currently by 1)
+#     TODO: replace by actual number, not 1
+#     """
+#     return scinot.sub(lambda x: float[x.group()], text)
 
 
 def processFile(l):
