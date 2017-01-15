@@ -47,7 +47,7 @@ class LMQuery:
             logProb = float(lines[0].split(' ')[1])
             # oovProb = int(lines[0].split(' ')[-1])
 
-            print("LM Query: " + " ".join([self.query_path, 
+            print("      LM Query: " + " ".join([self.query_path, 
                                '-n', '-s', #'sentence', 
                                self.lm_path]) + " " + line + ' ---> ' + str(logProb))
             

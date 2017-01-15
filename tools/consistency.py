@@ -136,7 +136,7 @@ class ConsistencyResolver:
                         
                         for candidate_name in unseen_candidates:
                             
-                            print '  candidate:', candidate_name
+                            print '\n  candidate:', candidate_name
                             
                             # Give no weight to names that remained hashed after translation
 #                             if name==candidate_name:
@@ -161,7 +161,7 @@ class ConsistencyResolver:
                                 
                             print '   ^ draft lines -----'
                             for line in draft_lines:
-                                print line
+                                print '    ', line
                             print
                                 
                             line_log_probs = []
@@ -186,7 +186,7 @@ class ConsistencyResolver:
                         candidate_names = sorted(log_probs, key=lambda e:-e[1])
                         candidate_name = candidate_names[0][0]
 
-                        print '   ^ log probs -------'                        
+                        print '\n   ^ log probs -------'                        
                         for (candidate_name, lm_log_prob) in candidate_names:
                             print (candidate_name, lm_log_prob)
                         print
