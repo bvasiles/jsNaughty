@@ -14,7 +14,7 @@ def processFile(js_file_path):
         
         # Num tokens before vs after
         try:
-            tok1 = Lexer(os.path.join(files_root, 'orig', js_file_path)).tokenList
+            tok1 = Lexer(os.path.join(files_root, js_file_path)).tokenList
         except:
             return (js_file_path, None, 'Lexer fail')
         
