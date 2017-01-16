@@ -206,11 +206,15 @@ def processFile(l):
                                       iBuilder_ugly,
                                       scopeAnalyst)
             
+            print 'After text:'
+            print after_text
+            print
+            
             (ok, beautified_after_text, _err) = clear.web_run(after_text)
             if not ok:
                 return (js_file_path, None, 'Beautifier fail')
             
-            print
+            print 'Beautified:'
             print beautified_after_text
             print
             
