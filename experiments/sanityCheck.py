@@ -75,6 +75,7 @@ def processFile(row):
         
         
         def check(pth, data):
+            print 'Checking', pth
             (iBuilder, scopeAnalyst) = load(pth)
             
             ok = True
@@ -95,6 +96,8 @@ def processFile(row):
                     tok_scope = iBuilder.revTokMap[(lin,col)]
                     
                     glb = isGlobal.get((name, pos), True)
+                    
+                    print ' ', name, pos, (lin,col), tok_scope, glb
                     
                     lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
                                for (t,pos) in name2defScope.keys()  
