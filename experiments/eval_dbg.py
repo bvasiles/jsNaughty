@@ -26,7 +26,7 @@ def processFile(l):
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
-#     print js_file_path
+    print js_file_path
     
     temp_files = {'orig': '%s.js' % base_name,
                   'minified': '%s.u.js' % base_name,
@@ -196,7 +196,7 @@ def processFile(l):
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
             
-#             print r_strategy
+            print r_strategy
         
 #             try:
 #             if True:
@@ -222,12 +222,12 @@ def processFile(l):
 #             except:
 #                 return (js_file_path, None, 'Renaming fail')
             
-#             print 'Lexing'
+            print 'Lexing'
             
 #             lx = WebLexer(a_iBuilder.get_text())
             lx = WebLexer(a_iBuilder.get_text_wo_literals())
             
-#             print a_iBuilder.get_text_wo_literals()
+            print a_iBuilder.get_text_wo_literals()
             
             # Translate renamed input
             md = WebMosesDecoder(proxy)
@@ -235,8 +235,8 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
-#             print '\ntranslation-------------'
-#             print translation
+            print '\ntranslation-------------'
+            print translation
             
 #             exit()
             
@@ -249,7 +249,7 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
-#                 print '\nr_strategy-----------', r_strategy
+                print '\nr_strategy-----------', r_strategy
                 
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
@@ -261,13 +261,13 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-#                 print '\nname_candidates before ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key[0], key[1][-50:]#, val
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-#                         for name_translation, lines in suggestions.iteritems():
-#                             print '\t\t', name_translation, lines
+                print '\nname_candidates before ----------'
+                for key, val in name_candidates.iteritems():
+                    print key[0], key[1][-50:]#, val
+                    for use_scope, suggestions in val.iteritems():
+                        print '\t...', use_scope[-50:]
+                        for name_translation, lines in suggestions.iteritems():
+                            print '\t\t', name_translation, lines
                     
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
@@ -297,13 +297,13 @@ def processFile(l):
                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
-#                 print '\nname_candidates after ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key[0], key[1][-50:]#, val
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-#                         for name_translation, lines in suggestions.iteritems():
-#                             print '\t\t', name_translation, lines
+                print '\nname_candidates after ----------'
+                for key, val in name_candidates.iteritems():
+                    print key[0], key[1][-50:]#, val
+                    for use_scope, suggestions in val.iteritems():
+                        print '\t...', use_scope[-50:]
+                        for name_translation, lines in suggestions.iteritems():
+                            print '\t\t', name_translation, lines
                                 
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
@@ -313,7 +313,7 @@ def processFile(l):
                 # Try different strategies to resolve inconsistencies, if any
                 for c_strategy in CS.all():
                     
-#                     print '\nc_strategy----------', c_strategy
+                    print '\nc_strategy----------', c_strategy
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
@@ -322,9 +322,9 @@ def processFile(l):
                                                       a_name_positions,
                                                       a_iBuilder,
                                                       lm_path)
-#                     print '\ntemp_renaming_map-------------'
-#                     for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
-#                         print (name, def_scope[-50:]), renaming
+                    print '\ntemp_renaming_map-------------'
+                    for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
+                        print (name, def_scope[-50:]), renaming
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
@@ -334,9 +334,9 @@ def processFile(l):
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-#                     print '\nrenaming_map-------------'
-#                     for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
-#                         print (name, def_scope[-50:]), renaming
+                    print '\nrenaming_map-------------'
+                    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+                        print (name, def_scope[-50:]), renaming
                     
                     # Apply renaming map and save output for future inspection
                     renamed_text = postRen.applyRenaming(a_iBuilder, 
