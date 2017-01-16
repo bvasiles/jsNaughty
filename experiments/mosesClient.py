@@ -17,7 +17,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 # from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 from tools import IndexBuilder, Beautifier, prepHelpers, WebMosesDecoder, \
-                    WebScopeAnalyst, WebPreprocessor, WebLexer, \
+                    WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
                     MosesParser, ConsistencyResolver, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
                     MosesProxy
@@ -149,7 +149,7 @@ class MosesClient():
         CS = ConsistencyStrategies()
         
         r_strategy = RS.HASH_ONE
-        c_strategy = CS.FREQLEN # or CS.LM?
+        c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
         
         proxy = MosesProxy().proxies[r_strategy]
         
@@ -176,7 +176,7 @@ class MosesClient():
         start = time.time()
         # Strip comments, replace literals, etc
         try:
-            prepro = WebPreprocessor(obfuscatedCode)
+            prepro = WebLMPreprocessor(obfuscatedCode)
             prepro_text = str(prepro)
             #TODO replace with: prepro = WebPreprocessor(text)
 #             prepro.write_temp_file(preproFile)
