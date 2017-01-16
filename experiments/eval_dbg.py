@@ -210,7 +210,10 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Beautifier fail')
             
-#                 print beautified_after_text
+            print
+            print beautified_after_text
+            print
+            
             # Save renamed input to disk for future inspection
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
                 f.write(beautified_after_text)
