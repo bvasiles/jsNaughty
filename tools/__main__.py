@@ -172,12 +172,15 @@ def highlight(tokens, lc_list):
 # manager = multiprocessing.Manager()
 # ns = manager.Namespace()
 
-js_file_paths = ['testing/test_files/test_file1.obs.js']
+# js_file_paths = ['testing/test_files/test_file1.obs.js']
 
+import sys
+js_file_path = os.path.abspath(sys.argv[1])
+processFile(js_file_path)
 
-pool = multiprocessing.Pool(processes=4)
+# pool = multiprocessing.Pool(processes=4)
 # pool.imap(processFile, js_file_paths)
-for res in pool.imap(processFile, js_file_paths):
-    pass
+# for res in pool.imap(processFile, js_file_paths):
+#     pass
 
     
