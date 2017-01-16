@@ -128,12 +128,12 @@ def processFile(row):
             return (js_file_path, None, 'N2P fail')
 
 
-        try:
-            all_ok = check(temp_files['path_hash_lm'], data)
-            if not all_ok:
-                method = 'hash.lm'
-        except: # Exception, e:
-            return (js_file_path, None, 'Hash fail')
+#         try:
+        all_ok = check(temp_files['path_hash_lm'], data)
+        if not all_ok:
+            method = 'hash.lm'
+#         except: # Exception, e:
+#             return (js_file_path, None, 'Hash fail')
         
 
         return (js_file_path, all_ok, method)
