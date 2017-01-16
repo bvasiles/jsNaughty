@@ -51,7 +51,7 @@ def processFile(row):
         
         data = {}
         
-#         print '\n', js_file_path
+        print '\n', js_file_path
         
         name2defScope_orig = scopeAnalyst_orig.resolve_scope()
         isGlobal_orig = scopeAnalyst_orig.isGlobal
@@ -71,7 +71,7 @@ def processFile(row):
                        if name2defScope_orig[(t,pos)] == def_scope]
             
             data[tok_scope_orig] = (name, glb_orig, lc_list)
-#             print '  ', name, tok_scope_orig, glb_orig, lc_list
+            print '  ', name, tok_scope_orig, glb_orig, lc_list
         
         
         def check(pth, data):
@@ -103,7 +103,7 @@ def processFile(row):
                     (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
                     if not (glb_orig == glb and 
                             set(lc_list_orig) == set(lc_list)):
-#                         print '  **', name,  lc_list, lc_list_orig
+                        print '  **', name,  lc_list, lc_list_orig
                         ok = False
             
             return ok
@@ -163,11 +163,11 @@ with open(file_list_path, 'r') as f:
 
 #     result = processFile(reader.next())
 
-    pool = multiprocessing.Pool(processes=num_threads)
+#     pool = multiprocessing.Pool(processes=num_threads)
     
-    for result in pool.imap_unordered(processFile, reader):
-#     for row in reader:
-#         result = processFile(row)
+#     for result in pool.imap_unordered(processFile, reader):
+    for row in reader:
+        result = processFile(row)
 #         print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
