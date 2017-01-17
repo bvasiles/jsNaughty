@@ -165,7 +165,7 @@ class MosesClient():
 #         base_name = "webTemp" + str(transactionID)
 #         tempFile = baseDir + str(transactionID) + "_temp.js"
         lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
-        
+        #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm"        
         if socket.gethostname() == 'bogdan.mac':
             lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
         elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
