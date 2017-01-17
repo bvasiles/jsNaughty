@@ -5,7 +5,9 @@ from pygments.lexers import get_lexer_for_filename
 
 
 import re
-scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
+# scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
+scinot = re.compile('[\s=]+([+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+))$')
+# Updated as per http://stackoverflow.com/questions/41668588
 def replaceSciNotNum(text):
     """
     The JS parser from UglifyJS fails on scientific notation
