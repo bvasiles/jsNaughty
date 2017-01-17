@@ -17,7 +17,11 @@ from tools import prepHelpers, MosesParser, ConsistencyResolver, \
 
 class defobfuscate_tests(unittest.TestCase):
     
-
+    def fileSort(self,fileList):
+        '''
+        Ensure that the list of files is sorted - e.g. test_file1 test_file2, etc.
+        '''
+        return sorted(fileList, key = lambda(x) : int(x[9:10]))
     
     def setUp(self):
         '''
@@ -25,10 +29,10 @@ class defobfuscate_tests(unittest.TestCase):
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
         self.testDir = Folder("./testing/test_files/")
-        self.clearTextFiles = self.testDir.baseFileNames("*.orig.js")
+        self.clearTextFiles = self.fileSort(self.testDir.baseFileNames("*.orig.js"))
         print("Files: " + str(self.clearTextFiles))
-        self.obsfuscatedTextFiles = self.testDir.baseFileNames("*.obs.js")
-        self.postTextFiles = self.testDir.baseFileNames("*.post_input.js")
+        self.obsfuscatedTextFiles = self.fileSort(self.testDir.baseFileNames("*.obs.js"))
+        self.postTextFiles = self.fileSort(self.testDir.baseFileNames("*.post_input.js"))
         self.clearTextFiles = [os.path.join(self.testDir.path, file) for file in self.clearTextFiles]
         self.obsfuscatedTextFiles = [os.path.join(self.testDir.path, file) for file in self.obsfuscatedTextFiles]
         self.postTextFiles = [os.path.join(self.testDir.path, file) for file in self.postTextFiles]
@@ -39,7 +43,7 @@ class defobfuscate_tests(unittest.TestCase):
         self.postText = ["".join(open(file, "r").readlines()) for file in self.postTextFiles]
         #print(self.postText[0])
         #print(self.clearLexed)        
-        
+        #quit()
         
         
     def testIndexBuilder(self):
@@ -63,8 +67,9 @@ class defobfuscate_tests(unittest.TestCase):
         # position in the bidimensional list of tokens
         self.revTokMap = {}
         '''
-        #print([item[1] for item in self.clearLexed[0].tokenList])
-        #print(ib1)
+        print([item[1] for item in self.clearLexed[0].tokenList])
+        print(ib1.charPosition2Name)
+        print(len(ib1.charPosition2Name))
         #print(len(ib1.charPosition2Name) == 53)
         #for i in range(0,22):
         #    linecount = 0
@@ -126,7 +131,7 @@ class defobfuscate_tests(unittest.TestCase):
         #print(self.obsfuscatedTextFiles[0])
         #This doesn't work when run inside pyDev for some weird reason.
         sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[0])
-        print(sa1)
+        #print(sa1)
         #Not really sure how to test this effectively.
         
         #Check (using minified file) if identifier name maps to different variables if
@@ -176,10 +181,10 @@ class defobfuscate_tests(unittest.TestCase):
 #         oneLine1 = renameUsingHashDefLine(sa1, ib1, False, True)
 #         twoLine1 = renameUsingHashDefLine(sa1, ib1, True, True)
         
-        print("OneLine1------------------------------------------------")
-        print(oneLine1)
-        print("TwoLine1------------------------------------------------")
-        print(twoLine1)
+        #print("OneLine1------------------------------------------------")
+        #print(oneLine1)
+        #print("TwoLine1------------------------------------------------")
+        #print(twoLine1)
         
         #One line tests
         lines = oneLine1.split("\n")
@@ -279,15 +284,15 @@ class defobfuscate_tests(unittest.TestCase):
             a_iBuilder = IndexBuilder(a_lexer.tokenList)
             p1 = a_iBuilder.tokens
             
-            print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
+            #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
             p1_combined = reduce(lambda x,y: x+y, p1)
-            print(p1_combined)
-            print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
+            #print(p1_combined)
+            #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
             #Without re-running the beautifer for spacing, this is missing whitespace.
     
-            print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
-            print(self.obsLexed[tC_ind].tokenList)
-            print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
+            #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
+            #print(self.obsLexed[tC_ind].tokenList)
+            #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
             #1) + 5)
             i = 0
             for token_type, token in self.obsLexed[tC_ind].tokenList:
@@ -296,7 +301,7 @@ class defobfuscate_tests(unittest.TestCase):
                 if(is_token_subtype(token_type, Token.Name)):
                     i += 1
                     continue
-                print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
+                #print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
                 self.assertTrue(p1_combined[i] == (token_type, token))
                 #try:
                 #    print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
@@ -331,8 +336,8 @@ class defobfuscate_tests(unittest.TestCase):
             
             #name2defScope? name2useScope? name2pth?
             orderedVars = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
-            print("Scoped Variables")
-            print(orderedVars)
+            #print("Scoped Variables")
+            #print(orderedVars)
             #Remove variable indexes from old and new list that aren't tracked by scoper. (Is this right?)
             toRemove = []
             trackingIndex = 0
@@ -355,20 +360,20 @@ class defobfuscate_tests(unittest.TestCase):
                     scopeMap[scope] = [curIndex]
                 curIndex += 1
                     
-            print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
-            for j in range(0,len(oldNameList)):
-                print(oldNameList[j] + " ----- " + newNameList[j])
-            print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
+            #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
+            #for j in range(0,len(oldNameList)):
+            #    print(oldNameList[j] + " ----- " + newNameList[j])
+            #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
             
             for scope in scopeMap.keys():
-                print("Scope:    " + str(scope) + "    " + str(scopeMap[scope]))
+                #print("Scope:    " + str(scope) + "    " + str(scopeMap[scope]))
                 if(len(scopeMap[scope]) > 1): #No conflicts if only one var in scope
                     #Iterate over all pairs in the scope.
                     for i in range(0,len(scopeMap[scope])-1):
                         for j in range(i+1, len(scopeMap[scope])):
                             fIndex = scopeMap[scope][i]
                             sIndex = scopeMap[scope][j]
-                            print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
+                            #print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
                             #names that are the same in the original scope must be the same in the new scope
                             #and names that are different in the original scope must be the different in the new scope
                             self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
