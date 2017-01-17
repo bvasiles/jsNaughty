@@ -9,12 +9,10 @@ class LMQuery:
         if query_path is None:
             if socket.gethostname() == 'bogdan.mac':
                 self.query_path = '/Users/bogdanv/mosesdecoder/bin/query'
-            elif socket.gethostname() == 'godot' or socket.gethostname() == 'godeep':
+            elif socket.gethostname() == 'godot':
                 self.query_path = '/home/bogdan/mosesdecoder/bin/query'
             else:
-                self.query_path = "/Users/caseycas/jsnaughty/moses_bin/query"
-            #else:
-            #    self.query_path = '/home/bogdanv/mosesdecoder/bin/query'
+                self.query_path = '/home/bogdanv/mosesdecoder/bin/query'
         else:
             self.query_path = query_path
 
