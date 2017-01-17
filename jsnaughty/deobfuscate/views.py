@@ -18,6 +18,15 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return JSForm()
     
+def about(request):
+    #output = "Behold, The Deobfuscated Javascript!"
+    return render(request, 'deobfuscate/about.html')
+    
+def team(request):
+    #output = "Behold, The Deobfuscated Javascript!"
+    return render(request, 'deobfuscate/team.html')
+     
+    
 def results(request, output):
     #output = "Behold, The Deobfuscated Javascript!"
     return render(request, 'deobfuscate/results.html', Context({'out_text': output}))
@@ -53,4 +62,4 @@ def get_js(request):
     else:
         form = JSForm()
     #Replace with the form again.
-    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "It's time to...", 'height' : 7}))
+    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "It's time to...", 'height' : 8}))
