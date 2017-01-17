@@ -104,7 +104,7 @@ rn_error = "Renaming Failed"
 #     js_tmp.write('\n')
 #     js_tmp.close()
 
-
+#2
 class MosesClient():
     
     def getValidationErrors(self):
@@ -149,7 +149,8 @@ class MosesClient():
         CS = ConsistencyStrategies()
         
         r_strategy = RS.HASH_ONE
-        c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
+        #c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
+        c_strategy = CS.LM
         
         proxy = MosesProxy().proxies[r_strategy]
         
@@ -167,6 +168,8 @@ class MosesClient():
         
         if socket.gethostname() == 'bogdan.mac':
             lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
+        elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
+            lm_path = "/Users/caseycas/jsnaughty_lms/js970k.blm.lm"
             
 #         preproFile = baseDir + str(transactionID) + "_prepro.js"
 #         beautFile = baseDir + str(transactionID) + "_beaut.js"
@@ -232,6 +235,7 @@ class MosesClient():
 #         options["twoLines"] = False
 #         options["debug"] = False
 #         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
+        rn_start = time.time()
         
         try:
 #         if True:
@@ -262,6 +266,7 @@ class MosesClient():
 #             renamingFile.writelines(renamedText)
  
         end = time.time()
+        rnTime = end-rn_start
         preprocessDuration = end - start
         
         m_start = time.time()
@@ -336,6 +341,7 @@ class MosesClient():
             # (name, def_scope) tuples (otherwise); 
             # values are suggested translations with the sets 
             # of line numbers on which they appear.
+            
                 
             cr = ConsistencyResolver()
 #             ts = TranslationSummarizer()
@@ -401,7 +407,7 @@ class MosesClient():
         
         post_end = time.time()
         post_time = post_end - post_start
-        return("Preprocess Time: " + str(preprocessDuration) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
+        return("Preprocess Time: " + str(preprocessDuration)  + "\nRename Time (Subset of Preprocess): " + str(rnTime) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
         #Use one of the scoping options
         #None
         #nc = processTranslationUnscoped(translation, iBuilder_ugly, 
