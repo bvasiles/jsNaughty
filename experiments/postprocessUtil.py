@@ -30,9 +30,9 @@ from tools import  prepHelpers, MosesParser, \
 #         pass
 # 
 #     
-# def cleanup(temp_files):
-#     for file_path in temp_files: #.itervalues():
-#         tryRemove(file_path)
+def cleanup(temp_files):
+    for file_path in temp_files: #.itervalues():
+        tryRemove(file_path)
 # 
 # 
 # def cleanupRenamed(pid):

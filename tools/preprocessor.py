@@ -18,6 +18,32 @@ def replaceSciNotNum(text):
 #     return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(float(x.group())), text)
 
 
+def handleUnicodeEscape(tokens, tokenType, technique="REMOVE"):
+    '''
+    The subprocess module is struggling with unicode escape characters inside string literals.
+    This method removes or replaces all unicode escape characters inside tokens of tokenType.
+    technique: "REMOVE" or "REPLACE", defaults to "REMOVE" if another string is sent.
+    '''
+    rt = []
+    if(technique == "REPLACE"): #Not implemented yet.
+        for t in tokens:
+            newTok = t
+            if(is_token_subtype(t[0], tokenType)):
+                #DO Stuff
+                newTok = (t[0], re.sub(r'[^\x00-\x7F]+',' ', t[1].decode("unicode_escape")))
+                
+            rt.append(newTok)
+    else:
+        for t in tokens:
+            newTok = t
+            if(is_token_subtype(t[0], tokenType)):
+                print(t)
+                newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
+                
+            rt.append(newTok)
+    return rt
+        
+
 def tokensExceptTokenType(tokens, 
                           tokenType, 
                           ignoreSubtypes = False):
@@ -135,7 +161,7 @@ class LMPreprocessor:
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
         programText = replaceSciNotNum(js_text)
-    
+        print(programText)
         # Tokenize input
         self.tokenList = list(lex(programText, self.lexer))
 
@@ -147,6 +173,10 @@ class LMPreprocessor:
         
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
+        print(self.tokenList)
+        #Remove unicode escape characters
+        self.tokenList = handleUnicodeEscape(self.tokenList, Token.Literal)
+        print(self.tokenList)
 
 
     def __preprocess(self, js_text):

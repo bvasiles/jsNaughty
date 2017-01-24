@@ -2,6 +2,7 @@ import subprocess
 PIPE = subprocess.PIPE
 import socket
 from preprocessor import replaceSciNotNum
+from unidecode import unidecode
 
 
 class Uglifier:
@@ -57,9 +58,10 @@ class Uglifier:
         writing to file for more speed when running this as a web service.
         '''
         uglifyjs_ok = False
-        
+        print(inputText)
         # Call uglifyjs
         command = [self.path] + self.flags
+        print(command)
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
         out, err = proc.communicate(input=inputText)
         

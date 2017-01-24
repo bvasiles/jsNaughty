@@ -237,8 +237,8 @@ class MosesClient():
 #         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
         rn_start = time.time()
         
-        try:
-#         if True:
+        #try:
+        if True:
             # Rename input prior to translation
             preRen = PreRenamer()
             after_text = preRen.rename(r_strategy, 
@@ -258,9 +258,9 @@ class MosesClient():
             a_iBuilder = IndexBuilder(a_lexer.tokenList)
             a_scopeAnalyst = WebScopeAnalyst(renamedText)
             
-        except:
-            print(rn_error)
-            return(rn_error)
+        #except:
+        #    print(rn_error)
+        #    return(rn_error)
 
 #         with open("renameFile.txt", 'w') as renamingFile:
 #             renamingFile.writelines(renamedText)
