@@ -64,8 +64,8 @@ class Uglifier:
         proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
         try:
             out, err = proc.communicate(input=inputText)
-        #except:
-        #    out, err = proc.communicate(input=inputText.decode('utf8'))#.decode('unicode_escape'))
+        except:
+            out, err = proc.communicate(input=inputText.decode('utf8'))#.decode('unicode_escape'))
         #out, err = proc.communicate(input=inputText.encode('utf16')) # JS is non-quite UTF-16 or UCS-02 (but either should be okay?)
         
         if not proc.returncode:
