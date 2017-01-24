@@ -11,23 +11,30 @@ def processFile(l):
     js_file_name = l
     
     candidates = []
-        
-    try:
-        lexer = Lexer(os.path.join(results_path, js_file_name))
-        return lexer.tokenlist
-    except:
-        print('Lexer fail')
-        return []
+    
+    if(True):    
+    #try:
+        print(js_file_name)
+        lexer = Lexer(js_file_name)
+        return IndexBuilder(lexer.tokenList)        
+    #except:
+    #    print('Process fail')
+    #    return []
 
-def getVarAt(var_tuple, tokens):
+def processObsFile(l):
     '''
-    Given a tuple (file_name, line_id, token_id_in_line) and a pygments token list for a file
-    1) Check that the token on line line_id and index token_id_in_line is a variable
-    2) return the original token name
+    get the token list for an obsfuscated file.
     '''
-    ib = IndexBuilder(tokens)
-    line_char_index = ib.revFlatMap((var_tuple[1], var_tuple[2]))
-    return ib.charPosition2Name(line_char_index)
+    point = l.rfind(".")
+    return processFile(l[:point] + ".u" + l[point:])
+
+def getVarAt(var_tuple, ib):
+    '''
+    Given a tuple (file_name, line_id, token_id_in_line) and a indexBuilder for a file
+    return the original token name
+    '''
+    line_char_index = ib.tokMap[(var_tuple[1], var_tuple[2])]
+    return ib.charPosition2Name[line_char_index]
 
 
 try:
@@ -49,34 +56,61 @@ fileKeys = {}
 for row in reader:
     #filename,renaming_strat,consistency_strat,scope_id,line_index,token_id_per_line,isGlobal,Choosen_Renaming,list_of_renamings
     file_name = row[0]
+    rename_strat = row[1]
     if(rename_strat == "n2p"): #skip jsnice lines
         continue
-    line_index = row[4]
-    line_tok_id = row[5]
+    line_index = int(row[4])
+    line_tok_id = int(row[5])
     is_global = row[6]
     if(is_global == True): #skip globals
         continue
     
     var_key = (file_name, line_index, line_tok_id)
-    if(filename in fileKeys):
+    if(file_name in fileKeys):
         fileKeys[file_name].append(var_key)
     else:
         fileKeys[file_name] = [var_key]
         
     renameMap[var_key] = row
 
-
+ignored = []
+newRow = []
 with open("compareOrigWithTool.csv", "w") as f:
+    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs")
     for file_name, var_list in fileKeys.iteritems():
         #process file
-        file_tokens = processFile(file_name)
+        ib = processFile(os.path.join(orig_dir,file_name))
+        ib_obs = processObsFile(os.path.join(orig_dir,file_name))
         #get name for line_index, token_id
+        #print(ib)
+        #print(ib_obs)
+        #print(ib.charPosition2Name)
         for next_var in var_list:
-            orig_name = getVarAt(next_var, file_tokens)
-            newRow = renameMap[next_var].append(orig_name)
-            f.write(",".join(rewRow) + "\n")
-        
+            #if(True):
+            try:
+                #TODO: Also need the obsfuscated name to make sure that we're actually translating back
+                #print(renameMap[next_var])
+                orig_name = getVarAt(next_var, ib)
+                obs_name = getVarAt(next_var, ib_obs)
+                newRow = renameMap[next_var]
+                newRow.append(orig_name)
+                newRow.append(obs_name)
+                if(orig_name == obs_name):
+                    newRow.append("False")
+                else:
+                    newRow.append("True")
+                #print(newRow)
+                f.write(";".join(newRow) + "\n")
+            except:
+                ignored.append(newRow)
     
+print(len(ignored))
+print(ignored)
+with open("ignored.csv", "w") as f:
+    for row in ignored:
+        f.write(";".join([r.encode("utf8") for r in row]) + "\n")
+
+
 #Tests:
 #Is the original name in the suggestion list?
 #How far
