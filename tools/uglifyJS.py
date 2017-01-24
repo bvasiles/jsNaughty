@@ -2,7 +2,6 @@ import subprocess
 PIPE = subprocess.PIPE
 import socket
 from preprocessor import replaceSciNotNum
-from unidecode import unidecode
 
 
 class Uglifier:
