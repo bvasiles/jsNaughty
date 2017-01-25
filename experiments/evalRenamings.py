@@ -36,6 +36,59 @@ def getVarAt(var_tuple, ib):
     line_char_index = ib.tokMap[(var_tuple[1], var_tuple[2])]
     return ib.charPosition2Name[line_char_index]
 
+def suggestionExactMatch(suggestion_list, word):
+    '''Is word in the comma separated suggestion list'''
+    words = suggestion_list.split(',')
+    print(suggestion_list + " --- " + word + " --- " + str(word in words))
+    return word in words
+
+def charsInOrder(w1,w2):
+    '''
+    Returns true if w1 is an abbreviation of the w2, i.e.
+    does w2 contain the letters of w1 in order
+    '''
+    pointer = 0
+    for c in w1:
+        if(pointer >= w2.length): #terminate
+            return False
+        while(w2[pointer] != c):
+            pointer += 1
+            if(pointer >= w2.length): #terminate
+                return False
+        
+        pointer += 1
+
+    return True
+
+def isAbbrev(w1, w2):
+    '''
+    Returns true if one word is an abbreviation of the other, i.e.
+    does w1 contain the letters of w2 in order, or vice versa.
+    '''
+    return charsInOrder(w1,w2) or charsInOrder(w2,w1)
+        
+
+def suggestionApproximateMatch(suggestion_list, word):
+    '''
+    Try to find approximate string matches for the word in the suggestion list
+    return a tuple matching a list of approximate matching strategies in the 
+    following order:
+    1) case-insensitivity
+    2) 1) + remove underscores and $
+    3) 1) + 2) + exact containment (a suggestion contains the word/ word contains the suggestion   
+    4) abbreviations - after 1) + 2) -> does either a word in the suggestion list/orig word contain the characters of the other
+    '''
+    word_lower = word.lower()
+    word_nspec = word_lower.replace("$","").replace("_","")
+
+    sg_lower = [n.lower() for n in suggestion_list]
+    sg_nspec = [n.replace("$","").replace("_","") for n in sg_lower]
+
+    case_insen = any([word_lower == n  for n in sg_lower])
+    nonSpec = any([word_nspec == n for n in sg_nspec])
+    contains = any([(word_nspec in n or n in word_nspec) for n in sg_nspec])
+    abbrev = any([isAbbrev(n, word_nspec) for n in sg_nspec])
+    return (case_insen, nonSpec, contains, abbrev)
 
 try:
     csv_path = os.path.abspath(sys.argv[1])
@@ -64,7 +117,7 @@ for row in reader:
     is_global = row[6]
     if(is_global == True): #skip globals
         continue
-    
+
     var_key = (file_name, line_index, line_tok_id)
     if(file_name in fileKeys):
         fileKeys[file_name].append(var_key)
@@ -73,10 +126,12 @@ for row in reader:
         
     renameMap[var_key] = row
 
+print("-------------------------------------")
 ignored = []
 newRow = []
+i = 0
 with open("compareOrigWithTool.csv", "w") as f:
-    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs")
+    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest\n")
     for file_name, var_list in fileKeys.iteritems():
         #process file
         ib = processFile(os.path.join(orig_dir,file_name))
@@ -93,16 +148,17 @@ with open("compareOrigWithTool.csv", "w") as f:
                 orig_name = getVarAt(next_var, ib)
                 obs_name = getVarAt(next_var, ib_obs)
                 newRow = renameMap[next_var]
-                newRow.append(orig_name)
-                newRow.append(obs_name)
-                if(orig_name == obs_name):
-                    newRow.append("False")
-                else:
-                    newRow.append("True")
+                in_suggest = suggestionExactMatch(newRow[8],orig_name)
+                (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = suggestionApproximateMatch(newRow[8],orig_name)
                 #print(newRow)
-                f.write(";".join(newRow) + "\n")
+                #if(i > 15):
+                #    break
+                #i += 1
+                f.write(";".join(newRow + [orig_name, obs_name,str(orig_name != obs_name),str(in_suggest),str(nspec_suggest),str(contains_suggest),str(abbrev_suggest)]) + "\n")
             except:
                 ignored.append(newRow)
+        #break 
+
     
 print(len(ignored))
 print(ignored)
