@@ -10,6 +10,7 @@ install:
 script:
   - pwd
   - python ./testing/deobfuscate_tests.py
+  - python ./testing/evalRenamingTests.py
 
 notifications:
   email: false
