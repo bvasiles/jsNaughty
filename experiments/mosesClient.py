@@ -164,8 +164,8 @@ class MosesClient():
 #         baseDir = os.getcwd()
 #         base_name = "webTemp" + str(transactionID)
 #         tempFile = baseDir + str(transactionID) + "_temp.js"
-        lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
-        
+        #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
+        lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm"        
         if socket.gethostname() == 'bogdan.mac':
             lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
         elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
@@ -178,22 +178,26 @@ class MosesClient():
         
         start = time.time()
         # Strip comments, replace literals, etc
-        try:
+        #try:
+        if True:
             prepro = WebLMPreprocessor(obfuscatedCode)
-            prepro_text = str(prepro)
+            prepro_text=str(prepro)
+            print("Prepro_text----------------------------------")
+            print(prepro_text)
+            print("Prepro_text----------------------------------")
             #TODO replace with: prepro = WebPreprocessor(text)
 #             prepro.write_temp_file(preproFile)
-        except:
+#        except:
 #             cleanup([preproFile])
-            print(prepro_error)
-            return(prepro_error)
+#            print(prepro_error)
+#            return(prepro_error)
             
         clear = Beautifier()
         #TODO: Need a text version of beautifier to avoid the file read and write.
         #(ok, beautText, err) = clear.webRun(preproText)
         (ok, beautified_text, _err) = clear.web_run(prepro_text)
 #         ok = clear.run(preproFile, beautFile)
-
+        print(beautified_text)
         if(not ok):
 #             cleanup([preproFile, beautFile])
             print(beaut_error)
@@ -202,6 +206,9 @@ class MosesClient():
         try:
 #             lex_ugly = Lexer(beautFile)
             lex_ugly = WebLexer(beautified_text)
+            print("Lex_ugly---------------------")
+            print(lex_ugly.tokenList)
+            print("Lex_ugly---------------------")
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
         except:
 #             cleanup([preproFile, beautFile])
@@ -237,13 +244,17 @@ class MosesClient():
 #         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
         rn_start = time.time()
         
-        try:
-#         if True:
+        #try:
+        if True:
             # Rename input prior to translation
             preRen = PreRenamer()
+            print("Tokens-------------------")
+            print(iBuilder_ugly.tokens)
+            print("Tokens-------------------")
             after_text = preRen.rename(r_strategy, 
                                       iBuilder_ugly,
                                       scopeAnalyst)
+             
             
             (ok, renamedText, _err) = clear.web_run(after_text)
             if not ok:
@@ -258,9 +269,9 @@ class MosesClient():
             a_iBuilder = IndexBuilder(a_lexer.tokenList)
             a_scopeAnalyst = WebScopeAnalyst(renamedText)
             
-        except:
-            print(rn_error)
-            return(rn_error)
+#        except:
+#            print(rn_error)
+#            return(rn_error)
 
 #         with open("renameFile.txt", 'w') as renamingFile:
 #             renamingFile.writelines(renamedText)
