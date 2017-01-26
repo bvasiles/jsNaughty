@@ -87,6 +87,10 @@ class ConsistencyResolver:
             
             val = name_candidates[key]
             
+            (name, def_scope) = key
+            print '\nLM-ing', name, '...', def_scope[-50:], num_lines
+            print 'candidates:', s
+            
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
             unseen_candidates = set([])
@@ -95,6 +99,7 @@ class ConsistencyResolver:
                     if not seen.has_key((candidate_name, use_scope)) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
+            print 'unseen candidates:', unseen_candidates
             
             # There is no uncertainty about the translation for
             # variables that have a single candidate translation
@@ -128,9 +133,6 @@ class ConsistencyResolver:
                             
                         draft_lines.append(' '.join(draft_line))
                                 
-                    (name, def_scope) = key
-                    print '\nLM-ing', candidate_name, '...', def_scope[-50:], num_lines
-                    
                     print '\n   ^ draft lines -----'
                     for line in draft_lines:
                         print '    ', line
