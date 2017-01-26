@@ -73,6 +73,8 @@ class ConsistencyResolver:
             for use_scope, suggestions in val.iteritems():
                 candidate_translations.update(suggestions.keys())
                 
+            print '      @', key[0], key[1][-50:], candidate_translations
+                
             # There is no uncertainty about the translation for
             # variables that have a single candidate translation
             if len(candidate_translations) == 1:
@@ -110,7 +112,9 @@ class ConsistencyResolver:
                                               for (line_num, _line_idx) in pos]))))
             
         token_lines = sorted(token_lines, key=lambda e: -e[1])
-    #     print token_lines
+        print '\n    token_lines'
+        for key, _num_lines in token_lines:
+            print key, _num_lines
         
         for key, _num_lines in token_lines:
             

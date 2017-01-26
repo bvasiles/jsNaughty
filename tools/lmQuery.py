@@ -25,7 +25,7 @@ class LMQuery:
         
         #E.G. echo "_fe8eefa5 . push ( _5a1652ee . substring ( i , iStrlen ) ) ;" | /home/bogdanv/mosesdecoder/bin/query -n -s /data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm
         echo = subprocess.Popen(['echo', line], stdout=PIPE)
-        print([self.query_path, '-n', '-s', line, self.lm_path])
+        print(['    ', self.query_path, '-n', '-s', line, self.lm_path])
         proc = subprocess.Popen([self.query_path, 
                                '-n', '-s', #'sentence', 
                                self.lm_path], 
