@@ -196,7 +196,9 @@ def processFile(l):
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
             
+            print '\n====================='
             print r_strategy
+            print '=====================\n'
         
 #             try:
 #             if True:
