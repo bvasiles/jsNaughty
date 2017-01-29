@@ -2,6 +2,7 @@ from pygments import lex
 from pygments.token import Token, STANDARD_TYPES, Comment, Number, String
 from pygments.token import is_token_subtype 
 from pygments.lexers import get_lexer_for_filename
+from unidecode import unidecode
 
 
 import re
@@ -38,7 +39,8 @@ def handleUnicodeEscape(tokens, tokenType, technique="REMOVE"):
             newTok = t
             if(is_token_subtype(t[0], tokenType)):
 #                 print(t)
-                newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
+#                 newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
+                newTok = (t[0], unidecode(t[1]))
                 
             rt.append(newTok)
     return rt
