@@ -162,9 +162,11 @@ class ConsistencyResolver:
 
                 print '\n   ^ log probs -------'                        
                 for (candidate_name, lm_log_prob) in candidate_names:
-                    print (candidate_name, lm_log_prob)
+                    print '    ', (candidate_name, lm_log_prob)
                 print
                         
+                print '\n  selected:', candidate_name
+                
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
                 seen[(candidate_name, use_scope)] = True
