@@ -114,6 +114,47 @@ class ConsistencyResolver:
                 seen[(candidate_name, def_scope)] = True
                 
             elif len(unseen_candidates) > 1:
+
+
+                for candidate_name in [name]:
+                    print '\n  minified:', candidate_name
+                            
+                    line_nums = set([num for (num,idx) in name_positions[key]])
+                            
+                    draft_lines = []
+                            
+                    for line_num in line_nums:
+                        draft_line = [token for (_token_type, token) 
+                                      in iBuilder.tokens[line_num]]
+                        for line_idx in [idx 
+                                         for (num, idx) in name_positions[key] 
+                                         if num == line_num]:
+                            draft_line[line_idx] = candidate_name
+                            
+                        draft_lines.append(' '.join(draft_line))
+                                
+                    print '\n   ^ draft lines -----'
+                    for line in draft_lines:
+                        print '    ', line
+                    print
+                                
+                    line_log_probs = []
+                    for line in draft_lines:
+#                                 print ' --', line
+                        
+                        (lm_ok, lm_log_prob, _lm_err) = \
+                            lm_cache.setdefault(line, lm_query.run(line))
+                        
+                        if not lm_ok:
+                            lm_log_prob = -9999999999
+                        line_log_probs.append(lm_log_prob)
+
+                    if not len(line_log_probs):
+                        lm_log_prob = -9999999999
+                    else:
+                        lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+    
+
                 
                 log_probs = []
                         
