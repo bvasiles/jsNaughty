@@ -37,7 +37,7 @@ def handleUnicodeEscape(tokens, tokenType, technique="REMOVE"):
         for t in tokens:
             newTok = t
             if(is_token_subtype(t[0], tokenType)):
-                print(t)
+#                 print(t)
                 newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
                 
             rt.append(newTok)
