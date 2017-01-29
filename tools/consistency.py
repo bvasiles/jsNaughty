@@ -161,11 +161,14 @@ class ConsistencyResolver:
                 candidate_name = candidate_names[0][0]
 
                 print '\n   ^ log probs -------'                        
-                for (candidate_name, lm_log_prob) in candidate_names:
-                    print '    ', (candidate_name, lm_log_prob)
+                for idx, (candidate_name, lm_log_prob) in enumerate(candidate_names):
+                    if idx == 0:
+                        print '    ', (candidate_name, lm_log_prob), ' --- this should be selected'
+                    else:
+                        print '    ', (candidate_name, lm_log_prob)
                 print
                         
-                print '\n  selected:', candidate_name
+                print '\n   ^ selected:', candidate_name
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
