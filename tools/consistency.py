@@ -159,6 +159,11 @@ class ConsistencyResolver:
                         
                 candidate_names = sorted(log_probs, key=lambda e:-e[1])
                 candidate_name = candidate_names[0][0]
+                if len(candidate_names) > 2:
+                    print '\n   ^ 0', candidate_names[0]
+                    print '   ^ 1', candidate_names[1]
+                    print '   ^ 2', candidate_names[2]
+                    
 
                 print '\n   ^ log probs -------'                        
                 for idx, (candidate_name, lm_log_prob) in enumerate(candidate_names):
@@ -168,7 +173,7 @@ class ConsistencyResolver:
                         print '    ', (candidate_name, lm_log_prob)
                 print
                         
-                print '\n   ^ selected:', candidate_name
+                print '   ^ selected:', candidate_name
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
