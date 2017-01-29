@@ -115,7 +115,7 @@ class ConsistencyResolver:
                 
             elif len(unseen_candidates) > 1:
 
-
+                drop = {}
                 for candidate_name in [name]:
                     print '\n  minified:', candidate_name
                             
@@ -139,7 +139,7 @@ class ConsistencyResolver:
                     print
                                 
                     line_log_probs = []
-                    for line in draft_lines:
+                    for idx, line in enumerate(draft_lines):
 #                                 print ' --', line
                         
                         (lm_ok, lm_log_prob, _lm_err) = \
@@ -147,7 +147,9 @@ class ConsistencyResolver:
                         
                         if not lm_ok:
                             lm_log_prob = -9999999999
+                        
                         line_log_probs.append(lm_log_prob)
+                        drop[idx] = lm_log_prob
 
                     if not len(line_log_probs):
                         lm_log_prob = -9999999999
@@ -181,7 +183,7 @@ class ConsistencyResolver:
                     print
                                 
                     line_log_probs = []
-                    for line in draft_lines:
+                    for idx, line in enumerate(draft_lines):
 #                                 print ' --', line
                         
                         (lm_ok, lm_log_prob, _lm_err) = \
@@ -189,7 +191,9 @@ class ConsistencyResolver:
                         
                         if not lm_ok:
                             lm_log_prob = -9999999999
+                            
                         line_log_probs.append(lm_log_prob)
+                        print '\t\t\t drop =', drop[idx] - lm_log_prob
 
                     if not len(line_log_probs):
                         lm_log_prob = -9999999999
