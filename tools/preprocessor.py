@@ -161,7 +161,8 @@ class LMPreprocessor:
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
         programText = replaceSciNotNum(js_text)
-        print(programText)
+#         print(programText)
+
         # Tokenize input
         self.tokenList = list(lex(programText, self.lexer))
 
@@ -173,10 +174,11 @@ class LMPreprocessor:
         
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
-        print(self.tokenList)
+#         print(self.tokenList)
+        
         #Remove unicode escape characters
         self.tokenList = handleUnicodeEscape(self.tokenList, Token.Literal)
-        print(self.tokenList)
+#         print(self.tokenList)
 
 
     def __preprocess(self, js_text):

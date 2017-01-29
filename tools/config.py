@@ -30,7 +30,8 @@ class ConsistencyStrategies:
     FREQLEN = 'freqlen'
 
     def all(self):
-        return [self.LMDROP,
+        return [self.LM,
+                self.LMDROP,
                 self.FREQLEN]
         
 

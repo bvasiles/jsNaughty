@@ -24,6 +24,7 @@ class ConsistencyResolver:
         self.CS = ConsistencyStrategies()
 #         self.renaming_map = {}
 #         self.seen = {}
+        self.debug_mode = False
     
     
     def computeRenaming(self,
@@ -95,8 +96,9 @@ class ConsistencyResolver:
             val = name_candidates[key]
             
             (name, def_scope) = key
-            print '\nLM-ing', name, '...', def_scope[-50:], num_lines
-            print 'candidates:', s
+            if self.debug_mode:
+                print '\nLM-ing', name, '...', def_scope[-50:], num_lines
+                print 'candidates:', s
             
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
@@ -106,7 +108,8 @@ class ConsistencyResolver:
                     if not seen.has_key((candidate_name, use_scope)) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
-            print 'unseen candidates:', unseen_candidates
+            if self.debug_mode:
+                print 'unseen candidates:', unseen_candidates
             
             # There is no uncertainty about the translation for
             # variables that have a single candidate translation
@@ -114,7 +117,8 @@ class ConsistencyResolver:
                 
                 candidate_name = unseen_candidates.pop()
                 
-                print '\n  single candidate:', candidate_name
+                if self.debug_mode:
+                    print '\n  single candidate:', candidate_name
                 
                 renaming_map[(key, use_scope)] = candidate_name
                 seen[(candidate_name, use_scope)] = True
@@ -142,7 +146,9 @@ class ConsistencyResolver:
                 drop = {}
                 
                 for candidate_name in [name]:
-                    print '\n  minified:', candidate_name
+                    
+                    if self.debug_mode:
+                        print '\n  minified:', candidate_name
                             
                     draft_lines = lines
                     for (draft_line_num, idx) in pairs:
@@ -150,11 +156,12 @@ class ConsistencyResolver:
                         
                     draft_lines_str = [' '.join(draft_line) 
                                        for draft_line in draft_lines]
-                            
-                    print '\n   ^ draft lines -----'
-                    for line in draft_lines_str:
-                        print '    ', line
-                    print
+                        
+                    if self.debug_mode:
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
                                 
                     line_log_probs = []
                     for idx, line in enumerate(draft_lines_str):
@@ -177,7 +184,8 @@ class ConsistencyResolver:
                 log_probs = []
                         
                 for candidate_name in unseen_candidates:
-                    print '\n  candidate:', candidate_name
+                    if self.debug_mode:
+                        print '\n  candidate:', candidate_name
 
                     draft_lines = lines
                     for (draft_line_num, idx) in pairs:
@@ -185,11 +193,12 @@ class ConsistencyResolver:
                         
                     draft_lines_str = [' '.join(draft_line) 
                                        for draft_line in draft_lines]
-                            
-                    print '\n   ^ draft lines -----'
-                    for line in draft_lines_str:
-                        print '    ', line
-                    print
+                    
+                    if self.debug_mode:
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
                                 
                     line_log_probs = []
                     for idx, line in enumerate(draft_lines_str):
@@ -201,7 +210,8 @@ class ConsistencyResolver:
                             lm_log_prob = -9999999999
                             
                         line_log_probs.append(drop[idx] - lm_log_prob)
-                        print '\t\t\t drop =', drop[idx] - lm_log_prob
+                        if self.debug_mode:
+                            print '\t\t\t drop =', drop[idx] - lm_log_prob
 
                     if not len(line_log_probs):
                         lm_log_prob = -9999999999
@@ -218,16 +228,16 @@ class ConsistencyResolver:
 #                     print '   ^ 1', candidate_names[1]
 #                     print '   ^ 2', candidate_names[2]
                     
-
-                print '\n   ^ drop in log probs -------'                        
-                for idx, (c, lm_log_prob) in enumerate(candidate_names):
-                    if idx == 0:
-                        print '    ', (c, lm_log_prob), ' --- this should be selected'
-                    else:
-                        print '    ', (c, lm_log_prob)
-                print
-                        
-                print '   ^ selected:', candidate_name
+                if self.debug_mode:
+                    print '\n   ^ drop in log probs -------'                        
+                    for idx, (c, lm_log_prob) in enumerate(candidate_names):
+                        if idx == 0:
+                            print '    ', (c, lm_log_prob), ' --- this should be selected'
+                        else:
+                            print '    ', (c, lm_log_prob)
+                    print
+                            
+                    print '   ^ selected:', candidate_name
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
@@ -279,8 +289,9 @@ class ConsistencyResolver:
             val = name_candidates[key]
             
             (name, def_scope) = key
-            print '\nLM-ing', name, '...', def_scope[-50:], num_lines
-            print 'candidates:', s
+            if self.debug_mode:
+                print '\nLM-ing', name, '...', def_scope[-50:], num_lines
+                print 'candidates:', s
             
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
@@ -290,7 +301,9 @@ class ConsistencyResolver:
                     if not seen.has_key((candidate_name, use_scope)) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
-            print 'unseen candidates:', unseen_candidates
+            
+            if self.debug_mode:
+                print 'unseen candidates:', unseen_candidates
             
             # There is no uncertainty about the translation for
             # variables that have a single candidate translation
@@ -298,7 +311,8 @@ class ConsistencyResolver:
                 
                 candidate_name = unseen_candidates.pop()
                 
-                print '\n  single candidate:', candidate_name
+                if self.debug_mode:
+                    print '\n  single candidate:', candidate_name
                 
                 renaming_map[(key, use_scope)] = candidate_name
                 seen[(candidate_name, use_scope)] = True
@@ -332,7 +346,9 @@ class ConsistencyResolver:
                 drop = {}
                 
                 for candidate_name in [name]:
-                    print '\n  minified:', candidate_name
+                    
+                    if self.debug_mode:
+                        print '\n  minified:', candidate_name
                             
                     draft_lines = lines
                     for (draft_line_num, idx) in pairs:
@@ -350,11 +366,12 @@ class ConsistencyResolver:
 #                             draft_line[line_idx] = candidate_name
 #                             
 #                         draft_lines.append(' '.join(draft_line))
-                                
-                    print '\n   ^ draft lines -----'
-                    for line in draft_lines_str:
-                        print '    ', line
-                    print
+                    
+                    if self.debug_mode:
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
                                 
                     line_log_probs = []
                     for idx, line in enumerate(draft_lines_str):
@@ -373,13 +390,12 @@ class ConsistencyResolver:
                         lm_log_prob = -9999999999
                     else:
                         lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
-    
-
                 
                 log_probs = []
                         
                 for candidate_name in unseen_candidates:
-                    print '\n  candidate:', candidate_name
+                    if self.debug_mode:
+                        print '\n  candidate:', candidate_name
 
                     draft_lines = lines
                     for (draft_line_num, idx) in pairs:
@@ -401,11 +417,12 @@ class ConsistencyResolver:
 #                             draft_line[line_idx] = candidate_name
 #                             
 #                         draft_lines.append(' '.join(draft_line))
-#                                 
-                    print '\n   ^ draft lines -----'
-                    for line in draft_lines_str:
-                        print '    ', line
-                    print
+
+                    if self.debug_mode:
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
                                 
                     line_log_probs = []
                     for idx, line in enumerate(draft_lines_str):
@@ -418,7 +435,9 @@ class ConsistencyResolver:
                             lm_log_prob = -9999999999
                             
                         line_log_probs.append(lm_log_prob)
-                        print '\t\t\t drop =', drop[idx] - lm_log_prob
+                        
+                        if self.debug_mode:
+                            print '\t\t\t drop =', drop[idx] - lm_log_prob
 
                     if not len(line_log_probs):
                         lm_log_prob = -9999999999
@@ -435,16 +454,16 @@ class ConsistencyResolver:
 #                     print '   ^ 1', candidate_names[1]
 #                     print '   ^ 2', candidate_names[2]
                     
-
-                print '\n   ^ log probs -------'                        
-                for idx, (c, lm_log_prob) in enumerate(candidate_names):
-                    if idx == 0:
-                        print '    ', (c, lm_log_prob), ' --- this should be selected'
-                    else:
-                        print '    ', (c, lm_log_prob)
-                print
-                        
-                print '   ^ selected:', candidate_name
+                if self.debug_mode:
+                    print '\n   ^ log probs -------'                        
+                    for idx, (c, lm_log_prob) in enumerate(candidate_names):
+                        if idx == 0:
+                            print '    ', (c, lm_log_prob), ' --- this should be selected'
+                        else:
+                            print '    ', (c, lm_log_prob)
+                    print
+                            
+                    print '   ^ selected:', candidate_name
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
