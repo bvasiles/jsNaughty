@@ -52,11 +52,11 @@ def processFile(l):
         
         # Strip comments, replace literals, etc
 #         if True:
-        try:
-            prepro = WebLMPreprocessor(js_text)
-            prepro_text = str(prepro)
-        except:
-            return (js_file_path, None, 'Preprocessor fail')
+#         try:
+        prepro = WebLMPreprocessor(js_text)
+        prepro_text = str(prepro)
+#         except:
+#             return (js_file_path, None, 'Preprocessor fail')
         
         print 'Preprocessor'
         print prepro_text
