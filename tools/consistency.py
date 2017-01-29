@@ -159,18 +159,18 @@ class ConsistencyResolver:
                         
                 candidate_names = sorted(log_probs, key=lambda e:-e[1])
                 candidate_name = candidate_names[0][0]
-                if len(candidate_names) > 2:
-                    print '\n   ^ 0', candidate_names[0]
-                    print '   ^ 1', candidate_names[1]
-                    print '   ^ 2', candidate_names[2]
+#                 if len(candidate_names) > 2:
+#                     print '\n   ^ 0', candidate_names[0]
+#                     print '   ^ 1', candidate_names[1]
+#                     print '   ^ 2', candidate_names[2]
                     
 
                 print '\n   ^ log probs -------'                        
-                for idx, (candidate_name, lm_log_prob) in enumerate(candidate_names):
+                for idx, (c, lm_log_prob) in enumerate(candidate_names):
                     if idx == 0:
-                        print '    ', (candidate_name, lm_log_prob), ' --- this should be selected'
+                        print '    ', (c, lm_log_prob), ' --- this should be selected'
                     else:
-                        print '    ', (candidate_name, lm_log_prob)
+                        print '    ', (c, lm_log_prob)
                 print
                         
                 print '   ^ selected:', candidate_name
