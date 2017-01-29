@@ -114,32 +114,59 @@ class ConsistencyResolver:
                 seen[(candidate_name, def_scope)] = True
                 
             elif len(unseen_candidates) > 1:
+                
+                # Line numbers of lines where (name, def_scope) appears
+                line_nums = set([num for (num,idx) in name_positions[key]])
 
+#                 draft_lines = [[token for (_token_type, token) 
+#                                       in iBuilder.tokens[line_num]]
+#                                for line_num in line_nums]
+
+                # Where to plug in candidate name?
+                pairs = []
+                lines = []
+                
+                # Within-line indices where (name, def_scope) appears
+                for draft_line_num, line_num in enumerate(sorted(line_nums)):
+#                     line_idxs = [idx for (num, idx) in name_positions[key] 
+#                                     if num == line_num]
+                    pairs.extend([(draft_line_num, idx) 
+                                  for (num, idx) in name_positions[key] 
+                                  if num == line_num])
+                    
+                    lines.append([token for (_token_type, token) 
+                                      in iBuilder.tokens[line_num]])
+                    
+                
                 drop = {}
+                
                 for candidate_name in [name]:
                     print '\n  minified:', candidate_name
                             
-                    line_nums = set([num for (num,idx) in name_positions[key]])
+                    draft_lines = lines
+                    for (draft_line_num, idx) in pairs:
+                        draft_lines[draft_line_num][idx] = candidate_name
+                        
+                    draft_lines_str = [' '.join(draft_line) 
+                                       for draft_line in draft_lines]
                             
-                    draft_lines = []
-                            
-                    for line_num in line_nums:
-                        draft_line = [token for (_token_type, token) 
-                                      in iBuilder.tokens[line_num]]
-                        for line_idx in [idx 
-                                         for (num, idx) in name_positions[key] 
-                                         if num == line_num]:
-                            draft_line[line_idx] = candidate_name
-                            
-                        draft_lines.append(' '.join(draft_line))
+#                     for line_num in line_nums:
+#                         draft_line = [token for (_token_type, token) 
+#                                       in iBuilder.tokens[line_num]]
+#                         for line_idx in [idx 
+#                                          for (num, idx) in name_positions[key] 
+#                                          if num == line_num]:
+#                             draft_line[line_idx] = candidate_name
+#                             
+#                         draft_lines.append(' '.join(draft_line))
                                 
                     print '\n   ^ draft lines -----'
-                    for line in draft_lines:
+                    for line in draft_lines_str:
                         print '    ', line
                     print
                                 
                     line_log_probs = []
-                    for idx, line in enumerate(draft_lines):
+                    for idx, line in enumerate(draft_lines_str):
 #                                 print ' --', line
                         
                         (lm_ok, lm_log_prob, _lm_err) = \
@@ -162,28 +189,35 @@ class ConsistencyResolver:
                         
                 for candidate_name in unseen_candidates:
                     print '\n  candidate:', candidate_name
+
+                    draft_lines = lines
+                    for (draft_line_num, idx) in pairs:
+                        draft_lines[draft_line_num][idx] = candidate_name
+                        
+                    draft_lines_str = [' '.join(draft_line) 
+                                       for draft_line in draft_lines]
                             
-                    line_nums = set([num for (num,idx) in name_positions[key]])
-                            
-                    draft_lines = []
-                            
-                    for line_num in line_nums:
-                        draft_line = [token for (_token_type, token) 
-                                      in iBuilder.tokens[line_num]]
-                        for line_idx in [idx 
-                                         for (num, idx) in name_positions[key] 
-                                         if num == line_num]:
-                            draft_line[line_idx] = candidate_name
-                            
-                        draft_lines.append(' '.join(draft_line))
-                                
+#                     line_nums = set([num for (num,idx) in name_positions[key]])
+#                             
+#                     draft_lines = []
+#                             
+#                     for line_num in line_nums:
+#                         draft_line = [token for (_token_type, token) 
+#                                       in iBuilder.tokens[line_num]]
+#                         for line_idx in [idx 
+#                                          for (num, idx) in name_positions[key] 
+#                                          if num == line_num]:
+#                             draft_line[line_idx] = candidate_name
+#                             
+#                         draft_lines.append(' '.join(draft_line))
+#                                 
                     print '\n   ^ draft lines -----'
-                    for line in draft_lines:
+                    for line in draft_lines_str:
                         print '    ', line
                     print
                                 
                     line_log_probs = []
-                    for idx, line in enumerate(draft_lines):
+                    for idx, line in enumerate(draft_lines_str):
 #                                 print ' --', line
                         
                         (lm_ok, lm_log_prob, _lm_err) = \
