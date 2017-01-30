@@ -23,33 +23,37 @@ ignored = set([])
 #Key: file, line, token_id -> row
 renameMap = {}
 fileKeys = {}
+jsnice_rows = []
 
 for row in reader:
     #filename,renaming_strat,consistency_strat,scope_id,line_index,token_id_per_line,isGlobal,Choosen_Renaming,list_of_renamings
     file_name = row[0]
     rename_strat = row[1]
+    consistency_strat = row[2]
     if(rename_strat == "n2p"): #skip jsnice lines
+        jsnice_rows.append(row)
         continue
     line_index = int(row[4])
     line_tok_id = int(row[5])
     is_global = row[6]
-    if(is_global == True): #skip globals
+    if(is_global == 'True'): #skip globals
         continue
 
-    var_key = (file_name, line_index, line_tok_id)
+    var_key = (file_name, rename_strat, consistency_strat,  line_index, line_tok_id)
     if(file_name in fileKeys):
         fileKeys[file_name].append(var_key)
     else:
         fileKeys[file_name] = [var_key]
         
     renameMap[var_key] = row
-
+    #print(row)
+#quit()
 print("-------------------------------------")
 ignored = []
 newRow = []
 i = 0
 with open("compareOrigWithTool.csv", "w") as f:
-    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest\n")
+    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest;approx_correct\n")
     for file_name, var_list in fileKeys.iteritems():
         #process file
         ib = processFile(os.path.join(orig_dir,file_name))
@@ -68,14 +72,20 @@ with open("compareOrigWithTool.csv", "w") as f:
                 newRow = renameMap[next_var]
                 in_suggest = suggestionExactMatch(newRow[8],orig_name)
                 (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = suggestionApproximateMatch(newRow[8].split(","),orig_name)
+                (a,b,c,d) = suggestionApproximateMatch([newRow[7]], orig_name)
+                approx_correct = a or b or c or d
                 #print(newRow)
-                #if(i > 15):
-                #    break
+                #if(newRow[2] !="freqlen"):
+                #    quit()
                 #i += 1
-                f.write(";".join(newRow + [orig_name, obs_name,str(orig_name != obs_name),str(in_suggest),str(nspec_suggest),str(contains_suggest),str(abbrev_suggest)]) + "\n")
+                f.write(";".join(newRow + [orig_name, obs_name,str(orig_name != obs_name),str(in_suggest),str(lc_suggest),str(nspec_suggest),str(contains_suggest),str(abbrev_suggest),str(approx_correct)]) + "\n")
             except:
                 ignored.append(newRow)
         #break 
+
+    #Add the jsnice rows back in (note, this means I need to add the orig_name and obs_name cols to these in R
+    for nextRow in jsnice_rows:
+        f.write(";".join(nextRow + ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA" ]) + "\n")
 
     
 print(len(ignored))
