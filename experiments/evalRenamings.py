@@ -33,7 +33,7 @@ for row in reader:
     line_index = int(row[4])
     line_tok_id = int(row[5])
     is_global = row[6]
-    if(is_global == True): #skip globals
+    if(is_global == "True"): #skip globals
         continue
 
     var_key = (file_name, line_index, line_tok_id)
@@ -49,7 +49,7 @@ ignored = []
 newRow = []
 i = 0
 with open("compareOrigWithTool.csv", "w") as f:
-    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest\n")
+    f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest;approx_correct\n")
     for file_name, var_list in fileKeys.iteritems():
         #process file
         ib = processFile(os.path.join(orig_dir,file_name))
@@ -68,7 +68,9 @@ with open("compareOrigWithTool.csv", "w") as f:
                 newRow = renameMap[next_var]
                 in_suggest = suggestionExactMatch(newRow[8],orig_name)
                 (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = suggestionApproximateMatch(newRow[8].split(","),orig_name)
-                #print(newRow)
+                (a,b,c,d) = suggestionApproximateMatch([],orig_name)
+                #What other information could we use in the line?
+                print(newRow)
                 #if(i > 15):
                 #    break
                 #i += 1
