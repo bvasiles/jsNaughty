@@ -21,7 +21,7 @@ class MosesParser:
         for line in moses_output.split('\n'):
 #             print line
         
-            translations = {}
+#             translations = {}
             
             parts = line.split('|||')
             if not len(parts[0]):
@@ -43,12 +43,12 @@ class MosesParser:
                                         in iBuilder.tokens[n]]
                 translation = ' '.join(translation_parts)
             
-            # An input can have identical translations, but with
-            # different scores (the number of different translations
-            # per input is controlled by the -n-best-list decoder
-            # parameter). Keep only unique translations.
-            translations.setdefault(n, set([]))
-            translations[n].add(translation)
+#             # An input can have identical translations, but with
+#             # different scores (the number of different translations
+#             # per input is controlled by the -n-best-list decoder
+#             # parameter). Keep only unique translations.
+#             translations.setdefault(n, set([]))
+#             translations[n].add(translation)
            
             # Which within-line indices have non-global var names? 
             line_dict = position_names.get(n, {})

@@ -25,11 +25,13 @@ class RenamingStrategies:
     
 class ConsistencyStrategies:
     LM = 'lm'
+    LMDROP = 'lmdrop'
     LEN = 'len'
     FREQLEN = 'freqlen'
 
     def all(self):
         return [self.LM,
+                self.LMDROP,
                 self.FREQLEN]
         
 

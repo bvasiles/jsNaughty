@@ -2,6 +2,7 @@ from pygments import lex
 from pygments.token import Token, STANDARD_TYPES, Comment, Number, String
 from pygments.token import is_token_subtype 
 from pygments.lexers import get_lexer_for_filename
+from unidecode import unidecode
 
 
 import re
@@ -37,8 +38,9 @@ def handleUnicodeEscape(tokens, tokenType, technique="REMOVE"):
         for t in tokens:
             newTok = t
             if(is_token_subtype(t[0], tokenType)):
-                print(t)
-                newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
+#                 print(t)
+#                 newTok = (t[0], re.sub(r'[^\x00-\x7F]+','', t[1].decode("unicode_escape")))
+                newTok = (t[0], unidecode(t[1]))
                 
             rt.append(newTok)
     return rt
@@ -161,7 +163,8 @@ class LMPreprocessor:
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
         programText = replaceSciNotNum(js_text)
-        print(programText)
+#         print(programText)
+
         # Tokenize input
         self.tokenList = list(lex(programText, self.lexer))
 
@@ -173,10 +176,11 @@ class LMPreprocessor:
         
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
-        print(self.tokenList)
+#         print(self.tokenList)
+        
         #Remove unicode escape characters
         self.tokenList = handleUnicodeEscape(self.tokenList, Token.Literal)
-        print(self.tokenList)
+#         print(self.tokenList)
 
 
     def __preprocess(self, js_text):
