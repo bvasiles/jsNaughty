@@ -24,7 +24,7 @@ class ConsistencyResolver:
         self.CS = ConsistencyStrategies()
 #         self.renaming_map = {}
 #         self.seen = {}
-        self.debug_mode = False
+        self.debug_mode = True
     
     
     def computeRenaming(self,
