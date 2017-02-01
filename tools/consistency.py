@@ -299,8 +299,11 @@ class ConsistencyResolver:
             
             (name, def_scope) = key
             if self.debug_mode:
-                print '\nLM-ing', name, '...', def_scope[-50:], num_lines
+                print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', s
+                print 'def_scope: ...', def_scope[-50:]
+                for use_scope in set(val.keys()):
+                    print 'use_scope: ...', use_scope[-50:]
             
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
