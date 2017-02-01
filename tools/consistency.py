@@ -327,6 +327,7 @@ class ConsistencyResolver:
                 
                 for use_scope in val.iterkeys():
                     seen[(candidate_name, use_scope)] = True
+                    print '\t\t\t', def_scope[-50:], '<seen>', candidate_name 
                     
 #                 seen[(candidate_name, use_scope)] = True
 #                 seen[(candidate_name, def_scope)] = True
@@ -483,6 +484,7 @@ class ConsistencyResolver:
                 
                 for use_scope in val.iterkeys():
                     seen[(candidate_name, use_scope)] = True
+                    print '\t\t\t', def_scope[-50:], '<seen>', candidate_name
                     
 #                 seen[(candidate_name, use_scope)] = True
 #                 seen[(candidate_name, def_scope)] = True
@@ -493,6 +495,7 @@ class ConsistencyResolver:
                 
                 for use_scope in val.iterkeys():
                     seen[(name, use_scope)] = True
+                    print '\t\t\t', def_scope[-50:], '<seen>', name
                     
 #                 seen[(name, use_scope)] = True
 #                 seen[(name, def_scope)] = True
