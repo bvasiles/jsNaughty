@@ -330,6 +330,9 @@ def processFile(l):
                     
                     print '\nc_strategy----------', c_strategy
                     
+                    for k,v in a_use_scopes.iteritems():
+                        print k,v
+                    
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
                     temp_renaming_map = cr.computeRenaming(c_strategy,
