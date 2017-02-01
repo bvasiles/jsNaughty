@@ -121,8 +121,9 @@ class ConsistencyResolver:
                     print '\n  single candidate:', candidate_name
                 
                 renaming_map[(key, use_scope)] = candidate_name
-                seen[(candidate_name, use_scope)] = True
-                seen[(candidate_name, def_scope)] = True
+                for use_scope in val.iterkeys():
+                    seen[(candidate_name, use_scope)] = True
+#                 seen[(candidate_name, def_scope)] = True
                 
             elif len(unseen_candidates) > 1:
                 
@@ -241,14 +242,22 @@ class ConsistencyResolver:
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
-                seen[(candidate_name, use_scope)] = True
-                seen[(candidate_name, def_scope)] = True
+                
+                for use_scope in val.iterkeys():
+                    seen[(candidate_name, use_scope)] = True
+                    
+#                 seen[(candidate_name, use_scope)] = True
+#                 seen[(candidate_name, def_scope)] = True
             
             else:
                 (name, _def_scope) = key
                 renaming_map[(key, use_scope)] = name
-                seen[(name, use_scope)] = True
-                seen[(name, def_scope)] = True
+                
+                for use_scope in val.iterkeys():
+                    seen[(name, use_scope)] = True
+                    
+#                 seen[(name, use_scope)] = True
+#                 seen[(name, def_scope)] = True
 
         return renaming_map
 
@@ -315,8 +324,12 @@ class ConsistencyResolver:
                     print '\n  single candidate:', candidate_name
                 
                 renaming_map[(key, use_scope)] = candidate_name
-                seen[(candidate_name, use_scope)] = True
-                seen[(candidate_name, def_scope)] = True
+                
+                for use_scope in val.iterkeys():
+                    seen[(candidate_name, use_scope)] = True
+                    
+#                 seen[(candidate_name, use_scope)] = True
+#                 seen[(candidate_name, def_scope)] = True
                 
             elif len(unseen_candidates) > 1:
                 
@@ -467,14 +480,22 @@ class ConsistencyResolver:
                 
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
-                seen[(candidate_name, use_scope)] = True
-                seen[(candidate_name, def_scope)] = True
+                
+                for use_scope in val.iterkeys():
+                    seen[(candidate_name, use_scope)] = True
+                    
+#                 seen[(candidate_name, use_scope)] = True
+#                 seen[(candidate_name, def_scope)] = True
             
             else:
                 (name, _def_scope) = key
                 renaming_map[(key, use_scope)] = name
-                seen[(name, use_scope)] = True
-                seen[(name, def_scope)] = True
+                
+                for use_scope in val.iterkeys():
+                    seen[(name, use_scope)] = True
+                    
+#                 seen[(name, use_scope)] = True
+#                 seen[(name, def_scope)] = True
 
         return renaming_map
                 
