@@ -325,15 +325,15 @@ class ConsistencyResolver:
                 self.__sortedCandidateTranslations(name_candidates, 
                                                    name_positions):
             
-            val = name_candidates[key]
-            use_scopes = set(val.keys())
+#             val = name_candidates[key]
+            us = use_scopes[key]
             
             (name, def_scope) = key
             if self.debug_mode:
                 print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', s
                 print 'def_scope: ...', def_scope[-50:]
-                for use_scope in use_scopes:
+                for use_scope in us:
                     print 'use_scope: ...', use_scope[-50:]
                 print '\nseen:'
                 for (c,u),f in seen.iteritems():
@@ -342,7 +342,7 @@ class ConsistencyResolver:
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
-            unseen_candidates = self.__updateCandidates(s, use_scopes, seen)
+            unseen_candidates = self.__updateCandidates(s, us, seen)
             
             if self.debug_mode:
                 print 'unseen candidates:', unseen_candidates
@@ -358,7 +358,7 @@ class ConsistencyResolver:
                 
                 renaming_map[key] = candidate_name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(candidate_name, use_scope)] = True
                     
                     if self.debug_mode:
@@ -415,7 +415,7 @@ class ConsistencyResolver:
                 
                 renaming_map[key] = candidate_name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(candidate_name, use_scope)] = True
                     
                     if self.debug_mode:
@@ -426,7 +426,7 @@ class ConsistencyResolver:
                 (name, _def_scope) = key
                 renaming_map[key] = name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(name, use_scope)] = True
                     
                     if self.debug_mode:
