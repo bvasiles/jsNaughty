@@ -425,7 +425,7 @@ class PreRenamer:
 #         print(context)
         
     #     (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
-        (name_positions, _position_names) = prepHelpers(iBuilder, scopeAnalyst)
+        (name_positions, _position_names, _use_scopes) = prepHelpers(iBuilder, scopeAnalyst)
         
         shas = {}
         name_candidates = {}
