@@ -189,7 +189,8 @@ def processFile(l):
             return (js_file_path, None, 'ScopeAnalyst fail')
          
         (_name_positions, \
-         position_names) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+         position_names,
+         _use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
           
 #         print 'Helpers'
 
@@ -250,7 +251,8 @@ def processFile(l):
 #             exit()
             
             (a_name_positions, 
-             a_position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+             a_position_names,
+             a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
 
             nc = []
              

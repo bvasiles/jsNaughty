@@ -136,6 +136,7 @@ class ScopeAnalyst:
         
         # For each name, record its scopes
         self.nameScopes = {}
+        self.nameUseScopes = {}
         
         self.isGlobal = {}
         
@@ -183,6 +184,9 @@ class ScopeAnalyst:
                     # out which names are overloaded
                     self.nameScopes.setdefault(key, set([]))
                     self.nameScopes[key].add(def_scope)
+                    
+                    self.nameUseScopes.setdefault((key, def_scope), set([]))
+                    self.nameUseScopes[(key, def_scope)].add(use_scope)
                     
                     depth = parent.get('pth', None)
                     self.name2pth[(key, start)] = depth
@@ -277,7 +281,7 @@ class ScopeAnalyst:
 
 
     def resolve_use_scope(self):
-        return self.name2useScope
+        return self.nameUseScope
     
     
     def resolve_path(self):

@@ -22,6 +22,8 @@ def prepHelpers(iBuilder,
     # [line number][index within line]?
     position_names = {}
     
+    use_scopes = set([])
+    
     for line_num, line in enumerate(iBuilder.tokens):
         position_names.setdefault(line_num, {})
         
@@ -33,7 +35,9 @@ def prepHelpers(iBuilder,
                 
                 if scopeAnalyst is not None:
                     name2defScope = scopeAnalyst.resolve_scope()
-            
+                    
+                    use_scopes.update(scopeAnalyst.nameUseScopes)
+                    
 #                     isGlobal = scopeAnalyst.isGlobal
 #                     if not isGlobal.get((token, p), True):
 
@@ -53,7 +57,7 @@ def prepHelpers(iBuilder,
                     name_positions[(token, def_scope)].append((line_num, line_idx))
                     position_names[line_num][line_idx] = (token, def_scope)
 
-    return (name_positions, position_names)
+    return (name_positions, position_names, use_scopes)
     
 
 def writeTmpLines(lines, 

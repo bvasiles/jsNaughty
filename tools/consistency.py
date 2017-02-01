@@ -29,29 +29,34 @@ class ConsistencyResolver:
                         strategy,
                         name_candidates,
                         name_positions,
+                        use_scopes,
                         iBuilder=None,
                         lm_path=None):
         
         if strategy == self.CS.LM:
             return self.computeLMRenaming(name_candidates, 
                                           name_positions,
+                                          use_scopes,
                                           iBuilder, 
                                           lm_path)
             
         elif strategy == self.CS.LMDROP:
             return self.computeLMDropRenaming(name_candidates, 
                                           name_positions,
+                                          use_scopes,
                                           iBuilder, 
                                           lm_path)
         
         elif strategy == self.CS.FREQLEN:
             return self.computeFreqLenRenaming(name_candidates, 
-                                               name_positions, 
+                                               name_positions,
+                                               use_scopes, 
                                                lambda e:(-e[1],-len(e[0])))
         
         elif strategy == self.CS.LEN:
             return self.computeFreqLenRenaming(name_candidates, 
-                                               name_positions, 
+                                               name_positions,
+                                               use_scopes, 
                                                lambda e:-len(e[0]))
         else:
             return {}
@@ -62,6 +67,7 @@ class ConsistencyResolver:
     def computeLMDropRenaming(self,
                           name_candidates, 
                           name_positions,
+                          use_scopes,
                           iBuilder, 
                           lm_path):
         
@@ -77,20 +83,20 @@ class ConsistencyResolver:
                 self.__sortedCandidateTranslations(name_candidates, 
                                                    name_positions):
             
-            val = name_candidates[key]
-            use_scopes = set(val.keys())
+#             val = name_candidates[key]
+            us = use_scopes[key]
             
             (name, def_scope) = key
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
-            unseen_candidates = self.__updateCandidates(s, use_scopes, seen)
+            unseen_candidates = self.__updateCandidates(s, us, seen)
             
             if self.debug_mode:
                 print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', s
                 print 'def_scope: ...', def_scope[-50:]
-                for use_scope in use_scopes:
+                for use_scope in us:
                     print 'use_scope: ...', use_scope[-50:]
 #                 print '\nseen:'
 #                 for (c,u),f in seen.iteritems():
@@ -108,7 +114,7 @@ class ConsistencyResolver:
                 
                 renaming_map[key] = candidate_name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(candidate_name, use_scope)] = True
                     
                     if self.debug_mode:
@@ -177,7 +183,7 @@ class ConsistencyResolver:
                 
                 renaming_map[key] = candidate_name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(candidate_name, use_scope)] = True
                     
                     if self.debug_mode:
@@ -188,7 +194,7 @@ class ConsistencyResolver:
                 (name, _def_scope) = key
                 renaming_map[key] = name
                 
-                for use_scope in use_scopes:
+                for use_scope in us:
                     seen[(name, use_scope)] = True
                     
                     if self.debug_mode:
@@ -303,6 +309,7 @@ class ConsistencyResolver:
     def computeLMRenaming(self,
                           name_candidates, 
                           name_positions,
+                          use_scopes,
                           iBuilder, 
                           lm_path):
         
@@ -718,6 +725,7 @@ class ConsistencyResolver:
     def computeFreqLenRenaming(self,
                                name_candidates, 
                                name_positions,
+                               use_scopes,
                                sorting_key):
      
 #         print("name_candidates-------------------------------------")
