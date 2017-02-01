@@ -94,6 +94,7 @@ class ConsistencyResolver:
                                         key = lambda (key, (num_lines, s)): -num_lines):
             
             val = name_candidates[key]
+            use_scopes = set(val.keys())
             
             (name, def_scope) = key
             if self.debug_mode:
@@ -104,10 +105,11 @@ class ConsistencyResolver:
             # translation elsewhere in the same scope
             unseen_candidates = set([])
             for candidate_name in s:
-                for use_scope, suggestions in val.iteritems():
-                    if not seen.has_key((candidate_name, use_scope)) \
+                for use_scope in use_scopes:
+                    if not seen.get((candidate_name, use_scope), False) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
+                        
             if self.debug_mode:
                 print 'unseen candidates:', unseen_candidates
             
@@ -310,8 +312,8 @@ class ConsistencyResolver:
             # translation elsewhere in the same scope
             unseen_candidates = set([])
             for candidate_name in s:
-                for use_scope, suggestions in val.iteritems():
-                    if not seen.has_key((candidate_name, use_scope)) \
+                for use_scope in use_scopes:
+                    if not seen.get((candidate_name, use_scope), False) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
             
