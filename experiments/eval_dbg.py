@@ -58,8 +58,8 @@ def processFile(l):
 #         except:
 #             return (js_file_path, None, 'Preprocessor fail')
         
-        print 'Preprocessor'
-        print prepro_text
+#         print 'Preprocessor'
+#         print prepro_text
         
         
         # Pass through beautifier to fix layout
@@ -67,8 +67,8 @@ def processFile(l):
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         
         
-        print '\nOK:', ok, 'ERR:', _err
-        print tmp_beautified_text
+#         print '\nOK:', ok, 'ERR:', _err
+#         print tmp_beautified_text
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -78,8 +78,8 @@ def processFile(l):
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         
-        print '\nOK:', ok, 'ERR:', _err
-        print tmp_minified_text
+#         print '\nOK:', ok, 'ERR:', _err
+#         print tmp_minified_text
         
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
@@ -94,11 +94,11 @@ def processFile(l):
         except:
             return (js_file_path, None, 'Aligner fail')
         
-        print '\nAligned clear'
-        print aligned_clear
-        print '\nAligned minified'
-        print aligned_minified
-        print
+#         print '\nAligned clear'
+#         print aligned_clear
+#         print '\nAligned minified'
+#         print aligned_minified
+#         print
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
@@ -108,9 +108,9 @@ def processFile(l):
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
-        print beautified_text
-        print
-        print minified_text
+#         print beautified_text
+#         print
+#         print minified_text
         
         # Num tokens before vs after
         try:
@@ -208,17 +208,17 @@ def processFile(l):
                                       iBuilder_ugly,
                                       scopeAnalyst)
             
-            print 'After text:'
-            print after_text
-            print
+#             print 'After text:'
+#             print after_text
+#             print
             
             (ok, beautified_after_text, _err) = clear.web_run(after_text)
             if not ok:
                 return (js_file_path, None, 'Beautifier fail')
             
-            print 'Beautified:'
-            print beautified_after_text
-            print
+#             print 'Beautified:'
+#             print beautified_after_text
+#             print
             
             # Save renamed input to disk for future inspection
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
@@ -231,12 +231,12 @@ def processFile(l):
 #             except:
 #                 return (js_file_path, None, 'Renaming fail')
             
-            print 'Lexing'
+#             print 'Lexing'
             
 #             lx = WebLexer(a_iBuilder.get_text())
             lx = WebLexer(a_iBuilder.get_text_wo_literals())
             
-            print a_iBuilder.get_text_wo_literals()
+#             print a_iBuilder.get_text_wo_literals()
             
             # Translate renamed input
             md = WebMosesDecoder(proxy)
@@ -244,8 +244,8 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
-            print '\ntranslation-------------'
-            print translation
+#             print '\ntranslation-------------'
+#             print translation
             
 #             exit()
             

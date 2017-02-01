@@ -22,7 +22,7 @@ class ConsistencyResolver:
     
     def __init__(self):
         self.CS = ConsistencyStrategies()
-        self.debug_mode = False
+        self.debug_mode = True
     
     
     def computeRenaming(self,
