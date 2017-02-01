@@ -31,8 +31,7 @@ class ConsistencyStrategies:
 
     def all(self):
         return [self.LM,
-                self.LMDROP,
-                self.FREQLEN]
+                self.LMDROP]
         
 
 import xmlrpclib

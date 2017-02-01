@@ -50,7 +50,7 @@ class PostRenamer:
         
         draft_translation = deepcopy(iBuilder.tokens)
     
-        for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+        for (name, def_scope), renaming in renaming_map.iteritems():
             for (line_num, line_idx) in name_positions[(name, def_scope)]:
                 (token_type, _token) = draft_translation[line_num][line_idx]
                 draft_translation[line_num][line_idx] = (token_type, renaming)
@@ -95,17 +95,17 @@ class PostRenamer:
 #             print k, v
 #         print
         
-        for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+        for (name, def_scope), renaming in renaming_map.iteritems():
 #             print (name, def_scope)
 #             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
             
             if not self.__is_invalid(renaming, r_strategy):
-                new_renaming_map[((name, def_scope), use_scope)] = renaming
+                new_renaming_map[(name, def_scope)] = renaming
             else:
                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
                 (old_name, _def_scope) = position_names[line_num][line_idx]
                 
-                new_renaming_map[((name, def_scope), use_scope)] = old_name
+                new_renaming_map[(name, def_scope)] = old_name
         
 #         print 'map updated---------------'
         return new_renaming_map

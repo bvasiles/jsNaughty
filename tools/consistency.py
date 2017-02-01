@@ -106,7 +106,7 @@ class ConsistencyResolver:
                 if self.debug_mode:
                     print '\n  single candidate:', candidate_name
                 
-                renaming_map[(key, use_scope)] = candidate_name
+                renaming_map[key] = candidate_name
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
@@ -175,7 +175,7 @@ class ConsistencyResolver:
                     print
                     print '   ^ selected:', candidate_name
                 
-                renaming_map[(key, use_scope)] = candidate_name
+                renaming_map[key] = candidate_name
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
@@ -186,7 +186,7 @@ class ConsistencyResolver:
 
             else:
                 (name, _def_scope) = key
-                renaming_map[(key, use_scope)] = name
+                renaming_map[key] = name
                 
                 for use_scope in use_scopes:
                     seen[(name, use_scope)] = True
@@ -350,7 +350,7 @@ class ConsistencyResolver:
                 if self.debug_mode:
                     print '\n  single candidate:', candidate_name
                 
-                renaming_map[(key, use_scope)] = candidate_name
+                renaming_map[key] = candidate_name
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
@@ -363,16 +363,16 @@ class ConsistencyResolver:
                 # Lines where (name, def_scope) appears
                 (lines, pairs) = self.__extractTempLines(name_positions[key], iBuilder)
                                 
-                draft_lines_str = self.__insertNameInTempLines(name, lines, pairs)
-                        
-                (lm_cache, untranslated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
-                
-                if self.debug_mode:
-                    print '\n  minified:', name
-                    print '\n   ^ draft lines -----'
-                    for line in draft_lines_str:
-                        print '    ', line
-                    print
+#                 draft_lines_str = self.__insertNameInTempLines(name, lines, pairs)
+#                         
+#                 (lm_cache, untranslated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
+#                 
+#                 if self.debug_mode:
+#                     print '\n  minified:', name
+#                     print '\n   ^ draft lines -----'
+#                     for line in draft_lines_str:
+#                         print '    ', line
+#                     print
                                     
                 log_probs = []
                         
@@ -407,7 +407,7 @@ class ConsistencyResolver:
                     print
                     print '   ^ selected:', candidate_name
                 
-                renaming_map[(key, use_scope)] = candidate_name
+                renaming_map[key] = candidate_name
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
@@ -418,7 +418,7 @@ class ConsistencyResolver:
 
             else:
                 (name, _def_scope) = key
-                renaming_map[(key, use_scope)] = name
+                renaming_map[key] = name
                 
                 for use_scope in use_scopes:
                     seen[(name, use_scope)] = True

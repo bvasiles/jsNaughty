@@ -25,10 +25,10 @@ class TranslationSummarizer:
             
         for key, renaming in renaming_map.iteritems():
             
-            ((name, def_scope), use_scope) = key
+            (name, def_scope) = key
                 
 #             print ' * nameDefScope2pos', (name, def_scope)
-            pos = scopeAnalyst.nameDefScope2pos[(name, def_scope)]
+            pos = scopeAnalyst.nameDefScope2pos[key]
                 
             (lin,col) = iBuilder.revFlatMat[pos]
             (tok_lin,tok_col) = iBuilder.revTokMap[(lin,col)]
@@ -37,7 +37,7 @@ class TranslationSummarizer:
                         tok_lin, tok_col, 
                         isGlobal.get((name, pos), True),
                         renaming,
-                        ','.join(name_candidates[(name, def_scope)][use_scope].keys())] )
+                        ','.join(name_candidates[(name, def_scope)].keys())] )
         
         return nc
 

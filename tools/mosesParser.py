@@ -14,8 +14,8 @@ class MosesParser:
     def parse(self, 
               moses_output, 
               iBuilder,
-              position_names,
-              scopeAnalyst=None):
+              position_names):#,
+#               scopeAnalyst=None):
         
 #         print '\nmoses output-----------------'    
         for line in moses_output.split('\n'):
@@ -60,12 +60,12 @@ class MosesParser:
                 # The original variable name
                 (name, def_scope) = line_dict[line_idx]
                 
-                if scopeAnalyst is not None:
-                    (l,c) = iBuilder.tokMap[(n, line_idx)]
-                    p = iBuilder.flatMap[(l,c)]
-                    use_scope = scopeAnalyst.name2useScope[(name, p)]
-                else:
-                    use_scope = None
+#                 if scopeAnalyst is not None:
+#                     (l,c) = iBuilder.tokMap[(n, line_idx)]
+#                     p = iBuilder.flatMap[(l,c)]
+#                     use_scope = scopeAnalyst.name2useScope[(name, p)]
+#                 else:
+#                     use_scope = None
                 
                 # The translated variable name
                 name_translation = translation_parts[line_idx]
@@ -75,9 +75,11 @@ class MosesParser:
                 # Record the line number (we will give more weight
                 # to names that appear on many translation lines)
                 self.name_candidates.setdefault(k, {})
-                self.name_candidates[k].setdefault(use_scope, {})
-                self.name_candidates[k][use_scope].setdefault(name_translation, set([]))
-                self.name_candidates[k][use_scope][name_translation].add(n)
+                self.name_candidates[k].setdefault(name_translation, set([]))
+                self.name_candidates[k][name_translation].add(n)
+#                 self.name_candidates[k].setdefault(use_scope, {})
+#                 self.name_candidates[k][use_scope].setdefault(name_translation, set([]))
+#                 self.name_candidates[k][use_scope][name_translation].add(n)
                     
         return self.name_candidates
 

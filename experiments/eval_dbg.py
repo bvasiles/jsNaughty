@@ -271,12 +271,12 @@ def processFile(l):
                 # of line numbers on which they appear.
 
                 print '\nname_candidates before ----------'
-                for key, val in name_candidates.iteritems():
-                    print key[0], key[1][-50:]#, val
-                    for use_scope, suggestions in val.iteritems():
-                        print '\t...', use_scope[-50:]
-                        for name_translation, lines in suggestions.iteritems():
-                            print '\t\t', name_translation, lines
+                for key, suggestions in name_candidates.iteritems():
+                    print key[0], key[1][-50:]
+#                     for use_scope, suggestions in val.iteritems():
+#                         print '\t...', use_scope[-50:]
+                    for name_translation, lines in suggestions.iteritems():
+                        print '\t', name_translation, lines
                     
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
@@ -287,7 +287,7 @@ def processFile(l):
                     scopeAnalyst_default = a_scopeAnalyst
                     iBuilder_default = a_iBuilder
                 else:
-                    for key_default, val in name_candidates_default.iteritems():
+                    for key_default, suggestions in name_candidates_default.iteritems():
 #                         (name_default, def_scope_default) = key_default
                         
                         pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
@@ -297,22 +297,27 @@ def processFile(l):
                         (name, def_scope) = a_position_names[line_num][line_idx]
                         key = (name, def_scope)
                         
-                        for use_scope, suggestions in val.iteritems():
-                            for name_translation, lines in suggestions.iteritems():
-#                                 key = preRen.simple_direct_map.get(key_default, key_default)
+                        for name_translation, lines in suggestions.iteritems():
+                            name_candidates.setdefault(key, {})
+                            name_candidates[key].setdefault(name_translation, set([]))
+                            name_candidates[key][name_translation].update(lines)
                                 
-                                name_candidates.setdefault(key, {})
-                                name_candidates[key].setdefault(use_scope, {})
-                                name_candidates[key][use_scope].setdefault(name_translation, set([]))
-                                name_candidates[key][use_scope][name_translation].update(lines)
+#                         for use_scope, suggestions in val.iteritems():
+#                             for name_translation, lines in suggestions.iteritems():
+# #                                 key = preRen.simple_direct_map.get(key_default, key_default)
+#                                  
+#                                 name_candidates.setdefault(key, {})
+#                                 name_candidates[key].setdefault(use_scope, {})
+#                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
+#                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
                 print '\nname_candidates after ----------'
-                for key, val in name_candidates.iteritems():
-                    print key[0], key[1][-50:]#, val
-                    for use_scope, suggestions in val.iteritems():
-                        print '\t...', use_scope[-50:]
-                        for name_translation, lines in suggestions.iteritems():
-                            print '\t\t', name_translation, lines
+                for key, suggestions in name_candidates.iteritems():
+                    print key[0], key[1][-50:]
+#                     for use_scope, suggestions in val.iteritems():
+#                         print '\t...', use_scope[-50:]
+                    for name_translation, lines in suggestions.iteritems():
+                        print '\t', name_translation, lines
                                 
                 cr = ConsistencyResolver()
                 ts = TranslationSummarizer()
@@ -332,7 +337,7 @@ def processFile(l):
                                                       a_iBuilder,
                                                       lm_path)
                     print '\ntemp_renaming_map-------------'
-                    for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
+                    for (name, def_scope), renaming in temp_renaming_map.iteritems():
                         print (name, def_scope[-50:]), renaming
                     
                     # Fall back on original names in input, if 
@@ -344,7 +349,7 @@ def processFile(l):
                                                              r_strategy)
                     
                     print '\nrenaming_map-------------'
-                    for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
+                    for (name, def_scope), renaming in renaming_map.iteritems():
                         print (name, def_scope[-50:]), renaming
                     
                     # Apply renaming map and save output for future inspection
