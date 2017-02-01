@@ -296,13 +296,14 @@ class ConsistencyResolver:
                                         key = lambda (key, (num_lines, s)): -num_lines):
             
             val = name_candidates[key]
+            use_scopes = set(val.keys())
             
             (name, def_scope) = key
             if self.debug_mode:
                 print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', s
                 print 'def_scope: ...', def_scope[-50:]
-                for use_scope in set(val.keys()):
+                for use_scope in use_scopes:
                     print 'use_scope: ...', use_scope[-50:]
             
             # The candidate pool could have shrunk if I've used this
@@ -328,9 +329,9 @@ class ConsistencyResolver:
                 
                 renaming_map[(key, use_scope)] = candidate_name
                 
-                for use_scope in val.iterkeys():
+                for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
-                    print '\t\t\t', def_scope[-50:], '<seen>', candidate_name 
+                    print '   ^ seen:', use_scope[-50:], candidate_name 
                     
 #                 seen[(candidate_name, use_scope)] = True
 #                 seen[(candidate_name, def_scope)] = True
@@ -485,9 +486,9 @@ class ConsistencyResolver:
 #                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
                 
-                for use_scope in val.iterkeys():
+                for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
-                    print '\t\t\t', def_scope[-50:], '<seen>', candidate_name
+                    print '   ^ seen:', use_scope[-50:], candidate_name
                     
 #                 seen[(candidate_name, use_scope)] = True
 #                 seen[(candidate_name, def_scope)] = True
@@ -496,9 +497,9 @@ class ConsistencyResolver:
                 (name, _def_scope) = key
                 renaming_map[(key, use_scope)] = name
                 
-                for use_scope in val.iterkeys():
+                for use_scope in use_scopes:
                     seen[(name, use_scope)] = True
-                    print '\t\t\t', def_scope[-50:], '<seen>', name
+                    print '   ^ seen:', use_scope[-50:], name
                     
 #                 seen[(name, use_scope)] = True
 #                 seen[(name, def_scope)] = True
