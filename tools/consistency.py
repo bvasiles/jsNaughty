@@ -316,16 +316,23 @@ class ConsistencyResolver:
             # translation elsewhere in the same scope
             unseen_candidates = set([])
             for candidate_name in s:
+                valid = True
                 for use_scope in use_scopes:
-                    if self.debug_mode:
-                        print (candidate_name, use_scope), \
-                            seen.get((candidate_name, use_scope), False), \
-                            not seen.get((candidate_name, use_scope), False) \
-                                and not isHash(candidate_name)
-                                
-                    if not seen.get((candidate_name, use_scope), False) \
-                            and not isHash(candidate_name):
-                        unseen_candidates.add(candidate_name)
+                    if seen.get((candidate_name, use_scope), False) \
+                            or isHash(candidate_name):
+                        valid = False
+                if valid:
+                    unseen_candidates.add(candidate_name)
+
+#                     if self.debug_mode:
+#                         print (candidate_name, use_scope), \
+#                             seen.get((candidate_name, use_scope), False), \
+#                             not seen.get((candidate_name, use_scope), False) \
+#                                 and not isHash(candidate_name)
+#                                 
+#                     if not seen.get((candidate_name, use_scope), False) \
+#                             and not isHash(candidate_name):
+                        
             
             if self.debug_mode:
                 print 'unseen candidates:', unseen_candidates
