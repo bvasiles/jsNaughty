@@ -209,11 +209,10 @@ class ConsistencyResolver:
             num_lines = len(set([line_num for (line_num, _line_idx) 
                                  in name_positions[key]]))
             
-            s = set([])
-            for suggestions in val.itervalues():
-                s.update(suggestions)
-                
-            candidate_translations[key] = (num_lines, s)
+            candidate_translations[key] = (num_lines, val.keys())
+#             s = val.keys()
+#             for suggestions in val.itervkeys():
+#                 s.update(suggestions.keys())
                 
         # Sort names by how many lines they appear 
         # on in the input, descending
