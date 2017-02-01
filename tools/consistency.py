@@ -22,9 +22,7 @@ class ConsistencyResolver:
     
     def __init__(self):
         self.CS = ConsistencyStrategies()
-#         self.renaming_map = {}
-#         self.seen = {}
-        self.debug_mode = True
+        self.debug_mode = False
     
     
     def computeRenaming(self,
@@ -83,22 +81,20 @@ class ConsistencyResolver:
             use_scopes = set(val.keys())
             
             (name, def_scope) = key
-            if self.debug_mode:
-                print '\nLM-ing', name, '...', num_lines
-                print 'candidates:', s
-                print 'def_scope: ...', def_scope[-50:]
-                for use_scope in use_scopes:
-                    print 'use_scope: ...', use_scope[-50:]
-                print '\nseen:'
-                for (c,u),f in seen.iteritems():
-                    print (c,u[-50:]), f
-                print '\nseen queries:'
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
             unseen_candidates = self.__updateCandidates(s, use_scopes, seen)
             
             if self.debug_mode:
+                print '\nLM-ing', name, '...', num_lines
+                print 'candidates:', s
+                print 'def_scope: ...', def_scope[-50:]
+                for use_scope in use_scopes:
+                    print 'use_scope: ...', use_scope[-50:]
+#                 print '\nseen:'
+#                 for (c,u),f in seen.iteritems():
+#                     print (c,u[-50:]), f
                 print 'unseen candidates:', unseen_candidates
             
             # There is no uncertainty about the translation for
@@ -123,7 +119,7 @@ class ConsistencyResolver:
                 # Lines where (name, def_scope) appears
                 (lines, pairs) = self.__extractTempLines(name_positions[key], iBuilder)
                                 
-                draft_lines_str = self.__insertNameInTempLines(name, lines, pairs)
+                draft_lines_str = [' '.join(draft_line) for draft_line in lines]
                         
                 (lm_cache, untranslated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
                 
@@ -133,6 +129,8 @@ class ConsistencyResolver:
                     for line in draft_lines_str:
                         print '    ', line
                     print
+                    for idx, lm_log_prob in untranslated_log_probs.iteritems():
+                        print '\t\t\t logprob[%d] =' % idx, untranslated_log_probs[idx]
                                     
                 log_probs = []
                         
@@ -140,21 +138,6 @@ class ConsistencyResolver:
                     
                     draft_lines_str = self.__insertNameInTempLines(candidate_name, lines, pairs)
                     
-                    (lm_cache, translated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
-                    
-                    line_log_probs = []
-                    for idx, lm_log_prob in translated_log_probs.iteritems():
-                        line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
-                        if self.debug_mode:
-                            print '\t\t\t drop =', untranslated_log_probs[idx] - lm_log_prob
-
-                    if not len(line_log_probs):
-                        lm_log_prob = -9999999999
-                    else:
-                        lm_log_prob = min(line_log_probs)
-    
-                    log_probs.append((candidate_name, lm_log_prob))
-                        
                     if self.debug_mode:
                         print '\n  candidate:', candidate_name
 
@@ -162,6 +145,22 @@ class ConsistencyResolver:
                         for line in draft_lines_str:
                             print '    ', line
                         print
+                        
+                    (lm_cache, translated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
+                    
+                    line_log_probs = []
+                    for idx, lm_log_prob in translated_log_probs.iteritems():
+                        line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
+                        
+                        if self.debug_mode:
+                            print '\t\t\t drop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
+
+                    if not len(line_log_probs):
+                        lm_log_prob = -9999999999
+                    else:
+                        lm_log_prob = min(line_log_probs)
+    
+                    log_probs.append((candidate_name, lm_log_prob))
                         
                 candidate_names = sorted(log_probs, key=lambda e:e[1])
                 candidate_name = candidate_names[0][0]
