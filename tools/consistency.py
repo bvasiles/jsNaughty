@@ -307,15 +307,22 @@ class ConsistencyResolver:
                 print 'def_scope: ...', def_scope[-50:]
                 for use_scope in use_scopes:
                     print 'use_scope: ...', use_scope[-50:]
-                print 'seen:'
+                print '\nseen:'
                 for (c,u),f in seen.iteritems():
                     print (c,u[-50:]), f
-            
+                print '\nseen queries:'
+                
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
             unseen_candidates = set([])
             for candidate_name in s:
                 for use_scope in use_scopes:
+                    if self.debug_mode:
+                        print (candidate_name, use_scope), \
+                            seen.get((candidate_name, use_scope), False), \
+                            not seen.get((candidate_name, use_scope), False) \
+                                and not isHash(candidate_name)
+                                
                     if not seen.get((candidate_name, use_scope), False) \
                             and not isHash(candidate_name):
                         unseen_candidates.add(candidate_name)
