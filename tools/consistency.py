@@ -211,7 +211,7 @@ class ConsistencyResolver:
             
             s = set([])
             for suggestions in val.itervalues():
-                s.update(suggestions.keys())
+                s.update(suggestions)
                 
             candidate_translations[key] = (num_lines, s)
                 
