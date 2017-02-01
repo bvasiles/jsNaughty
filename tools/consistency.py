@@ -338,7 +338,6 @@ class ConsistencyResolver:
                 print '\nseen:'
                 for (c,u),f in seen.iteritems():
                     print (c,u[-50:]), f
-                print '\nseen queries:'
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
