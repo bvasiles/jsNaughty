@@ -425,7 +425,7 @@ class PreRenamer:
 #         print(context)
         
     #     (name_positions, _position_names) = prepareHelpers(iBuilder, scopeAnalyst)
-        (name_positions, _position_names, _use_scopes) = prepHelpers(iBuilder, scopeAnalyst)
+        (name_positions, _position_names, use_scopes) = prepHelpers(iBuilder, scopeAnalyst)
         
         shas = {}
         name_candidates = {}
@@ -451,6 +451,7 @@ class PreRenamer:
         cs = ConsistencyResolver()
         renaming_map = cs.computeFreqLenRenaming(name_candidates,
                                               name_positions,
+                                              use_scopes,
                                               lambda e:e)
         
 #         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():

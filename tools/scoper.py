@@ -281,7 +281,7 @@ class ScopeAnalyst:
 
 
     def resolve_use_scope(self):
-        return self.nameUseScope
+        return self.name2useScope
     
     
     def resolve_path(self):
