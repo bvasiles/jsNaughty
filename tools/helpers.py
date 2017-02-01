@@ -22,7 +22,7 @@ def prepHelpers(iBuilder,
     # [line number][index within line]?
     position_names = {}
     
-    use_scopes = set([])
+    use_scopes = {}
     
     for line_num, line in enumerate(iBuilder.tokens):
         position_names.setdefault(line_num, {})
@@ -36,7 +36,7 @@ def prepHelpers(iBuilder,
                 if scopeAnalyst is not None:
                     name2defScope = scopeAnalyst.resolve_scope()
                     
-                    use_scopes.update(scopeAnalyst.nameUseScopes)
+                    use_scopes = scopeAnalyst.nameUseScopes
                     
 #                     isGlobal = scopeAnalyst.isGlobal
 #                     if not isGlobal.get((token, p), True):
