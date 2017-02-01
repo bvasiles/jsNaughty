@@ -73,229 +73,11 @@ class ConsistencyResolver:
         lm_cache = {}
         lm_query = LMQuery(lm_path=lm_path)
         
-#         print #len(name_candidates.items())
-
-        candidate_translations = {}
-     
-        for key, val in name_candidates.iteritems():
-
-            num_lines = len(set([line_num for (line_num, _line_idx) 
-                                 in name_positions[key]]))
-            
-            s = set([])
-            for use_scope, suggestions in val.iteritems():
-                s.update(suggestions.keys())
-                
-            candidate_translations[key] = (num_lines, s)
-                
         # Sort names by how many lines they appear 
         # on in the input, descending
-        for (key, (num_lines, s)) in sorted(candidate_translations.items(),
-                                        key = lambda (key, (num_lines, s)): -num_lines):
-            
-            val = name_candidates[key]
-            use_scopes = set(val.keys())
-            
-            (name, def_scope) = key
-            if self.debug_mode:
-                print '\nLM-ing', name, '...', def_scope[-50:], num_lines
-                print 'candidates:', s
-            
-            # The candidate pool could have shrunk if I've used this
-            # translation elsewhere in the same scope
-            unseen_candidates = set([])
-            for candidate_name in s:
-                for use_scope in use_scopes:
-                    if not seen.get((candidate_name, use_scope), False) \
-                            and not isHash(candidate_name):
-                        unseen_candidates.add(candidate_name)
-                        
-            if self.debug_mode:
-                print 'unseen candidates:', unseen_candidates
-            
-            # There is no uncertainty about the translation for
-            # variables that have a single candidate translation
-            if len(unseen_candidates) == 1:
-                
-                candidate_name = unseen_candidates.pop()
-                
-                if self.debug_mode:
-                    print '\n  single candidate:', candidate_name
-                
-                renaming_map[(key, use_scope)] = candidate_name
-                for use_scope in val.iterkeys():
-                    seen[(candidate_name, use_scope)] = True
-#                 seen[(candidate_name, def_scope)] = True
-                
-            elif len(unseen_candidates) > 1:
-                
-                # Line numbers of lines where (name, def_scope) appears
-                line_nums = set([num for (num,idx) in name_positions[key]])
-
-                # Where to plug in candidate name?
-                pairs = []
-                lines = []
-                
-                # Within-line indices where (name, def_scope) appears
-                for draft_line_num, line_num in enumerate(sorted(line_nums)):
-                    pairs.extend([(draft_line_num, idx) 
-                                  for (num, idx) in name_positions[key] 
-                                  if num == line_num])
-                    
-                    lines.append([token for (_token_type, token) 
-                                      in iBuilder.tokens[line_num]])
-                    
-                
-                drop = {}
-                
-                for candidate_name in [name]:
-                    
-                    if self.debug_mode:
-                        print '\n  minified:', candidate_name
-                            
-                    draft_lines = lines
-                    for (draft_line_num, idx) in pairs:
-                        draft_lines[draft_line_num][idx] = candidate_name
-                        
-                    draft_lines_str = [' '.join(draft_line) 
-                                       for draft_line in draft_lines]
-                        
-                    if self.debug_mode:
-                        print '\n   ^ draft lines -----'
-                        for line in draft_lines_str:
-                            print '    ', line
-                        print
-                                
-                    line_log_probs = []
-                    for idx, line in enumerate(draft_lines_str):
-                        
-                        (lm_ok, lm_log_prob, _lm_err) = \
-                            lm_cache.setdefault(line, lm_query.run(line))
-                        
-                        if not lm_ok:
-                            lm_log_prob = -9999999999
-                        
-                        line_log_probs.append(lm_log_prob)
-                        drop[idx] = lm_log_prob
-
-                    if not len(line_log_probs):
-                        lm_log_prob = -9999999999
-                    else:
-                        lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
-    
-                
-                log_probs = []
-                        
-                for candidate_name in unseen_candidates:
-                    if self.debug_mode:
-                        print '\n  candidate:', candidate_name
-
-                    draft_lines = lines
-                    for (draft_line_num, idx) in pairs:
-                        draft_lines[draft_line_num][idx] = candidate_name
-                        
-                    draft_lines_str = [' '.join(draft_line) 
-                                       for draft_line in draft_lines]
-                    
-                    if self.debug_mode:
-                        print '\n   ^ draft lines -----'
-                        for line in draft_lines_str:
-                            print '    ', line
-                        print
-                                
-                    line_log_probs = []
-                    for idx, line in enumerate(draft_lines_str):
-                        
-                        (lm_ok, lm_log_prob, _lm_err) = \
-                            lm_cache.setdefault(line, lm_query.run(line))
-                        
-                        if not lm_ok:
-                            lm_log_prob = -9999999999
-                            
-                        line_log_probs.append(drop[idx] - lm_log_prob)
-                        if self.debug_mode:
-                            print '\t\t\t drop =', drop[idx] - lm_log_prob
-
-                    if not len(line_log_probs):
-                        lm_log_prob = -9999999999
-                    else:
-                        lm_log_prob = min(line_log_probs)
-    
-                    log_probs.append((candidate_name, lm_log_prob))
-                        
-                        
-                candidate_names = sorted(log_probs, key=lambda e:e[1])
-                candidate_name = candidate_names[0][0]
-#                 if len(candidate_names) > 2:
-#                     print '\n   ^ 0', candidate_names[0]
-#                     print '   ^ 1', candidate_names[1]
-#                     print '   ^ 2', candidate_names[2]
-                    
-                if self.debug_mode:
-                    print '\n   ^ drop in log probs -------'                        
-                    for idx, (c, lm_log_prob) in enumerate(candidate_names):
-                        if idx == 0:
-                            print '    ', (c, lm_log_prob), ' --- this should be selected'
-                        else:
-                            print '    ', (c, lm_log_prob)
-                    print
-                            
-                    print '   ^ selected:', candidate_name
-                
-#                     print (key, use_scope), candidate_name
-                renaming_map[(key, use_scope)] = candidate_name
-                
-                for use_scope in val.iterkeys():
-                    seen[(candidate_name, use_scope)] = True
-                    
-#                 seen[(candidate_name, use_scope)] = True
-#                 seen[(candidate_name, def_scope)] = True
-            
-            else:
-                (name, _def_scope) = key
-                renaming_map[(key, use_scope)] = name
-                
-                for use_scope in val.iterkeys():
-                    seen[(name, use_scope)] = True
-                    
-#                 seen[(name, use_scope)] = True
-#                 seen[(name, def_scope)] = True
-
-        return renaming_map
-
-
-
-    def computeLMRenaming(self,
-                          name_candidates, 
-                          name_positions,
-                          iBuilder, 
-                          lm_path):
-        
-        renaming_map = {}
-        seen = {}
-        
-        lm_cache = {}
-        lm_query = LMQuery(lm_path=lm_path)
-        
-#         print #len(name_candidates.items())
-
-        candidate_translations = {}
-     
-        for key, val in name_candidates.iteritems():
-
-            num_lines = len(set([line_num for (line_num, _line_idx) 
-                                 in name_positions[key]]))
-            
-            s = set([])
-            for use_scope, suggestions in val.iteritems():
-                s.update(suggestions.keys())
-                
-            candidate_translations[key] = (num_lines, s)
-                
-        # Sort names by how many lines they appear 
-        # on in the input, descending
-        for (key, (num_lines, s)) in sorted(candidate_translations.items(),
-                                        key = lambda (key, (num_lines, s)): -num_lines):
+        for (key, (num_lines, s)) in \
+                self.__sortedCandidateTranslations(name_candidates, 
+                                                   name_positions):
             
             val = name_candidates[key]
             use_scopes = set(val.keys())
@@ -314,25 +96,7 @@ class ConsistencyResolver:
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
-            unseen_candidates = set([])
-            for candidate_name in s:
-                valid = True
-                for use_scope in use_scopes:
-                    if seen.get((candidate_name, use_scope), False) \
-                            or isHash(candidate_name):
-                        valid = False
-                if valid:
-                    unseen_candidates.add(candidate_name)
-
-#                     if self.debug_mode:
-#                         print (candidate_name, use_scope), \
-#                             seen.get((candidate_name, use_scope), False), \
-#                             not seen.get((candidate_name, use_scope), False) \
-#                                 and not isHash(candidate_name)
-#                                 
-#                     if not seen.get((candidate_name, use_scope), False) \
-#                             and not isHash(candidate_name):
-                        
+            unseen_candidates = self.__updateCandidates(s, use_scopes, seen)
             
             if self.debug_mode:
                 print 'unseen candidates:', unseen_candidates
@@ -350,146 +114,289 @@ class ConsistencyResolver:
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
-                    print '   ^ seen:', use_scope[-50:], candidate_name 
                     
-#                 seen[(candidate_name, use_scope)] = True
-#                 seen[(candidate_name, def_scope)] = True
-                
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], candidate_name 
+                    
             elif len(unseen_candidates) > 1:
                 
-                # Line numbers of lines where (name, def_scope) appears
-                line_nums = set([num for (num,idx) in name_positions[key]])
-
-#                 draft_lines = [[token for (_token_type, token) 
-#                                       in iBuilder.tokens[line_num]]
-#                                for line_num in line_nums]
-
-                # Where to plug in candidate name?
-                pairs = []
-                lines = []
-                
-                # Within-line indices where (name, def_scope) appears
-                for draft_line_num, line_num in enumerate(sorted(line_nums)):
-#                     line_idxs = [idx for (num, idx) in name_positions[key] 
-#                                     if num == line_num]
-                    pairs.extend([(draft_line_num, idx) 
-                                  for (num, idx) in name_positions[key] 
-                                  if num == line_num])
-                    
-                    lines.append([token for (_token_type, token) 
-                                      in iBuilder.tokens[line_num]])
-                    
-                
-                drop = {}
-                
-                for candidate_name in [name]:
-                    
-                    if self.debug_mode:
-                        print '\n  minified:', candidate_name
-                            
-                    draft_lines = lines
-                    for (draft_line_num, idx) in pairs:
-                        draft_lines[draft_line_num][idx] = candidate_name
-                        
-                    draft_lines_str = [' '.join(draft_line) 
-                                       for draft_line in draft_lines]
-                            
-#                     for line_num in line_nums:
-#                         draft_line = [token for (_token_type, token) 
-#                                       in iBuilder.tokens[line_num]]
-#                         for line_idx in [idx 
-#                                          for (num, idx) in name_positions[key] 
-#                                          if num == line_num]:
-#                             draft_line[line_idx] = candidate_name
-#                             
-#                         draft_lines.append(' '.join(draft_line))
-                    
-                    if self.debug_mode:
-                        print '\n   ^ draft lines -----'
-                        for line in draft_lines_str:
-                            print '    ', line
-                        print
+                # Lines where (name, def_scope) appears
+                (lines, pairs) = self.__extractTempLines(name_positions[key], iBuilder)
                                 
-                    line_log_probs = []
-                    for idx, line in enumerate(draft_lines_str):
-#                                 print ' --', line
+                draft_lines_str = self.__insertNameInTempLines(name, lines, pairs)
                         
-                        (lm_ok, lm_log_prob, _lm_err) = \
-                            lm_cache.setdefault(line, lm_query.run(line))
-                        
-                        if not lm_ok:
-                            lm_log_prob = -9999999999
-                        
-                        line_log_probs.append(lm_log_prob)
-                        drop[idx] = lm_log_prob
-
-                    if not len(line_log_probs):
-                        lm_log_prob = -9999999999
-                    else:
-                        lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+                (lm_cache, untranslated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
                 
+                if self.debug_mode:
+                    print '\n  minified:', name
+                    print '\n   ^ draft lines -----'
+                    for line in draft_lines_str:
+                        print '    ', line
+                    print
+                                    
                 log_probs = []
                         
                 for candidate_name in unseen_candidates:
-                    if self.debug_mode:
-                        print '\n  candidate:', candidate_name
-
-                    draft_lines = lines
-                    for (draft_line_num, idx) in pairs:
-                        draft_lines[draft_line_num][idx] = candidate_name
-                        
-                    draft_lines_str = [' '.join(draft_line) 
-                                       for draft_line in draft_lines]
-                            
-#                     line_nums = set([num for (num,idx) in name_positions[key]])
-#                             
-#                     draft_lines = []
-#                             
-#                     for line_num in line_nums:
-#                         draft_line = [token for (_token_type, token) 
-#                                       in iBuilder.tokens[line_num]]
-#                         for line_idx in [idx 
-#                                          for (num, idx) in name_positions[key] 
-#                                          if num == line_num]:
-#                             draft_line[line_idx] = candidate_name
-#                             
-#                         draft_lines.append(' '.join(draft_line))
-
-                    if self.debug_mode:
-                        print '\n   ^ draft lines -----'
-                        for line in draft_lines_str:
-                            print '    ', line
-                        print
-                                
+                    
+                    draft_lines_str = self.__insertNameInTempLines(candidate_name, lines, pairs)
+                    
+                    (lm_cache, translated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
+                    
                     line_log_probs = []
-                    for idx, line in enumerate(draft_lines_str):
-#                                 print ' --', line
-                        
-                        (lm_ok, lm_log_prob, _lm_err) = \
-                            lm_cache.setdefault(line, lm_query.run(line))
-                        
-                        if not lm_ok:
-                            lm_log_prob = -9999999999
-                            
-                        line_log_probs.append(lm_log_prob)
-                        
+                    for idx, lm_log_prob in translated_log_probs.iteritems():
+                        line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
                         if self.debug_mode:
-                            print '\t\t\t drop =', drop[idx] - lm_log_prob
+                            print '\t\t\t drop =', untranslated_log_probs[idx] - lm_log_prob
 
                     if not len(line_log_probs):
                         lm_log_prob = -9999999999
                     else:
-                        lm_log_prob = float(sum(line_log_probs)/len(line_log_probs))
+                        lm_log_prob = min(line_log_probs)
     
                     log_probs.append((candidate_name, lm_log_prob))
                         
+                    if self.debug_mode:
+                        print '\n  candidate:', candidate_name
+
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
+                        
+                candidate_names = sorted(log_probs, key=lambda e:e[1])
+                candidate_name = candidate_names[0][0]
+                                
+                if self.debug_mode:
+                    print '\n   ^ log probs -------'                        
+                    for idx, (c, lm_log_prob) in enumerate(candidate_names):
+                        if idx == 0:
+                            print '    ', (c, lm_log_prob), ' --- this should be selected'
+                        else:
+                            print '    ', (c, lm_log_prob)
+                    print
+                    print '   ^ selected:', candidate_name
+                
+                renaming_map[(key, use_scope)] = candidate_name
+                
+                for use_scope in use_scopes:
+                    seen[(candidate_name, use_scope)] = True
+                    
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], candidate_name
+                    
+
+            else:
+                (name, _def_scope) = key
+                renaming_map[(key, use_scope)] = name
+                
+                for use_scope in use_scopes:
+                    seen[(name, use_scope)] = True
+                    
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], name
+                    
+
+        return renaming_map
+        
+
+    
+    def __sortedCandidateTranslations(self,
+                                      name_candidates,
+                                      name_positions):
+        candidate_translations = {}
+     
+        for key, val in name_candidates.iteritems():
+
+            num_lines = len(set([line_num for (line_num, _line_idx) 
+                                 in name_positions[key]]))
+            
+            s = set([])
+            for suggestions in val.itervalues():
+                s.update(suggestions.keys())
+                
+            candidate_translations[key] = (num_lines, s)
+                
+        # Sort names by how many lines they appear 
+        # on in the input, descending
+        return sorted(candidate_translations.items(), \
+                      key = lambda (key, (num_lines, s)): -num_lines)
+        
+    
+    def __updateCandidates(self, 
+                           suggestions,
+                           use_scopes,
+                           seen):
+        unseen_candidates = set([])
+        for candidate_name in suggestions:
+            valid = True
+            for use_scope in use_scopes:
+                if seen.get((candidate_name, use_scope), False) \
+                        or isHash(candidate_name):
+                    valid = False
+            if valid:
+                unseen_candidates.add(candidate_name)
+        
+        return unseen_candidates
+    
+    
+    
+    def __extractTempLines(self,
+                           name_positions_key,
+                           iBuilder):
+        
+        # Line numbers of lines where (name, def_scope) appears
+        line_nums = set([num for (num,idx) in name_positions_key])
+
+        # Subset of input lines containing the identifier 
+        lines = []
+        
+        # Correspondence between index in the above list and 
+        # line number in original input. For example, if identifier
+        # x appeared on lines 3, 5, 8 in the original input, the 
+        # correspondence is (0, 3), (1, 5), (3, 8)
+        pairs = []
+        
+        # Within-line indices where (name, def_scope) appears
+        for draft_line_num, line_num in enumerate(sorted(line_nums)):
+            pairs.extend([(draft_line_num, idx) 
+                          for (num, idx) in name_positions_key 
+                          if num == line_num])
+            
+            lines.append([token for (_token_type, token) 
+                              in iBuilder.tokens[line_num]])
+        
+        return (lines, pairs)
+    
+    
+    def __insertNameInTempLines(self,
+                                candidate_name,
+                                lines,
+                                pairs):
+        draft_lines = lines
+        for (draft_line_num, idx) in pairs:
+            draft_lines[draft_line_num][idx] = candidate_name
+            
+        draft_lines_str = [' '.join(draft_line) 
+                           for draft_line in draft_lines]
+        
+        return draft_lines_str
+
+
+    def __lmQueryLines(self,
+                       draft_lines_str,
+                       lm_cache,
+                       lm_query):
+        
+        line_log_probs = {}
+        for idx, line in enumerate(draft_lines_str):
+            
+            (lm_ok, lm_log_prob, _lm_err) = \
+                lm_cache.setdefault(line, lm_query.run(line))
+            
+            if not lm_ok:
+                lm_log_prob = -9999999999
+            
+            line_log_probs[idx] = lm_log_prob
+        
+        return (lm_cache, line_log_probs)
+
+
+
+    def computeLMRenaming(self,
+                          name_candidates, 
+                          name_positions,
+                          iBuilder, 
+                          lm_path):
+        
+        renaming_map = {}
+        seen = {}
+        
+        lm_cache = {}
+        lm_query = LMQuery(lm_path=lm_path)
+        
+        # Sort names by how many lines they appear 
+        # on in the input, descending
+        for (key, (num_lines, s)) in \
+                self.__sortedCandidateTranslations(name_candidates, 
+                                                   name_positions):
+            
+            val = name_candidates[key]
+            use_scopes = set(val.keys())
+            
+            (name, def_scope) = key
+            if self.debug_mode:
+                print '\nLM-ing', name, '...', num_lines
+                print 'candidates:', s
+                print 'def_scope: ...', def_scope[-50:]
+                for use_scope in use_scopes:
+                    print 'use_scope: ...', use_scope[-50:]
+                print '\nseen:'
+                for (c,u),f in seen.iteritems():
+                    print (c,u[-50:]), f
+                print '\nseen queries:'
+                
+            # The candidate pool could have shrunk if I've used this
+            # translation elsewhere in the same scope
+            unseen_candidates = self.__updateCandidates(s, use_scopes, seen)
+            
+            if self.debug_mode:
+                print 'unseen candidates:', unseen_candidates
+            
+            # There is no uncertainty about the translation for
+            # variables that have a single candidate translation
+            if len(unseen_candidates) == 1:
+                
+                candidate_name = unseen_candidates.pop()
+                
+                if self.debug_mode:
+                    print '\n  single candidate:', candidate_name
+                
+                renaming_map[(key, use_scope)] = candidate_name
+                
+                for use_scope in use_scopes:
+                    seen[(candidate_name, use_scope)] = True
+                    
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], candidate_name 
+                    
+            elif len(unseen_candidates) > 1:
+                
+                # Lines where (name, def_scope) appears
+                (lines, pairs) = self.__extractTempLines(name_positions[key], iBuilder)
+                                
+                draft_lines_str = self.__insertNameInTempLines(name, lines, pairs)
+                        
+                (lm_cache, untranslated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
+                
+                if self.debug_mode:
+                    print '\n  minified:', name
+                    print '\n   ^ draft lines -----'
+                    for line in draft_lines_str:
+                        print '    ', line
+                    print
+                                    
+                log_probs = []
+                        
+                for candidate_name in unseen_candidates:
+                    
+                    draft_lines_str = self.__insertNameInTempLines(candidate_name, lines, pairs)
+                    
+                    (lm_cache, translated_log_probs) = self.__lmQueryLines(draft_lines_str, lm_cache, lm_query)
+                                
+                    lm_log_prob = float(sum(translated_log_probs.values())/len(translated_log_probs.keys()))
+    
+                    log_probs.append((candidate_name, lm_log_prob))
+                        
+                    if self.debug_mode:
+                        print '\n  candidate:', candidate_name
+
+                        print '\n   ^ draft lines -----'
+                        for line in draft_lines_str:
+                            print '    ', line
+                        print
                         
                 candidate_names = sorted(log_probs, key=lambda e:-e[1])
                 candidate_name = candidate_names[0][0]
-#                 if len(candidate_names) > 2:
-#                     print '\n   ^ 0', candidate_names[0]
-#                     print '   ^ 1', candidate_names[1]
-#                     print '   ^ 2', candidate_names[2]
                     
                 if self.debug_mode:
                     print '\n   ^ log probs -------'                        
@@ -499,31 +406,31 @@ class ConsistencyResolver:
                         else:
                             print '    ', (c, lm_log_prob)
                     print
-                            
                     print '   ^ selected:', candidate_name
                 
-#                     print (key, use_scope), candidate_name
                 renaming_map[(key, use_scope)] = candidate_name
                 
                 for use_scope in use_scopes:
                     seen[(candidate_name, use_scope)] = True
-                    print '   ^ seen:', use_scope[-50:], candidate_name
                     
-#                 seen[(candidate_name, use_scope)] = True
-#                 seen[(candidate_name, def_scope)] = True
-            
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], candidate_name
+                    
+
             else:
                 (name, _def_scope) = key
                 renaming_map[(key, use_scope)] = name
                 
                 for use_scope in use_scopes:
                     seen[(name, use_scope)] = True
-                    print '   ^ seen:', use_scope[-50:], name
                     
-#                 seen[(name, use_scope)] = True
-#                 seen[(name, def_scope)] = True
+                    if self.debug_mode:
+                        print '   ^ seen:', use_scope[-50:], name
+                    
 
         return renaming_map
+
+
                 
 #                 
 #                 is_valid = True
