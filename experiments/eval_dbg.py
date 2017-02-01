@@ -335,6 +335,7 @@ def processFile(l):
                     temp_renaming_map = cr.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
+                                                      a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path)
                     print '\ntemp_renaming_map-------------'
