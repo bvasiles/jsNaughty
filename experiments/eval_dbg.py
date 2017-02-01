@@ -262,8 +262,7 @@ def processFile(l):
                 
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
-                                           a_position_names,
-                                           a_scopeAnalyst)
+                                           a_position_names)
                 # name_candidates is a dictionary of dictionaries: 
                 # keys are (name, None) (if scopeAnalyst=None) or 
                 # (name, def_scope) tuples (otherwise); 
