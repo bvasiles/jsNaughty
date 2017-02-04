@@ -215,17 +215,17 @@ def processFile(l):
                                       iBuilder_ugly,
                                       scopeAnalyst)
             
-            print 'After text:'
-            print after_text
-            print
+#             print 'After text:'
+#             print after_text
+#             print
             
             (ok, beautified_after_text, _err) = clear.web_run(after_text)
             if not ok:
                 return (js_file_path, None, 'Beautifier fail')
             
-            print 'Beautified:'
-            print beautified_after_text
-            print
+#             print 'Beautified:'
+#             print beautified_after_text
+#             print
             
             # Save renamed input to disk for future inspection
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
@@ -366,9 +366,9 @@ def processFile(l):
                                                          a_name_positions, 
                                                          renaming_map)
                     
-                    print '\nrenamed_text--------------'
-                    print renamed_text
-                    print
+#                     print '\nrenamed_text--------------'
+#                     print renamed_text
+#                     print
                     
                     (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
                     if not ok:

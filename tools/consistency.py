@@ -59,9 +59,9 @@ class ConsistencyResolver:
                 print 'def_scope: ...', def_scope[-50:]
                 for use_scope in use_scopes:
                     print 'use_scope: ...', use_scope[-50:]
-                print '\nseen:'
-                for (c,u),f in self.seen.iteritems():
-                    print (c,u[-50:]), f
+#                 print '\nseen:'
+#                 for (c,u),f in self.seen.iteritems():
+#                     print (c,u[-50:]), f
                 
             # The candidate pool could have shrunk if I've used this
             # translation elsewhere in the same scope
