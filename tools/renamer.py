@@ -448,7 +448,7 @@ class PreRenamer:
     
 #             print (token, def_scope)
     
-        cs = ConsistencyResolver(debug=True)
+        cs = ConsistencyResolver(debug_mode=True)
         renaming_map = cs.computeRenaming(name_candidates, 
                                           name_positions, 
                                           use_scopes, 
