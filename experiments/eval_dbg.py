@@ -8,14 +8,20 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
+
 import multiprocessing
-from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
-                    prepHelpers, TranslationSummarizer, WebMosesDecoder, \
-                    WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
-                    MosesParser, ConsistencyResolver, PreRenamer, \
-                    PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy, Aligner
+from unicodeManager import UnicodeReader, UnicodeWriter
+from tools import Uglifier, Beautifier
+from tools import UnuglifyJS
+from tools import Aligner, IndexBuilder, WebLexer
+from tools import PreRenamer, PostRenamer
+from tools import MosesProxy, WebMosesDecoder, MosesParser
+from tools import WebScopeAnalyst
+from tools import TranslationSummarizer
+from tools import prepHelpers, WebLMPreprocessor
+from tools import RenamingStrategies, ConsistencyStrategies
+
+from consistencyController import ConsistencyController
 
 from folderManager import Folder
 
@@ -320,7 +326,7 @@ def processFile(l):
                     for name_translation, lines in suggestions.iteritems():
                         print '\t', name_translation, lines
                                 
-                cr = ConsistencyResolver()
+                cc = ConsistencyController()
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
@@ -332,7 +338,7 @@ def processFile(l):
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
-                    temp_renaming_map = cr.computeRenaming(c_strategy,
+                    temp_renaming_map = cc.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
                                                       a_use_scopes,

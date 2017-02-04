@@ -448,11 +448,11 @@ class PreRenamer:
     
 #             print (token, def_scope)
     
-        cs = ConsistencyResolver()
-        renaming_map = cs.computeFreqLenRenaming(name_candidates,
-                                              name_positions,
-                                              use_scopes,
-                                              lambda e:e)
+        cs = ConsistencyResolver(debug=True)
+        renaming_map = cs.computeRenaming(name_candidates, 
+                                          name_positions, 
+                                          use_scopes, 
+                                          iBuilder)
         
 #         for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
 #             self.simple_direct_map[(name, def_scope)] = (renaming, def_scope)
