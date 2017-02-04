@@ -552,7 +552,7 @@ class PreRenamer:
         draft_translation = deepcopy(iBuilder.tokens)
 #         draft_translation = self.strip_literals(iBuilder)
         
-        for ((name, def_scope), _use_scope), renaming in renaming_map.iteritems():
+        for (name, def_scope), renaming in renaming_map.iteritems():
             for (line_num, line_idx) in name_positions[(name, def_scope)]:
                 (token_type, _name) = draft_translation[line_num][line_idx]
                 draft_translation[line_num][line_idx] = (token_type, renaming)

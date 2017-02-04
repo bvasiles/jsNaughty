@@ -251,11 +251,11 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
-            print '\ntranslation-------------'
-            print translation
+#             print '\ntranslation-------------'
+#             print translation
             
-            if r_strategy == RS.HASH_ONE:
-                exit()
+#             if r_strategy == RS.HASH_ONE:
+#                 exit()
             
             (a_name_positions, 
              a_position_names,
