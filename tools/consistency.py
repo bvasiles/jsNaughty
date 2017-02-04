@@ -336,8 +336,9 @@ class ConsistencyResolver:
 class LMConsistencyResolver(ConsistencyResolver):
     
     def __init__(self, 
+                 debug_mode,
                  lm_path):
-        ConsistencyResolver.__init__(self)
+        ConsistencyResolver.__init__(self, debug_mode=debug_mode)
         
         self.lm_cache = {}
         self.lm_query = LMQuery(lm_path=lm_path)
