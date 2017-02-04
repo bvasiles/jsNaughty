@@ -58,7 +58,8 @@ class MosesParser:
             for line_idx in line_dict.keys():
                 
                 # The original variable name
-                (name, def_scope) = line_dict[line_idx]
+                # line_dict returns (name, def_scope)
+                k = line_dict[line_idx] 
                 
 #                 if scopeAnalyst is not None:
 #                     (l,c) = iBuilder.tokMap[(n, line_idx)]
@@ -70,8 +71,6 @@ class MosesParser:
                 # The translated variable name
                 name_translation = translation_parts[line_idx]
     
-                k = (name, def_scope)
-                
                 # Record the line number (we may give more weight
                 # to names that appear on many translation lines)
                 self.name_candidates.setdefault(k, {})

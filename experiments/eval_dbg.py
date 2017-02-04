@@ -251,8 +251,8 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
-#             print '\ntranslation-------------'
-#             print translation
+            print '\ntranslation-------------'
+            print translation
             
 #             exit()
             
