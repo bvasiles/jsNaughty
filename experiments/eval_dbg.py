@@ -365,6 +365,11 @@ def processFile(l):
                     renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                          a_name_positions, 
                                                          renaming_map)
+                    
+                    print
+                    print renamed_text
+                    print
+                    
                     (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
                     if not ok:
                         return (js_file_path, None, 'Beautifier fail')
