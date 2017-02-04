@@ -254,7 +254,8 @@ def processFile(l):
             print '\ntranslation-------------'
             print translation
             
-            exit()
+            if r_strategy == RS.HASH_ONE:
+                exit()
             
             (a_name_positions, 
              a_position_names,
