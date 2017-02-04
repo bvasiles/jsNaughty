@@ -437,14 +437,16 @@ class PreRenamer:
             
             name_candidates.setdefault((token, def_scope), {})
             
-            for (line_num, line_idx) in name_positions[(token, def_scope)]:
-                (l,c) = iBuilder.tokMap[(line_num, line_idx)]
-                p = iBuilder.flatMap[(l,c)]
-                use_scope = scopeAnalyst.name2useScope[(token, p)]
+            name_candidates[(token, def_scope)].setdefault(renaming, set([]))
+            name_candidates[(token, def_scope)][renaming].add(1)
             
-                name_candidates[(token, def_scope)].setdefault(use_scope, {})
-                name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
-                name_candidates[(token, def_scope)][use_scope][renaming].add(1)
+#             for (line_num, line_idx) in name_positions[(token, def_scope)]:
+#                 (l,c) = iBuilder.tokMap[(line_num, line_idx)]
+#                 p = iBuilder.flatMap[(l,c)]
+#                 use_scope = scopeAnalyst.name2useScope[(token, p)]
+#                 name_candidates[(token, def_scope)].setdefault(use_scope, {})
+#                 name_candidates[(token, def_scope)][use_scope].setdefault(renaming, set([]))
+#                 name_candidates[(token, def_scope)][use_scope][renaming].add(1)
     
 #             print (token, def_scope)
     
