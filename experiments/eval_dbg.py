@@ -366,7 +366,7 @@ def processFile(l):
                                                          a_name_positions, 
                                                          renaming_map)
                     
-                    print
+                    print '\nrenamed_text--------------'
                     print renamed_text
                     print
                     

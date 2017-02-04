@@ -20,8 +20,7 @@ class RenamingStrategies:
 #                 self.HASH_ONE,
 #                 self.HASH_TWO]
     
-        return [self.NONE, 
-                self.HASH_ONE]
+        return [self.HASH_ONE]
     
 class ConsistencyStrategies:
     LM = 'lm'
