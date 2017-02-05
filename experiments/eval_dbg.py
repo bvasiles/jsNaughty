@@ -333,7 +333,7 @@ def processFile(js_file_path):
 #                     for name_translation, lines in suggestions.iteritems():
 #                         print '\t', name_translation, lines
                                 
-                cc = ConsistencyController(debug_mode=False)
+                cc = ConsistencyController(debug_mode=True)
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
