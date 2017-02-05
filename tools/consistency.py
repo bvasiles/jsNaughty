@@ -453,10 +453,16 @@ class LMAvgConsistencyResolver(LMConsistencyResolver):
             draft_lines_str = self._insertNameInTempLines(candidate_name, 
                                                            lines, 
                                                            pairs)
-             
+            
+            if self.debug_mode:
+                print '\n  candidate:', candidate_name
                  
             translated_log_probs = self._lmQueryLines(draft_lines_str)
-                         
+            
+            if self.debug_mode:
+                for idx, lm_log_prob in translated_log_probs.iteritems():
+                    print '\t\t prob[%d] =' % idx, lm_log_prob
+            
             lm_log_prob = float(sum(translated_log_probs.values())/len(translated_log_probs.keys()))
         
             log_probs.append((candidate_name, lm_log_prob))
@@ -519,8 +525,8 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
         if self.debug_mode:
             print '\n  minified:', name
             print '\n   ^ draft lines -----'
-            for line in draft_lines_str:
-                print '    ', line
+            for idx, line in enumerate(draft_lines_str):
+                print '    ', line, untranslated_log_probs[idx]
             print
     
         log_probs = []
@@ -546,7 +552,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
                 line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
                 
                 if self.debug_mode:
-                    print '\t\t drop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
+                    print '\t\t prob[%d] =' % idx, lm_log_prob, '\tdrop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
             
             if not len(line_log_probs):
                 lm_log_prob = -9999999999
