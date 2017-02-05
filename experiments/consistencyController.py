@@ -23,7 +23,6 @@ class ConsistencyController:
                  debug_mode):
         self.CS = ConsistencyStrategies()
         self.debug_mode = debug_mode
-        self.lm_cache = {}
     
     
     def computeRenaming(self,
@@ -32,18 +31,15 @@ class ConsistencyController:
                         name_positions,
                         use_scopes,
                         iBuilder=None,
-                        lm_path=None,
-                        lm_cache=None):
+                        lm_path=None):
         
         if strategy == self.CS.LM:
             worker = LMAvgConsistencyResolver(self.debug_mode,
-                                              lm_path,
-                                              self.lm_cache)
+                                              lm_path)
 
         elif strategy == self.CS.LMDROP:
             worker = LMDropConsistencyResolver(self.debug_mode,
-                                               lm_path,
-                                               self.lm_cache)
+                                               lm_path)
             
         elif strategy == self.CS.FREQLEN:
             worker = FreqLenConsistencyResolver(self.debug_mode)
@@ -53,13 +49,8 @@ class ConsistencyController:
             
         else:
             worker = ConsistencyResolver(self.debug_mode)
-            
-        (cache, result) = worker.computeRenaming(name_candidates, 
-                                                  name_positions,
-                                                  use_scopes,
-                                                  iBuilder)
         
-        self.lm_cache = cache
-        
-        return result
-
+        return worker.computeRenaming(name_candidates, 
+                                      name_positions,
+                                      use_scopes,
+                                      iBuilder)
