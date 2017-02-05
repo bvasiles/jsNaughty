@@ -9,13 +9,18 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 import multiprocessing
-from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Uglifier, IndexBuilder, Beautifier, UnuglifyJS, \
-                    prepHelpers, TranslationSummarizer, WebMosesDecoder, \
-                    WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
-                    MosesParser, ConsistencyResolver, PreRenamer, \
-                    PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy, Aligner
+from unicodeManager import UnicodeReader, UnicodeWriter
+from tools import Uglifier, Beautifier
+from tools import UnuglifyJS
+from tools import Aligner, IndexBuilder, WebLexer
+from tools import PreRenamer, PostRenamer
+from tools import MosesProxy, WebMosesDecoder, MosesParser
+from tools import WebScopeAnalyst
+from tools import TranslationSummarizer
+from tools import prepHelpers, WebLMPreprocessor
+from tools import RenamingStrategies, ConsistencyStrategies
+
+from consistencyController import ConsistencyController
 
 from folderManager import Folder
 
@@ -24,8 +29,6 @@ def processFile(l):
     
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
-    
-#     print js_file_path
     
     temp_files = {'orig': '%s.js' % base_name,
                   'minified': '%s.u.js' % base_name,
@@ -45,20 +48,15 @@ def processFile(l):
     
     candidates = []
     
-#     if True:
     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
-#         if True:
         try:
             prepro = WebLMPreprocessor(js_text)
             prepro_text = str(prepro)
         except:
             return (js_file_path, None, 'Preprocessor fail')
-        
-#         print 'Preprocessor'
-        
         
         # Pass through beautifier to fix layout
         clear = Beautifier()
@@ -117,8 +115,6 @@ def processFile(l):
         except:
             return (js_file_path, None, 'IndexBuilder fail')
         
-#         print 'Writing'
-        
         with open(temp_files['orig'], 'w') as f:
             f.write(beautified_text)
             
@@ -151,8 +147,6 @@ def processFile(l):
         except:
             return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
         
-#         print 'n2p'
-        
         # Save some translation stats to compare different methods
         ts = TranslationSummarizer()
         candidates += [['n2p', ''] + x 
@@ -169,17 +163,12 @@ def processFile(l):
             return (js_file_path, None, 'ScopeAnalyst fail')
          
         (_name_positions, \
-         position_names) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+         position_names,
+         _use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
           
-#         print 'Helpers'
-
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
             
-#             print r_strategy
-        
-#             try:
-#             if True:
             # Rename input prior to translation
             preRen = PreRenamer()
             after_text = preRen.rename(r_strategy, 
@@ -190,7 +179,6 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Beautifier fail')
             
-#                 print beautified_after_text
             # Save renamed input to disk for future inspection
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
                 f.write(beautified_after_text)
@@ -199,15 +187,9 @@ def processFile(l):
             a_iBuilder = IndexBuilder(a_lexer.tokenList)
             a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
                 
-#             except:
-#                 return (js_file_path, None, 'Renaming fail')
-            
-#             print 'Lexing'
             
 #             lx = WebLexer(a_iBuilder.get_text())
             lx = WebLexer(a_iBuilder.get_text_wo_literals())
-            
-#             print a_iBuilder.get_text_wo_literals()
             
             # Translate renamed input
             md = WebMosesDecoder(proxy)
@@ -215,13 +197,9 @@ def processFile(l):
             if not ok:
                 return (js_file_path, None, 'Moses translation fail')
             
-#             print '\ntranslation-------------'
-#             print translation
-            
-#             exit()
-            
             (a_name_positions, 
-             a_position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+             a_position_names,
+             a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
 
             nc = []
              
@@ -229,26 +207,14 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
-#                 print '\nr_strategy-----------', r_strategy
-                
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
-                                           a_position_names,
-                                           a_scopeAnalyst)
+                                           a_position_names)
                 # name_candidates is a dictionary of dictionaries: 
-                # keys are (name, None) (if scopeAnalyst=None) or 
-                # (name, def_scope) tuples (otherwise); 
+                # keys are (name, def_scope) tuples; 
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-#                 print '\nname_candidates before ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key[0], key[1][-50:]#, val
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-#                         for name_translation, lines in suggestions.iteritems():
-#                             print '\t\t', name_translation, lines
-                    
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
                 # if the translation is empty
@@ -258,7 +224,7 @@ def processFile(l):
                     scopeAnalyst_default = a_scopeAnalyst
                     iBuilder_default = a_iBuilder
                 else:
-                    for key_default, val in name_candidates_default.iteritems():
+                    for key_default, suggestions in name_candidates_default.iteritems():
 #                         (name_default, def_scope_default) = key_default
                         
                         pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
@@ -268,24 +234,13 @@ def processFile(l):
                         (name, def_scope) = a_position_names[line_num][line_idx]
                         key = (name, def_scope)
                         
-                        for use_scope, suggestions in val.iteritems():
-                            for name_translation, lines in suggestions.iteritems():
-#                                 key = preRen.simple_direct_map.get(key_default, key_default)
-                                
+                        for name_translation, lines in suggestions.iteritems():
                                 name_candidates.setdefault(key, {})
-                                name_candidates[key].setdefault(use_scope, {})
-                                name_candidates[key][use_scope].setdefault(name_translation, set([]))
-                                name_candidates[key][use_scope][name_translation].update(lines)
+                                name_candidates[key].setdefault(name_translation, set([]))
+                                name_candidates[key][name_translation].update(lines)
+                
                                 
-#                 print '\nname_candidates after ----------'
-#                 for key, val in name_candidates.iteritems():
-#                     print key[0], key[1][-50:]#, val
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-#                         for name_translation, lines in suggestions.iteritems():
-#                             print '\t\t', name_translation, lines
-                                
-                cr = ConsistencyResolver()
+                cc = ConsistencyController(debug_mode=False)
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
@@ -293,18 +248,14 @@ def processFile(l):
                 # Try different strategies to resolve inconsistencies, if any
                 for c_strategy in CS.all():
                     
-#                     print '\nc_strategy----------', c_strategy
-                    
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
-                    temp_renaming_map = cr.computeRenaming(c_strategy,
+                    temp_renaming_map = cc.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
+                                                      a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path)
-#                     print '\ntemp_renaming_map-------------'
-#                     for ((name, def_scope), use_scope), renaming in temp_renaming_map.iteritems():
-#                         print (name, def_scope[-50:]), renaming
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
@@ -314,14 +265,11 @@ def processFile(l):
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-#                     print '\nrenaming_map-------------'
-#                     for ((name, def_scope), use_scope), renaming in renaming_map.iteritems():
-#                         print (name, def_scope[-50:]), renaming
-                    
                     # Apply renaming map and save output for future inspection
                     renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                          a_name_positions, 
                                                          renaming_map)
+
                     (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
                     if not ok:
                         return (js_file_path, None, 'Beautifier fail')
@@ -380,8 +328,6 @@ if __name__=="__main__":
     
         pool = multiprocessing.Pool(processes=num_threads)
         
-#         result = processFile(reader.next())
-#         if True:
         for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
