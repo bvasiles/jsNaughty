@@ -29,9 +29,9 @@ from folderManager import Folder
 dbg = False
 
 
-def processFile(l):
+def processFile(js_file_path):
     
-    js_file_path = l[0]
+#     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
     if dbg:
@@ -57,7 +57,8 @@ def processFile(l):
     
     if True:
 #     try:
-        js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
+#         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
+        js_text = open(js_file_path, 'r').read()
         
         # Strip comments, replace literals, etc
 #         if True:
@@ -409,14 +410,15 @@ def processFile(l):
 
 if __name__=="__main__":
 
-    corpus_root = os.path.abspath(sys.argv[1])
-    testing_sample_path = os.path.abspath(sys.argv[2])
+#     corpus_root = os.path.abspath(sys.argv[1])
+#     testing_sample_path = os.path.abspath(sys.argv[2])
     
-    output_path = Folder(sys.argv[3]).create()
-    num_threads = int(sys.argv[4])
-    lm_path = os.path.abspath(sys.argv[5])
+    test_file = os.path.abspath(sys.argv[1])
+    output_path = Folder(sys.argv[2]).create()
+    num_threads = int(sys.argv[3])
+    lm_path = os.path.abspath(sys.argv[4])
     
-    flog = 'log_test_' + os.path.basename(corpus_root)
+    flog = 'log_test'
     c_path = 'candidates.csv'
     
     with open(os.path.join(output_path, flog), 'w') as g, \
@@ -436,7 +438,7 @@ if __name__=="__main__":
 #         pool = multiprocessing.Pool(processes=num_threads)
         
 #         result = processFile(reader.next())
-    result = processFile(testing_sample_path)
+    result = processFile(test_file)
     if True:
 #         for result in pool.imap_unordered(processFile, reader):
     
