@@ -429,30 +429,31 @@ if __name__=="__main__":
     proxies = MosesProxy().getProxies() 
     
     
-    with open(testing_sample_path, 'r') as f:
+#     with open(testing_sample_path, 'r') as f:
     
-        reader = UnicodeReader(f)
+#         reader = UnicodeReader(f)
     
 #         pool = multiprocessing.Pool(processes=num_threads)
         
-        result = processFile(reader.next())
-        if True:
+#         result = processFile(reader.next())
+    result = processFile(testing_sample_path)
+    if True:
 #         for result in pool.imap_unordered(processFile, reader):
-        
-            with open(os.path.join(output_path, flog), 'a') as g, \
-                    open(os.path.join(output_path, c_path), 'a') as c:
-                writer = UnicodeWriter(g)
-                cw = UnicodeWriter(c)
-         
-                if result[1] is not None:
-                    js_file_path, ok, candidates = result
-                    
-                    writer.writerow([js_file_path, ok])
-                    
-                    for r in candidates:
-                        cw.writerow([js_file_path]+
-                                    [str(x).replace("\"","") for x in r])
-                else:
-                    writer.writerow([result[0], result[2]])
+    
+        with open(os.path.join(output_path, flog), 'a') as g, \
+                open(os.path.join(output_path, c_path), 'a') as c:
+            writer = UnicodeWriter(g)
+            cw = UnicodeWriter(c)
+     
+            if result[1] is not None:
+                js_file_path, ok, candidates = result
+                
+                writer.writerow([js_file_path, ok])
+                
+                for r in candidates:
+                    cw.writerow([js_file_path]+
+                                [str(x).replace("\"","") for x in r])
+            else:
+                writer.writerow([result[0], result[2]])
              
 
