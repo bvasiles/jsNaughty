@@ -26,7 +26,7 @@ from consistencyController import ConsistencyController
 from folderManager import Folder
 
 
-dbg = False
+dbg = True
 
 
 def processFile(js_file_path):
