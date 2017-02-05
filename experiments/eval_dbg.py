@@ -26,13 +26,16 @@ from consistencyController import ConsistencyController
 from folderManager import Folder
 
 
+dbg = False
+
 
 def processFile(l):
     
     js_file_path = l[0]
     base_name = os.path.splitext(os.path.basename(js_file_path))[0]
     
-    print js_file_path
+    if dbg:
+        print js_file_path
     
     temp_files = {'orig': '%s.js' % base_name,
                   'minified': '%s.u.js' % base_name,
@@ -203,9 +206,10 @@ def processFile(l):
         # Try different renaming strategies (hash, etc)
         for r_strategy, proxy in proxies:
             
-            print '\n====================='
-            print r_strategy
-            print '=====================\n'
+            if dbg:
+                print '\n====================='
+                print r_strategy
+                print '=====================\n'
         
 #             try:
 #             if True:
@@ -267,7 +271,8 @@ def processFile(l):
                 # Parse moses output
                 mp = MosesParser()
                 
-                print '\nr_strategy-----------', r_strategy
+                if dbg:
+                    print '\nr_strategy-----------', r_strategy
                 
                 name_candidates = mp.parse(translation,
                                            a_iBuilder,
@@ -327,7 +332,7 @@ def processFile(l):
 #                     for name_translation, lines in suggestions.iteritems():
 #                         print '\t', name_translation, lines
                                 
-                cc = ConsistencyController(debug_mode=True)
+                cc = ConsistencyController(debug_mode=False)
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
@@ -335,7 +340,8 @@ def processFile(l):
                 # Try different strategies to resolve inconsistencies, if any
                 for c_strategy in CS.all():
                     
-                    print '\nc_strategy----------', c_strategy
+                    if dbg:
+                        print '\nc_strategy----------', c_strategy
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
@@ -357,9 +363,10 @@ def processFile(l):
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
-                    print '\nrenaming_map-------------'
-                    for (name, def_scope), renaming in renaming_map.iteritems():
-                        print (name, def_scope[-50:]), renaming
+                    if dbg:
+                        print '\nrenaming_map-------------'
+                        for (name, def_scope), renaming in renaming_map.iteritems():
+                            print (name, def_scope[-50:]), renaming
                     
                     # Apply renaming map and save output for future inspection
                     renamed_text = postRen.applyRenaming(a_iBuilder, 

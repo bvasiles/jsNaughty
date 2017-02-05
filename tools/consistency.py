@@ -430,19 +430,23 @@ class LMAvgConsistencyResolver(LMConsistencyResolver):
         
         log_probs = []
                  
+        if self.debug_mode:
+            (name, def_scope) = key
+            draft_lines_str = self._insertNameInTempLines(name, 
+                                                           lines, 
+                                                           pairs)
+            
+            print '\n   ^ draft lines -----'
+            for line in draft_lines_str:
+                print '    ', line
+            print
+            
         for candidate_name in unseen_candidates:
              
             draft_lines_str = self._insertNameInTempLines(candidate_name, 
                                                            lines, 
                                                            pairs)
              
-            if self.debug_mode:
-                print '\n  candidate:', candidate_name
-        
-                print '\n   ^ draft lines -----'
-                for line in draft_lines_str:
-                    print '    ', line
-                print
                  
             translated_log_probs = self._lmQueryLines(draft_lines_str)
                          
@@ -523,10 +527,10 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
             if self.debug_mode:
                 print '\n  candidate:', candidate_name
         
-                print '\n   ^ draft lines -----'
-                for line in draft_lines_str:
-                    print '    ', line
-                print
+#                 print '\n   ^ draft lines -----'
+#                 for line in draft_lines_str:
+#                     print '    ', line
+#                 print
                 
             translated_log_probs = self._lmQueryLines(draft_lines_str)
                          
@@ -535,7 +539,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
                 line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
                 
                 if self.debug_mode:
-                    print '\t\t\t drop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
+                    print '\t\t drop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
             
             if not len(line_log_probs):
                 lm_log_prob = -9999999999
