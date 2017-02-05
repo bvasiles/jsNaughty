@@ -32,7 +32,8 @@ class ConsistencyController:
                         name_positions,
                         use_scopes,
                         iBuilder=None,
-                        lm_path=None):
+                        lm_path=None,
+                        lm_cache=None):
         
         if strategy == self.CS.LM:
             worker = LMAvgConsistencyResolver(self.debug_mode,
