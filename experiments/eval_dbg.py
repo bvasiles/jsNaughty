@@ -327,7 +327,7 @@ def processFile(l):
                     for name_translation, lines in suggestions.iteritems():
                         print '\t', name_translation, lines
                                 
-                cc = ConsistencyController(debug_mode=True)
+                cc = ConsistencyController(debug_mode=False)
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently

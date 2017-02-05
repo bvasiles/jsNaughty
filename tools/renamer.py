@@ -450,8 +450,8 @@ class PreRenamer:
     
 #             print (token, def_scope)
     
-        cs = ConsistencyResolver(debug_mode=True)
-        (_cache, renaming_map) = cs.computeRenaming(name_candidates, 
+        cs = ConsistencyResolver(debug_mode=False)
+        renaming_map = cs.computeRenaming(name_candidates, 
                                           name_positions, 
                                           use_scopes, 
                                           iBuilder)

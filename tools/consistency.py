@@ -4,14 +4,6 @@ Created on Dec 22, 2016
 @author: Bogdan Vasilescu
 '''
 
-# import os
-# import sys
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
-#                                              os.path.pardir)))
-# from config import ConsistencyStrategies
-# from renamer import PostRenamer
-
-
 from lmQuery import LMQuery
 
 
