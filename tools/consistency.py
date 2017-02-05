@@ -146,6 +146,9 @@ class ConsistencyResolver:
                       key = lambda (key, (num_lines, s)): -num_lines)
     
     
+    def _isInvalid(self,
+                   candidate_name):
+        return False
         
     def _updateCandidates(self, 
                            suggestions,
@@ -169,7 +172,7 @@ class ConsistencyResolver:
             valid = True
             for use_scope in use_scopes:
                 if self.seen.get((candidate_name, use_scope), False) \
-                        or self._isHash(candidate_name):
+                        or self._isInvalid(candidate_name):
                     valid = False
             if valid:
                 unseen_candidates.add(candidate_name)
@@ -348,6 +351,10 @@ class LMConsistencyResolver(ConsistencyResolver):
         self.lm_cache = {}
         self.lm_query = LMQuery(lm_path=lm_path)
         
+    
+    def _isInvalid(self,
+                   candidate_name):
+        return self._isHash(candidate_name)
 
         
     def _lmQueryLines(self,
@@ -431,7 +438,7 @@ class LMAvgConsistencyResolver(LMConsistencyResolver):
         log_probs = []
                  
         if self.debug_mode:
-            (name, def_scope) = key
+            (name, _def_scope) = key
             draft_lines_str = self._insertNameInTempLines(name, 
                                                            lines, 
                                                            pairs)
@@ -563,6 +570,10 @@ class FreqLenConsistencyResolver(ConsistencyResolver):
         self.sorting_key = lambda e:(-e[1],-len(e[0]))
     
     
+    def _isInvalid(self,
+                   candidate_name):
+        return self._isHash(candidate_name)
+    
 
 class LenConsistencyResolver(ConsistencyResolver):
     
@@ -572,4 +583,10 @@ class LenConsistencyResolver(ConsistencyResolver):
         
         # Sorts candidates by length
         self.sorting_key = lambda e:-len(e[0])
+    
+    
+    def _isInvalid(self,
+                   candidate_name):
+        return self._isHash(candidate_name)
+    
     

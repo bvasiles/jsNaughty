@@ -430,13 +430,14 @@ class PreRenamer:
         shas = {}
         name_candidates = {}
         
-#         print("name_candidates-------------------------------------")
+#         print("\nrenaming-name-candidates-------------------------------------")
         for (token, def_scope), context_tokens in context.iteritems():
             concat_str = ''.join(context_tokens)
             renaming = shas.setdefault(concat_str, self.__sha(concat_str, debug))
             
-            name_candidates.setdefault((token, def_scope), {})
+#             print (token, def_scope[-50:]), renaming
             
+            name_candidates.setdefault((token, def_scope), {})
             name_candidates[(token, def_scope)].setdefault(renaming, set([]))
             name_candidates[(token, def_scope)][renaming].add(1)
             
