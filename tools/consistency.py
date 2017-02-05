@@ -48,9 +48,9 @@ class ConsistencyResolver:
             if self.debug_mode:
                 print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', suggestions
-                print 'def_scope: ...', def_scope[-50:]
-                for use_scope in use_scopes:
-                    print 'use_scope: ...', use_scope[-50:]
+#                 print 'def_scope: ...', def_scope[-50:]
+#                 for use_scope in use_scopes:
+#                     print 'use_scope: ...', use_scope[-50:]
 #                 print '\nseen:'
 #                 for (c,u),f in self.seen.iteritems():
 #                     print (c,u[-50:]), f

@@ -278,13 +278,13 @@ def processFile(l):
                 # values are suggested translations with the sets 
                 # of line numbers on which they appear.
 
-                print '\nname_candidates before ----------'
-                for key, suggestions in name_candidates.iteritems():
-                    print key[0], key[1][-50:]
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-                    for name_translation, lines in suggestions.iteritems():
-                        print '\t', name_translation, lines
+#                 print '\nname_candidates before ----------'
+#                 for key, suggestions in name_candidates.iteritems():
+#                     print key[0], key[1][-50:]
+# #                     for use_scope, suggestions in val.iteritems():
+# #                         print '\t...', use_scope[-50:]
+#                     for name_translation, lines in suggestions.iteritems():
+#                         print '\t', name_translation, lines
                     
                 # Update name_candidates with some default values 
                 # (in this case the translation without any renaming)
@@ -319,15 +319,15 @@ def processFile(l):
 #                                 name_candidates[key][use_scope].setdefault(name_translation, set([]))
 #                                 name_candidates[key][use_scope][name_translation].update(lines)
                                 
-                print '\nname_candidates after ----------'
-                for key, suggestions in name_candidates.iteritems():
-                    print key[0], key[1][-50:]
-#                     for use_scope, suggestions in val.iteritems():
-#                         print '\t...', use_scope[-50:]
-                    for name_translation, lines in suggestions.iteritems():
-                        print '\t', name_translation, lines
+#                 print '\nname_candidates after ----------'
+#                 for key, suggestions in name_candidates.iteritems():
+#                     print key[0], key[1][-50:]
+# #                     for use_scope, suggestions in val.iteritems():
+# #                         print '\t...', use_scope[-50:]
+#                     for name_translation, lines in suggestions.iteritems():
+#                         print '\t', name_translation, lines
                                 
-                cc = ConsistencyController(debug_mode=False)
+                cc = ConsistencyController(debug_mode=True)
                 ts = TranslationSummarizer()
                 
                 # An identifier may have been translated inconsistently
@@ -345,9 +345,9 @@ def processFile(l):
                                                       a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path)
-                    print '\ntemp_renaming_map-------------'
-                    for (name, def_scope), renaming in temp_renaming_map.iteritems():
-                        print (name, def_scope[-50:]), renaming
+#                     print '\ntemp_renaming_map-------------'
+#                     for (name, def_scope), renaming in temp_renaming_map.iteritems():
+#                         print (name, def_scope[-50:]), renaming
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
