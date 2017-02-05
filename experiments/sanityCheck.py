@@ -29,8 +29,8 @@ def processFile(row):
                   'path_hash_lm': os.path.join(results_root, 
                                                '%s.hash_def_one_renaming.lm.js' % base_name)}
 
-#     try:
-    if True:
+    try:
+#     if True:
         
         def load(pth):
             lexer = Lexer(pth)
@@ -51,7 +51,7 @@ def processFile(row):
         
         data = {}
         
-        print '\n', js_file_path
+#         print '\n', js_file_path
         
         name2defScope_orig = scopeAnalyst_orig.resolve_scope()
         isGlobal_orig = scopeAnalyst_orig.isGlobal
@@ -71,11 +71,11 @@ def processFile(row):
                        if name2defScope_orig[(t,pos)] == def_scope]
             
             data[tok_scope_orig] = (name, glb_orig, lc_list)
-            print '  ', name, tok_scope_orig, glb_orig, lc_list
+#             print '  ', name, tok_scope_orig, glb_orig, lc_list
         
         
         def check(pth, data):
-            print 'Checking', pth
+#             print 'Checking', pth
             (iBuilder, scopeAnalyst) = load(pth)
             
             ok = True
@@ -97,7 +97,7 @@ def processFile(row):
                     
                     glb = isGlobal.get((name, pos), True)
                     
-                    print ' ', name, pos, (lin,col), tok_scope, glb
+#                     print ' ', name, pos, (lin,col), tok_scope, glb
                     
                     lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
                                for (t,pos) in name2defScope.keys()  
@@ -106,7 +106,7 @@ def processFile(row):
                     (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
                     if not (glb_orig == glb and 
                             set(lc_list_orig) == set(lc_list)):
-                        print '  **', name,  lc_list, lc_list_orig
+#                         print '  **', name,  lc_list, lc_list_orig
                         ok = False
             
             return ok
@@ -142,8 +142,8 @@ def processFile(row):
         return (js_file_path, all_ok, method)
         
 
-#     except Exception, e:
-#         return (js_file_path, None, str(e).replace("\n", ""))
+    except Exception, e:
+        return (js_file_path, None, str(e).replace("\n", ""))
     
     
     
@@ -166,11 +166,11 @@ with open(file_list_path, 'r') as f:
 
 #     result = processFile(reader.next())
 
-#     pool = multiprocessing.Pool(processes=num_threads)
+    pool = multiprocessing.Pool(processes=num_threads)
     
-#     for result in pool.imap_unordered(processFile, reader):
-    for row in reader:
-        result = processFile(row)
+    for result in pool.imap_unordered(processFile, reader):
+#     for row in reader:
+#         result = processFile(row)
 #         print 'result', result
         
         with open(os.path.join(results_root, flog), 'a') as g:
