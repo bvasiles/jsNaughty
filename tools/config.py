@@ -41,13 +41,34 @@ class MosesProxy:
     def __init__(self):
         RS = RenamingStrategies()
         
+#         # Default
+#         self.proxies = {
+#                         RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"), 
+#                         RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40002/RPC2"),
+#                         RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40003/RPC2"),
+#                         RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40004/RPC2"),
+#                         RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40005/RPC2")
+#                         }
+
+#         # Tuned
+#         self.proxies = {
+#                         RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40006/RPC2"), 
+#                         RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40007/RPC2"),
+#                         RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40008/RPC2"),
+#                         RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40009/RPC2"),
+#                         RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40010/RPC2")
+#                         }
+
+        # Tuned, pruned LM, with literals
         self.proxies = {
-                        RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40001/RPC2"), 
-                        RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40002/RPC2"),
-                        RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40003/RPC2"),
-                        RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40004/RPC2"),
-                        RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40005/RPC2")
+                        RS.NONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40011/RPC2"), 
+                        RS.NORMALIZED:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40012/RPC2"),
+                        RS.SCOPE_ID:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40013/RPC2"),
+                        RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40014/RPC2"),
+                        RS.HASH_TWO:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40015/RPC2")
                         }
+
+
 
     def getProxies(self):
         RS = RenamingStrategies()
