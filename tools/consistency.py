@@ -110,7 +110,7 @@ class ConsistencyResolver:
                 self.renaming_map[key] = name
                 self._markSeen(name, use_scopes)                    
 
-        return self.renaming_map
+        return ({}, self.renaming_map)
     
     
     def _sortedCandidateTranslations(self,
@@ -337,12 +337,24 @@ class LMConsistencyResolver(ConsistencyResolver):
     
     def __init__(self, 
                  debug_mode,
-                 lm_path):
+                 lm_path,
+                 lm_cache):
         ConsistencyResolver.__init__(self, debug_mode=debug_mode)
         
-        self.lm_cache = {}
+        self.lm_cache = lm_cache
         self.lm_query = LMQuery(lm_path=lm_path)
         
+
+    def computeRenaming(self, 
+                        name_candidates, 
+                        name_positions, 
+                        all_use_scopes, 
+                        iBuilder=None):
+        return (self.lm_cache, 
+                ConsistencyResolver.computeRenaming(name_candidates, 
+                                                    name_positions, 
+                                                    all_use_scopes, 
+                                                    iBuilder))
 
         
     def _lmQueryLines(self,
