@@ -270,6 +270,19 @@ class ConsistencyResolver:
             candidate_translations.append([unseen_candidate, 
                                            len(name_candidates[key][unseen_candidate])])
      
+        if self.debug_mode:
+            (name, def_scope) = key
+            (lines, pairs) = self._extractTempLines(name_positions[key], 
+                                                    iBuilder)
+            draft_lines_str = self._insertNameInTempLines(name, 
+                                                           lines, 
+                                                           pairs)
+         
+            print '\n   ^ draft lines -----'
+            for line in draft_lines_str:
+                print '    ', line
+            print
+     
         return sorted(candidate_translations, key=self.sorting_key)
     
     
@@ -320,8 +333,8 @@ class ConsistencyResolver:
         for use_scope in use_scopes:
             self.seen[(candidate_name, use_scope)] = True
         
-            if self.debug_mode:
-                print '   ^ seen:', use_scope[-50:], candidate_name 
+#             if self.debug_mode:
+#                 print '   ^ seen:', use_scope[-50:], candidate_name 
         
     
 
