@@ -31,5 +31,6 @@ for k, v in sorted(d2.items(), key=lambda e:(e[0][0],e[0][1],e[0][2])):
     if v != d1[k]:
         (f, rs, cs, s, l, c, g) = k
         print f, rs, cs, l, c, g
-        print '\t', v, d1[k]
+        print '\t', sorted(v.split(','))
+        print '\t', sorted(d1[k].split(','))
 
