@@ -58,7 +58,7 @@ def processFile(row):
         nameDefScope2pos_orig = scopeAnalyst_orig.nameDefScope2pos
         nameOrigin_orig = scopeAnalyst_orig.nameOrigin
         
-        for (name, def_scope) in nameOrigin_orig.iterkeys():
+        for (name, def_scope) in sorted(nameOrigin_orig.keys(), key=lambda e:e[1]):
             pos = nameDefScope2pos_orig[(name, def_scope)]
             
             (lin,col) = iBuilder_orig.revFlatMat[pos]
@@ -75,7 +75,7 @@ def processFile(row):
         
         
         def check(pth, data):
-            print 'Checking', pth
+            print '  Checking', pth
             (iBuilder, scopeAnalyst) = load(pth)
             
             ok = True
@@ -85,7 +85,7 @@ def processFile(row):
             nameDefScope2pos = scopeAnalyst.nameDefScope2pos
             nameOrigin = scopeAnalyst.nameOrigin
             
-            for (name, def_scope) in nameOrigin.iterkeys():
+            for (name, def_scope) in sorted(nameOrigin.keys(), key=lambda e:e[1]):
                 
                 if name != 'TOKEN_LITERAL_NUMBER' and \
                         name != 'TOKEN_LITERAL_STRING':
@@ -97,7 +97,7 @@ def processFile(row):
                     
                     glb = isGlobal.get((name, pos), True)
                     
-                    print ' ', name, pos, (lin,col), tok_scope, glb
+                    print '\t\t', name, pos, (lin,col), tok_scope, glb
                     
                     lc_list = [iBuilder.revTokMap[iBuilder.revFlatMat[pos]] 
                                for (t,pos) in name2defScope.keys()  
@@ -106,7 +106,7 @@ def processFile(row):
                     (_name_orig, glb_orig, lc_list_orig) = data[tok_scope]
                     if not (glb_orig == glb and 
                             set(lc_list_orig) == set(lc_list)):
-                        print '  **', name,  lc_list, lc_list_orig
+                        print '\t\t **', name,  lc_list, lc_list_orig
                         ok = False
             
             return ok
@@ -115,12 +115,12 @@ def processFile(row):
         all_ok = True
         method = ''
                 
-#         try:
-        all_ok = check(temp_files['path_ugly'], data)
-        if not all_ok:
-            method = 'u'
-#         except: # Exception, e:
-#             return (js_file_path, None, 'Ugly fail')
+# #         try:
+#         all_ok = check(temp_files['path_ugly'], data)
+#         if not all_ok:
+#             method = 'u'
+# #         except: # Exception, e:
+# #             return (js_file_path, None, 'Ugly fail')
         
 
 #         try:
@@ -131,12 +131,12 @@ def processFile(row):
 #             return (js_file_path, None, 'N2P fail')
 
 
-#         try:
-        all_ok = check(temp_files['path_hash_lm'], data)
-        if not all_ok:
-            method = 'hash.lm'
-#         except: # Exception, e:
-#             return (js_file_path, None, 'Hash fail')
+# #         try:
+#         all_ok = check(temp_files['path_hash_lm'], data)
+#         if not all_ok:
+#             method = 'hash.lm'
+# #         except: # Exception, e:
+# #             return (js_file_path, None, 'Hash fail')
         
 
         return (js_file_path, all_ok, method)
