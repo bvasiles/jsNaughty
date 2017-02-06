@@ -27,7 +27,9 @@ with open(pth_f2, 'r') as f2:
     for row in reader:
         d2[tuple(row[:7])] = row[8]
     
-for k, v in d2.iteritems():
+for k, v in sorted(d2.items(), key=lambda e:(e[0][0],e[0][1],e[0][2])):
     if v != d1[k]:
-        print k, v, d1[k]
+        (f, rs, cs, s, l, c, g) = k
+        print f, rs, cs, l, c, g
+        print '\t', v, d1[k]
 
