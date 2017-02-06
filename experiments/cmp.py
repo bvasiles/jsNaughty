@@ -27,7 +27,7 @@ with open(pth_f2, 'r') as f2:
     for row in reader:
         d2[tuple(row[:7])] = row[8]
     
-for k, v in d2.iteritems:
+for k, v in d2.iteritems():
     if v != d1[k]:
         print k, v, d1[k]
 
