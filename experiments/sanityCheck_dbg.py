@@ -115,20 +115,20 @@ def processFile(row):
         all_ok = True
         method = ''
                 
-        try:
-            all_ok = check(temp_files['path_ugly'], data)
-            if not all_ok:
-                method = 'u'
-        except: # Exception, e:
-            return (js_file_path, None, 'Ugly fail')
+#         try:
+        all_ok = check(temp_files['path_ugly'], data)
+        if not all_ok:
+            method = 'u'
+#         except: # Exception, e:
+#             return (js_file_path, None, 'Ugly fail')
         
 
-        try:
-            all_ok = check(temp_files['path_unugly'], data)
-            if not all_ok:
-                method = 'n2p'
-        except: # Exception, e:
-            return (js_file_path, None, 'N2P fail')
+#         try:
+        all_ok = check(temp_files['path_unugly'], data)
+        if not all_ok:
+            method = 'n2p'
+#         except: # Exception, e:
+#             return (js_file_path, None, 'N2P fail')
 
 
 #         try:
