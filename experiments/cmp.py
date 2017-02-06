@@ -28,7 +28,7 @@ with open(pth_f2, 'r') as f2:
         d2[tuple(row[:7])] = row[8]
     
 for k, v in sorted(d2.items(), key=lambda e:(e[0][0],e[0][1],e[0][2])):
-    if v != d1[k]:
+    if len(set(v.split(',')).symmetric_difference(set(d1[k].split(',')))):
         (f, rs, cs, s, l, c, g) = k
         print f, rs, cs, l, c, g
         print '\t', sorted(v.split(','))
