@@ -374,9 +374,9 @@ def processFile(js_file_path):
                                                          a_name_positions, 
                                                          renaming_map)
                     
-#                     print '\nrenamed_text--------------'
-#                     print renamed_text
-#                     print
+                    print '\nrenamed_text--------------'
+                    print renamed_text
+                    print
                     
                     (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
                     if not ok:
