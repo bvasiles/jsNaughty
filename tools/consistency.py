@@ -31,6 +31,163 @@ class BasicConsistencyResolver:
                  name):
         # _45e4313f
         return len(name) == 9 and name[0] == '_' and name[1:].isalnum()
+    
+    
+    def _markSeen(self,
+                   candidate_name,
+                   use_scopes):
+        """
+        Helper: Mark candidate_name as seen in every scope in use_scopes
+            so as not to assign it to another identifier in the same scope.
+        
+        Parameters
+        ----------
+        candidate_name: suggested name translation
+        use_scopes: set of scope ids
+        """
+        for use_scope in use_scopes:
+            self.seen[(candidate_name, use_scope)] = True
+        
+#             if self.debug_mode:
+#                 print '   ^ seen:', use_scope[-50:], candidate_name 
+
+
+    def _extractTempLines(self,
+                           name_positions_key,
+                           iBuilder):
+        """
+        Helper: Returns input lines where a certain name appears 
+        
+        Parameters
+        ----------
+        name_positions_key: name_positions[key]
+            = list of (line_num, line_idx) tuples where the identifier
+                 appears in the input; line_idx is a within-line token index,
+                 e.g., "i" in "for(int i = 0;" would have index 3 (4th token).
+        iBuilder: indexBuilder object that contains the indexed input text
+        
+        Returns
+        -------
+        (lines, pairs): a line is a list of tokens; lines is a list of line 
+            lists; pairs is a list of (subset_idx, input_idx) tuples to map
+            line indices in the input to line indices in the subset.
+        """
+        
+        # Line numbers of lines where (name, def_scope) appears
+        line_nums = set([l_num for (l_num, l_idx) in name_positions_key])
+
+        # Subset of input lines containing the identifier 
+        lines = []
+        
+        # Correspondence between index in the above list and 
+        # line number in original input. For example, if identifier
+        # x appeared on lines 3, 5, 8 in the original input, the 
+        # correspondence is (0, 3), (1, 5), (3, 8)
+        pairs = []
+        
+        # Within-line indices where (name, def_scope) appears
+        for draft_line_num, line_num in enumerate(sorted(line_nums)):
+            pairs.extend([(draft_line_num, l_idx) 
+                          for (l_num, l_idx) in name_positions_key 
+                          if l_num == line_num])
+            
+            lines.append([token for (_token_type, token) 
+                              in iBuilder.tokens[line_num]])
+        
+        return (lines, pairs)
+    
+
+    def _rankUnseenCandidates(self,
+                               key,
+                               unseen_candidates,
+                               name_candidates,
+                               name_positions,
+                               iBuilder):
+        """
+        Default: Sorts candidates by frequency
+
+        Parameters
+        ----------
+        key: (name, def_scope) identifier to be renamed
+        
+        unseen_candidates: set of candidate name translations to consider
+        
+        name_candidates: dict
+            name_candidates[(name, def_scope)][name_translation] 
+                = set of line numbers in the translation
+                An identifier (name, def_scope) may appear on many lines in 
+                the input. Each line is translated independently by Moses.
+                We will need to choose one of potentially multiple suggested
+                translations for a name. We may decide to give more weight to 
+                translations suggested consistently for different lines in 
+                the input. 
+                
+        name_positions: dict
+             name_positions[(token, def_scope)]
+                 = list of (line_num, line_idx) tuples where the identifier
+                 appears in the input; line_idx is a within-line token index,
+                 e.g., "i" in "for(int i = 0;" would have index 3 (4th token).
+        
+        iBuilder: indexBuilder object that contains the indexed input text
+        
+        sorting_key: lambda sorting key
+        
+        Returns
+        -------
+        sorted list of (candidate_name, num_lines) tuples, with
+            the first element being the most desirable.
+        """
+        candidate_translations = []
+        
+        for unseen_candidate in unseen_candidates:
+            candidate_translations.append([unseen_candidate, 
+                                           len(name_candidates[key][unseen_candidate])])
+     
+        if self.debug_mode:
+            (name, def_scope) = key
+            (lines, pairs) = self._extractTempLines(name_positions[key], 
+                                                    iBuilder)
+            draft_lines_str = self._insertNameInTempLines(name, 
+                                                           lines, 
+                                                           pairs)
+         
+            print '\n   ^ draft lines -----'
+            for line in draft_lines_str:
+                print '    ', line
+            print
+     
+        return sorted(candidate_translations, key=self.sorting_key)
+    
+    
+    
+    def _insertNameInTempLines(self,
+                                candidate_name,
+                                lines,
+                                pairs):
+        """
+        Helper: Returns input lines where a certain name appears 
+        
+        Parameters
+        ----------
+        candidate_name: suggested name translation
+        lines: a line is a list of tokens; lines is a list of line lists
+        pairs: list of (subset_idx, input_idx) tuples to map line indices 
+            in the input to line indices in the subset.
+        
+        Returns
+        -------
+        draft_lines_str: list of line strings after substituting the candidate
+            translation in each lines.
+        """
+        
+        draft_lines = lines
+        for (draft_line_num, idx) in pairs:
+            draft_lines[draft_line_num][idx] = candidate_name
+            
+        draft_lines_str = [' '.join(draft_line) 
+                           for draft_line in draft_lines]
+        
+        return draft_lines_str
 
     
     def computeRenaming(self, 
