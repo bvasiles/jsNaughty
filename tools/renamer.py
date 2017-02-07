@@ -10,7 +10,7 @@ from copy import deepcopy
 from pygments.token import Token, String, Number, is_token_subtype
 import hashlib
 from helpers import prepHelpers
-from consistency import ConsistencyResolver
+from consistency import BasicConsistencyResolver
 from normalizer import Normalizer
 from config import RenamingStrategies
 from indexer import IndexBuilder
@@ -451,7 +451,7 @@ class PreRenamer:
     
 #             print (token, def_scope)
     
-        cs = ConsistencyResolver(debug_mode=False)
+        cs = BasicConsistencyResolver(debug_mode=False)
         renaming_map = cs.computeRenaming(name_candidates, 
                                           name_positions, 
                                           use_scopes, 

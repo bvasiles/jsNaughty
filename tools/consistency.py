@@ -5,10 +5,11 @@ Created on Dec 22, 2016
 '''
 
 from lmQuery import LMQuery
+import itertools
 
 
-class ConsistencyResolver:
-    
+class BasicConsistencyResolver:
+
     def __init__(self, 
                  debug_mode=False):
 
@@ -22,6 +23,8 @@ class ConsistencyResolver:
         self.seen = {}
         
         self.sorting_key = lambda e: e
+        
+        self.newid = itertools.count().next
 
 
     def _isHash(self, 
@@ -36,11 +39,57 @@ class ConsistencyResolver:
                         all_use_scopes, 
                         iBuilder=None):
         
+        done = {}
+        
         # Sort names by how many lines they appear 
         # on in the input, descending
         for (key, (num_lines, suggestions)) in \
                 self._sortedCandidateTranslations(name_candidates, 
                                                    name_positions):
+            
+            use_scopes = all_use_scopes[key]
+            (name, def_scope) = key
+            
+            if self.debug_mode:
+                print '\nLM-ing', name, '...', num_lines
+                print 'candidates:', suggestions
+#                 print 'def_scope: ...', def_scope[-50:]
+#                 for use_scope in use_scopes:
+#                     print 'use_scope: ...', use_scope[-50:]
+#                 print '\nseen:'
+#                 for (c,u),f in self.seen.iteritems():
+#                     print (c,u[-50:]), f
+                
+            # The candidate pool could have shrunk if I've used this
+            # translation elsewhere in the same scope
+            unseen_candidates = self._updateCandidates(suggestions, 
+                                                        use_scopes)
+            
+            if self.debug_mode:
+                print 'unseen candidates:', unseen_candidates
+            
+            # There is no uncertainty about the translation for
+            # variables that have a single candidate translation
+            if len(unseen_candidates) == 1:
+                
+                candidate_name = unseen_candidates.pop()
+                
+                self.renaming_map[key] = candidate_name
+                self._markSeen(candidate_name, use_scopes)
+                
+                done[key] = True
+                
+                if self.debug_mode:
+                    print '\n  single candidate:', candidate_name
+        
+        
+        # Sort names by how many lines they appear 
+        # on in the input, descending
+        for (key, (num_lines, suggestions)) in \
+                self._sortedCandidateTranslations(name_candidates, 
+                                                   name_positions):
+            if done.get(key, False):
+                continue
             
             use_scopes = all_use_scopes[key]
             (name, def_scope) = key
@@ -99,8 +148,12 @@ class ConsistencyResolver:
                 self._markSeen(candidate_name, use_scopes)
 
             else:
-                self.renaming_map[key] = name
-                self._markSeen(name, use_scopes)                    
+                candidate_name = name
+                while not self._isScopeValid(candidate_name, use_scopes):
+                    candidate_name = '%s%d' % (candidate_name, self.newid())
+                
+                self.renaming_map[key] = candidate_name
+                self._markSeen(candidate_name, use_scopes)
 
         return self.renaming_map
     
@@ -149,6 +202,19 @@ class ConsistencyResolver:
     def _isInvalid(self,
                    candidate_name):
         return False
+    
+    
+    def _isScopeValid(self,
+                        candidate_name,
+                        use_scopes):
+        
+        valid = True
+        for use_scope in use_scopes:
+            if self.seen.get((candidate_name, use_scope), False) \
+                    or self._isInvalid(candidate_name):
+                valid = False
+        return valid
+    
         
     def _updateCandidates(self, 
                            suggestions,
@@ -169,175 +235,19 @@ class ConsistencyResolver:
         """
         unseen_candidates = set([])
         for candidate_name in suggestions:
-            valid = True
-            for use_scope in use_scopes:
-                if self.seen.get((candidate_name, use_scope), False) \
-                        or self._isInvalid(candidate_name):
-                    valid = False
-            if valid:
+            if self._isScopeValid(candidate_name, use_scopes):
                 unseen_candidates.add(candidate_name)
         
         return unseen_candidates
-    
-
-    
-    def _extractTempLines(self,
-                           name_positions_key,
-                           iBuilder):
-        """
-        Helper: Returns input lines where a certain name appears 
-        
-        Parameters
-        ----------
-        name_positions_key: name_positions[key]
-            = list of (line_num, line_idx) tuples where the identifier
-                 appears in the input; line_idx is a within-line token index,
-                 e.g., "i" in "for(int i = 0;" would have index 3 (4th token).
-        iBuilder: indexBuilder object that contains the indexed input text
-        
-        Returns
-        -------
-        (lines, pairs): a line is a list of tokens; lines is a list of line 
-            lists; pairs is a list of (subset_idx, input_idx) tuples to map
-            line indices in the input to line indices in the subset.
-        """
-        
-        # Line numbers of lines where (name, def_scope) appears
-        line_nums = set([l_num for (l_num, l_idx) in name_positions_key])
-
-        # Subset of input lines containing the identifier 
-        lines = []
-        
-        # Correspondence between index in the above list and 
-        # line number in original input. For example, if identifier
-        # x appeared on lines 3, 5, 8 in the original input, the 
-        # correspondence is (0, 3), (1, 5), (3, 8)
-        pairs = []
-        
-        # Within-line indices where (name, def_scope) appears
-        for draft_line_num, line_num in enumerate(sorted(line_nums)):
-            pairs.extend([(draft_line_num, l_idx) 
-                          for (l_num, l_idx) in name_positions_key 
-                          if l_num == line_num])
-            
-            lines.append([token for (_token_type, token) 
-                              in iBuilder.tokens[line_num]])
-        
-        return (lines, pairs)
-    
-    
-    
-    def _rankUnseenCandidates(self,
-                               key,
-                               unseen_candidates,
-                               name_candidates,
-                               name_positions,
-                               iBuilder):
-        """
-        Default: Sorts candidates by frequency
-
-        Parameters
-        ----------
-        key: (name, def_scope) identifier to be renamed
-        
-        unseen_candidates: set of candidate name translations to consider
-        
-        name_candidates: dict
-            name_candidates[(name, def_scope)][name_translation] 
-                = set of line numbers in the translation
-                An identifier (name, def_scope) may appear on many lines in 
-                the input. Each line is translated independently by Moses.
-                We will need to choose one of potentially multiple suggested
-                translations for a name. We may decide to give more weight to 
-                translations suggested consistently for different lines in 
-                the input. 
-                
-        name_positions: dict
-             name_positions[(token, def_scope)]
-                 = list of (line_num, line_idx) tuples where the identifier
-                 appears in the input; line_idx is a within-line token index,
-                 e.g., "i" in "for(int i = 0;" would have index 3 (4th token).
-        
-        iBuilder: indexBuilder object that contains the indexed input text
-        
-        sorting_key: lambda sorting key
-        
-        Returns
-        -------
-        sorted list of (candidate_name, num_lines) tuples, with
-            the first element being the most desirable.
-        """
-        candidate_translations = []
-        
-        for unseen_candidate in unseen_candidates:
-            candidate_translations.append([unseen_candidate, 
-                                           len(name_candidates[key][unseen_candidate])])
-     
-        if self.debug_mode:
-            (name, def_scope) = key
-            (lines, pairs) = self._extractTempLines(name_positions[key], 
-                                                    iBuilder)
-            draft_lines_str = self._insertNameInTempLines(name, 
-                                                           lines, 
-                                                           pairs)
-         
-            print '\n   ^ draft lines -----'
-            for line in draft_lines_str:
-                print '    ', line
-            print
-     
-        return sorted(candidate_translations, key=self.sorting_key)
-    
-    
-    
-    def _insertNameInTempLines(self,
-                                candidate_name,
-                                lines,
-                                pairs):
-        """
-        Helper: Returns input lines where a certain name appears 
-        
-        Parameters
-        ----------
-        candidate_name: suggested name translation
-        lines: a line is a list of tokens; lines is a list of line lists
-        pairs: list of (subset_idx, input_idx) tuples to map line indices 
-            in the input to line indices in the subset.
-        
-        Returns
-        -------
-        draft_lines_str: list of line strings after substituting the candidate
-            translation in each lines.
-        """
-        
-        draft_lines = lines
-        for (draft_line_num, idx) in pairs:
-            draft_lines[draft_line_num][idx] = candidate_name
-            
-        draft_lines_str = [' '.join(draft_line) 
-                           for draft_line in draft_lines]
-        
-        return draft_lines_str
 
 
 
-    def _markSeen(self,
-                   candidate_name,
-                   use_scopes):
-        """
-        Helper: Mark candidate_name as seen in every scope in use_scopes
-            so as not to assign it to another identifier in the same scope.
-        
-        Parameters
-        ----------
-        candidate_name: suggested name translation
-        use_scopes: set of scope ids
-        """
-        for use_scope in use_scopes:
-            self.seen[(candidate_name, use_scope)] = True
-        
-#             if self.debug_mode:
-#                 print '   ^ seen:', use_scope[-50:], candidate_name 
+
+class ConsistencyResolver(BasicConsistencyResolver):
+    
+    def _isInvalid(self,
+                   candidate_name):
+        return self._isHash(candidate_name)
         
     
 
@@ -351,11 +261,6 @@ class LMConsistencyResolver(ConsistencyResolver):
         self.lm_cache = {}
         self.lm_query = LMQuery(lm_path=lm_path)
         
-    
-    def _isInvalid(self,
-                   candidate_name):
-        return self._isHash(candidate_name)
-
         
     def _lmQueryLines(self,
                        draft_lines_str):
@@ -576,9 +481,6 @@ class FreqLenConsistencyResolver(ConsistencyResolver):
         self.sorting_key = lambda e:(-e[1],-len(e[0]))
     
     
-    def _isInvalid(self,
-                   candidate_name):
-        return self._isHash(candidate_name)
     
 
 class LenConsistencyResolver(ConsistencyResolver):
@@ -591,8 +493,5 @@ class LenConsistencyResolver(ConsistencyResolver):
         self.sorting_key = lambda e:-len(e[0])
     
     
-    def _isInvalid(self,
-                   candidate_name):
-        return self._isHash(candidate_name)
     
     
