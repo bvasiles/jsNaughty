@@ -2,6 +2,7 @@ import argparse
 import unittest
 import sys
 import os
+import re
 import ntpath
 import multiprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -108,11 +109,20 @@ class scopeNameTest(unittest.TestCase):
             for skipped in self.IgnoreSet:
                 f.write(str(skipped) + "\n")
 
+    def isHash(self, name):
+        '''
+        Check if the name is still in a hashed form
+        e.g. _e9cd7426 
+        '''
+        hash_regex = "_([a-z0-9]){8}$"
+        return re.match(hash_regex, name) != None
 
     def compareFiles(self, originalFilename, obsFilename, renamedFilename):
         '''
         Provide the absolute path of the original Filename, the corresponding obsfuscated filename,
-        and a renamed filename
+        and a renamed filename, and determine if their is a naming inconsistency.  An assertion failure
+        is thrown for inconsistent namings, but the function will return true/false if there is a hashed
+        variable that has not been reverted.
         '''
         self.assertTrue(os.path.isabs(originalFilename) and os.path.isfile(originalFilename))
         self.assertTrue(os.path.isabs(obsFilename) and os.path.isfile(obsFilename))
@@ -226,10 +236,10 @@ class scopeNameTest(unittest.TestCase):
         #name2defScope? name2useScope? name2pth?
         orderedVarsOld = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
         #undefined is a weird case -> try ignoring it?
-        orderedVarsOld = [v for v in orderedVarsOld if v[0] != "undefined"]
+        #orderedVarsOld = [v for v in orderedVarsOld if v[0] != "undefined"]
         orderedVarsNew = sorted(sa2.name2useScope.keys(), key = lambda x: x[1])
         #undefined is a weird case -> try ignoring it?
-        orderedVarsNew = [v for v in orderedVarsNew if v[0] != "undefined"]
+        #orderedVarsNew = [v for v in orderedVarsNew if v[0] != "undefined"]
         newNameList = [v[0] for v in orderedVarsNew]
         oldNameList = [v[0] for v in orderedVarsOld]
         #print("Scoped Variables")
@@ -282,8 +292,20 @@ class scopeNameTest(unittest.TestCase):
                         #and names that are different in the original scope must be the different in the new scope
                         self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
 
-    
-    
+        #Check that there are no hashes left in there.
+        hashCount = 0 #It is possible that someone picked a variable name equal to a hash.
+        
+        for newName in newNameList:
+            if(self.isHash(newName)):
+                hashCount += 1
+       
+        #So let's report an error if at least half of the renamable variables look like hashes
+        #This would be extremely unlikely to occur and not be an error on our part.
+        if(hashCount > len(newNameList)/2):
+            return False
+        else:
+            return True    
+
     def testPostprocessing(self):
         '''
         Test that the post-processing functions work correctly.
@@ -302,7 +324,7 @@ class scopeNameTest(unittest.TestCase):
             clearTextFile = self.clearTextFiles[fileid]
             baseId =self.getFileId(clearTextFile)
             obfuscatedFile = self.obfuscatedTextFiles[fileid]
-            #if(baseId != 268731):
+            #if(baseId != 494296):
             #    continue
             #if(fileid > 150):
             #    break 
@@ -321,7 +343,9 @@ class scopeNameTest(unittest.TestCase):
                 #     print(str(baseId) + " : " + str(self.getFileId(obfuscatedFile)) + " : " + str(self.getFileId(renamedFile)))
                 #if True:
                 try:
-                    self.compareFiles(clearTextFile, obfuscatedFile, renamedFile)
+                    nohashes = self.compareFiles(clearTextFile, obfuscatedFile, renamedFile)
+	            if(not nohashes):
+                        failedCases.append(str(baseId) + "(" + key + ")(Still Hashed)\n")
                     print("\n")
                 except AssertionError:
                     print(" - Failed\n")
