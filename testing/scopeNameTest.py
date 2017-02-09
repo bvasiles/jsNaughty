@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import ntpath
+import multiprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 #from tools import IndexBuilder, ScopeAnalyst, Lexer
@@ -46,8 +47,8 @@ class scopeNameTest(unittest.TestCase):
         Don't run Moses server here (just incremental tests)
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
-        #self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v7/")
-        self.testDir = Folder("./consistencyFailureFiles2/")
+        #self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/")
+        self.testDir = Folder("./consistencyFailureFiles/")
         '''
         3193021.hash_def_one_renaming.freqlen.js
         3193021.hash_def_one_renaming.js
@@ -117,6 +118,7 @@ class scopeNameTest(unittest.TestCase):
         
         ib1 = IndexBuilder(lexedObs.tokenList)
         sa1 = ScopeAnalyst(obsFilename)
+        sa2 = ScopeAnalyst(renamedFilename)
         '''
         (a_name_positions, 
              a_position_names) = prepHelpers(ib1, sa1)
@@ -205,41 +207,51 @@ class scopeNameTest(unittest.TestCase):
         #Build mapping from old to new names. (TODO remove some maybe?)
         oldNameList = []
         newNameList = []
-        i = 0
-        for token_type, token in lexedObs.tokenList:
-            if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
-                continue
-            if(is_token_subtype(token_type, Token.Name)):
-                oldNameList.append(token)
-                newNameList.append(p1_combined[i][1])
-                
-            i += 1
+        #i = 0
+        #Just use scopeAnalyst for each
+        #for token_type, token in lexedObs.tokenList:
+        #    if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
+        #        continue
+        #    if(is_token_subtype(token_type, Token.Name)):
+        #        oldNameList.append(token)
+        #        newNameList.append(p1_combined[i][1])
+        #        
+        #    i += 1
         
         #name2defScope? name2useScope? name2pth?
-        orderedVars = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
+        orderedVarsOld = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
         #undefined is a weird case -> try ignoring it?
-        orderedVars = [v for v in orderedVars if v[0] != "undefined"]
-        #print(lexedObs.tokenList)
+        orderedVarsOld = [v for v in orderedVarsOld if v[0] != "undefined"]
+        orderedVarsNew = sorted(sa2.name2useScope.keys(), key = lambda x: x[1])
+        #undefined is a weird case -> try ignoring it?
+        orderedVarsNew = [v for v in orderedVarsNew if v[0] != "undefined"]
+        newNameList = [v[0] for v in orderedVarsNew]
+        oldNameList = [v[0] for v in orderedVarsOld]
         #print("Scoped Variables")
-        #print(orderedVars)
+        #print(orderedVarsOld)
+        #print("Unaltered Old " + str(len(oldNameList)))
         #print(oldNameList)
-        #Remove variable indexes from old and new list that aren't tracked by scoper. (Is this right?)
-        toRemove = []
-        trackingIndex = 0
-        for (var, loc) in orderedVars:
-            
-            #print(var)
-            while(oldNameList[trackingIndex] != var):
-                oldNameList = oldNameList[:trackingIndex] + oldNameList[trackingIndex+1:]
-                newNameList = newNameList[:trackingIndex] + newNameList[trackingIndex+1:]
-            trackingIndex += 1
+        #print("Unaltered New " + str(len(newNameList)))
+        #print(newNameList)
+        #print("IsGlobal" + str(len(sa1.isGlobal)))
+        #print(sa1.isGlobal.keys())
+        #print(sorted(sa1.isGlobal.keys(), key= lambda(x) : x[1]))
+        #trackingIndex = 0
+        #for (var, loc) in orderedVars:
+        #    
+        #    #print(var)
+        #    #This can be bugged when another variable in a different scope matches the name and causes the scope to be build incorrectly error.
+        #    while(oldNameList[trackingIndex] != var):
+        #        oldNameList = oldNameList[:trackingIndex] + oldNameList[trackingIndex+1:]
+        #        newNameList = newNameList[:trackingIndex] + newNameList[trackingIndex+1:]
+        #    trackingIndex += 1
             
         
         
         scopeMap = {}
         #Build map linking scopes to indexes in the old and new list.
         curIndex = 0
-        for key in orderedVars:
+        for key in orderedVarsOld:
             scope = sa1.name2useScope[key]
             if(scope in scopeMap): #Existing Scope?
                 scopeMap[scope].append(curIndex)
@@ -260,7 +272,7 @@ class scopeNameTest(unittest.TestCase):
                     for j in range(i+1, len(scopeMap[scope])):
                         fIndex = scopeMap[scope][i]
                         sIndex = scopeMap[scope][j]
-                        print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
+                        #print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
                         #names that are the same in the original scope must be the same in the new scope
                         #and names that are different in the original scope must be the different in the new scope
                         self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
@@ -278,12 +290,14 @@ class scopeNameTest(unittest.TestCase):
         5) Output same number of tokens as the input.
         '''
         failedCases = []
+        pool = multiprocessing.Pool(processes = 16)
+
         #Iterate over all renamings and obsfuscated texts
         for fileid in range(0, len(self.clearTextFiles)):
             clearTextFile = self.clearTextFiles[fileid]
             baseId =self.getFileId(clearTextFile)
             obfuscatedFile = self.obfuscatedTextFiles[fileid]
-            #if(baseId != 1072219):
+            #if(baseId != 268731):
             #    continue
             #if(fileid > 150):
             #    break 
@@ -311,7 +325,7 @@ class scopeNameTest(unittest.TestCase):
                     print(" - Other Failure\n")
                     failedCases.append(str(baseId) + "(" + key + ")(Other Failure)\n")
                     
-        with open("consistencyFailures2.txt", 'w') as f:
+        with open("consistencyFailuresV10Test.txt", 'w') as f:
             for failed in failedCases:
                 f.write(failed)
 

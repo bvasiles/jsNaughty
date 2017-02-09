@@ -15,9 +15,18 @@ def getFileId(filename):
     return int(base[:base.find(".")])
 
 fileIds = set()
+
+
+
 testDir = Folder("/home/ccasal/jsnaughty/testing/consistencyFailureFiles/")
-print(testDir.baseFileNames("*.js"))
-fileIds = set([getFileId(nextFile) for nextFile in testDir.baseFileNames("*.js")])
+#print(testDir.baseFileNames("*.js"))
+#fileIds = set([getFileId(nextFile) for nextFile in testDir.baseFileNames("*.js")])
+
+with open("/home/ccasal/jsnaughty/testing/justConsistencyFailuresV10.txt", 'r') as f:
+    for line in f:
+        #files.append(line.split(")")[0].replace("(", "."))
+        fileIds.add(int(line.split("(")[0]))
+
 
 print(fileIds)
 
@@ -25,10 +34,10 @@ renamings = ["hash_def_one_renaming", "no_renaming"]
 consistency = ["", "freqlen", "lmdrop", "lm"]
 
 
-with open("/home/ccasal/jsnaughty/testing/copyFailures2.sh", 'w') as f:
+with open("/home/ccasal/jsnaughty/testing/copyFailures.sh", 'w') as f:
     for fileId in fileIds:
-        f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v7/" + str(fileId) + ".js" + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles2/\n")
-        f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v7/" + str(fileId) + ".u.js" + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles2/\n")
+        f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/" + str(fileId) + ".js" + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles/\n")
+        f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/" + str(fileId) + ".u.js" + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles/\n")
         for r in renamings:
             for c in consistency:
                 if(c != ""):
@@ -36,4 +45,4 @@ with open("/home/ccasal/jsnaughty/testing/copyFailures2.sh", 'w') as f:
                 else:
                     ending = "." + r + ".js"
 
-                f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v7/" + str(fileId) + ending + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles2/\n")
+                f.write("cp /data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/" + str(fileId) + ending + " /home/ccasal/jsnaughty/testing/consistencyFailureFiles/\n")
