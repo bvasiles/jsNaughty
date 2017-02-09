@@ -1,3 +1,4 @@
+import argparse
 import unittest
 import sys
 import os
@@ -16,6 +17,8 @@ from tools import prepHelpers, MosesParser, ConsistencyResolver, \
                     TranslationSummarizer, ConsistencyStrategies, \
                     PreRenamer, PostRenamer, RenamingStrategies
 
+id_start = 0
+id_end = sys.maxint
 
 class scopeNameTest(unittest.TestCase):
     
@@ -47,8 +50,8 @@ class scopeNameTest(unittest.TestCase):
         Don't run Moses server here (just incremental tests)
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
-        #self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/")
-        self.testDir = Folder("./consistencyFailureFiles/")
+        self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/")
+        #self.testDir = Folder("./consistencyFailureFiles/")
         '''
         3193021.hash_def_one_renaming.freqlen.js
         3193021.hash_def_one_renaming.js
@@ -75,6 +78,8 @@ class scopeNameTest(unittest.TestCase):
         self.renamedFilenameMap = {}
         #Retain a list of all the files we do have things for
         self.allSet = set([self.getFileId(clean) for clean in self.clearTextFiles]).intersection(set([self.getFileId(obs) for obs in self.obfuscatedTextFiles]))
+        #Parallel formation: (look at only those in the range (and call the rest from pieces in a shell script
+        self.allSet = set([item for item in self.allSet if (item >= id_start and item < id_end)])
         for r in self.renamings:
             for c in self.consistency:
                 if(c != ""):
@@ -325,10 +330,19 @@ class scopeNameTest(unittest.TestCase):
                     print(" - Other Failure\n")
                     failedCases.append(str(baseId) + "(" + key + ")(Other Failure)\n")
                     
-        with open("consistencyFailuresV10Test.txt", 'w') as f:
+        with open("consistencyFailuresV10_" + str(id_start)  + "_" + str(id_end) +  ".txt", 'w') as f:
             for failed in failedCases:
                 f.write(failed)
 
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-start",action="store", type=int, default = 0)
+    parser.add_argument("-end", action="store", type=int,default = sys.maxint)
+    parser.add_argument("unittest_args", nargs="*")
+    args = parser.parse_args()
+    id_start = args.start
+    id_end = args.end
+
+    sys.argv[1:] = args.unittest_args
     unittest.main()
