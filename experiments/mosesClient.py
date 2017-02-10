@@ -18,10 +18,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 
 from tools import IndexBuilder, Beautifier, prepHelpers, WebMosesDecoder, \
                     WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
-                    MosesParser, ConsistencyResolver, PreRenamer, \
+                    MosesParser, PreRenamer, \
                     PostRenamer, RenamingStrategies, ConsistencyStrategies, \
                     MosesProxy
 
+from consistencyController import ConsistencyController
 
 prepro_error = "Preprocessor Failed"
 beaut_error = "Beautifier Failed"
@@ -228,8 +229,7 @@ class MosesClient():
             print(sa_error)
             return(sa_error)
         
-        (_name_positions, \
-         position_names) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+        (name_positions, position_names, use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
 
         #Do Rename related tasks
         #Nov_29 Update:
@@ -336,7 +336,7 @@ class MosesClient():
         post_start = time.time()
 
         (a_name_positions, 
-             a_position_names) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+             a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
         
         if translation is not None:
             # Parse moses output
@@ -345,8 +345,8 @@ class MosesClient():
                 
             name_candidates = mp.parse(translation,
                                        a_iBuilder,
-                                       a_position_names,
-                                       a_scopeAnalyst)
+                                       a_position_names)#,
+                                       #a_scopeAnalyst)
             # name_candidates is a dictionary of dictionaries: 
             # keys are (name, None) (if scopeAnalyst=None) or 
             # (name, def_scope) tuples (otherwise); 
@@ -354,7 +354,7 @@ class MosesClient():
             # of line numbers on which they appear.
             
                 
-            cr = ConsistencyResolver()
+            cr = ConsistencyController(debug_mode=True)
 #             ts = TranslationSummarizer()
                 
             # An identifier may have been translated inconsistently
@@ -366,6 +366,7 @@ class MosesClient():
             temp_renaming_map = cr.computeRenaming(c_strategy,
                                               name_candidates,
                                               a_name_positions,
+                                              a_use_scopes,
                                               a_iBuilder,
                                               lm_path)
             
