@@ -306,6 +306,7 @@ class BasicConsistencyResolver:
 
             else:
                 candidate_name = name
+                #FOUND YOU! (This is warping the hashes to not hashes -> why are we doing this instead of replacing with the original variable name?)
                 while not self._isScopeValid(candidate_name, use_scopes):
                     candidate_name = '%s%d' % (candidate_name, self.newid())
                 
@@ -392,6 +393,7 @@ class BasicConsistencyResolver:
         """
         unseen_candidates = set([])
         for candidate_name in suggestions:
+            print("Checking validity! " + candidate_name)
             if self._isScopeValid(candidate_name, use_scopes):
                 unseen_candidates.add(candidate_name)
         
