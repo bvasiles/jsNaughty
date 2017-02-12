@@ -352,9 +352,10 @@ def processFile(js_file_path):
                                                       a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path)
-#                     print '\ntemp_renaming_map-------------'
-#                     for (name, def_scope), renaming in temp_renaming_map.iteritems():
-#                         print (name, def_scope[-50:]), renaming
+                    if dbg:
+                        print '\ntemp_renaming_map-------------'
+                        for (name, def_scope), renaming in temp_renaming_map.iteritems():
+                            print (name, def_scope[-50:]), renaming
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
