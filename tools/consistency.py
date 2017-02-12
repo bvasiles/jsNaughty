@@ -8,7 +8,7 @@ from lmQuery import LMQuery
 import itertools
 
 
-class BasicConsistencyResolver:
+class ConsistencyResolver:
 
     def __init__(self, 
                  debug_mode=False):
@@ -358,9 +358,9 @@ class BasicConsistencyResolver:
                       key = lambda (key, (num_lines, s)): -num_lines)
     
     
-    def _isInvalid(self,
-                   candidate_name):
-        return False
+#     def _isInvalid(self,
+#                    candidate_name):
+#         return False
     
     
     def _isScopeValid(self,
@@ -369,8 +369,8 @@ class BasicConsistencyResolver:
         
         valid = True
         for use_scope in use_scopes:
-            if self.seen.get((candidate_name, use_scope), False) \
-                    or self._isInvalid(candidate_name):
+            if self.seen.get((candidate_name, use_scope), False): # \
+#                     or self._isInvalid(candidate_name):
                 valid = False
         return valid
     
@@ -403,11 +403,11 @@ class BasicConsistencyResolver:
 
 
 
-class ConsistencyResolver(BasicConsistencyResolver):
-    
-    def _isInvalid(self,
-                   candidate_name):
-        return self._isHash(candidate_name)
+# class ConsistencyResolver(BasicConsistencyResolver):
+#     
+#     def _isInvalid(self,
+#                    candidate_name):
+#         return self._isHash(candidate_name)
         
     
 
