@@ -199,9 +199,9 @@ def processFile(js_file_path):
         except:
             return (js_file_path, None, 'ScopeAnalyst fail')
          
-        (_name_positions, \
+        (name_positions, \
          position_names,
-         _use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+         use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
           
 #         print 'Helpers'
 
@@ -347,7 +347,7 @@ def processFile(js_file_path):
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
-                    temp_renaming_map = cc.computeRenaming(c_strategy,
+                    (temp_renaming_map, seen) = cc.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
                                                       a_use_scopes,
@@ -358,35 +358,52 @@ def processFile(js_file_path):
                         for (name, def_scope), renaming in temp_renaming_map.iteritems():
                             print (name, def_scope[-50:]), renaming
 
-                    postRen = PostRenamer()
-                    tmp_renamed_text = postRen.applyRenaming(a_iBuilder, 
-                                                         a_name_positions, 
-                                                         temp_renaming_map)
-                    (ok, tmp_beautified_renamed_text, _err) = clear.web_run(tmp_renamed_text)
-                    if not ok:
-                        return (js_file_path, None, 'Beautifier fail')
-                    
-                    tmp_lexer = WebLexer(tmp_beautified_renamed_text)
-                    tmp_iBuilder = IndexBuilder(tmp_lexer.tokenList)
-                    tmp_scopeAnalyst = WebScopeAnalyst(tmp_beautified_renamed_text)
-                        
-                    (tmp_name_positions, 
-                     tmp_position_names,
-                     tmp_use_scopes) = prepHelpers(tmp_iBuilder, tmp_scopeAnalyst)
-                    
                     # Fall back on original names in input, if 
                     # no translation was suggested
-                    new_name_candidates = postRen.updateRenamingMap(tmp_name_positions, 
+                    postRen = PostRenamer()
+                    renaming_map = postRen.updateRenamingMap(a_name_positions, 
                                                              position_names, 
+                                                             a_use_scopes,
                                                              temp_renaming_map, 
+                                                             seen,
                                                              r_strategy)
+
+#                     new_name_candidates = {}
+# 
+#                     for (name, def_scope), renaming in temp_renaming_map.iteritems():
+#                         (line_num, line_idx) = a_name_positions[(name, def_scope)][0]
+#                         (old_name, old_def_scope) = position_names[line_num][line_idx]
+#                         
+#                         new_name_candidates.setdefault((old_name, old_def_scope), {})
+#                         new_name_candidates[(old_name, old_def_scope)][renaming] = set([1])
+
+
+#                     tmp_renamed_text = postRen.applyRenaming(a_iBuilder, 
+#                                                          a_name_positions, 
+#                                                          temp_renaming_map)
+#                     (ok, tmp_beautified_renamed_text, _err) = clear.web_run(tmp_renamed_text)
+#                     if not ok:
+#                         return (js_file_path, None, 'Beautifier fail')
+#                     
+#                     tmp_lexer = WebLexer(tmp_beautified_renamed_text)
+#                     tmp_iBuilder = IndexBuilder(tmp_lexer.tokenList)
+#                     tmp_scopeAnalyst = WebScopeAnalyst(tmp_beautified_renamed_text)
+#                         
+#                     (tmp_name_positions, 
+#                      tmp_position_names,
+#                      tmp_use_scopes) = prepHelpers(tmp_iBuilder, tmp_scopeAnalyst)
                     
-                    renaming_map = cc.computeRenaming(CS.FREQLEN,
-                                                      new_name_candidates,
-                                                      a_name_positions,
-                                                      a_use_scopes,
-                                                      a_iBuilder,
-                                                      lm_path)
+#                     renaming_map = postRen.updateRenamingMap(tmp_name_positions, 
+#                                                              position_names, 
+#                                                              temp_renaming_map, 
+#                                                              r_strategy)
+#                     
+#                     renaming_map = cc.computeRenaming(CS.FREQLEN,
+#                                                       new_name_candidates,
+#                                                       name_positions,
+#                                                       use_scopes,
+#                                                       iBuilder_ugly,
+#                                                       lm_path)
                     
 #                     # Fall back on original names in input, if 
 #                     # no translation was suggested

@@ -8,7 +8,7 @@ from lmQuery import LMQuery
 import itertools
 
 
-class ConsistencyResolver:
+class BasicConsistencyResolver:
 
     def __init__(self, 
                  debug_mode=False):
@@ -308,13 +308,15 @@ class ConsistencyResolver:
                 candidate_name = name
                 
                 #FOUND YOU! (This is warping the hashes to not hashes -> why are we doing this instead of replacing with the original variable name?)
-                while not self._isScopeValid(candidate_name, use_scopes):
-                    candidate_name = '%s%d' % (candidate_name, self.newid())
+                if not self._isHash(candidate_name):
+                    while not self._isScopeValid(candidate_name, use_scopes):
+                        candidate_name = '%s%d' % (candidate_name, self.newid())
                 
                 self.renaming_map[key] = candidate_name
                 self._markSeen(candidate_name, use_scopes)
 
-        return self.renaming_map
+        return (self.renaming_map, self.seen)
+    
     
     
     def _sortedCandidateTranslations(self,
@@ -358,9 +360,9 @@ class ConsistencyResolver:
                       key = lambda (key, (num_lines, s)): -num_lines)
     
     
-#     def _isInvalid(self,
-#                    candidate_name):
-#         return False
+    def _isInvalid(self,
+                   candidate_name):
+        return False
     
     
     def _isScopeValid(self,
@@ -369,8 +371,8 @@ class ConsistencyResolver:
         
         valid = True
         for use_scope in use_scopes:
-            if self.seen.get((candidate_name, use_scope), False): # \
-#                     or self._isInvalid(candidate_name):
+            if self.seen.get((candidate_name, use_scope), False) \
+                    or self._isInvalid(candidate_name):
                 valid = False
         return valid
     
@@ -403,11 +405,11 @@ class ConsistencyResolver:
 
 
 
-# class ConsistencyResolver(BasicConsistencyResolver):
-#     
-#     def _isInvalid(self,
-#                    candidate_name):
-#         return self._isHash(candidate_name)
+class ConsistencyResolver(BasicConsistencyResolver):
+     
+    def _isInvalid(self,
+                   candidate_name):
+        return self._isHash(candidate_name)
         
     
 
