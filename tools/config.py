@@ -30,9 +30,10 @@ class ConsistencyStrategies:
     FREQLEN = 'freqlen'
 
     def all(self):
-        return [self.FREQLEN,
-                self.LM,
-                self.LMDROP]
+        return [self.LMDROP]
+#         return [self.FREQLEN,
+#                 self.LM,
+#                 self.LMDROP]
         
 
 import xmlrpclib
