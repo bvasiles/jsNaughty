@@ -88,28 +88,47 @@ class PostRenamer:
                           position_names,
                           renaming_map,
                           r_strategy):
-        new_renaming_map = {}
+        new_name_candidates = {}
+        
+        for (name, def_scope), renaming in renaming_map.iteritems():
+#             print (name, def_scope)
+#             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
+            if self.__is_invalid(renaming, r_strategy):
+                (line_num, line_idx) = name_positions[(name, def_scope)][0]
+                (old_name, _def_scope) = position_names[line_num][line_idx]
+                
+                name_translation = old_name
+
+            else:
+                name_translation = renaming
+                
+            new_name_candidates.setdefault((name, def_scope), {})
+            new_name_candidates[(name, def_scope)][name_translation] = set([1])
+
+        return new_name_candidates
+            
+#         new_renaming_map = {}
         
 #         print 'name_positions---------------'
 #         for k, v in name_positions.iteritems():
 #             print k, v
 #         print
         
-        for (name, def_scope), renaming in renaming_map.iteritems():
-#             print (name, def_scope)
-#             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
-            
-            if not self.__is_invalid(renaming, r_strategy):
-                new_renaming_map[(name, def_scope)] = renaming
-            else:
-                (line_num, line_idx) = name_positions[(name, def_scope)][0]
-                (old_name, _def_scope) = position_names[line_num][line_idx]
-                
-                new_renaming_map[(name, def_scope)] = old_name
-        
-#         print 'map updated---------------'
-        return new_renaming_map
-        
+#             if not self.__is_invalid(renaming, r_strategy):
+#                 new_renaming_map[(name, def_scope)] = renaming
+#             else:
+#                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
+#                 (old_name, _def_scope) = position_names[line_num][line_idx]
+#                 
+#                 new_renaming_map[(name, def_scope)] = old_name
+#         
+# #         print 'map updated---------------'
+#         return new_renaming_map
+#         
+# #                     self.name_candidates.setdefault(k, {})
+# #                     self.name_candidates[k].setdefault(name_translation, set([]))
+#                     self.name_candidates[k][name_translation].add(n)
+
 
 
 

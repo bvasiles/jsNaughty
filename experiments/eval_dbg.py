@@ -20,6 +20,7 @@ from tools import WebScopeAnalyst
 from tools import TranslationSummarizer
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
+from tools import ConsistencyResolver
 
 from consistencyController import ConsistencyController
 
@@ -360,15 +361,30 @@ def processFile(js_file_path):
                     # Fall back on original names in input, if 
                     # no translation was suggested
                     postRen = PostRenamer()
-                    renaming_map = postRen.updateRenamingMap(a_name_positions, 
+                    new_name_candidates = postRen.updateRenamingMap(a_name_positions, 
                                                              position_names, 
                                                              temp_renaming_map, 
                                                              r_strategy)
                     
+                    renaming_map = cc.computeRenaming(CS.FREQLEN,
+                                                      new_name_candidates,
+                                                      a_name_positions,
+                                                      a_use_scopes,
+                                                      a_iBuilder,
+                                                      lm_path)
+                    
+#                     # Fall back on original names in input, if 
+#                     # no translation was suggested
+#                     postRen = PostRenamer()
+#                     renaming_map = postRen.updateRenamingMap(a_name_positions, 
+#                                                              position_names, 
+#                                                              temp_renaming_map, 
+#                                                              r_strategy)
+                    
                     if dbg:
                         print '\nrenaming_map-------------'
                         for (name, def_scope), renaming in renaming_map.iteritems():
-                            print (name, def_scope[-50:]), renaming
+                            print (name, def_scope[-50:]), renaming, '(%s)' % temp_renaming_map[(name, def_scope)]
                     
                     # Apply renaming map and save output for future inspection
                     renamed_text = postRen.applyRenaming(a_iBuilder, 
