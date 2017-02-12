@@ -112,9 +112,9 @@ class PostRenamer:
 #         print
 
         for (name, def_scope), renaming in renaming_map.iteritems():         
-            if not self.__is_invalid(renaming, r_strategy):
-                new_renaming_map[(name, def_scope)] = renaming
-            else:
+            new_renaming_map[(name, def_scope)] = renaming
+
+            if self.__is_invalid(renaming, r_strategy):
                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
                 (old_name, _def_scope) = position_names[line_num][line_idx]
                 candidate_name = old_name
