@@ -250,7 +250,7 @@ def processFile(l):
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
-                    temp_renaming_map = cc.computeRenaming(c_strategy,
+                    (temp_renaming_map, seen) = cc.computeRenaming(c_strategy,
                                                       name_candidates,
                                                       a_name_positions,
                                                       a_use_scopes,
@@ -262,7 +262,9 @@ def processFile(l):
                     postRen = PostRenamer()
                     renaming_map = postRen.updateRenamingMap(a_name_positions, 
                                                              position_names, 
+                                                             a_use_scopes,
                                                              temp_renaming_map, 
+                                                             seen,
                                                              r_strategy)
                     
                     # Apply renaming map and save output for future inspection
