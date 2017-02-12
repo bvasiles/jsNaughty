@@ -306,6 +306,7 @@ class BasicConsistencyResolver:
 
             else:
                 candidate_name = name
+                
                 while not self._isScopeValid(candidate_name, use_scopes):
                     candidate_name = '%s%d' % (candidate_name, self.newid())
                 
