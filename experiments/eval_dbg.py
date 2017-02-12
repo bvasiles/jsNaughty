@@ -357,11 +357,26 @@ def processFile(js_file_path):
                         print '\ntemp_renaming_map-------------'
                         for (name, def_scope), renaming in temp_renaming_map.iteritems():
                             print (name, def_scope[-50:]), renaming
+
+                    postRen = PostRenamer()
+                    tmp_renamed_text = postRen.applyRenaming(a_iBuilder, 
+                                                         a_name_positions, 
+                                                         temp_renaming_map)
+                    (ok, tmp_beautified_renamed_text, _err) = clear.web_run(tmp_renamed_text)
+                    if not ok:
+                        return (js_file_path, None, 'Beautifier fail')
+                    
+                    tmp_lexer = WebLexer(tmp_beautified_renamed_text)
+                    tmp_iBuilder = IndexBuilder(tmp_lexer.tokenList)
+                    tmp_scopeAnalyst = WebScopeAnalyst(tmp_beautified_renamed_text)
+                        
+                    (tmp_name_positions, 
+                     tmp_position_names,
+                     tmp_use_scopes) = prepHelpers(tmp_iBuilder, tmp_scopeAnalyst)
                     
                     # Fall back on original names in input, if 
                     # no translation was suggested
-                    postRen = PostRenamer()
-                    new_name_candidates = postRen.updateRenamingMap(a_name_positions, 
+                    new_name_candidates = postRen.updateRenamingMap(tmp_name_positions, 
                                                              position_names, 
                                                              temp_renaming_map, 
                                                              r_strategy)
