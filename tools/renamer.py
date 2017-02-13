@@ -17,12 +17,15 @@ from indexer import IndexBuilder
 from lexer import WebLexer
 from uglifyJS import Beautifier
 from scoper import WebScopeAnalyst 
+import itertools
  
 
 class PostRenamer:
     
     def __init__(self):
         self.RS = RenamingStrategies()
+        self.newid = itertools.count().next
+        
     
     def _isHash(self, name):
         # _45e4313f
@@ -41,6 +44,17 @@ class PostRenamer:
         for _line_idx, line in enumerate(self.tokens):
             tokens.append(' '.join([t for (_tt,t) in line]))
         return '\n'.join(tokens)
+    
+    
+    def _isScopeValid(self,
+                        candidate_name,
+                        seen,
+                        use_scopes):
+        valid = True
+        for use_scope in use_scopes:
+            if seen.get((candidate_name, use_scope), False):
+                valid = False
+        return valid
 
 
     def applyRenaming(self,
@@ -86,30 +100,58 @@ class PostRenamer:
     def updateRenamingMap(self,
                           name_positions, 
                           position_names,
+                          all_use_scopes,
                           renaming_map,
+                          seen,
                           r_strategy):
         new_renaming_map = {}
-        
+         
 #         print 'name_positions---------------'
 #         for k, v in name_positions.iteritems():
 #             print k, v
 #         print
-        
-        for (name, def_scope), renaming in renaming_map.iteritems():
-#             print (name, def_scope)
-#             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
-            
-            if not self.__is_invalid(renaming, r_strategy):
-                new_renaming_map[(name, def_scope)] = renaming
-            else:
+
+        for (name, def_scope), renaming in renaming_map.iteritems():         
+            new_renaming_map[(name, def_scope)] = renaming
+
+            if self.__is_invalid(renaming, r_strategy):
                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
                 (old_name, _def_scope) = position_names[line_num][line_idx]
+                candidate_name = old_name
                 
-                new_renaming_map[(name, def_scope)] = old_name
-        
-#         print 'map updated---------------'
+                use_scopes = all_use_scopes[(name, def_scope)]
+                
+                while not self._isScopeValid(candidate_name, seen, use_scopes):
+                        candidate_name = '%s%d' % (candidate_name, self.newid())
+                 
+                new_renaming_map[(name, def_scope)] = candidate_name
+         
         return new_renaming_map
-        
+         
+#         print 'map updated---------------'
+#                     self.name_candidates.setdefault(k, {})
+#                     self.name_candidates[k].setdefault(name_translation, set([]))
+#                     self.name_candidates[k][name_translation].add(n)
+#         new_name_candidates = {}
+#         
+#         for (name, def_scope), renaming in renaming_map.iteritems():
+# #             print (name, def_scope)
+# #             print '   --', renaming, self.__is_invalid(renaming, r_strategy), use_scope
+#             if self.__is_invalid(renaming, r_strategy):
+#                 (line_num, line_idx) = name_positions[(name, def_scope)][0]
+#                 (old_name, _def_scope) = position_names[line_num][line_idx]
+#                 
+#                 name_translation = old_name
+# 
+#             else:
+#                 name_translation = renaming
+#                 
+#             new_name_candidates.setdefault((name, def_scope), {})
+#             new_name_candidates[(name, def_scope)][name_translation] = set([1])
+# 
+#         return new_name_candidates
+            
+
 
 
 
@@ -451,8 +493,9 @@ class PreRenamer:
     
 #             print (token, def_scope)
     
+#         cs = BasicConsistencyResolver(debug_mode=False)
         cs = BasicConsistencyResolver(debug_mode=False)
-        renaming_map = cs.computeRenaming(name_candidates, 
+        (renaming_map, _seen) = cs.computeRenaming(name_candidates, 
                                           name_positions, 
                                           use_scopes, 
                                           iBuilder)

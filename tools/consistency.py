@@ -306,14 +306,17 @@ class BasicConsistencyResolver:
 
             else:
                 candidate_name = name
+                
                 #FOUND YOU! (This is warping the hashes to not hashes -> why are we doing this instead of replacing with the original variable name?)
-                while not self._isScopeValid(candidate_name, use_scopes):
-                    candidate_name = '%s%d' % (candidate_name, self.newid())
+                if not self._isHash(candidate_name):
+                    while not self._isScopeValid(candidate_name, use_scopes):
+                        candidate_name = '%s%d' % (candidate_name, self.newid())
                 
                 self.renaming_map[key] = candidate_name
                 self._markSeen(candidate_name, use_scopes)
 
-        return self.renaming_map
+        return (self.renaming_map, self.seen)
+    
     
     
     def _sortedCandidateTranslations(self,
@@ -403,7 +406,7 @@ class BasicConsistencyResolver:
 
 
 class ConsistencyResolver(BasicConsistencyResolver):
-    
+     
     def _isInvalid(self,
                    candidate_name):
         return self._isHash(candidate_name)
