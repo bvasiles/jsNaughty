@@ -6,6 +6,7 @@ Created on Feb 12, 2017
 
 from pygments.token import Token
 from pygments.token import is_token_subtype 
+from nltk.tag.brill import Pos
 
 class VariableMetrics:
 
@@ -16,12 +17,14 @@ class VariableMetrics:
         
         #Caching maps
         self.posToLineMap = {} #Map linking a items location in the token line to its line number.
-        self.globalVarLines = set() #Set of lines containing global variables
+        self.externalVarLines = set() #Set of lines containing global variables
         self.literalsOnLines = set() #Set of lines containing a literal
         self.forOnLines = set() #Set of lines containing a for statement
         self.whileOnLines = set() #Set of lines containing a while statement
+        self.lineLengthMap = {} #Map of the line_num -> line length in tokens.
         
         self.processTokenList()
+        self.buildLineLengthMap()
         
         #Map from keys of type (name, def_scope) (desired for output) -> [(name, flat_position)] (used by iB and sA)
         self.keyMap = {}
@@ -32,10 +35,10 @@ class VariableMetrics:
         #(name, def_scope) -> list of int
         self.lineList = {}
 
-        #Map for variables (name, def_scope) -> number of lines on which it appears with a global (not including def)
-        self.globalLines = {}
-        #Map for variables (name, def_scope) -> does a global appear on its def line. (bool)
-        self.globalOnDef = {}
+        #Map for variables (name, def_scope) -> number of lines on which it appears with an external variable (not including def line)
+        self.externalLines = {}
+        #Map for variables (name, def_scope) -> does an external variable appear on its def line. (bool)
+        self.externalOnDef = {}
         #Map for # of lines it appears on with a for or while statement
         #(name, def_scope) -> (for_count, while_count)
         self.loopLines = {}
@@ -43,6 +46,10 @@ class VariableMetrics:
         self.literalOnDef = {}
         #(name, def_scope) -> # of lines it appears where there is also a literal (not including def)
         self.literalLines = {}
+        #(name, def_scope) -> length in tokens of the longest line the variable appears on
+        self.maxLengthLine = {}
+        #(name, def_scope) -> average length in tokens of the lines the variable appears on
+        self.aveLineLength = {}
         
         #Fill in all the maps
         self.getFileMetrics()
@@ -85,8 +92,28 @@ class VariableMetrics:
                 #Check if while loop
                 if(token_type == Token.Keyword and token.strip() == u'while'):
                     self.whileOnLines.add(line_num)
-            
+                    
+    def buildLineLengthMap(self):
+        """
+        Helper: Fill in the field that tracks the length of each line in tokens via a map.
         
+        Parameters
+        ---------- 
+        
+        Returns
+        -------
+        """     
+        orderedLines = sorted(self.iB.tokMap.items(), key = lambda (x,y) : (y[0],y[1]))
+        for (tok_pos, char_pos) in orderedLines:
+            line_num = tok_pos[0]
+            if(line_num not in self.lineLengthMap):
+                self.lineLengthMap[line_num] = 0 #All lines will have the newline token, which we don't want to count, so start at 0
+            else:
+                self.lineLengthMap[line_num] += 1
+        
+    
+    
+    
     def posToLine(self, position):
         """
         Helper: Given a token position in the tokenlist, return what line of the file it is on.
@@ -104,14 +131,15 @@ class VariableMetrics:
         if(len(self.posToLineMap) == 0):
             #Get the line, character position of the token.
             for name, pos in self.sA.name2useScope.keys():
-                self.posToLineMap[pos] = self.iB.revFlatMat[position][0]
+                self.posToLineMap[pos] = self.iB.revFlatMat[pos][0]
         
         return self.posToLineMap[position]
     
     
-    def isGlobalOnLine(self, line):
+    def isExternalOnLine(self, line):
         """
-        Helper: Is there a global variable on this line.
+        Helper: Is there an external variable on this line. An external variable is one defined outside this snippet
+        This means it cannot be minified.
         
         Parameters
         ----------
@@ -119,16 +147,25 @@ class VariableMetrics:
         
         Returns
         -------
-        true if there is a global variable used on this line and false otherwise
+        true if there is a external variable used on this line and false otherwise
         """
-        if(len(self.globalVarLines) == 0):
+        if(len(self.externalVarLines) == 0):
             #Fill in the map
-            for name_pos, globalBool in self.sA.isGlobal.iteritems():
-                if(globalBool):
-                    line = self.posToLine(name_pos[1])
-                    self.globalVarLines.add(line)     
-        else:
-            return line in self.globalVarLines
+            
+            #for name_pos, globalBool in self.sA.isGlobal.iteritems():
+            #    if(globalBool):
+            #        l = self.posToLine(name_pos[1])
+            #        self.externalVarLines.add(l)     
+            for lineCharPos, name in self.iB.charPosition2Name.iteritems():
+                flatPos =  self.iB.flatMap[lineCharPos]
+                if((name, flatPos) in self.sA.isGlobal):
+                    if(self.sA.isGlobal[(name,flatPos)]):
+                        self.externalVarLines.add(lineCharPos[0])
+                else:
+                    self.externalVarLines.add(lineCharPos[0])
+        
+        
+        return line in self.externalVarLines
 
 
     def isDefinitionLine(self, variable, line):
@@ -144,8 +181,28 @@ class VariableMetrics:
         -------
         true if this variable is defined on this line, false otherwise
         """
+        print("Definition Line: ")
+        print(self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][0])
+        return self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][0] == line
+    
+    def lineMetrics(self, uniqueLines):
+        """
+        Helper: find the maximum line length and the average line length from a set of lines
         
-        return self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][1] == line
+        Parameters
+        ----------
+        uniqueLines: a set of valid line numbers for this file.
+        
+        Returns
+        -------
+        (maxLineLength -> longest line in the set (in tokens),
+        aveLineLength -> average length of the lines in the set (in tokens))
+        """
+        lengths = []
+        for line in uniqueLines:
+            lengths.append(self.lineLengthMap[line])
+            
+        return (max(lengths), sum(lengths)/(float)(len(lengths)))
     
     def getFileMetrics(self):
         """
@@ -178,47 +235,76 @@ class VariableMetrics:
         #Fill in the line metrics for each variable  
         
         for variable, lines in self.lineList.iteritems():
-            for line in set(lines): #Look at each line once.
+            #Fill in the data with false and 0s and then update information if we see it in lines.
+            print(variable)
+            if(variable not in self.externalOnDef):
+                self.externalOnDef[variable] = False
             
+            if(variable not in self.literalOnDef):
+                self.literalOnDef[variable] = False
+                
+            if(variable not in self.externalLines):
+                self.externalLines[variable] = []
+            
+            if(variable not in self.literalLines):
+                self.literalLines[variable] = []            
+                
+            if(variable not in self.loopLines):
+                self.loopLines[variable] = (0,0)
+            
+            if(variable not in self.maxLengthLine):
+                self.maxLengthLine[variable] = 0
+                
+            if(variable not in self.aveLineLength):
+                self.aveLineLength[variable] = 0
+            
+            uniqueLines = set(lines)
+            
+            for line in uniqueLines: #Look at each line once.
+                print(line)
                 #Is this line the variable definition line?
                 if(self.isDefinitionLine(variable, line)):
                     #Check if the variable definition appears with a global variable
-                    self.globalOnDef[variable] = self.isGlobalOnLine(line)
+                    self.externalOnDef[variable] = self.isExternalOnLine(line)
                     #Check if a literal appears on its definition line.
-                    self.literalOnDef = self.isLiteralOnLine(line)
+                    self.literalOnDef[variable] = self.isLiteralOnLine(line)
                 else:
                     #Increment the count of lines that a global appears on if possible
-                    if(variable not in self.globalLines):
-                        self.globalLines[variable] = 0
-                    if(self.isGlobalOnLine(line)):
-                        self.globalLines[variable] += 1
+                    if(self.isExternalOnLine(line)):
+                        self.externalLines[variable].append(line)
                         
                     #Increment count of lines that a literal appears on if possible
-                    if(variable not in self.literalLines):
-                        self.literalLines[variable] = 0
                     if(self.isLiteralOnLine(line)):
-                        self.literalLines[variable] += 1
+                        self.literalLines[variable].append(line)
                 
                 
                 #Do the for and while checks regardless of definition line status.         
-                if(variable not in self.loopLines):
-                    self.literalLines[variable] = (0,0)
                 isFor = self.isForOnLine(line)
                 isWhile = self.isWhileOnLine(line)    
                 
                 if(isFor):
-                    tmp = self.literalLines[variable]
-                    self.literalLines[variable] = (tmp[0] + 1, tmp[1])
+                    tmp = self.loopLines[variable]
+                    self.loopLines[variable] = (tmp[0] + 1, tmp[1])
                     
                 if(isWhile):
                     tmp = self.literalLines[variable]
-                    self.literalLines[variable] = (tmp[0], tmp[1] + 1)
+                    self.loopLines[variable] = (tmp[0], tmp[1] + 1)
+             
+             
+            #Find the longest line this variable occurs on and the average linelength
+            (longest, ave) = self.lineMetrics(uniqueLines)
+            assert(ave <= longest)
+            self.maxLengthLine[variable] = longest
+            self.aveLineLength[variable] = ave     
+
             
     
     def getMaxListCount(self, list):
         """
         Helper: return the max occurances of a list
         """
+        #print("Max counting -> line list")
+        #print(list)
         tmpMax = {}
         for item in list:
             if item in tmpMax:
@@ -256,17 +342,20 @@ class VariableMetrics:
         (# lines it appears on, max # times it appears on a line, 
         global appears on def line?, # of usage lines it appears on with a global,
         times it appears on a while line?, times it appears on a for line?,
-        literal appears on def line?, # of usage lines it appears on with a literal)
+        literal appears on def line?, # of usage lines it appears on with a literal,
+        longest line in tokens it appears on, average line length in tokens of the lines it appears on)
         """
         
-        numLines = len(self.lineList[variable])
-        maxLine = self.getMaxListCount(self.lineList)
-        globalDef = self.globalOnDef[variable]
-        usageGlobal = len(self.globalLines[variable])
+        numLines = len(set(self.lineList[variable]))
+        maxLine = self.getMaxListCount(self.lineList[variable])
+        externalDef = self.externalOnDef[variable]
+        usageExternal = len(self.externalLines[variable])
         (usedInFor, usedInWhile) = self.loopLines[variable]
         literalDef = self.literalOnDef[variable]
         usageLiteral = len(self.literalLines[variable])
-        return (numLines, maxLine, globalDef, usageGlobal, usedInFor, usedInWhile, literalDef, usageLiteral)
+        maxLengthLine = self.maxLengthLine[variable]
+        aveLineLength = self.aveLineLength[variable]
+        return (numLines, maxLine, externalDef, usageExternal, usedInFor, usedInWhile, literalDef, usageLiteral, maxLengthLine, aveLineLength)
         
     
     def __str__(self):
@@ -280,10 +369,10 @@ class VariableMetrics:
         output.append("lineList ---------------------------------------")
         output.append(self.lineList.__str__())
 
-        output.append("globalLines ---------------------------------------")
-        output.append(self.globalLines.__str__())
-        output.append("globalOnDef ---------------------------------------")
-        output.append(self.globalOnDef.__str__())
+        output.append("externalLines ---------------------------------------")
+        output.append(self.externalLines.__str__())
+        output.append("externalOnDef ---------------------------------------")
+        output.append(self.externalOnDef.__str__())
         output.append("loopLines ---------------------------------------")
         output.append(self.loopLines.__str__())
         output.append("literalOnDef ---------------------------------------")
@@ -293,14 +382,16 @@ class VariableMetrics:
         
         output.append("posToLineMap ---------------------------------------")
         output.append(self.posToLineMap.__str__())
-        output.append("globalVarLines ---------------------------------------")
-        output.append(self.globalVarLines.__str__())
+        output.append("externalVarLines ---------------------------------------")
+        output.append(self.externalVarLines.__str__())
         output.append("literalsOnLines ---------------------------------------")
         output.append(self.literalsOnLines.__str__())
         output.append("forOnLines ---------------------------------------")
         output.append(self.forOnLines.__str__())
         output.append("whileOnLines ---------------------------------------")
         output.append(self.whileOnLines.__str__())
-        
+        output.append("lineLengthMap ---------------------------------------")
+        output.append(self.lineLengthMap.__str__())
+                
         return "\n".join(output)
         

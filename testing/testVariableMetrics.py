@@ -23,18 +23,29 @@ class scopeNameTest(unittest.TestCase):
         print(self.fileList)
 
     def testFiles(self):
+        #TODO: Automated checks against the files.  
+        #Known bugs:  The definitions of sum and numberEquals in test_file1 seem to be pointing to the wrong instance...
+        
         for nextFile in self.fileList:
             print(nextFile)
             lexed = Lexer(nextFile)
             ib = IndexBuilder(lexed.tokenList)
             sa = ScopeAnalyst(nextFile)
+            print("TokenList----------------------------------------------------------------")
+            print(lexed.tokenList)
+            print("Index Builder----------------------------------------------------------------")
+            print(ib)
+            print("Scope Analyst----------------------------------------------------------------")
+            print(sa)
             vm = VariableMetrics(sa, ib, lexed.tokenList)
             print("VM----------------------------------------------------------------")
             print(vm)
             print("VM----------------------------------------------------------------")
             for var in vm.getVariables():
                 print(var)
+                print("Num Lines,Max Lines,Global Def,Global Usage,For,While,Literal Def,Literal Usage,Max Length Line,Ave Line Length")
                 print vm.getNameMetrics(var)
+            break
         
     
 if __name__=="__main__":
