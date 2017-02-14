@@ -6,7 +6,6 @@ Created on Feb 12, 2017
 
 from pygments.token import Token
 from pygments.token import is_token_subtype 
-from nltk.tag.brill import Pos
 
 class VariableMetrics:
 
