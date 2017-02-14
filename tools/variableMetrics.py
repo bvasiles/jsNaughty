@@ -180,8 +180,8 @@ class VariableMetrics:
         -------
         true if this variable is defined on this line, false otherwise
         """
-        print("Definition Line: ")
-        print(self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][0])
+        #print("Definition Line: ")
+        #print(self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][0])
         return self.iB.revFlatMat[self.sA.nameDefScope2pos[variable]][0] == line
     
     def lineMetrics(self, uniqueLines):
@@ -200,6 +200,8 @@ class VariableMetrics:
         lengths = []
         for line in uniqueLines:
             lengths.append(self.lineLengthMap[line])
+            
+        #print(lengths)
             
         return (max(lengths), sum(lengths)/(float)(len(lengths)))
     
@@ -235,7 +237,7 @@ class VariableMetrics:
         
         for variable, lines in self.lineList.iteritems():
             #Fill in the data with false and 0s and then update information if we see it in lines.
-            print(variable)
+            #print(variable)
             if(variable not in self.externalOnDef):
                 self.externalOnDef[variable] = False
             
@@ -260,7 +262,7 @@ class VariableMetrics:
             uniqueLines = set(lines)
             
             for line in uniqueLines: #Look at each line once.
-                print(line)
+                #print(line)
                 #Is this line the variable definition line?
                 if(self.isDefinitionLine(variable, line)):
                     #Check if the variable definition appears with a global variable
@@ -291,7 +293,10 @@ class VariableMetrics:
              
              
             #Find the longest line this variable occurs on and the average linelength
+            #print("Line lengths")
             (longest, ave) = self.lineMetrics(uniqueLines)
+            #print(longest)
+            #print(ave)
             assert(ave <= longest)
             self.maxLengthLine[variable] = longest
             self.aveLineLength[variable] = ave     
