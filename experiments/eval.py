@@ -178,18 +178,18 @@ def processFile(l):
             return (js_file_path, None, 'ScopeAnalyst fail')
         
         #Map the original names to the minified counterparts.
-        orderedVarsOld = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-        orderedVarsNew = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsOld = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
 
-        if(len(oldNameList) != len(newNewList)):
+        if(len(orderedVarsOld) != len(orderedVarsNew)):
             return (js_file_path, None, "Old and New Name lists different length")
         
         for i in range(0, len(orderedVarsOld)):
             name_old = orderedVarsOld[i][0]
-            def_scope_old = scopeAnalyst_clear[orderedVarsOld[i]]
+            def_scope_old = scopeAnalyst_clear.name2defScope[orderedVarsOld[i]]
             
             name_new = orderedVarsNew[i][0]
-            def_scope_old = scopeAnalyst_clear[orderedVarsNew[i]]
+            def_scope_new = scopeAnalyst.name2defScope[orderedVarsNew[i]]
             min_name_map[(name_new, def_scope_new)] = (name_old, def_scope_old) 
         
         #Once we have the scopeAnalyst, iBuilder, and tokenlist for the minified
@@ -361,9 +361,9 @@ def processFile(l):
         #create the rows for the suggestion_model.csv
         for suggestionKey, s_feat in suggestion_features.iteritems():
             variableKey = (suggestionKey[0], suggestionKey[1])
-            original_name = min_name_map[variableyKey][0]
+            original_name = min_name_map[variableKey][0]
             n_feat = list(name_features[variableKey])
-            model_rows.append(list(original_name) + list(suggestionKey) + n_feat + s_feat)
+            model_rows.append([original_name] + list(suggestionKey) + n_feat + s_feat)
          
         return (js_file_path, 'OK', candidates, model_rows)
 
