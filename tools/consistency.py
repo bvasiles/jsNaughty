@@ -7,6 +7,7 @@ Created on Dec 22, 2016
 from lmQuery import LMQuery
 import itertools
 
+ENTROPY_ERR = -9999999999
 
 class BasicConsistencyResolver:
 
@@ -448,7 +449,7 @@ class LMConsistencyResolver(ConsistencyResolver):
                 self.lm_cache.setdefault(line, self.lm_query.run(line))
              
             if not lm_ok:
-                lm_log_prob = -9999999999
+                lm_log_prob = ENTROPY_ERR
              
             line_log_probs[idx] = lm_log_prob
          
@@ -540,6 +541,50 @@ class LMAvgConsistencyResolver(LMConsistencyResolver):
 
 class LMDropConsistencyResolver(LMConsistencyResolver):
     
+    def __init__(self, 
+             debug_mode,
+             lm_path):
+    
+        LMConsistencyResolver.__init__(self, debug_mode, lm_path)
+    
+        #A series of caches for building a model comparing the entropy changes for various suggestions to a variable. 
+        #All of these are keyed by (name, def_scope, suggested_translation)
+        
+        #Caches for sorting all the entropies prior to computation.  The values are a list of entropies or entropy drops
+        self.log_probs = {}
+        self.log_drops = {}
+        
+        
+    
+    def getEntropyStats(self, variable, suggestion):
+        """
+        Returns a set of entropy stats about a variable and suggestion combination.
+        
+        Parameters
+        ----------
+        variable: (name, def_scope) identifier to be renamed
+        suggestion: string for the replacement name
+        
+        unseen_candidates: set of candidate name translations to consider
+        
+        Returns
+        -------
+        (average log prob, average drop, min gain in log prob, max gain in log prob)
+        if nothing is listed for the probabilites, return 4 copies of ENTROPY_ERR
+        """
+        cacheKey = (variable[0], variable[1], suggestion)
+        if(len(self.log_probs) != 0):
+            aveLogProb = sum(self.log_probs[cacheKey])/(float)(len(self.log_probs[cacheKey]))
+            
+            aveLogDrop = sum(self.log_drops[cacheKey])/(float)(len(self.log_drops[cacheKey]))
+            #Are these negative?
+            minGain = max(self.log_drops)
+            maxGain = min(self.log_drops)
+            return (aveLogProb, aveLogDrop, minGain, maxGain)
+        else:
+            return (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)
+        
+    
     def _rankUnseenCandidates(self,
                                key,
                                unseen_candidates,
@@ -580,6 +625,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
             the first element being the most desirable. 
         """
         
+        
         (name, _def_scope) = key
         
         # Lines where (name, def_scope) appears
@@ -600,6 +646,13 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
                  
         for candidate_name in unseen_candidates:
              
+            cacheKey = (name, _def_scope, candidate_name)
+            if(cacheKey not in self.log_probs):
+                self.log_probs = []
+            
+            if(cacheKey not in self.log_drops):
+                self.log_drops = []
+             
             draft_lines_str = self._insertNameInTempLines(candidate_name, 
                                                            lines, 
                                                            pairs)
@@ -616,13 +669,17 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
                          
             line_log_probs = []
             for idx, lm_log_prob in translated_log_probs.iteritems():
-                line_log_probs.append(untranslated_log_probs[idx] - lm_log_prob)
+                drop = untranslated_log_probs[idx] - lm_log_prob
+                
+                line_log_probs.append(drop)
+                self.log_drops[cacheKey].append(drops)
+                self.log_probs[cacheKey].append(lm_log_prob)
                 
                 if self.debug_mode:
                     print '\t\t prob[%d] =' % idx, lm_log_prob, '\tdrop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
             
             if not len(line_log_probs):
-                lm_log_prob = -9999999999
+                lm_log_prob = ENTROPY_ERR
             else:
                 lm_log_prob = min(line_log_probs)
             

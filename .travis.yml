@@ -7,6 +7,9 @@ before_script:
 
 install:
 
+#TODO:
+#let scopeNameTest.py run on a small sample of most recently processed files after a commit (~ 100).
+
 script:
   - pwd
   - python ./testing/deobfuscate_tests.py

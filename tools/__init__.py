@@ -27,4 +27,6 @@ from tools.mosesParser import MosesParser
 from tools.renamer import PostRenamer, PreRenamer
 from tools.summarizer import TranslationSummarizer
 from tools.consistency import *
+from tools.variableMetrics import VariableMetrics
+from tools.suggestionMetrics import *
 from tools.config import RenamingStrategies, ConsistencyStrategies, MosesProxy

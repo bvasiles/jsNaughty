@@ -215,169 +215,176 @@ class defobfuscate_tests(unittest.TestCase):
     
     
     
-    
-    def testPostprocessing(self):
-        '''
-        TODO: Test that the post-processing functions work correctly.
-        This will build off of existing Moses output (run separately from these tests)
-        Example call:
-        processed_translation = processTranslationScopedServer(translation, 
-                                                              iBuilder_ugly, 
-                                                              scopeAnalyst, 
-                                                              lm_path)
-        What to look for in the tests?
-        1) All non identifiers unchanged.
-        2) No identifiers remain as hashes - either a translation or the original one.
-        3) Consistency of same variable name in the same scope.
-        4) Different variables in the same scope have different names.
-        5) Output same number of tokens as the input.
-        '''
-        lm_path = ""
-        for tC_ind in range(0, len(self.postText)):
-            ib1 = IndexBuilder(self.obsLexed[tC_ind].tokenList)
-            sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[tC_ind])
-            
-            (a_name_positions, 
-                 a_position_names) = prepHelpers(ib1, sa1)
-            
-            translation = self.postText[tC_ind]
-    
-            # Parse moses output
-            mp = MosesParser()
-            
-            name_candidates = mp.parse(translation,
-                                       ib1,
-                                       a_position_names,
-                                       sa1)
-            # name_candidates is a dictionary of dictionaries: 
-            # keys are (name, None) (if scopeAnalyst=None) or 
-            # (name, def_scope) tuples (otherwise); 
-            # values are suggested translations with the sets 
-            # of line numbers on which they appear.
-            
-            cr = ConsistencyResolver()
-            CS = ConsistencyStrategies()
-            c_strategy = CS.FREQLEN
-            
-            temp_renaming_map = cr.computeRenaming(c_strategy,
-                                                      name_candidates,
-                                                      a_name_positions,
-                                                      ib1,
-                                                      lm_path)
-                    
-    #             # Fall back on original names in input, if 
-    #             # no translation was suggested
-            postRen = PostRenamer()
-    #             renaming_map = postRen.updateRenamingMap(a_name_positions, 
-    #                                                      position_names, 
-    #                                                      temp_renaming_map, 
-    #                                                      r_strategy)
-                    
-                # Apply renaming map and save output for future inspection
-            renamed_text = postRen.applyRenaming(ib1, 
-                                                 a_name_positions, 
-                                                 temp_renaming_map)
-            
-    #         clear = Beautifier()
-    #         (_ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
-            a_lexer = WebLexer(renamed_text)
-            a_iBuilder = IndexBuilder(a_lexer.tokenList)
-            p1 = a_iBuilder.tokens
-            
-            #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
-            p1_combined = reduce(lambda x,y: x+y, p1)
-            #print(p1_combined)
-            #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
-            #Without re-running the beautifer for spacing, this is missing whitespace.
-    
-            #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
-            #print(self.obsLexed[tC_ind].tokenList)
-            #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
-            #1) + 5)
-            i = 0
-            for token_type, token in self.obsLexed[tC_ind].tokenList:
-                if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
-                    continue
-                if(is_token_subtype(token_type, Token.Name)):
-                    i += 1
-                    continue
-                #print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
-                self.assertTrue(p1_combined[i] == (token_type, token))
-                #try:
-                #    print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
-                #    self.assertTrue(p1_combined[i] == (token_type, token))
-                #except:
-                #    print("Past end: " + str((token_type, token)))
-                i += 1
-            #2)
-            for token_type, token in p1_combined:
-                self.assertTrue("<<" not in token)
-                
-            #3) + 4)
-            #Weird note: the scope analyst does not find scopes correctly on the post-processed file...
-            #Data structures needed:
-            #Map from original variables to new variables
-            #In old variables.  
-            #1) All instances of a variable in a scope.
-            #2) All variables in a scope.
-            
-            #Build mapping from old to new names. (TODO remove some maybe?)
-            oldNameList = []
-            newNameList = []
-            i = 0
-            for token_type, token in self.obsLexed[tC_ind].tokenList:
-                if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
-                    continue
-                if(is_token_subtype(token_type, Token.Name)):
-                    oldNameList.append(token)
-                    newNameList.append(p1_combined[i][1])
-                    
-                i += 1
-            
-            #name2defScope? name2useScope? name2pth?
-            orderedVars = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
-            #print("Scoped Variables")
-            #print(orderedVars)
-            #Remove variable indexes from old and new list that aren't tracked by scoper. (Is this right?)
-            toRemove = []
-            trackingIndex = 0
-            for (var, loc) in orderedVars:
-                while(oldNameList[trackingIndex] != var):
-                    oldNameList = oldNameList[:trackingIndex] + oldNameList[trackingIndex+1:]
-                    newNameList = newNameList[:trackingIndex] + newNameList[trackingIndex+1:]
-                trackingIndex += 1
-                
-            
-            
-            scopeMap = {}
-            #Build map linking scopes to indexes in the old and new list.
-            curIndex = 0
-            for key in orderedVars:
-                scope = sa1.name2useScope[key]
-                if(scope in scopeMap): #Existing Scope?
-                    scopeMap[scope].append(curIndex)
-                else:
-                    scopeMap[scope] = [curIndex]
-                curIndex += 1
-                    
-            #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
-            #for j in range(0,len(oldNameList)):
-            #    print(oldNameList[j] + " ----- " + newNameList[j])
-            #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
-            
-            for scope in scopeMap.keys():
-                #print("Scope:    " + str(scope) + "    " + str(scopeMap[scope]))
-                if(len(scopeMap[scope]) > 1): #No conflicts if only one var in scope
-                    #Iterate over all pairs in the scope.
-                    for i in range(0,len(scopeMap[scope])-1):
-                        for j in range(i+1, len(scopeMap[scope])):
-                            fIndex = scopeMap[scope][i]
-                            sIndex = scopeMap[scope][j]
-                            #print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
-                            #names that are the same in the original scope must be the same in the new scope
-                            #and names that are different in the original scope must be the different in the new scope
-                            self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
-            
+      #Superceded by the scopeNameTest.py
+#     def testPostprocessing(self):
+#         '''
+#         TODO: Test that the post-processing functions work correctly.
+#         This will build off of existing Moses output (run separately from these tests)
+#         Example call:
+#         processed_translation = processTranslationScopedServer(translation, 
+#                                                               iBuilder_ugly, 
+#                                                               scopeAnalyst, 
+#                                                               lm_path)
+#         What to look for in the tests?
+#         1) All non identifiers unchanged.
+#         2) No identifiers remain as hashes - either a translation or the original one.
+#         3) Consistency of same variable name in the same scope.
+#         4) Different variables in the same scope have different names.
+#         5) Output same number of tokens as the input.
+#         '''
+#         lm_path = ""
+#         for tC_ind in range(0, len(self.postText)):
+#             ib1 = IndexBuilder(self.obsLexed[tC_ind].tokenList)
+#             sa1 = ScopeAnalyst(self.obsfuscatedTextFiles[tC_ind])
+#             
+#             (a_name_positions, 
+#                  a_position_names,
+#                  a_use_scopes) = prepHelpers(ib1, sa1)
+#             
+#             translation = self.postText[tC_ind]
+#     
+#             # Parse moses output
+#             mp = MosesParser()
+#             
+#             name_candidates = mp.parse(translation,
+#                                        ib1,
+#                                        a_position_names)
+#             # name_candidates is a dictionary of dictionaries: 
+#             # keys are (name, None) (if scopeAnalyst=None) or 
+#             # (name, def_scope) tuples (otherwise); 
+#             # values are suggested translations with the sets 
+#             # of line numbers on which they appear.
+#             
+#             cr = ConsistencyResolver()
+#             CS = ConsistencyStrategies()
+#             c_strategy = CS.FREQLEN
+#             
+#             (temp_renaming_map, seen) = cr.computeRenaming(c_strategy,
+#                                                       name_candidates,
+#                                                       a_name_positions,
+#                                                       a_use_scopes,
+#                                                       ib1,
+#                                                       lm_path)
+#                     
+#     #             # Fall back on original names in input, if 
+#     #             # no translation was suggested
+#             postRen = PostRenamer()
+#     #             renaming_map = postRen.updateRenamingMap(a_name_positions, 
+#     #                                                      position_names, 
+#     #                                                      temp_renaming_map, 
+#     #                                                      r_strategy)
+#                     
+#                 # Apply renaming map and save output for future inspection
+#             renamed_text = postRen.applyRenaming(ib1, 
+#                                                  a_name_positions, 
+#                                                  temp_renaming_map)
+#             renaming_map = postRen.updateRenamingMap(a_name_positions, 
+#                                             position_names, 
+#                                             a_use_scopes,
+#                                             temp_renaming_map, 
+#                                             seen,
+#                                             r_strategy)
+#             
+#     #         clear = Beautifier()
+#     #         (_ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
+#             a_lexer = WebLexer(renamed_text)
+#             a_iBuilder = IndexBuilder(a_lexer.tokenList)
+#             p1 = a_iBuilder.tokens
+#             
+#             #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
+#             p1_combined = reduce(lambda x,y: x+y, p1)
+#             #print(p1_combined)
+#             #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
+#             #Without re-running the beautifer for spacing, this is missing whitespace.
+#     
+#             #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
+#             #print(self.obsLexed[tC_ind].tokenList)
+#             #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
+#             #1) + 5)
+#             i = 0
+#             for token_type, token in self.obsLexed[tC_ind].tokenList:
+#                 if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
+#                     continue
+#                 if(is_token_subtype(token_type, Token.Name)):
+#                     i += 1
+#                     continue
+#                 #print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
+#                 self.assertTrue(p1_combined[i] == (token_type, token))
+#                 #try:
+#                 #    print(str(p1_combined[i]) + " =?= " + str((token_type, token)))
+#                 #    self.assertTrue(p1_combined[i] == (token_type, token))
+#                 #except:
+#                 #    print("Past end: " + str((token_type, token)))
+#                 i += 1
+#             #2)
+#             for token_type, token in p1_combined:
+#                 self.assertTrue("<<" not in token)
+#                 
+#             #3) + 4)
+#             #Weird note: the scope analyst does not find scopes correctly on the post-processed file...
+#             #Data structures needed:
+#             #Map from original variables to new variables
+#             #In old variables.  
+#             #1) All instances of a variable in a scope.
+#             #2) All variables in a scope.
+#             
+#             #Build mapping from old to new names. (TODO remove some maybe?)
+#             oldNameList = []
+#             newNameList = []
+#             i = 0
+#             for token_type, token in self.obsLexed[tC_ind].tokenList:
+#                 if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
+#                     continue
+#                 if(is_token_subtype(token_type, Token.Name)):
+#                     oldNameList.append(token)
+#                     newNameList.append(p1_combined[i][1])
+#                     
+#                 i += 1
+#             
+#             #name2defScope? name2useScope? name2pth?
+#             orderedVars = sorted(sa1.name2useScope.keys(), key = lambda x: x[1])
+#             #print("Scoped Variables")
+#             #print(orderedVars)
+#             #Remove variable indexes from old and new list that aren't tracked by scoper. (Is this right?)
+#             toRemove = []
+#             trackingIndex = 0
+#             for (var, loc) in orderedVars:
+#                 while(oldNameList[trackingIndex] != var):
+#                     oldNameList = oldNameList[:trackingIndex] + oldNameList[trackingIndex+1:]
+#                     newNameList = newNameList[:trackingIndex] + newNameList[trackingIndex+1:]
+#                 trackingIndex += 1
+#                 
+#             
+#             
+#             scopeMap = {}
+#             #Build map linking scopes to indexes in the old and new list.
+#             curIndex = 0
+#             for key in orderedVars:
+#                 scope = sa1.name2useScope[key]
+#                 if(scope in scopeMap): #Existing Scope?
+#                     scopeMap[scope].append(curIndex)
+#                 else:
+#                     scopeMap[scope] = [curIndex]
+#                 curIndex += 1
+#                     
+#             #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
+#             #for j in range(0,len(oldNameList)):
+#             #    print(oldNameList[j] + " ----- " + newNameList[j])
+#             #print("(" + str(tC_ind) + ") OldName ---------------------- New Name")
+#             
+#             for scope in scopeMap.keys():
+#                 #print("Scope:    " + str(scope) + "    " + str(scopeMap[scope]))
+#                 if(len(scopeMap[scope]) > 1): #No conflicts if only one var in scope
+#                     #Iterate over all pairs in the scope.
+#                     for i in range(0,len(scopeMap[scope])-1):
+#                         for j in range(i+1, len(scopeMap[scope])):
+#                             fIndex = scopeMap[scope][i]
+#                             sIndex = scopeMap[scope][j]
+#                             #print("Pair : " + oldNameList[fIndex] + ","  + oldNameList[sIndex] + " --> " + newNameList[fIndex] +  "," +  newNameList[sIndex])
+#                             #names that are the same in the original scope must be the same in the new scope
+#                             #and names that are different in the original scope must be the different in the new scope
+#                             self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
+           
     
 
 
