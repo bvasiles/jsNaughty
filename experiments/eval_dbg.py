@@ -414,7 +414,9 @@ def processFile(js_file_path):
                                 suggestionKey = (variableKey[0], variableKey[1], suggestionName)
 
                                 entropyVals = cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
-                                if(entropyVals != (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)):
+                                
+                                if(True): #eval_dbg only
+                                #if(entropyVals != (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)):
                                     suggestionValue = [len(linesSuggested)] + \
                                                        list(getSuggestionStats(suggestionName)) + \
                                                        list(entropyVals)
@@ -523,8 +525,9 @@ def processFile(js_file_path):
         for suggestionKey, s_feat in suggestion_features.iteritems():
             variableKey = (suggestionKey[0], suggestionKey[1])
             original_name = min_name_map[variableKey][0]
-            n_feat = list(name_features[variableKey])
-            model_rows.append([original_name] + list(suggestionKey) + n_feat + s_feat)
+            if(variableKey in name_features): #eval_dbg only
+                n_feat = list(name_features[variableKey])
+                model_rows.append([original_name] + list(suggestionKey) + n_feat + s_feat)
          
         return (js_file_path, 'OK', candidates, model_rows)
 

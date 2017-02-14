@@ -176,7 +176,16 @@ def processFile(l):
             scopeAnalyst = WebScopeAnalyst(minified_text)
         except:
             return (js_file_path, None, 'ScopeAnalyst fail')
-        
+       
+        try:
+            scopeAnalyst_clear = WebScopeAnalyst(beautified_text)
+        except:
+            return (js_file_path, None, 'ScopeAnalyst clear fail')
+
+        #Map the original names to the minified counterparts.
+        orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsOld = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
+ 
         #Map the original names to the minified counterparts.
         orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
         orderedVarsOld = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
