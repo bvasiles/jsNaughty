@@ -672,7 +672,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
                 drop = untranslated_log_probs[idx] - lm_log_prob
                 
                 line_log_probs.append(drop)
-                self.log_drops[cacheKey].append(drops)
+                self.log_drops[cacheKey].append(drop)
                 self.log_probs[cacheKey].append(lm_log_prob)
                 
                 if self.debug_mode:

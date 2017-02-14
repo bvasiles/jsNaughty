@@ -19,6 +19,8 @@ from tools import WebScopeAnalyst
 from tools import TranslationSummarizer
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
+from tools import VariableMetrics
+from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
 
@@ -47,6 +49,17 @@ def processFile(l):
     
     
     candidates = []
+    
+    #Data for the suggestion model.csv
+    #Map of variable (name, def_scope) -> results of variableMetrics features function
+    name_features = {}
+    
+    #Map of variable-suggestion (name, def_scope, suggestion) -> suggestion line counts + suggestionMetrics features function
+    #Ultimately, we will iterate over this to get the keys out of name_features and build model_rows
+    suggestion_features = {}
+    
+    #Output Lines for the suggestoin_model.csv
+    model_rows = [] 
     
     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
@@ -161,6 +174,16 @@ def processFile(l):
             scopeAnalyst = WebScopeAnalyst(minified_text)
         except:
             return (js_file_path, None, 'ScopeAnalyst fail')
+        
+        
+        #Once we have the scopeAnalyst, iBuilder, and tokenlist for the minified
+        #version, we can get the name properties
+        vm = VariableMetrics(scopeAnalyst, iBuilder_ugly, lex_ugly.tokenList)
+        variableKeySet = vm.getVariables()
+        for variableKey in variableKeySet:
+            name_features[variableKey] = vm.getNameMetrics(variableKey)
+        
+        
          
         (_name_positions, \
          position_names,
@@ -257,6 +280,27 @@ def processFile(l):
                                                       a_iBuilder,
                                                       lm_path)
                     
+                    
+                    #After computeRenaming, we have both the entropies stored
+                    #if we are in LMDrop strategy and have the suggestions
+                    #frequency from name_candidates.  Fill in suggestion_Features
+                    if(c_strategy == CS.LMDROP and suggestion_features == {}):
+                        assert(cc.suggestion_cache != None)
+                        #Need some way of iterating over all name, suggestion groups...
+                        """
+                        name_candidates: dict
+                            name_candidates[(name, def_scope)][name_translation] 
+                            = set of line numbers in the translation
+                        """
+                        for variableKey, suggestionDictionary in name_candidates.iteritems():
+                            for suggestionName, linesSuggested in suggestionDictionary.iteritems():
+                                suggestionKey = (variableKey[0], variableKey[1], suggestionName)
+                                suggestionValue = (len(linesSuggested)) + \
+                                                   getSuggestionStats(suggestionName) + \
+                                                   cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
+                                                      
+                                suggestion_features[suggestionKey] = suggestionValue
+                    
                     # Fall back on original names in input, if 
                     # no translation was suggested
                     postRen = PostRenamer()
@@ -293,12 +337,19 @@ def processFile(l):
                 
             if nc:
                 candidates += [[r_strategy] + x for x in nc]
+                
+        
+        #create the rows for the suggestion_model.csv
+        for suggestionKey, s_feat in suggestion_features.iteritems():
+            variableKey = (suggestionKey[0], suggestionKey[1])
+            n_feat = name_features[variableKey]
+            model_rows.append(list(n_feat) + list(s_feat))
          
-        return (js_file_path, 'OK', candidates)
+        return (js_file_path, 'OK', candidates, model_rows)
 
 
     except Exception, e:
-        return (js_file_path, None, str(e).replace("\n", ""))
+        return (js_file_path, None, str(e).replace("\n", ""), model_rows)
     
     
 
@@ -313,9 +364,11 @@ if __name__=="__main__":
     
     flog = 'log_test_' + os.path.basename(corpus_root)
     c_path = 'candidates.csv'
+    s_path = 'suggestion_model.csv'
     
     with open(os.path.join(output_path, flog), 'w') as g, \
-            open(os.path.join(output_path, c_path), 'w') as c:
+            open(os.path.join(output_path, c_path), 'w') as c, \
+                open(os.path.join(output_path, s_path), 'w') as sM:
         pass
 
     CS = ConsistencyStrategies() 
@@ -333,18 +386,24 @@ if __name__=="__main__":
         for result in pool.imap_unordered(processFile, reader):
         
             with open(os.path.join(output_path, flog), 'a') as g, \
-                    open(os.path.join(output_path, c_path), 'a') as c:
+                        open(os.path.join(output_path, c_path), 'a') as c, \
+                            open(os.path.join(output_path, s_path), 'a') as sM:
                 writer = UnicodeWriter(g)
                 cw = UnicodeWriter(c)
+                sM_writer = UnicodeWrite(sM)
          
                 if result[1] is not None:
-                    js_file_path, ok, candidates = result
+                    js_file_path, ok, candidates, model_rows = result
                     
                     writer.writerow([js_file_path, ok])
                     
                     for r in candidates:
                         cw.writerow([js_file_path]+
                                     [str(x).replace("\"","") for x in r])
+                        
+                    for row in model_rows:
+                        sM_writer.writerow([js_file_path]+
+                                    [str(x).replace("\"","") for x in row])
                 else:
                     writer.writerow([result[0], result[2]])
              

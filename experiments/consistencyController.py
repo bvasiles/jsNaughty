@@ -23,6 +23,7 @@ class ConsistencyController:
                  debug_mode):
         self.CS = ConsistencyStrategies()
         self.debug_mode = debug_mode
+        self.suggestion_cache = None
     
     
     def computeRenaming(self,
@@ -40,6 +41,8 @@ class ConsistencyController:
         elif strategy == self.CS.LMDROP:
             worker = LMDropConsistencyResolver(self.debug_mode,
                                                lm_path)
+            #Save this particular variant so we can recover entropy scores.
+            self.suggestion_cache = worker
             
         elif strategy == self.CS.FREQLEN:
             worker = FreqLenConsistencyResolver(self.debug_mode)
