@@ -20,9 +20,15 @@ class scopeNameTest(unittest.TestCase):
     def asBool(self, string):
         return string in ["TRUE", "true", "True", "t", "T", "1"]
     
+    def fileSort(self,fileList):
+        '''
+        Ensure that the list of files is sorted - e.g. test_file1 test_file2, etc.
+        '''
+        return sorted(fileList, key = lambda(x) : int(x[9:10]))
+    
     def setUp(self):
         self.testDir = Folder("./testing//test_files/")
-        self.fileList = self.testDir.baseFileNames("*.orig.js")
+        self.fileList = self.fileSort(self.testDir.baseFileNames("*.orig.js"))
         self.fileList = [os.path.join(self.testDir.path, nextFile) for nextFile in self.fileList]
         print("FileList:")
         print(self.fileList)
