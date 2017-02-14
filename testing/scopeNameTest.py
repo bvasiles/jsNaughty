@@ -51,7 +51,7 @@ class scopeNameTest(unittest.TestCase):
         Don't run Moses server here (just incremental tests)
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
-        self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v10/")
+        self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v11/")
         #self.testDir = Folder("./consistencyFailureFiles/")
         '''
         3193021.hash_def_one_renaming.freqlen.js
@@ -114,7 +114,7 @@ class scopeNameTest(unittest.TestCase):
         Check if the name is still in a hashed form
         e.g. _e9cd7426 
         '''
-        hash_regex = "_([a-z0-9]){8}$"
+        hash_regex = "_([a-z0-9]){8,9}$"
         return re.match(hash_regex, name) != None
 
     def compareFiles(self, originalFilename, obsFilename, renamedFilename):
@@ -185,16 +185,8 @@ class scopeNameTest(unittest.TestCase):
         a_iBuilder = IndexBuilder(lexedRenamed.tokenList)
         p1 = a_iBuilder.tokens
         
-        #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
         p1_combined = reduce(lambda x,y: x+y, p1)
-        #print(p1_combined)
-        #print("(" + str(tC_ind) + ") Post Processed Text ---------------------------------------------------")
-        #Without re-running the beautifer for spacing, this is missing whitespace.
 
-        #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
-        #print(self.obsLexed[tC_ind].tokenList)
-        #print("(" + str(tC_ind) + ") Original Lexed Text ---------------------------------------------------")
-        #1) + 5)
         i = 0
         for token_type, token in lexedObs.tokenList:
             if(token_type == Token.Text or is_token_subtype(token_type, Token.Comment)):
@@ -210,6 +202,14 @@ class scopeNameTest(unittest.TestCase):
             #except:
             #    print("Past end: " + str((token_type, token)))
             i += 1
+
+
+        print(lexedObs.tokenList)
+        print("--------------------------------------------")
+        print(ib1)
+        print("--------------------------------------------")
+        print(sa1)
+        print("--------------------------------------------")
             
         #3) + 4)
         #Weird note: the scope analyst does not find scopes correctly on the post-processed file...
@@ -262,7 +262,6 @@ class scopeNameTest(unittest.TestCase):
         #    trackingIndex += 1
             
         
-        
         scopeMap = {}
         #Build map linking scopes to indexes in the old and new list.
         curIndex = 0
@@ -291,7 +290,7 @@ class scopeNameTest(unittest.TestCase):
                         #names that are the same in the original scope must be the same in the new scope
                         #and names that are different in the original scope must be the different in the new scope
                         self.assertTrue((oldNameList[fIndex] == oldNameList[sIndex]) == (newNameList[fIndex] == newNameList[sIndex]))
-
+        
         #Check that there are no hashes left in there.
         hashCount = 0 #It is possible that someone picked a variable name equal to a hash.
         
@@ -301,7 +300,8 @@ class scopeNameTest(unittest.TestCase):
        
         #So let's report an error if at least half of the renamable variables look like hashes
         #This would be extremely unlikely to occur and not be an error on our part.
-        if(hashCount > len(newNameList)/2):
+        #if(hashCount > len(newNameList)/2):
+        if(hashCount >= 1): #Set threshold as low as possible.
             return False
         else:
             return True    
@@ -324,7 +324,7 @@ class scopeNameTest(unittest.TestCase):
             clearTextFile = self.clearTextFiles[fileid]
             baseId =self.getFileId(clearTextFile)
             obfuscatedFile = self.obfuscatedTextFiles[fileid]
-            #if(baseId != 494296):
+            #if(baseId != 2788125):
             #    continue
             #if(fileid > 150):
             #    break 
@@ -344,7 +344,7 @@ class scopeNameTest(unittest.TestCase):
                 #if True:
                 try:
                     nohashes = self.compareFiles(clearTextFile, obfuscatedFile, renamedFile)
-	            if(not nohashes):
+	            if((not nohashes) and key != "hash_def_one_renaming.js"): #We expect this one to still be hashed.
                         failedCases.append(str(baseId) + "(" + key + ")(Still Hashed)\n")
                     print("\n")
                 except AssertionError:
@@ -354,7 +354,7 @@ class scopeNameTest(unittest.TestCase):
                     print(" - Other Failure\n")
                     failedCases.append(str(baseId) + "(" + key + ")(Other Failure)\n")
                     
-        with open("consistencyFailuresV10_" + str(id_start)  + "_" + str(id_end) +  ".txt", 'w') as f:
+        with open("consistencyFailuresV11H_" + str(id_start)  + "_" + str(id_end) +  ".txt", 'w') as f:
             for failed in failedCases:
                 f.write(failed)
 

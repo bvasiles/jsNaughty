@@ -20,6 +20,7 @@ from tools import TranslationSummarizer
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
 from tools import VariableMetrics
+from tools.consistency import ENTROPY_ERR
 from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
@@ -295,12 +296,15 @@ def processFile(l):
                         for variableKey, suggestionDictionary in name_candidates.iteritems():
                             for suggestionName, linesSuggested in suggestionDictionary.iteritems():
                                 suggestionKey = (variableKey[0], variableKey[1], suggestionName)
-                                suggestionValue = (len(linesSuggested)) + \
-                                                   getSuggestionStats(suggestionName) + \
-                                                   cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
                                                       
-                                suggestion_features[suggestionKey] = suggestionValue
-                    
+                                entropyVals = cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
+                                if(entropyVals != (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)):
+                                    suggestionValue = [len(linesSuggested)] + \
+                                                       list(getSuggestionStats(suggestionName)) + \
+                                                       list(entropyVals)
+
+                                    suggestion_features[suggestionKey] = suggestionValue                   
+ 
                     # Fall back on original names in input, if 
                     # no translation was suggested
                     postRen = PostRenamer()
@@ -342,8 +346,8 @@ def processFile(l):
         #create the rows for the suggestion_model.csv
         for suggestionKey, s_feat in suggestion_features.iteritems():
             variableKey = (suggestionKey[0], suggestionKey[1])
-            n_feat = name_features[variableKey]
-            model_rows.append(list(n_feat) + list(s_feat))
+            n_feat = list(name_features[variableKey])
+            model_rows.append(list(suggestionKey) + n_feat + s_feat)
          
         return (js_file_path, 'OK', candidates, model_rows)
 
@@ -390,7 +394,7 @@ if __name__=="__main__":
                             open(os.path.join(output_path, s_path), 'a') as sM:
                 writer = UnicodeWriter(g)
                 cw = UnicodeWriter(c)
-                sM_writer = UnicodeWrite(sM)
+                sM_writer = UnicodeWriter(sM)
          
                 if result[1] is not None:
                     js_file_path, ok, candidates, model_rows = result

@@ -22,6 +22,7 @@ from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
 from tools import ConsistencyResolver
 from tools import VariableMetrics
+from tools.consistency import ENTROPY_ERR
 from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
@@ -90,8 +91,8 @@ def processFile(js_file_path):
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         
         
-#         print '\nOK:', ok, 'ERR:', _err
-#         print tmp_beautified_text
+        print '\nOK:', ok, 'ERR:', _err
+        print tmp_beautified_text
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -388,11 +389,14 @@ def processFile(js_file_path):
                         for variableKey, suggestionDictionary in name_candidates.iteritems():
                             for suggestionName, linesSuggested in suggestionDictionary.iteritems():
                                 suggestionKey = (variableKey[0], variableKey[1], suggestionName)
-                                suggestionValue = (len(linesSuggested)) + \
-                                                   getSuggestionStats(suggestionName) + \
-                                                   cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
+
+                                entropyVals = cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
+                                if(entropyVals != (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)):
+                                    suggestionValue = [len(linesSuggested)] + \
+                                                       list(getSuggestionStats(suggestionName)) + \
+                                                       list(entropyVals)
                                                       
-                                suggestion_features[suggestionKey] = suggestionValue
+                                    suggestion_features[suggestionKey] = suggestionValue
                     
                     
                     if dbg:
@@ -495,8 +499,8 @@ def processFile(js_file_path):
         #create the rows for the suggestion_model.csv
         for suggestionKey, s_feat in suggestion_features.iteritems():
             variableKey = (suggestionKey[0], suggestionKey[1])
-            n_feat = name_features[variableKey]
-            model_rows.append(list(n_feat) + list(s_feat))
+            n_feat = list(name_features[variableKey])
+            model_rows.append(list(suggestionKey) + n_feat + s_feat)
          
         return (js_file_path, 'OK', candidates, model_rows)
 
@@ -551,7 +555,7 @@ if __name__=="__main__":
                         open(os.path.join(output_path, s_path), 'a') as sM:
             writer = UnicodeWriter(g)
             cw = UnicodeWriter(c)
-            sM_writer = UnicodeWrite(sM)
+            sM_writer = UnicodeWriter(sM)
      
             if result[1] is not None:
                 js_file_path, ok, candidates, model_rows = result

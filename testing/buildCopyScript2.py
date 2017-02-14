@@ -14,6 +14,9 @@ def getFileId(filename):
     base = ntpath.basename(filename)
     return int(base[:base.find(".")])
 
+
+inputFile = sys.argv[1]
+
 fileIds = set()
 
 
@@ -22,7 +25,7 @@ testDir = Folder("/home/ccasal/jsnaughty/testing/consistencyFailureFiles/")
 #print(testDir.baseFileNames("*.js"))
 #fileIds = set([getFileId(nextFile) for nextFile in testDir.baseFileNames("*.js")])
 
-with open("/home/ccasal/jsnaughty/testing/justConsistencyFailuresV10.txt", 'r') as f:
+with open(inputFile, 'r') as f:
     for line in f:
         #files.append(line.split(")")[0].replace("(", "."))
         fileIds.add(int(line.split("(")[0]))

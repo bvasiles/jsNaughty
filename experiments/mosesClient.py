@@ -352,7 +352,8 @@ class MosesClient():
             # (name, def_scope) tuples (otherwise); 
             # values are suggested translations with the sets 
             # of line numbers on which they appear.
-            
+            print("Name_candidates")
+            print(name_candidates) 
                 
             cr = ConsistencyController(debug_mode=True)
 #             ts = TranslationSummarizer()
@@ -363,21 +364,26 @@ class MosesClient():
             
             # Compute renaming map (x -> length, y -> width, ...)
             # Note that x,y here are names after renaming
-            temp_renaming_map = cr.computeRenaming(c_strategy,
+            #Hash error is occuring in here.
+            (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
                                               name_candidates,
                                               a_name_positions,
                                               a_use_scopes,
                                               a_iBuilder,
                                               lm_path)
-            
+            print("Temp renaming map")
+            print(temp_renaming_map)
             # Fall back on original names in input, if 
             # no translation was suggested
             postRen = PostRenamer()
             renaming_map = postRen.updateRenamingMap(a_name_positions, 
-                                                     position_names, 
+                                                     position_names,
+                                                     a_use_scopes, 
                                                      temp_renaming_map, 
+                                                     seen,
                                                      r_strategy)
-            
+            print("Renaming Map")
+            print(renaming_map)
             # Apply renaming map and save output for future inspection
             renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                  a_name_positions, 
@@ -386,7 +392,8 @@ class MosesClient():
             if not ok:
                 print(beaut_error)
                 return(beaut_error)
-            
+            print("Renamed text")
+            print(renamed_text)
             
 #         nc = processTranslationScoped(translation, 
 #                                       iBuilder_ugly, 

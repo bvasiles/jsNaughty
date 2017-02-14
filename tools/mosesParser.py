@@ -52,7 +52,9 @@ class MosesParser:
            
             # Which within-line indices have non-global var names? 
             line_dict = position_names.get(n, {})
-            
+            #print("line_dict:")
+            #print(line_dict) 
+            #print(n)
             # For each variable name, record its candidate translation
             # and on how many lines (among the -n-best-list) it appears on
             for line_idx in line_dict.keys():

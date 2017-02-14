@@ -28,10 +28,10 @@ def processObsFile(l):
 
 def getVarAt(var_tuple, ib):
     '''
-    Given a tuple (file_name, line_id, token_id_in_line) and a indexBuilder for a file
+    Given a tuple (file_name, rename_strat, consistency_strat, line_id, token_id_in_line) and a indexBuilder for a file
     return the original token name
     '''
-    line_char_index = ib.tokMap[(var_tuple[1], var_tuple[2])]
+    line_char_index = ib.tokMap[(var_tuple[3], var_tuple[4])]
     return ib.charPosition2Name[line_char_index]
 
 def suggestionExactMatch(suggestion_list, word):

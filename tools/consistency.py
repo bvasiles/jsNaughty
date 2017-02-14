@@ -573,15 +573,18 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
         if nothing is listed for the probabilites, return 4 copies of ENTROPY_ERR
         """
         cacheKey = (variable[0], variable[1], suggestion)
-        if(len(self.log_probs) != 0):
+        if self.debug_mode:
+            print(cacheKey)
+            #print(self.log_probs[cacheKey])
+        if(cacheKey in self.log_probs and len(self.log_probs[cacheKey]) != 0):
             aveLogProb = sum(self.log_probs[cacheKey])/(float)(len(self.log_probs[cacheKey]))
             
             aveLogDrop = sum(self.log_drops[cacheKey])/(float)(len(self.log_drops[cacheKey]))
             #Are these negative?
-            minGain = max(self.log_drops)
-            maxGain = min(self.log_drops)
+            minGain = max(self.log_drops[cacheKey])
+            maxGain = min(self.log_drops[cacheKey])
             return (aveLogProb, aveLogDrop, minGain, maxGain)
-        else:
+        else:#This key has been dropped in the consistency checks.
             return (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)
         
     
@@ -648,10 +651,10 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
              
             cacheKey = (name, _def_scope, candidate_name)
             if(cacheKey not in self.log_probs):
-                self.log_probs = []
+                self.log_probs[cacheKey] = []
             
             if(cacheKey not in self.log_drops):
-                self.log_drops = []
+                self.log_drops[cacheKey] = []
              
             draft_lines_str = self._insertNameInTempLines(candidate_name, 
                                                            lines, 
