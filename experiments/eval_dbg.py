@@ -58,6 +58,8 @@ def processFile(js_file_path):
     
     
     candidates = []
+    #Minified Name -> Original Name (name, def_scope) -> (name, def_scope)
+    min_name_map = {}
     #Data for the suggestion model.csv
     #Map of variable (name, def_scope) -> results of variableMetrics features function
     name_features = {}
@@ -161,6 +163,7 @@ def processFile(js_file_path):
         except:
             return (js_file_path, None, 'IndexBuilder fail')
         
+        
 #         print 'Writing'
         
         with open(temp_files['orig'], 'w') as f:
@@ -211,6 +214,26 @@ def processFile(js_file_path):
             scopeAnalyst = WebScopeAnalyst(minified_text)
         except:
             return (js_file_path, None, 'ScopeAnalyst fail')
+        
+        try:
+            scopeAnalyst_clear = WebScopeAnalyst(beautified_text)
+        except:
+            return (js_file_path, None, 'ScopeAnalyst clear fail')
+        
+        #Map the original names to the minified counterparts.
+        orderedVarsOld = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsNew = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
+
+        if(len(oldNameList) != len(newNewList)):
+            return (js_file_path, None, "Old and New Name lists different length")
+        
+        for i in range(0, len(orderedVarsOld)):
+            name_old = orderedVarsOld[i][0]
+            def_scope_old = scopeAnalyst_clear[orderedVarsOld[i]]
+            
+            name_new = orderedVarsNew[i][0]
+            def_scope_old = scopeAnalyst_clear[orderedVarsNew[i]]
+            min_name_map[(name_new, def_scope_new)] = (name_old, def_scope_old) 
         
         #Once we have the scopeAnalyst, iBuilder, and tokenlist for the minified
         #version, we can get the name properties
@@ -499,8 +522,9 @@ def processFile(js_file_path):
         #create the rows for the suggestion_model.csv
         for suggestionKey, s_feat in suggestion_features.iteritems():
             variableKey = (suggestionKey[0], suggestionKey[1])
+            original_name = min_name_map[variableyKey][0]
             n_feat = list(name_features[variableKey])
-            model_rows.append(list(suggestionKey) + n_feat + s_feat)
+            model_rows.append(list(original_name) + list(suggestionKey) + n_feat + s_feat)
          
         return (js_file_path, 'OK', candidates, model_rows)
 
