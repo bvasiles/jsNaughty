@@ -52,14 +52,16 @@ def processFile(l):
     candidates = []
     #Minified Name -> Original Name (name, def_scope) -> (name, def_scope)
     min_name_map = {}
+    #Hashed Name -> Minified Name (name, def_scope) -> (name, def_scope)
+    hash_name_map = {}
     #Data for the suggestion model.csv
     #Map of variable (name, def_scope) -> results of variableMetrics features function
     name_features = {}
     
-    #Map of variable-suggestion (name, def_scope, suggestion) -> suggestion line counts + suggestionMetrics features function
+    #Map of maps of variable-suggestion (name, def_scope, suggestion) -> suggestion line counts + suggestionMetrics features function
+    #The first key is the renaming strategy
     #Ultimately, we will iterate over this to get the keys out of name_features and build model_rows
-    suggestion_features = {}
-    
+    suggestion_features = {}    
     #Output Lines for the suggestoin_model.csv
     model_rows = [] 
     
@@ -230,6 +232,29 @@ def processFile(l):
             # Save renamed input to disk for future inspection
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
                 f.write(beautified_after_text)
+
+            if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
+                try:
+                    scopeAnalyst_hash = WebScopeAnalyst(after_text)
+                except:
+                    return (js_file_path, None, "ScopeAnalyst hash fail")
+
+                #Map the hashed names to the minified counterparts.
+                orderedVarsMin = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+                orderedVarsHash = sorted(scopeAnalyst_hash.name2defScope.keys(), key = lambda x: x[1])
+
+                if(len(orderedVarsMin) != len(orderedVarsHash)):
+                    return (js_file_path, None, "Hash and Min lists different length")
+
+                for i in range(0, len(orderedVarsHash)):
+                    name_hash = orderedVarsHash[i][0]
+                    def_scope_hash = scopeAnalyst_hash.name2defScope[orderedVarsHash[i]]
+
+                    name_min = orderedVarsMin[i][0]
+                    def_scope_min = scopeAnalyst.name2defScope[orderedVarsMin[i]]
+                    hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
+
+
             
             a_lexer = WebLexer(beautified_after_text)
             a_iBuilder = IndexBuilder(a_lexer.tokenList)
@@ -309,9 +334,9 @@ def processFile(l):
                     #After computeRenaming, we have both the entropies stored
                     #if we are in LMDrop strategy and have the suggestions
                     #frequency from name_candidates.  Fill in suggestion_Features
-                    if(c_strategy == CS.LMDROP and suggestion_features == {}):
+                    if(c_strategy == CS.LMDROP and r_strategy not in suggestion_features):
                         assert(cc.suggestion_cache != None)
-                        #Need some way of iterating over all name, suggestion groups...
+                        suggestion_features[r_strategy] = {}
                         """
                         name_candidates: dict
                             name_candidates[(name, def_scope)][name_translation] 
@@ -319,7 +344,13 @@ def processFile(l):
                         """
                         for variableKey, suggestionDictionary in name_candidates.iteritems():
                             for suggestionName, linesSuggested in suggestionDictionary.iteritems():
-                                suggestionKey = (variableKey[0], variableKey[1], suggestionName)
+                        
+                                # I need to revert variableKey[0] in the suggestion from its hash to its original minified name.
+                                if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
+                                    unhashedKey = hash_name_map[variableKey]
+                                    suggestionKey = (unhashedKey[0], unhashedKey[1], suggestionName)
+                                else:
+                                    suggestionKey = (variableKey[0], variableKey[1], suggestionName)
                                                       
                                 entropyVals = cc.suggestion_cache.getEntropyStats(variableKey, suggestionName)
                                 if(entropyVals != (ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR, ENTROPY_ERR)):
@@ -327,7 +358,7 @@ def processFile(l):
                                                        list(getSuggestionStats(suggestionName)) + \
                                                        list(entropyVals)
 
-                                    suggestion_features[suggestionKey] = suggestionValue                   
+                                    suggestion_features[r_strategy][suggestionKey] = suggestionValue                   
  
                     # Fall back on original names in input, if 
                     # no translation was suggested
@@ -368,12 +399,17 @@ def processFile(l):
                 
         
         #create the rows for the suggestion_model.csv
-        for suggestionKey, s_feat in suggestion_features.iteritems():
-            variableKey = (suggestionKey[0], suggestionKey[1])
-            original_name = min_name_map[variableKey][0]
-            n_feat = list(name_features[variableKey])
-            model_rows.append([original_name] + list(suggestionKey) + n_feat + s_feat)
-         
+        for r_strategy in RS.all():
+            for suggestionKey, s_feat in suggestion_features[r_strategy].iteritems():
+                variableKey = (suggestionKey[0], suggestionKey[1])
+                original_name = min_name_map[variableKey][0]
+                    
+                n_feat = list(name_features[variableKey])
+                #Convert the def_scope to an equivalent, but smaller, easier to read key: (line_num, token_num)
+                newKey = scopeAnalyst.nameDefScope2pos[variableKey]
+                (keyLine, keyToken) = iBuilder_ugly.revFlatMat[newKey]
+                model_rows.append([original_name, r_strategy, suggestionKey[0], keyLine, keyToken, suggestionKey[2]] + n_feat + s_feat)
+
         return (js_file_path, 'OK', candidates, model_rows)
 
 
@@ -431,8 +467,7 @@ if __name__=="__main__":
                                     [str(x).replace("\"","") for x in r])
                         
                     for row in model_rows:
-                        sM_writer.writerow([js_file_path]+
-                                    [str(x).replace("\"","") for x in row])
+                        sM_writer.writerow([js_file_path]+row)
                 else:
                     writer.writerow([result[0], result[2]])
              
