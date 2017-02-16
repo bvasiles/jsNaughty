@@ -21,6 +21,9 @@ class VariableMetrics:
         self.forOnLines = set() #Set of lines containing a for statement
         self.whileOnLines = set() #Set of lines containing a while statement
         self.lineLengthMap = {} #Map of the line_num -> line length in tokens.
+        #Token lines in the index builder do not record blank lines as a line.  
+        #Therefore, we need to map from the character lines to the token ones.
+        self.charToTokLineMap = {}  
         
         self.processTokenList()
         self.buildLineLengthMap()
@@ -91,10 +94,20 @@ class VariableMetrics:
                 #Check if while loop
                 if(token_type == Token.Keyword and token.strip() == u'while'):
                     self.whileOnLines.add(line_num)
+    
+    
+
                     
     def buildLineLengthMap(self):
         """
         Helper: Fill in the field that tracks the length of each line in tokens via a map.
+        Note that line number in the tokens map ignores blank lines.  The line number in the
+        #character map does not.
+        
+        Also, Fill in the map that tracks the line number of the token indicies by
+        keying them with the line number of the character based measure.
+        The character based measure tracks the true line number, the token based one
+        ignores blank lines.
         
         Parameters
         ---------- 
@@ -104,14 +117,40 @@ class VariableMetrics:
         """     
         orderedLines = sorted(self.iB.tokMap.items(), key = lambda (x,y) : (y[0],y[1]))
         for (tok_pos, char_pos) in orderedLines:
-            line_num = tok_pos[0]
-            if(line_num not in self.lineLengthMap):
-                self.lineLengthMap[line_num] = 0 #All lines will have the newline token, which we don't want to count, so start at 0
+            char_line_num = char_pos[0]
+            tok_line_num = tok_pos[0]
+            self.charToTokLineMap[char_line_num] = tok_line_num #Written several times, but all the same, so it doesn't matter.
+            #Fill in the line length map
+            if(tok_line_num not in self.lineLengthMap):
+                self.lineLengthMap[tok_line_num] = 0 #All lines will have the newline token, which we don't want to count, so start at 0
             else:
-                self.lineLengthMap[line_num] += 1
+                self.lineLengthMap[tok_line_num] += 1
         
     
     
+    def posToTokLine(self, position):
+        """
+        Helper: Given a token position in the tokenlist, return what line of the file it is on.
+        This returns the token line variable -> this ignores blank lines, unlike the character line number.
+        
+        Parameters
+        ----------
+        name: integer of the token index
+        
+        Returns
+        -------
+        line: line number of the file it is on
+        """
+        
+        #If the posToLineMap is not built, built it
+        if(len(self.posToLineMap) == 0):
+            #Get the line, character position of the token.
+            for name, pos in self.sA.name2useScope.keys():
+                #revTokMap is what allows us to convert from the character line to the token line.
+                self.posToLineMap[pos] = self.iB.revTokMap[self.iB.revFlatMat[pos]][0]
+                
+        
+        return self.posToLineMap[position]
     
     def posToLine(self, position):
         """
@@ -130,6 +169,7 @@ class VariableMetrics:
         if(len(self.posToLineMap) == 0):
             #Get the line, character position of the token.
             for name, pos in self.sA.name2useScope.keys():
+                #revTokMap is what allows us to convert from the character line to the token line.
                 self.posToLineMap[pos] = self.iB.revFlatMat[pos][0]
         
         return self.posToLineMap[position]
@@ -186,11 +226,13 @@ class VariableMetrics:
     
     def lineMetrics(self, uniqueLines):
         """
-        Helper: find the maximum line length and the average line length from a set of lines
+        Helper: find the maximum line length and the average line length from a set of lines.
         
         Parameters
         ----------
-        uniqueLines: a set of valid line numbers for this file.
+        uniqueLines: a set of valid line numbers for this file. This is the character based
+        version of the line number -> i.e. it includes blank lines.  It is converted to 
+        the token based version to not cause a key error in lineLengthMap
         
         Returns
         -------
@@ -199,7 +241,8 @@ class VariableMetrics:
         """
         lengths = []
         for line in uniqueLines:
-            lengths.append(self.lineLengthMap[line])
+            tok_line = self.charToTokLineMap[line]
+            lengths.append(self.lineLengthMap[tok_line])
             
         #print(lengths)
             
