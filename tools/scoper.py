@@ -145,10 +145,23 @@ class ScopeAnalyst:
         # Annotate scope nodes with depth
         scopepaths(self.ast, [])
         self.ast['pth'] = '$'
+        #print("Annotated Tree ---------------------------------------")
+        #print(self.ast)
+        #print("Annotated Tree ---------------------------------------")
+        #print("KeyPaths ---------------------------------------------")
+        #print(keypaths(self.ast))
+        #print("KeyPaths ---------------------------------------------")
+        
+        #set of (name, def_scope) pairs where we saw the orig tag -> meaning we cannot
+        #replace it with another tag.
+        origSeen = set()
+        #Another set map of cases where we saw a non_references
+        refCount = {}
       
         # Extract names and scopes
         for (pth, key) in keypaths(self.ast):
             # Iterate over all leaves
+
             
             # `name` leaves are interesting ...  
             if pth[-1] == 'name':
@@ -156,6 +169,11 @@ class ScopeAnalyst:
                 # Get the parent of the `node` name; the parent  
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
+
+                #Does orig have anything to do with it?
+
+                #if(parent.has_key('orig')):
+                #    print("ORIGKEY")
                 
                 # ... but only if they have `scope`, `thedef`,
                 # and `start` siblings
@@ -163,8 +181,9 @@ class ScopeAnalyst:
                         parent.has_key('thedef') and \
                         parent.has_key('start'):
                     
+                              
                     # Retrieve starting position for the name
-                    start = self.__get_start(parent['start'])
+                    start = self.__get_start(parent['start']) #I think we need orig here somewhere?
                     
                     #print("Key:" + str(key) + " Start: " + str(start))
                     use_scope = self.__get_use_scope(parent['scope'])
@@ -172,9 +191,46 @@ class ScopeAnalyst:
                     
                     # Retrieve scope identifier
                     def_scope = self.__get_def_scope(parent['thedef'])
+                    
                     self.name2defScope[(key, start)] = def_scope
                     
-                    self.nameDefScope2pos[(key, def_scope)] = start
+                    #Record the position of the definition if its an orig tag (unique) or a path without a
+                    #reference if we haven't seen an orig tag yet.  If there is no orig tag, there should
+                    #be exactly one non reference path.
+                    if("orig" in join_ref_key(pth[:-1])):
+                    #if("orig" == pth[-3]):
+                        assert((key,def_scope) not in origSeen) #orig tag must be unique for a def_scope.
+                        self.nameDefScope2pos[(key, def_scope)] = start
+                        origSeen.add((key,def_scope))
+                    elif((key, def_scope) not in origSeen and "references" not in join_ref_key(pth[:-1])):
+                    #elif((key, def_scope) not in origSeen and "references" != pth[-3]):
+                        self.nameDefScope2pos[(key, def_scope)] = start
+                        if((key,def_scope) not in refCount):
+                            refCount[(key,def_scope)] = 1
+                        else:
+                            refCount[(key,def_scope)] += 1
+                    
+                    #print("Path: " + str(pth))
+                    print("Key: " + str(key))
+                    print("Path: " + str(join_ref_key(pth[:-1])))
+                    print("-------------")
+                    print(pth[-2])
+                    print(pth[-3])
+                    print("-------------")
+                    #1.if it contains references in this path, it can't be assigned to (key, def_scope)
+                    #2.if it contains orig, it is the definition.
+                    print(start)
+                    print(def_scope)
+
+                    print(use_scope)
+                    
+                    #if((key, def_scope) in definitionCorrection):
+                        #Correction criteria:  try use_scope in def_scope and position minimized?
+                        #If we can figure out a criteria that works correctly, then it can be replaced here.
+                    #    if(use_scope in def_scope and start < definitionCorrection[(key, def_scope)]):
+                    #        definitionCorrection[(key, def_scope)] = start
+                    #else:
+                    #    definitionCorrection[(key, def_scope)] = start
                     
                     # Is name global (defined outside of this file)?
                     glb = self.__get_def_global(parent['thedef'])
@@ -193,6 +249,19 @@ class ScopeAnalyst:
                     
                     self.nameScope2pth.setdefault((key, def_scope), [])
                     self.nameScope2pth[(key, def_scope)].append(depth)
+        
+        #Sanity check that if no orig tag was seen, one non-ref tag was seen.
+        for def_key in refCount.keys():
+            if(def_key not in origSeen):
+                print("Ref Count for " + str(def_key) + " = " + str(refCount[def_key]))
+                assert(refCount[def_key] == 1)
+        
+        #Fill in the definition lines with controlled values.
+        #for (key, def_scope), def_start in definitionCorrection.iteritems():
+            #self.name2defScope[(key, def_start)] = def_scope
+                  
+        #    self.nameDefScope2pos[(key, def_scope)] = def_start
+        
         
         
         for (name, def_scope), depths in self.nameScope2pth.iteritems():
