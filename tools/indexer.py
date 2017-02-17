@@ -5,7 +5,7 @@ class IndexBuilder:
 
     def __init__(self, lexed_input):
         # Build some helper data structures:
-        
+        #print(lexed_input)        
         # - bidimensional list of tokens
         self.tokens = []
         
@@ -74,7 +74,7 @@ class IndexBuilder:
                     
                     col_tok_idx += 1 
                 
-                elif '\n' in token:
+                elif token_type == Token.Text and '\n' in token:
                     self.tokens.append(line)
                     line = []
                     line_tok_idx += 1

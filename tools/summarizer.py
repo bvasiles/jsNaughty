@@ -45,7 +45,12 @@ class TranslationSummarizer:
     def compute_summary_unscoped(self,
                                  iBuilder,
                                  scopeAnalyst):
-        
+       
+        #print("Summarizer --------------------------------")
+        #print(scopeAnalyst.nameOrigin)
+        #print("-------------------------------------------")
+        #print(scopeAnalyst.nameDefScope2pos)
+        #print("Summarizer --------------------------------") 
         nc = []
         
         nameOrigin = scopeAnalyst.nameOrigin

@@ -23,10 +23,8 @@ def prepHelpers(iBuilder,
     position_names = {}
     
     use_scopes = {}
-    
     for line_num, line in enumerate(iBuilder.tokens):
         position_names.setdefault(line_num, {})
-        
         for line_idx, (token_type, token) in enumerate(line):
             
             if is_token_subtype(token_type, Token.Name):

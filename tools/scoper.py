@@ -157,12 +157,20 @@ class ScopeAnalyst:
         origSeen = set()
         #Another set map of cases where we saw a non_references
         refCount = {}
-      
+        #Keys:
+        
         # Extract names and scopes
         for (pth, key) in keypaths(self.ast):
             # Iterate over all leaves
-
-            
+            parent = self.__get_ref_key(pth[:-1])
+            #print("Path_1: " + str(join_ref_key(pth)))
+            #if(parent.has_key('definitions') and parent.has_key('thedef')):
+            #    print("-------------Def-the-Def--------------")
+            #    print("Key: " + key)
+            #    print("Path: " + str(join_ref_key(pth))) 
+            #    if(parent.has_key('start')):
+            #        print("Start: " + str(self.__get_start(parent['start'])))
+            #    print("-------------Def-the-Def--------------")
             # `name` leaves are interesting ...  
             if pth[-1] == 'name':
                 
@@ -170,18 +178,12 @@ class ScopeAnalyst:
                 # contains the other attributes we need.
                 parent = self.__get_ref_key(pth[:-1])
 
-                #Does orig have anything to do with it?
-
-                #if(parent.has_key('orig')):
-                #    print("ORIGKEY")
-                
                 # ... but only if they have `scope`, `thedef`,
                 # and `start` siblings
                 if parent.has_key('scope') and \
                         parent.has_key('thedef') and \
                         parent.has_key('start'):
                     
-                              
                     # Retrieve starting position for the name
                     start = self.__get_start(parent['start']) #I think we need orig here somewhere?
                     
@@ -209,20 +211,26 @@ class ScopeAnalyst:
                             refCount[(key,def_scope)] = 1
                         else:
                             refCount[(key,def_scope)] += 1
+                    elif((key,def_scope) not in origSeen and (key, def_scope) not in refCount): #I don't know, just default to the one earlier in the file?
+                        if((key,def_scope) not in self.nameDefScope2pos):
+                            self.nameDefScope2pos[(key,def_scope)] = start
+                        elif(self.nameDefScope2pos[(key,def_scope)] > start):
+                            self.nameDefScope2pos[(key,def_scope)] = start
+                            
                     
                     #print("Path: " + str(pth))
-                    print("Key: " + str(key))
-                    print("Path: " + str(join_ref_key(pth[:-1])))
-                    print("-------------")
-                    print(pth[-2])
-                    print(pth[-3])
-                    print("-------------")
+                    #print("Key: " + str(key))
+                    #print("Path: " + str(join_ref_key(pth[:-1])))
+                    #print("-------------")
+                    #print(pth[-2])
+                    #print(pth[-3])
+                    #print("-------------")
                     #1.if it contains references in this path, it can't be assigned to (key, def_scope)
                     #2.if it contains orig, it is the definition.
-                    print(start)
-                    print(def_scope)
+                    #print(start)
+                    #print(def_scope)
 
-                    print(use_scope)
+                    #print(use_scope)
                     
                     #if((key, def_scope) in definitionCorrection):
                         #Correction criteria:  try use_scope in def_scope and position minimized?
@@ -253,7 +261,7 @@ class ScopeAnalyst:
         #Sanity check that if no orig tag was seen, one non-ref tag was seen.
         for def_key in refCount.keys():
             if(def_key not in origSeen):
-                print("Ref Count for " + str(def_key) + " = " + str(refCount[def_key]))
+                #print("Ref Count for " + str(def_key) + " = " + str(refCount[def_key]))
                 assert(refCount[def_key] == 1)
         
         #Fill in the definition lines with controlled values.

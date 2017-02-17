@@ -194,12 +194,13 @@ def processFile(js_file_path):
         with open(temp_files['n2p'], 'w') as f:
             f.write(n2p_text_beautified)
          
-        try:
+        if(True):
+        #try:
             n2p_lexer = WebLexer(n2p_text_beautified)
             n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
             n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
-        except:
-            return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+        #except:
+        #    return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
         
 #         print 'n2p'
         
