@@ -15,6 +15,7 @@ script:
   - python ./testing/deobfuscate_tests.py
   - python ./testing/evalRenamingTests.py
   - python ./testing/testVariableMetrics.py
+  - python ./testing/testScopeDefinition.py
 
 notifications:
   email: false
