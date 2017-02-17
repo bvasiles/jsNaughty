@@ -42,7 +42,7 @@ class scopeNameTest(unittest.TestCase):
             lexed = Lexer(nextFile)
             ib = IndexBuilder(lexed.tokenList)
             sa = ScopeAnalyst(nextFile)
-            s_min = ScopeAnalyst("/Users/caseycas/jsnaughty/testing/test_files/test_file1.obs.js")
+            s_min = ScopeAnalyst(os.path.join(self.testDir.path, "test_file1.obs.js"))
             print(s_min.name2defScope)
             print("TokenList----------------------------------------------------------------")
             print(lexed.tokenList)
