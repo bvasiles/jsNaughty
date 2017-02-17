@@ -2,6 +2,7 @@
 Created on Dec 22, 2016
 
 @author: Bogdan Vasilescu
+@author: Casey Casalnuovo
 '''
 
 from lmQuery import LMQuery
