@@ -50,16 +50,77 @@ class testAST(unittest.TestCase):
         self.file_definitions[1]["epsilon"] = [11]
         self.file_definitions[1]["dest"] = [15]
         self.file_definitions[1]["src"] = [15]
+        
+        self.file_definitions[5] = {}
+        self.file_definitions[5]["button"] = [5,19]
+        self.file_definitions[5]["e"] = [5,19]
+        self.file_definitions[5]["options"] = [5,19]
+        self.file_definitions[5]["win"] = [6]
+        self.file_definitions[5]["frm"] = [7]
+        self.file_definitions[5]["store"] = [8]
+        self.file_definitions[5]["customer"] = [10,22] #Sometimes global, so the 10 doesn't really matter?
+        self.file_definitions[5]["grid"] = [22,29]
+        self.file_definitions[5]["cp"] = [23,30]
+        self.file_definitions[5]["Ext"] = [0]
+        self.file_definitions[5]["mode"] = [9]
+        
+        self.file_definitions[6] = {}
+        self.file_definitions[6]["feather"] = [0]
+        self.file_definitions[6]["cardmagic"] = [3]
+        self.file_definitions[6]["newCard"] = [9]
+        self.file_definitions[6]["nPlayerId"] = [9]
+        
+        self.file_definitions[7] = {}
+        self.file_definitions[7]["require"] = [0]
+        self.file_definitions[7]["fs"] = [0]
+        self.file_definitions[7]["path"] = [2]
+        self.file_definitions[7]["__dirname"] = [2]
+        self.file_definitions[7]["ignoreList"] = [2]
+        self.file_definitions[7]["describe"] = [4]
+        self.file_definitions[7]["done"] = [5]
+        self.file_definitions[7]["it"] = [5]
+        self.file_definitions[7]["err"] = [6]
+        self.file_definitions[7]["file"] = [6]
+        
+        self.file_definitions[8] = {}
+        self.file_definitions[8]["module"] = [0]
+        self.file_definitions[8]["testCompile"] = [2,8]
+        self.file_definitions[8]["promise"] = [5,11]
+        self.file_definitions[8]["anonymous"] = [2,4,8,10] # I don't know if I agree with this?
+        
+        self.file_definitions[9] = {}
+        self.file_definitions[9]["document"] = [0]
+        self.file_definitions[9]["studentSelector"] = [1]
+        self.file_definitions[9]["courseSelector"] = [1]
+        self.file_definitions[9]["$"] = [0] #The other ones aren't?
+        self.file_definitions[9]["data"] = [4,12]
+        self.file_definitions[9]["i"] = [5,13]
+        self.file_definitions[9]["s"] = [5]
+        self.file_definitions[9]["student"] = [6,14]
+        self.file_definitions[9]["t"] = [13]
+        #self.file_definitions[9]["tablesorter"] = [20]
+        #self.file_definitions[9]["sortList"] = [21]
+        self.file_definitions[9]["studentRows"] = [35]
+        self.file_definitions[9]["filterButtons"] = [35]
+        self.file_definitions[9]["e"] = [36]
+        #self.file_definitions[9]["on"] = [36]
+        self.file_definitions[9]["activeRows"] = [37]
+        self.file_definitions[9]["inactiveRows"] = [37]
+        self.file_definitions[9]["grade"] = [37]
+        #self.file_definitions[9]["filter"] = [42]
 
     def testFiles(self):
-        #Known bugs:  The definitions of sum and numberEquals in test_file1 seem to be pointing to the wrong instance...
-        i = 1
-        lexed = Lexer(self.fileList[0])
-        ib = IndexBuilder(lexed.tokenList)        
-        sa = ScopeAnalyst(self.fileList[0])
-        for variable in sa.nameDefScope2pos.keys():
-            print(str(variable[0]) + " : " + str(sa.nameDefScope2pos[variable]) + " -> " +  str(ib.revFlatMat[sa.nameDefScope2pos[variable]]) + " Manual: " + str(self.file_definitions[i][variable[0]]))
-            assert(ib.revFlatMat[sa.nameDefScope2pos[variable]][0] in self.file_definitions[i][variable[0]])
+        tf = [1,5,6,7,8,9]
+
+        for i in tf:
+            print("-----------------------------------------------------")
+            lexed = Lexer(self.fileList[i-1])
+            ib = IndexBuilder(lexed.tokenList)        
+            sa = ScopeAnalyst(self.fileList[i-1])
+            #print(sa)
+            for variable in sa.nameDefScope2pos.keys():
+                print(str(variable[0]) + " : " + str(sa.nameDefScope2pos[variable]) + " -> " +  str(ib.revFlatMat[sa.nameDefScope2pos[variable]]) + " Manual: " + str(self.file_definitions[i][variable[0]]))
+                assert(ib.revFlatMat[sa.nameDefScope2pos[variable]][0] in self.file_definitions[i][variable[0]])
         
     
 if __name__=="__main__":

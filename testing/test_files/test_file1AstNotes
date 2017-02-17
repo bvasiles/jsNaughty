@@ -1,0 +1,87 @@
+Variables in order
+geom2d
+sum numeric sum numberEquals numeric numberEquals
+a
+Vector2d x y
+(this) x x
+(this) y y
+mix Vector2d
+(label) dotproduct dotProduct vector
+sum (this) x vector x (this) y vector y
+(label) equals equals vector epsilon
+numberEquals (this) x vector x epsilon numberEquals (this) y vector y epsilon
+mix dest src
+k src dest k src k
+dest
+(label)Vector2d Vector2d
+
+What is the 'definitions' block?
+More than just names, but if it has "type": "name"...
+geom2d
+
+Under another definitions block:
+sum, numeric,
+
+Uniques in order:
+geom2d - definitions 1 start, no reference link
+sum - definitions 2 start, no reference link
+numeric - defintions 2 start, no reference link
+numberEquals - definitions 2 start, no reference link (there is a one under 'thedef' that points to the later copy?)
+a -> hardcoded under definitions 2 and linked (without any reference to another start tag) from 'thedef', 'orig' which presumably links to its location in definitions? 
+Vector2d -> properties -> start (puts this at line 21), another one has a start reference where it is paired with an 'end on line 4' (This seems correct, similarly patterned)
+x - only start reference links
+y - only start reference links
+this -> 4 instances with a hard-coded start.
+mix -> hardcoded hard and then reference to it under 'thedef'
+dotproduct -> hardcoded somewhere with references later (but not clearly under 'thedef')
+vector(1+2) -> two versions, both linked from start under 'thedef' to an orig 
+equals -> label and a hardcoded start under properties -> args (b/c its a label ref?)
+epsilon -> start link under 'thedef'
+dest ->  linked from start under 'thedef' to an orig 
+src -> linked from start under 'thedef' to an orig 
+k -> linked from start under 'thedef' to an orig
+
+From another way, what are all the 'thedef' tags looking like?
+(38 of them...)
+What is near then in order?
+numeric -> ref
+subtag
+sum (no start just a orig with a reference...)
+subtag
+vector
+subtag
+subtag
+subtag of dotProduct (has no thedef supertag?)
+numberEquals (no start just a orig with a reference...)
+subtag
+vector
+subtag
+subtag
+epsilon
+subtag
+subtag
+subtag
+tag in expression (not any other 'thedef?')
+subtag of equals (has no thedef supertag)
+a
+x
+subtag
+y
+subtag
+Vector2d
+subtag (under references)
+subtag (under references)
+mix
+subtag
+k
+subtag
+subtag (under references)
+src
+subtag
+subtag (under references)
+dest
+subtag
+subtag (under references)
+geom2d
+
+Many we need to follow the reference under 'orig' always and not just what we find under a start?
