@@ -556,7 +556,6 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
         self.log_drops = {}
         
         
-    
     def getEntropyStats(self, variable, suggestion):
         """
         Returns a set of entropy stats about a variable and suggestion combination.
