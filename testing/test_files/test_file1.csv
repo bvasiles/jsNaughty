@@ -3,7 +3,7 @@ vector,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][
 epsilon,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][0][""definitions""][1][""name""][""thedef""][""references""][0][""scope""][""body""][0][""value""][""right""][""args""][2][""thedef""][""scope""]",2,2,TRUE,1,0,0,FALSE,0,27,18.5
 a,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][1][""definitions""][0][""name""][""thedef""][""scope""]",1,1,FALSE,0,0,0,TRUE,0,5,5.0
 dotProduct,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][0][""definitions""][0][""name""][""thedef""][""references""][0][""scope""][""functions""][""_values""][""$dotProduct""][""scope""]",1,1,TRUE,0,0,0,FALSE,0,8,8.0
-Vector2d,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][2][""name""][""thedef""][""scope""]",3,1,TRUE,0,0,0,FALSE,0,8,5.333
+Vector2d,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][2][""name""][""thedef""][""scope""]",3,1,FALSE,1,0,0,FALSE,0,8,5.333
 sum,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][0][""definitions""][0][""name""][""thedef""][""scope""]",2,1,TRUE,1,0,0,FALSE,0,22,17.5
 numberEquals,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][0][""definitions""][1][""name""][""thedef""][""scope""]",2,2,TRUE,1,0,0,FALSE,0,27,20.0
 dest,"$[""body""][0][""definitions""][0][""value""][""expression""][""body""][4][""body""][0][""body""][""body""][""left""][""expression""][""thedef""][""scope""]",3,1,FALSE,0,1,0,FALSE,0,17,9.333
