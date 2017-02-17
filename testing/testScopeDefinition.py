@@ -22,7 +22,7 @@ class testAST(unittest.TestCase):
         '''
         Ensure that the list of files is sorted - e.g. test_file1 test_file2, etc.
         '''
-        return sorted(fileList, key = lambda(x) : int(x[9:10]))
+        return sorted(fileList, key = lambda(x) : int(x[9:x.find(".")]))
     
     def setUp(self):
         self.testDir = Folder("./testing//test_files/")
@@ -111,6 +111,7 @@ class testAST(unittest.TestCase):
 
     def testFiles(self):
         tf = [1,5,6,7,8,9]
+        #tf = [10]
 
         for i in tf:
             print("-----------------------------------------------------")
