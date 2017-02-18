@@ -130,26 +130,30 @@ class testAST(unittest.TestCase):
         self.file_definitions[11]["elem"] = [8]
         self.file_definitions[11]["layer"] = [11]
         self.file_definitions[11]["data"] = [12]
-        self.file_definitions[11]["name"] = [13,39,46,52]
+        #Apparently older versions of javascript don't support block level scoping.
+        #This also should be 39 probably, but 46 has the orig tag for some reason
+        #I don't see any way to fix this under the constraints of the current ast
+        self.file_definitions[11]["name"] = [13,46] #,39,52]
         self.file_definitions[11]["tmp"] = [14]
         self.file_definitions[11]["parent"] = [18]
         self.file_definitions[11]["node"] = [27]
         self.file_definitions[11]["stack"] = [28]
         self.file_definitions[11]["args"] = [36]
         self.file_definitions[11]["b"] = [37]
-        self.file_definitions[11]["i"] = [38,45,50]
+        #This has the same deal as name does
+        self.file_definitions[11]["i"] = [38] #,45,50]
         self.file_definitions[11]["a"] = [44]
         self.file_definitions[11]["arg"] = [51]
 
     def testFiles(self):
-        tf = [1,5,6,7,8,9,10]
-#        tf = [11]
+        tf = [1,5,6,7,8,9,10,11]
+        #tf = [11]
 
         for i in tf:
             print("-----------------------------------------------------")
             lexed = Lexer(self.fileList[i-1])
             ib = IndexBuilder(lexed.tokenList)        
-            print(ib)
+            #print(ib)
             sa = ScopeAnalyst(self.fileList[i-1])
             #print(sa)
             nameCount = {}

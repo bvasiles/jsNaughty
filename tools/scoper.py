@@ -198,19 +198,19 @@ class ScopeAnalyst:
 
 
                     print("----------------------------------------------------------------")
-                    print("Path: " + str(pth))
+                    #print("Path: " + str(pth))
                     print("Key: " + str(key))
-                    print("Path: " + str(join_ref_key(pth[:-1])))
-                    print("-------------")
-                    print(pth[-2])
+                    print("Path: " + str(join_ref_key(pth)))
+                    #print("-------------")
+                    #print(pth[-2])
                     print(pth[-3])
-                    print("-------------")
+                    #print("-------------")
                     #1.if it contains references in this path, it can't be assigned to (key, def_scope)
                     #2.if it contains orig, it is the definition.
                     print(start)
                     print("Def_scope:" + def_scope)
-
                     print("Use_scope:" + use_scope)
+                    print("----------------------------------------------------------------")
 
 
                     #Orig tag is not necessarily unique, but it should be priveleged over other tags I think.
@@ -220,7 +220,11 @@ class ScopeAnalyst:
                         #assert((key,def_scope) not in origSeen) #orig tag must be unique for a def_scope. (Well, not exactly)
                         #if((key,def_scope) in origSeen): #Change the def_scope I think?
                         #def_scope += "[" + str(pth[-2]) + "]"
-                        self.nameDefScope2pos[(key, def_scope)] = start
+                        #Orig tags get preference over non-orig tags
+                        if((key,def_scope) not in self.nameDefScope2pos or (key, def_scope) not in origSeen):
+                            self.nameDefScope2pos[(key,def_scope)] = start
+                        elif(self.nameDefScope2pos[(key,def_scope)] > start):
+                            self.nameDefScope2pos[(key,def_scope)] = start
                         origSeen.add((key,def_scope))
                     elif((key, def_scope) not in origSeen and "references" not in join_ref_key(pth[:-1])):
                     #elif((key, def_scope) not in origSeen and "references" != pth[-3]):
@@ -234,9 +238,7 @@ class ScopeAnalyst:
                             self.nameDefScope2pos[(key,def_scope)] = start
                         elif(self.nameDefScope2pos[(key,def_scope)] > start):
                             self.nameDefScope2pos[(key,def_scope)] = start
-                           
-                    print("New def_scope: " + def_scope)
-                    print("----------------------------------------------------------------")
+                        
 
  
                     # Is name global (defined outside of this file)?
