@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import re
+
 import csv
 from _sqlite3 import Row
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -58,7 +59,7 @@ class testAST(unittest.TestCase):
         self.file_definitions[5]["win"] = [6]
         self.file_definitions[5]["frm"] = [7]
         self.file_definitions[5]["store"] = [8]
-        self.file_definitions[5]["customer"] = [10,22] #Sometimes global, so the 10 doesn't really matter?
+        self.file_definitions[5]["customer"] = [22] # the 10 is global, skip 
         self.file_definitions[5]["grid"] = [22,29]
         self.file_definitions[5]["cp"] = [23,30]
         self.file_definitions[5]["Ext"] = [0]
@@ -109,20 +110,65 @@ class testAST(unittest.TestCase):
         self.file_definitions[9]["grade"] = [37]
         #self.file_definitions[9]["filter"] = [42]
 
+        self.file_definitions[10] = {}
+        self.file_definitions[10]["BaseView"] = [8]
+        self.file_definitions[10]["setup"] = [6]
+        self.file_definitions[10]["teardown"] = [13]
+        self.file_definitions[10]["test"] = [41]
+        self.file_definitions[10]["document"] = [7]
+        self.file_definitions[10]["assert"] = [11]
+        self.file_definitions[10]["stubAddListener"] = [7]
+        self.file_definitions[10]["window"] = [39]
+        self.file_definitions[10]["stubReqWakeLock"] = [17]
+        self.file_definitions[10]["overflowCall"] = [42]
+        self.file_definitions[10]["suite"] = [4]
+        self.file_definitions[10]["require"] = [2]
+        self.file_definitions[10]["options"] = [5]
+
+        self.file_definitions[11] = {}
+        self.file_definitions[11]["func"] = [4]
+        self.file_definitions[11]["elem"] = [8]
+        self.file_definitions[11]["layer"] = [11]
+        self.file_definitions[11]["data"] = [12]
+        self.file_definitions[11]["name"] = [13,39,46,52]
+        self.file_definitions[11]["tmp"] = [14]
+        self.file_definitions[11]["parent"] = [18]
+        self.file_definitions[11]["node"] = [27]
+        self.file_definitions[11]["stack"] = [28]
+        self.file_definitions[11]["args"] = [36]
+        self.file_definitions[11]["b"] = [37]
+        self.file_definitions[11]["i"] = [38,45,50]
+        self.file_definitions[11]["a"] = [44]
+        self.file_definitions[11]["arg"] = [51]
+
     def testFiles(self):
-        tf = [1,5,6,7,8,9]
-        #tf = [10]
+        tf = [1,5,6,7,8,9,10]
+#        tf = [11]
 
         for i in tf:
             print("-----------------------------------------------------")
             lexed = Lexer(self.fileList[i-1])
             ib = IndexBuilder(lexed.tokenList)        
+            print(ib)
             sa = ScopeAnalyst(self.fileList[i-1])
             #print(sa)
+            nameCount = {}
+            #TODO: Grab only the non-globals to look at (get the start key and look it up)
             for variable in sa.nameDefScope2pos.keys():
-                print(str(variable[0]) + " : " + str(sa.nameDefScope2pos[variable]) + " -> " +  str(ib.revFlatMat[sa.nameDefScope2pos[variable]]) + " Manual: " + str(self.file_definitions[i][variable[0]]))
-                assert(ib.revFlatMat[sa.nameDefScope2pos[variable]][0] in self.file_definitions[i][variable[0]])
+                start = sa.nameDefScope2pos[variable]
+                name = variable[0]
+                if(not sa.isGlobal[(name, start)]):
+                    if(name in nameCount):
+                        nameCount[name] += 1
+                    else:
+                        nameCount[name] = 1
+                    print(str(name) + " : " + str(sa.nameDefScope2pos[variable]) + " -> " +  str(ib.revFlatMat[sa.nameDefScope2pos[variable]]) + " Manual: " + str(self.file_definitions[i][name]))
+                    assert(ib.revFlatMat[sa.nameDefScope2pos[variable]][0] in self.file_definitions[i][name])
         
+            #Finally make sure that the count of definitions matches our manual check.
+            for name, count in nameCount.iteritems():
+                print(name + " : " + str(count) + " =?= " + str(len(self.file_definitions[i][name]))) 
+                assert(len(self.file_definitions[i][name]) == count)
     
 if __name__=="__main__":
     unittest.main()

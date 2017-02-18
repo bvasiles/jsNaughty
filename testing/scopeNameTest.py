@@ -51,7 +51,7 @@ class scopeNameTest(unittest.TestCase):
         Don't run Moses server here (just incremental tests)
         - Take all the .orig test files and create the IndexBuilders and ScopeAnalysts here
         '''
-        self.testDir = Folder("/data/bogdanv/deobfuscator/experiments/results/sample.test.10k.v11/")
+        self.testDir = Folder("/home/ccasal/jsnaughty/experiments/results/sample.test.10k.v12_model/")
         #self.testDir = Folder("./consistencyFailureFiles/")
         '''
         3193021.hash_def_one_renaming.freqlen.js
@@ -204,12 +204,12 @@ class scopeNameTest(unittest.TestCase):
             i += 1
 
 
-        print(lexedObs.tokenList)
-        print("--------------------------------------------")
-        print(ib1)
-        print("--------------------------------------------")
-        print(sa1)
-        print("--------------------------------------------")
+        #print(lexedObs.tokenList)
+        #print("--------------------------------------------")
+        #print(ib1)
+        #print("--------------------------------------------")
+        #print(sa1)
+        #print("--------------------------------------------")
             
         #3) + 4)
         #Weird note: the scope analyst does not find scopes correctly on the post-processed file...
@@ -354,7 +354,7 @@ class scopeNameTest(unittest.TestCase):
                     print(" - Other Failure\n")
                     failedCases.append(str(baseId) + "(" + key + ")(Other Failure)\n")
                     
-        with open("consistencyFailuresV11H_" + str(id_start)  + "_" + str(id_end) +  ".txt", 'w') as f:
+        with open("consistencyFailuresV12_" + str(id_start)  + "_" + str(id_end) +  ".txt", 'w') as f:
             for failed in failedCases:
                 f.write(failed)
 

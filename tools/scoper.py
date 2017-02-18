@@ -195,13 +195,31 @@ class ScopeAnalyst:
                     def_scope = self.__get_def_scope(parent['thedef'])
                     
                     self.name2defScope[(key, start)] = def_scope
-                    
-                    #Record the position of the definition if its an orig tag (unique) or a path without a
-                    #reference if we haven't seen an orig tag yet.  If there is no orig tag, there should
-                    #be exactly one non reference path.
-                    if("orig" in join_ref_key(pth[:-1])):
-                    #if("orig" == pth[-3]):
-                        assert((key,def_scope) not in origSeen) #orig tag must be unique for a def_scope.
+
+
+                    print("----------------------------------------------------------------")
+                    print("Path: " + str(pth))
+                    print("Key: " + str(key))
+                    print("Path: " + str(join_ref_key(pth[:-1])))
+                    print("-------------")
+                    print(pth[-2])
+                    print(pth[-3])
+                    print("-------------")
+                    #1.if it contains references in this path, it can't be assigned to (key, def_scope)
+                    #2.if it contains orig, it is the definition.
+                    print(start)
+                    print("Def_scope:" + def_scope)
+
+                    print("Use_scope:" + use_scope)
+
+
+                    #Orig tag is not necessarily unique, but it should be priveleged over other tags I think.
+                    #if we see a second orig tag, replace only if its earlier in the file?                    
+                    #if("orig" in join_ref_key(pth[:-1])):
+                    if("orig" == pth[-3]):
+                        #assert((key,def_scope) not in origSeen) #orig tag must be unique for a def_scope. (Well, not exactly)
+                        #if((key,def_scope) in origSeen): #Change the def_scope I think?
+                        #def_scope += "[" + str(pth[-2]) + "]"
                         self.nameDefScope2pos[(key, def_scope)] = start
                         origSeen.add((key,def_scope))
                     elif((key, def_scope) not in origSeen and "references" not in join_ref_key(pth[:-1])):
@@ -216,30 +234,11 @@ class ScopeAnalyst:
                             self.nameDefScope2pos[(key,def_scope)] = start
                         elif(self.nameDefScope2pos[(key,def_scope)] > start):
                             self.nameDefScope2pos[(key,def_scope)] = start
-                            
-                    
-                    #print("Path: " + str(pth))
-                    #print("Key: " + str(key))
-                    #print("Path: " + str(join_ref_key(pth[:-1])))
-                    #print("-------------")
-                    #print(pth[-2])
-                    #print(pth[-3])
-                    #print("-------------")
-                    #1.if it contains references in this path, it can't be assigned to (key, def_scope)
-                    #2.if it contains orig, it is the definition.
-                    #print(start)
-                    #print(def_scope)
+                           
+                    print("New def_scope: " + def_scope)
+                    print("----------------------------------------------------------------")
 
-                    #print(use_scope)
-                    
-                    #if((key, def_scope) in definitionCorrection):
-                        #Correction criteria:  try use_scope in def_scope and position minimized?
-                        #If we can figure out a criteria that works correctly, then it can be replaced here.
-                    #    if(use_scope in def_scope and start < definitionCorrection[(key, def_scope)]):
-                    #        definitionCorrection[(key, def_scope)] = start
-                    #else:
-                    #    definitionCorrection[(key, def_scope)] = start
-                    
+ 
                     # Is name global (defined outside of this file)?
                     glb = self.__get_def_global(parent['thedef'])
                     self.isGlobal[(key, start)] = glb
