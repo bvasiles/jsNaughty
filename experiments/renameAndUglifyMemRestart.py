@@ -46,7 +46,7 @@ def processFile(l):
         clear = Beautifier()
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         print 'Beautifier:', ok, _err
-        print tmp_beautified_text
+#         print tmp_beautified_text
 
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -56,7 +56,7 @@ def processFile(l):
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         print 'Uglifier:', ok, _err
-        print tmp_minified_text
+#         print tmp_minified_text
 
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
@@ -70,11 +70,11 @@ def processFile(l):
 #         except:
 #             return (js_file_path, None, 'Aligner fail')
 
-        print '\nAligned clear:'
-        print aligned_clear
+#         print '\nAligned clear:'
+#         print aligned_clear
         
-        print '\nAligned ugly:'
-        print aligned_minified
+#         print '\nAligned ugly:'
+#         print aligned_minified
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
@@ -199,7 +199,7 @@ if __name__=="__main__":
 #         result = processFile(reader.next())
 #         if True:
 #         for result in pool.imap_unordered(processFile, reader):
-        for row in [['u.js', 'OK']]: #reader:
+        for row in reader:
             result = processFile(row)
         
             with open(os.path.join(output_path, log), 'a') as g:
