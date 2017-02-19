@@ -173,9 +173,9 @@ class LMPreprocessor:
         # Replace .1 by 0.1
         self.tokenList = fixIncompleteDecimals(self.tokenList)
 
-        print '======='
-        print(self.tokenList)
-        print '======='
+#         print '======='
+#         print(self.tokenList)
+#         print '======='
         
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)

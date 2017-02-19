@@ -1,7 +1,9 @@
 import subprocess
 PIPE = subprocess.PIPE
 import socket
-from preprocessor import replaceSciNotNum
+from preprocessor import replaceSciNotNum, fixIncompleteDecimals, formatLines, formatTokens
+from pygments import lex
+from pygments.lexers import get_lexer_for_filename
 
 
 class Uglifier:
@@ -71,7 +73,14 @@ class Uglifier:
         if not proc.returncode:
             uglifyjs_ok = True
     
-        return (uglifyjs_ok, replaceSciNotNum(out), err)
+        lexer = get_lexer_for_filename("jsFile.js")
+        tokenList = list(lex(replaceSciNotNum(out), lexer))
+        # Replace .1 by 0.1
+        tokenList = fixIncompleteDecimals(tokenList)
+        lines = formatTokens(tokenList)
+        
+        return (uglifyjs_ok, formatLines(lines).encode('utf8'), err)
+
 
 
 
