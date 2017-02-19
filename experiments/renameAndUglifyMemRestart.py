@@ -27,6 +27,8 @@ def processFile(l):
     if status != 'OK':
         return (js_file_path, None, 'Skipped')
     
+    print js_file_path
+    
     if True:
 #     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
@@ -42,6 +44,8 @@ def processFile(l):
         # Pass through beautifier to fix layout
         clear = Beautifier()
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
+        print 'Beautifier:', ok, _err
+
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
@@ -49,6 +53,8 @@ def processFile(l):
         # Minify
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
+        print 'Uglifier:', ok, _err
+
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
 
@@ -63,9 +69,14 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
+        print 'Beautifier after align:', ok, _err
+        
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
+        
         (ok, minified_text, _err) = clear.web_run(aligned_minified)
+        print 'Uglifier after align:', ok, _err
+        
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
 
@@ -114,6 +125,7 @@ def processFile(l):
                                           scopeAnalyst)
                 
                 (ok, beautified_after_text, _err) = clear.web_run(after_text)
+                print 'Beautifier after rename:', ok, _err
                 if not ok:
                     return (js_file_path, None, 'Beautifier fail')
                 
