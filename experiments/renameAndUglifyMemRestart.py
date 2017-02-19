@@ -190,7 +190,7 @@ if __name__=="__main__":
 #         result = processFile(reader.next())
 #         if True:
 #         for result in pool.imap_unordered(processFile, reader):
-        for row in reader:
+        for row in [['783240.js', 'OK']]: #reader:
             result = processFile(row)
         
             with open(os.path.join(output_path, log), 'a') as g:
