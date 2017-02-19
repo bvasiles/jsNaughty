@@ -139,7 +139,7 @@ def processFile(l):
                                           scopeAnalyst)
                 
                 (ok, beautified_after_text, _err) = clear.web_run(after_text)
-                print 'Beautifier after rename:', ok, _err
+#                 print 'Beautifier after rename:', ok, _err
                 if not ok:
                     return (js_file_path, None, 'Beautifier fail')
                 
