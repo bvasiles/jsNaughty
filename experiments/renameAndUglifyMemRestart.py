@@ -83,13 +83,13 @@ def processFile(l):
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
-        print 'Beautifier after align:', ok, _err
+#         print 'Beautifier after align:', ok, _err
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
         
         (ok, minified_text, _err) = clear.web_run(aligned_minified)
-        print 'Uglifier after align:', ok, _err
+#         print 'Uglifier after align:', ok, _err
         
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
