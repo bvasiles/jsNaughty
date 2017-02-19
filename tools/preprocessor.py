@@ -7,14 +7,15 @@ from unidecode import unidecode
 
 import re
 # scinot = re.compile('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)')
-scinot = re.compile('[\s=]+([+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+))')
+# scinot = re.compile('[\s=]+([+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+))')
+scinot = re.compile(r'\b([+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+))')
 # Updated as per http://stackoverflow.com/questions/41668588
 def replaceSciNotNum(text):
     """
     The JS parser from UglifyJS fails on scientific notation
     Use this to replace all scinot numbers
     """
-    return scinot.sub(lambda x: str(float(x.group())), text)
+    return scinot.sub(lambda x: str(float(x.group(1))), text)
 #     return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(float(x.group())), text)
 
 
