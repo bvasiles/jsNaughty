@@ -31,7 +31,8 @@ def processFile(l):
     
     if True:
 #     try:
-        js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
+#         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
+        js_text = open(js_file_path, 'r').read()
         
         # Strip comments, replace literals, etc
 #         try:
@@ -198,7 +199,7 @@ if __name__=="__main__":
 #         result = processFile(reader.next())
 #         if True:
 #         for result in pool.imap_unordered(processFile, reader):
-        for row in [['783240.js', 'OK']]: #reader:
+        for row in [['u.js', 'OK']]: #reader:
             result = processFile(row)
         
             with open(os.path.join(output_path, log), 'a') as g:
