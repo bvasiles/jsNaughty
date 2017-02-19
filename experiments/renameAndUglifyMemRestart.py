@@ -33,11 +33,16 @@ def processFile(l):
 #     try:
 #         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         js_text = open(js_file_path, 'r').read()
+        print 'Orig:'
+        print js_text 
         
         # Strip comments, replace literals, etc
 #         try:
         prepro = WebLMPreprocessor(js_text)
         prepro_text = str(prepro)
+        print 'Preprocessed:'
+        print prepro_text 
+
 #         except:
 #             return (js_file_path, None, 'Preprocessor fail')
         
