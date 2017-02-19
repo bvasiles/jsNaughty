@@ -163,9 +163,6 @@ class LMPreprocessor:
         # FIXME: right now I'm replacing all numbers in 
         # scientific notation by 1. Replace by actual value
         programText = replaceSciNotNum(js_text)
-#         print '======='
-#         print(programText)
-#         print '======='
 
         # Tokenize input
         self.tokenList = list(lex(programText, self.lexer))
@@ -175,6 +172,10 @@ class LMPreprocessor:
     
         # Replace .1 by 0.1
         self.tokenList = fixIncompleteDecimals(self.tokenList)
+
+        print '======='
+        print(self.tokenList)
+        print '======='
         
         # Strip annotations and literals
         self.tokenList = tokensExceptTokenType(self.tokenList, String.Doc)
