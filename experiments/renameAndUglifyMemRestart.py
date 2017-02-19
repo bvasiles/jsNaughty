@@ -45,6 +45,7 @@ def processFile(l):
         clear = Beautifier()
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         print 'Beautifier:', ok, _err
+        print tmp_beautified_text
 
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -54,6 +55,7 @@ def processFile(l):
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         print 'Uglifier:', ok, _err
+        print tmp_minified_text
 
         if not ok:
             return (js_file_path, None, 'Uglifier fail')
@@ -66,6 +68,12 @@ def processFile(l):
                                                              WebLexer(tmp_minified_text).tokenList)
 #         except:
 #             return (js_file_path, None, 'Aligner fail')
+
+        print '\nAligned clear:'
+        print aligned_clear
+        
+        print '\nAligned ugly:'
+        print aligned_minified
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
