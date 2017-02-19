@@ -197,20 +197,20 @@ class ScopeAnalyst:
                     self.name2defScope[(key, start)] = def_scope
 
 
-                    print("----------------------------------------------------------------")
-                    #print("Path: " + str(pth))
-                    print("Key: " + str(key))
-                    print("Path: " + str(join_ref_key(pth)))
-                    #print("-------------")
-                    #print(pth[-2])
-                    print(pth[-3])
-                    #print("-------------")
-                    #1.if it contains references in this path, it can't be assigned to (key, def_scope)
-                    #2.if it contains orig, it is the definition.
-                    print(start)
-                    print("Def_scope:" + def_scope)
-                    print("Use_scope:" + use_scope)
-                    print("----------------------------------------------------------------")
+#                     print("----------------------------------------------------------------")
+#                     #print("Path: " + str(pth))
+#                     print("Key: " + str(key))
+#                     print("Path: " + str(join_ref_key(pth)))
+#                     #print("-------------")
+#                     #print(pth[-2])
+#                     print(pth[-3])
+#                     #print("-------------")
+#                     #1.if it contains references in this path, it can't be assigned to (key, def_scope)
+#                     #2.if it contains orig, it is the definition.
+#                     print(start)
+#                     print("Def_scope:" + def_scope)
+#                     print("Use_scope:" + use_scope)
+#                     print("----------------------------------------------------------------")
 
 
                     #Orig tag is not necessarily unique, but it should be priveleged over other tags I think.
