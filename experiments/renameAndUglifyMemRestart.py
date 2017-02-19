@@ -27,16 +27,16 @@ def processFile(l):
     if status != 'OK':
         return (js_file_path, None, 'Skipped')
     
-#     if True:
-    try:
+    if True:
+#     try:
         js_text = open(os.path.join(corpus_root, js_file_path), 'r').read()
         
         # Strip comments, replace literals, etc
-        try:
-            prepro = WebLMPreprocessor(js_text)
-            prepro_text = str(prepro)
-        except:
-            return (js_file_path, None, 'Preprocessor fail')
+#         try:
+        prepro = WebLMPreprocessor(js_text)
+        prepro_text = str(prepro)
+#         except:
+#             return (js_file_path, None, 'Preprocessor fail')
         
         
         # Pass through beautifier to fix layout
@@ -54,12 +54,12 @@ def processFile(l):
 
         # Align minified and clear files, in case the beautifier 
         # did something weird
-        try:
-            aligner = Aligner()
-            (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
-                                                                 WebLexer(tmp_minified_text).tokenList)
-        except:
-            return (js_file_path, None, 'Aligner fail')
+#         try:
+        aligner = Aligner()
+        (aligned_clear, aligned_minified) = aligner.web_align(WebLexer(tmp_beautified_text).tokenList,
+                                                             WebLexer(tmp_minified_text).tokenList)
+#         except:
+#             return (js_file_path, None, 'Aligner fail')
         
         # Pass through beautifier to fix layout
         (ok, beautified_text, _err) = clear.web_run(aligned_clear)
@@ -70,14 +70,14 @@ def processFile(l):
             return (js_file_path, None, 'Beautifier fail')
 
         # Num tokens before vs after
-        try:
-            lex_clear = WebLexer(beautified_text)
-            tok_clear = lex_clear.tokenList
-            
-            lex_ugly = WebLexer(minified_text)
-            tok_ugly = lex_ugly.tokenList
-        except:
-            return (js_file_path, None, 'Lexer fail')
+#         try:
+        lex_clear = WebLexer(beautified_text)
+        tok_clear = lex_clear.tokenList
+        
+        lex_ugly = WebLexer(minified_text)
+        tok_ugly = lex_ugly.tokenList
+#         except:
+#             return (js_file_path, None, 'Lexer fail')
        
         # For now only work with minified files that have
         # the same number of tokens as the originals
@@ -89,24 +89,24 @@ def processFile(l):
             return (js_file_path, None, 'Not minified')
 
         
-        try:
-            iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
-        except:
-            return (js_file_path, None, 'IndexBuilder fail')
+#         try:
+        iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
+#         except:
+#             return (js_file_path, None, 'IndexBuilder fail')
         
         
-        try:
-            scopeAnalyst = WebScopeAnalyst(minified_text)
-        except:
-            return (js_file_path, None, 'ScopeAnalyst fail')
+#         try:
+        scopeAnalyst = WebScopeAnalyst(minified_text)
+#         except:
+#             return (js_file_path, None, 'ScopeAnalyst fail')
 
         processed = []
          
         # Try different renaming strategies (hash, etc)
         for r_strategy in RS.all():
         
-            try:
-#             if True:
+#             try:
+            if True:
                 # Rename input prior to translation
                 preRen = PreRenamer()
                 after_text = preRen.rename(r_strategy, 
@@ -119,8 +119,8 @@ def processFile(l):
                 
                 processed.append((r_strategy, beautified_after_text))
                 
-            except:
-                return (js_file_path, None, 'Renaming fail')
+#             except:
+#                 return (js_file_path, None, 'Renaming fail')
             
         
         with open(os.path.join(output_path, 'orig', js_file_path), 'w') as f:
@@ -133,8 +133,8 @@ def processFile(l):
         return (js_file_path, 'OK', None)
 
 
-    except Exception, e:
-        return (js_file_path, None, str(e).replace("\n", ""))
+#     except Exception, e:
+#         return (js_file_path, None, str(e).replace("\n", ""))
     
     
 
@@ -177,7 +177,9 @@ if __name__=="__main__":
         
 #         result = processFile(reader.next())
 #         if True:
-        for result in pool.imap_unordered(processFile, reader):
+#         for result in pool.imap_unordered(processFile, reader):
+        for row in reader:
+            result = processFile(row)
         
             with open(os.path.join(output_path, log), 'a') as g:
                 writer = UnicodeWriter(g)
