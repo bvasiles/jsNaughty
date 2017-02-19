@@ -10,16 +10,22 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Uglifier, IndexBuilder, Beautifier, Aligner, \
-                    WebScopeAnalyst, WebLMPreprocessor, \
-                    WebLexer, PreRenamer, RenamingStrategies
-
+from tools import Uglifier, Beautifier
+from tools import IndexBuilder
+from tools import Aligner
+from tools import WebScopeAnalyst
+from tools import WebLMPreprocessor
+from tools import WebLexer
+from tools import PreRenamer
 from folderManager import Folder
 
 
 def processFile(l):
     
     js_file_path = l[0]
+    status = l[1]
+    if status != 'OK':
+        return (js_file_path, None, 'Skipped')
     
 #     if True:
     try:
@@ -132,6 +138,20 @@ def processFile(l):
     
     
 
+
+class RenamingStrategies:
+    NONE = 'no_renaming'
+    NORMALIZED = 'normalized'
+    SCOPE_ID = 'basic_renaming'
+    HASH_ONE = 'hash_def_one_renaming'
+    HASH_TWO = 'hash_def_two_renaming'
+    
+    def all(self):
+        return [self.NONE, 
+                self.HASH_ONE,
+                self.HASH_TWO]
+        
+        
 if __name__=="__main__":
 
     corpus_root = os.path.abspath(sys.argv[1])
@@ -140,7 +160,7 @@ if __name__=="__main__":
     output_path = Folder(sys.argv[3]).create()
     num_threads = int(sys.argv[4])
     
-    flog = 'log_renameAndUglifyMem_' + os.path.basename(corpus_root)
+    log = 'log_renameAndUglify'
 
     RS = RenamingStrategies()
     
@@ -159,7 +179,7 @@ if __name__=="__main__":
 #         if True:
         for result in pool.imap_unordered(processFile, reader):
         
-            with open(os.path.join(output_path, flog), 'a') as g:
+            with open(os.path.join(output_path, log), 'a') as g:
                 writer = UnicodeWriter(g)
          
                 if result[1] is not None:
