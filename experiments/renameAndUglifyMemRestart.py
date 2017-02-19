@@ -46,7 +46,7 @@ def processFile(l):
         clear = Beautifier()
         (ok, tmp_beautified_text, _err) = clear.web_run(prepro_text)
         print 'Beautifier:', ok, _err
-#         print tmp_beautified_text
+        print tmp_beautified_text
 
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
@@ -56,7 +56,7 @@ def processFile(l):
         ugly = Uglifier()
         (ok, tmp_minified_text, _err) = ugly.web_run(tmp_beautified_text)
         print 'Uglifier:', ok, _err
-#         print tmp_minified_text
+        print tmp_minified_text
 
         if not ok:
             return (js_file_path, None, 'Uglifier fail')

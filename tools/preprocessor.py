@@ -15,7 +15,7 @@ def replaceSciNotNum(text):
     The JS parser from UglifyJS fails on scientific notation
     Use this to replace all scinot numbers
     """
-    return scinot.sub(lambda x: str(float(x.group(1))), text)
+    return scinot.sub(lambda x: '{:f}'.format(float(x.group())), text)
 #     return re.sub('[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)', lambda x: str(float(x.group())), text)
 
 
