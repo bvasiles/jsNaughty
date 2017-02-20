@@ -144,7 +144,14 @@ def processFile(l):
             
         with open(temp_files['minified'], 'w') as f:
             f.write(minified_text)
-        
+            
+#         try:
+#             orig_lexer = WebLexer(beautified_text)
+#             orig_iBuilder = IndexBuilder(orig_lexer.tokenList)
+#             orig_scopeAnalyst = WebScopeAnalyst(beautified_text)
+#         except:
+#             return (js_file_path, None, 'IndexBuilder/Scoper fail on original')
+
         ######################## 
         #     Nice2Predict
         ########################
@@ -185,7 +192,7 @@ def processFile(l):
             scopeAnalyst = WebScopeAnalyst(minified_text)
         except:
             return (js_file_path, None, 'ScopeAnalyst minified fail')
-       
+        
         try:
             scopeAnalyst_clear = WebScopeAnalyst(beautified_text)
         except:
@@ -248,35 +255,36 @@ def processFile(l):
             with open(temp_files['%s' % (r_strategy)], 'w') as f:
                 f.write(beautified_after_text)
 
+
+            a_lexer = WebLexer(beautified_after_text)
+            a_iBuilder = IndexBuilder(a_lexer.tokenList)
+            a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
+                
+                
             if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
-                try:
-                    scopeAnalyst_hash = WebScopeAnalyst(after_text)
-                except:
-                    return (js_file_path, None, "ScopeAnalyst hash fail")
+#                 try:
+#                     scopeAnalyst_hash = WebScopeAnalyst(beautified_after_text) #This should be beautified_after_text instead of after_text
+#                 except:
+#                     return (js_file_path, None, "ScopeAnalyst hash fail")
 
                 #Map the hashed names to the minified counterparts.
                 orderedVarsMin = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-                orderedVarsHash = sorted(scopeAnalyst_hash.name2defScope.keys(), key = lambda x: x[1])
+                orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
 
                 if(len(orderedVarsMin) != len(orderedVarsHash)):
                     return (js_file_path, None, "Hash and Min lists different length")
 
                 for i in range(0, len(orderedVarsHash)):
                     name_hash = orderedVarsHash[i][0]
-                    def_scope_hash = scopeAnalyst_hash.name2defScope[orderedVarsHash[i]]
+                    def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
 
                     name_min = orderedVarsMin[i][0]
                     def_scope_min = scopeAnalyst.name2defScope[orderedVarsMin[i]]
                     hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
 
-
             
-            a_lexer = WebLexer(beautified_after_text)
-            a_iBuilder = IndexBuilder(a_lexer.tokenList)
-            a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
-                
-            
-#             lx = WebLexer(a_iBuilder.get_text())
+            # We can switch this back once we train models on a corpus with literals
+            # lx = WebLexer(a_iBuilder.get_text())
             lx = WebLexer(a_iBuilder.get_text_wo_literals())
             
             # Translate renamed input
@@ -337,20 +345,19 @@ def processFile(l):
                 for c_strategy in CS.all():
                     
                     # Compute renaming map (x -> length, y -> width, ...)
-                    # Note that x,y here are names after renaming
+                    # Note that x,y here are names after (hash) renaming
                     (temp_renaming_map, seen) = cc.computeRenaming(c_strategy,
-                                                      name_candidates,
-                                                      a_name_positions,
-                                                      a_use_scopes,
-                                                      a_iBuilder,
-                                                      lm_path,
-                                                      vm,
-                                                      hash_name_map)
+                                                                  name_candidates,
+                                                                  a_name_positions,
+                                                                  a_use_scopes,
+                                                                  a_iBuilder,
+                                                                  lm_path,
+                                                                  vm,
+                                                                  hash_name_map)
                     
-                    
-                    #After computeRenaming, we have both the entropies stored
-                    #if we are in LMDrop strategy and have the suggestions
-                    #frequency from name_candidates.  Fill in suggestion_Features
+                    # After computeRenaming, we have both the entropies stored
+                    # if we are in LMDrop strategy and have the suggestions
+                    # frequency from name_candidates.  Fill in suggestion_Features
                     if(c_strategy == CS.LMDROP and r_strategy not in suggestion_features):
                         assert(cc.suggestion_cache != None)
                         suggestion_features[r_strategy] = {}

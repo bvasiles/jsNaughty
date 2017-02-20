@@ -374,9 +374,9 @@ class VariableMetrics:
         
     def getNameMetrics(self, name, def_scope):
         variable = (name, def_scope)
-        return getNameMetrics(variable)
+        return self._getNameMetrics(variable)
         
-    def getNameMetrics(self, variable):
+    def _getNameMetrics(self, variable):
         """
         Helper: Returns the recorded metrics on variable
         
