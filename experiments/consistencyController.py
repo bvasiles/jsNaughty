@@ -14,8 +14,8 @@ from tools import ConsistencyResolver, \
                         LenConsistencyResolver, \
                         FreqLenConsistencyResolver, \
                         LMAvgConsistencyResolver, \
-                        LMDropConsistencyResolver
-
+                        LMDropConsistencyResolver, \
+                        LogModelConsistencyResolver
 
 class ConsistencyController:
     
@@ -33,8 +33,9 @@ class ConsistencyController:
                         use_scopes,
                         iBuilder=None,
                         lm_path=None,
-                        variable_metrics=None):
-        
+                        variable_metrics=None,
+                        hash_to_min = None):
+  
         if strategy == self.CS.LM:
             worker = LMAvgConsistencyResolver(self.debug_mode,
                                               lm_path)
@@ -46,7 +47,10 @@ class ConsistencyController:
             self.suggestion_cache = worker
         
         elif strategy == self.CS.LOGMODEL:
-            worker = LogModelConsistencyResolver(variable_metrics, debug_mode, lm_path)
+            worker = LogModelConsistencyResolver(variable_metrics,
+                                                 hash_to_min, 
+                                                 self.debug_mode,
+                                                 lm_path)
             
         elif strategy == self.CS.FREQLEN:
             worker = FreqLenConsistencyResolver(self.debug_mode)

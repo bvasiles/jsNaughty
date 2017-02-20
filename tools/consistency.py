@@ -720,20 +720,24 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
     
     def __init__(self, 
              variable_metrics,
+             hash_to_min,
              debug_mode,
              lm_path):
     
-        LMConsistencyResolver.__init__(self, debug_mode, lm_path)
+        LMDropConsistencyResolver.__init__(self, debug_mode, lm_path)
         
         #Pass in the name features so we can track
-        vm = variable_metrics
+        self.vm = variable_metrics
+        print(self.vm)
+        #We need to remember what the original minified names are so we can look them up in vm.
+        self.hash_name_map = hash_to_min
         #Initialize the model constraints
         #Based on the log odds from the model on exact match (These will change as models change...)
-        weights = {}
-        weights["name_length"] = 2.232032275 #logged
-        weights["ent_drop"] = 0.626775328
-        weight["ave_ent"] = 1.348069963 #logged
-        weight["ext_def"] = 1.187888546
+        self.weights = {}
+        self.weights["name_length"] = 2.232032275 #logged
+        self.weights["ent_drop"] = 0.626775328
+        self.weights["ave_ent"] = 1.348069963 #logged
+        self.weights["ext_def"] = 1.187888546
     
     def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def):
         """
@@ -762,7 +766,10 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         else:
             ave_ent = np.log(-ave_entropy + .01)
             
-        return weights["name_length"] * name_length + weights["ent_drop"] * entropy_drop + weights["ave_ent"]*ave_ent + weight["ext_def"] * external_def
+        return self.weights["name_length"] * name_length + \
+               self.weights["ent_drop"] * entropy_drop + \
+               self.weights["ave_ent"]* ave_ent + \
+               self.weights["ext_def"] * external_def
         
     
        
@@ -829,7 +836,11 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             print
     
         log_probs = []
-        n_feat = self.vm.getNameMetrics((name, _def_scope))
+        if(self.hash_name_map != {}): #Get the minified name if we are using hashes.
+            min_name = self.hash_name_map[key]
+            n_feat = self.vm.getNameMetrics(min_name)
+        else:
+            n_feat = self.vm.getNameMetrics(key)
                  
         for candidate_name in unseen_candidates:
              
@@ -875,6 +886,6 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             weight = self.calculateWeight(candidate_name, s_feat[1], s_feat[0], n_feat[2])
             
             log_probs.append((candidate_name, weight))
-            
-        return sorted(log_probs, key=lambda e:e[1])
+        #Here bigger weights are better
+        return sorted(log_probs, key=lambda e:e[1], reverse=True)
 

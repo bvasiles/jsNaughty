@@ -413,6 +413,8 @@ def processFile(js_file_path):
                     
                     if dbg:
                         print '\nc_strategy----------', c_strategy
+
+                    #assert(hash_name_map != {})
                     
                     # Compute renaming map (x -> length, y -> width, ...)
                     # Note that x,y here are names after renaming
@@ -422,7 +424,8 @@ def processFile(js_file_path):
                                                       a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path,
-                                                      vm)
+                                                      vm,
+                                                      hash_name_map)
                     
                     
                     #After computeRenaming, we have both the entropies stored

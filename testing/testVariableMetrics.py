@@ -15,7 +15,7 @@ from folderManager.folder import Folder
 # from experiments.postprocessUtil import processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
 
 
-class scopeNameTest(unittest.TestCase):
+class variableMetricsTest(unittest.TestCase):
     
     def asBool(self, string):
         return string in ["TRUE", "true", "True", "t", "T", "1"]
@@ -24,7 +24,7 @@ class scopeNameTest(unittest.TestCase):
         '''
         Ensure that the list of files is sorted - e.g. test_file1 test_file2, etc.
         '''
-        return sorted(fileList, key = lambda(x) : int(x[9:10]))
+        return sorted(fileList, key = lambda(x) : int(x[9:x.find(".")]))
     
     def setUp(self):
         self.testDir = Folder("./testing//test_files/")
@@ -43,17 +43,17 @@ class scopeNameTest(unittest.TestCase):
             ib = IndexBuilder(lexed.tokenList)
             sa = ScopeAnalyst(nextFile)
             s_min = ScopeAnalyst(os.path.join(self.testDir.path, "test_file1.obs.js"))
-            print(s_min.name2defScope)
-            print("TokenList----------------------------------------------------------------")
-            print(lexed.tokenList)
-            print("Index Builder----------------------------------------------------------------")
-            print(ib)
-            print("Scope Analyst----------------------------------------------------------------")
-            print(sa)
+            #print(s_min.name2defScope)
+            #print("TokenList----------------------------------------------------------------")
+            #print(lexed.tokenList)
+            #print("Index Builder----------------------------------------------------------------")
+            #print(ib)
+            #print("Scope Analyst----------------------------------------------------------------")
+            #print(sa)
             vm = VariableMetrics(sa, ib, lexed.tokenList)
-            print("VM----------------------------------------------------------------")
-            print(vm)
-            print("VM----------------------------------------------------------------")
+            #print("VM----------------------------------------------------------------")
+            #print(vm)
+            #print("VM----------------------------------------------------------------")
             for var in vm.getVariables():
                 print(var)
                 print("Num Lines,Max Lines,Global Def,Global Usage,For,While,Literal Def,Literal Usage,Max Length Line,Ave Line Length")

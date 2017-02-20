@@ -329,7 +329,8 @@ def processFile(l):
                                                       a_use_scopes,
                                                       a_iBuilder,
                                                       lm_path,
-                                                      vm)
+                                                      vm,
+                                                      hash_name_map)
                     
                     
                     #After computeRenaming, we have both the entropies stored
