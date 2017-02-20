@@ -129,10 +129,10 @@ def processFile(l):
         if beautified_text == minified_text:
             return (js_file_path, None, 'Not minified')
 
-        try:
-            iBuilder_clear = IndexBuilder(lex_clear.tokenList)
-        except:
-            return (js_file_path, None, "IndexBuilder fail on original file.")
+        #try:
+        #    iBuilder_clear = IndexBuilder(lex_clear.tokenList)
+        #except:
+        #    return (js_file_path, None, "IndexBuilder fail on original file.")
             
         try:
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
@@ -198,8 +198,8 @@ def processFile(l):
         except:
             return (js_file_path, None, 'ScopeAnalyst clear fail')
         
-        if(not check(iBuilder_clear, scopeAnalyst_clear, n2p_iBuilder, n2p_scopeAnalyst)):
-            return (js_file_path, None, 'JsNice restructured file. Skipping..')
+        #if(not check(iBuilder_clear, scopeAnalyst_clear, n2p_iBuilder, n2p_scopeAnalyst)):
+        #    return (js_file_path, None, 'JsNice restructured file. Skipping..')
 
         #Map the original names to the minified counterparts.
         orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])

@@ -372,11 +372,11 @@ class VariableMetrics:
          
         return nonGlobal       
         
-    def getNameMetrics(self, name, def_scope):
-        variable = (name, def_scope)
-        return self._getNameMetrics(variable)
+    #def getNameMetrics(self, name, def_scope):
+    #    variable = (name, def_scope)
+    #    return self.getNameMetrics(variable)
         
-    def _getNameMetrics(self, variable):
+    def getNameMetrics(self, variable):
         """
         Helper: Returns the recorded metrics on variable
         
