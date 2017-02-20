@@ -24,6 +24,7 @@ from tools.consistency import ENTROPY_ERR
 from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
+from jsnice_check import check
 
 from folderManager import Folder
 
@@ -54,6 +55,8 @@ def processFile(l):
     min_name_map = {}
     #Hashed Name -> Minified Name (name, def_scope) -> (name, def_scope)
     hash_name_map = {}
+    #Minified Name -> jsnice name  (name, def_scope) -> (name, def_scope)
+    jsnice_name_map = {}
     #Data for the suggestion model.csv
     #Map of variable (name, def_scope) -> results of variableMetrics features function
     name_features = {}
@@ -126,6 +129,10 @@ def processFile(l):
         if beautified_text == minified_text:
             return (js_file_path, None, 'Not minified')
 
+        try:
+            iBuilder_clear = IndexBuilder(lex_clear.tokenList)
+        except:
+            return (js_file_path, None, "IndexBuilder fail on original file.")
             
         try:
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
@@ -177,32 +184,40 @@ def processFile(l):
         try:
             scopeAnalyst = WebScopeAnalyst(minified_text)
         except:
-            return (js_file_path, None, 'ScopeAnalyst fail')
+            return (js_file_path, None, 'ScopeAnalyst minified fail')
        
         try:
             scopeAnalyst_clear = WebScopeAnalyst(beautified_text)
         except:
             return (js_file_path, None, 'ScopeAnalyst clear fail')
+        
+        if(not check(iBuilder_clear, scopeAnalyst_clear, n2p_iBuilder, n2p_scopeAnalyst)):
+            return (js_file_path, None, 'JsNice restructured file. Skipping..')
 
         #Map the original names to the minified counterparts.
         orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
         orderedVarsOld = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
- 
-        #Map the original names to the minified counterparts.
-        orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-        orderedVarsOld = sorted(scopeAnalyst_clear.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsN2p = sorted(n2p_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
 
         if(len(orderedVarsOld) != len(orderedVarsNew)):
             return (js_file_path, None, "Old and New Name lists different length")
         
+        if(len(orderedVarsOld) != len(orderedVarsN2p)):
+            return (js_file_path, None, "JsNice and Old Name lists different length")
+        
+        
         for i in range(0, len(orderedVarsOld)):
             name_old = orderedVarsOld[i][0]
             def_scope_old = scopeAnalyst_clear.name2defScope[orderedVarsOld[i]]
-            
+
             name_new = orderedVarsNew[i][0]
             def_scope_new = scopeAnalyst.name2defScope[orderedVarsNew[i]]
-            min_name_map[(name_new, def_scope_new)] = (name_old, def_scope_old) 
-        
+            min_name_map[(name_new, def_scope_new)] = (name_old, def_scope_old)
+            
+            name_n2p = orderedVarsN2p[i][0]
+            def_scope_n2p = scopeAnalyst.name2defScope[orderedVarsNew[i]]
+            jsnice_name_map[(name_new, def_scope_new)] = (name_n2p, def_scope_n2p)
+ 
         #Once we have the scopeAnalyst, iBuilder, and tokenlist for the minified
         #version, we can get the name properties
         vm = VariableMetrics(scopeAnalyst, iBuilder_ugly, lex_ugly.tokenList)
@@ -405,12 +420,12 @@ def processFile(l):
             for suggestionKey, s_feat in suggestion_features[r_strategy].iteritems():
                 variableKey = (suggestionKey[0], suggestionKey[1])
                 original_name = min_name_map[variableKey][0]
-                    
+                js_nice_name = jsnice_name_map[variableKey][0]    
                 n_feat = list(name_features[variableKey])
                 #Convert the def_scope to an equivalent, but smaller, easier to read key: (line_num, token_num)
                 newKey = scopeAnalyst.nameDefScope2pos[variableKey]
                 (keyLine, keyToken) = iBuilder_ugly.revFlatMat[newKey]
-                model_rows.append([original_name, r_strategy, suggestionKey[0], keyLine, keyToken, suggestionKey[2]] + n_feat + s_feat)
+                model_rows.append([original_name, r_strategy, suggestionKey[0], keyLine, keyToken, suggestionKey[2], js_nice_name] + n_feat + s_feat)
 
         return (js_file_path, 'OK', candidates, model_rows)
 
