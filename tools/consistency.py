@@ -728,7 +728,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         
         #Pass in the name features so we can track
         self.vm = variable_metrics
-        print(self.vm)
+        #print(self.vm)
         #We need to remember what the original minified names are so we can look them up in vm.
         self.hash_name_map = hash_to_min
         #Initialize the model constraints
