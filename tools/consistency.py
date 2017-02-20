@@ -7,6 +7,7 @@ Created on Dec 22, 2016
 
 from lmQuery import LMQuery
 import itertools
+import numpy as np
 
 ENTROPY_ERR = -9999999999
 
@@ -715,4 +716,165 @@ class LenConsistencyResolver(ConsistencyResolver):
     
     
     
+class LogModelConsistencyResolver(LMDropConsistencyResolver):
     
+    def __init__(self, 
+             variable_metrics,
+             debug_mode,
+             lm_path):
+    
+        LMConsistencyResolver.__init__(self, debug_mode, lm_path)
+        
+        #Pass in the name features so we can track
+        vm = variable_metrics
+        #Initialize the model constraints
+        #Based on the log odds from the model on exact match (These will change as models change...)
+        weights = {}
+        weights["name_length"] = 2.232032275 #logged
+        weights["ent_drop"] = 0.626775328
+        weight["ave_ent"] = 1.348069963 #logged
+        weight["ext_def"] = 1.187888546
+    
+    def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def):
+        """
+        Produce a weight for a suggestion determined by the
+        logistic model.
+        
+        Parameters
+        ----------
+        suggestion: The suggested name
+        
+        entropy_drop: The average drop in entropy it causes
+        
+        ave_entropy: The average entropy across the instances
+        
+        external_def: Is the name defined on a line where there is an unminified name (0 no, 1 yes)
+        
+        Returns
+        -------
+        weight: a float giving this items weight for ranking
+        """
+        name_length = np.log(len(suggestion) + .01)
+        #Default to just the name length and external_def if there are entropy issues.
+        if(ave_entropy == ENTROPY_ERR or entropy_drop == ENTROPY_ERR):
+            ave_ent = 0.0
+            entropy_drop = 0.0
+        else:
+            ave_ent = np.log(-ave_entropy + .01)
+            
+        return weights["name_length"] * name_length + weights["ent_drop"] * entropy_drop + weights["ave_ent"]*ave_ent + weight["ext_def"] * external_def
+        
+    
+       
+    def _rankUnseenCandidates(self,
+                               key,
+                               unseen_candidates,
+                               name_candidates,
+                               name_positions,
+                               iBuilder):
+        """
+        Ranks candidate name translations by weights determined by the
+        logistic model.
+        Items that are taken into account:
+        length of suggested name.
+        lm-drop
+        average-lm
+        
+        
+        Parameters
+        ----------
+        key: (name, def_scope) identifier to be renamed
+        
+        unseen_candidates: set of candidate name translations to consider
+        
+        name_candidates: dict
+            name_candidates[(name, def_scope)][name_translation] 
+                = set of line numbers in the translation
+                An identifier (name, def_scope) may appear on many lines in 
+                the input. Each line is translated independently by Moses.
+                We will need to choose one of potentially multiple suggested
+                translations for a name. We may decide to give more weight to 
+                translations suggested consistently for different lines in 
+                the input. 
+                
+        name_positions: dict
+             name_positions[(token, def_scope)]
+                 = list of (line_num, line_idx) tuples where the identifier
+                 appears in the input; line_idx is a within-line token index,
+                 e.g., "i" in "for(int i = 0;" would have index 3 (4th token).
+        
+        iBuilder: indexBuilder object that contains the indexed input text
+        
+        Returns
+        -------
+        log_probs: sorted list of (candidate_name, weight) tuples, with
+            the first element being the most desirable. 
+        """
+        
+        
+        (name, _def_scope) = key
+        
+        # Lines where (name, def_scope) appears
+        (lines, pairs) = self._extractTempLines(name_positions[key], 
+                                                 iBuilder)
+        
+        draft_lines_str = self._insertNameInTempLines(name, lines, pairs)
+        untranslated_log_probs = self._lmQueryLines(draft_lines_str)
+         
+        if self.debug_mode:
+            print '\n  minified:', name
+            print '\n   ^ draft lines -----'
+            for idx, line in enumerate(draft_lines_str):
+                print '    ', line, untranslated_log_probs[idx]
+            print
+    
+        log_probs = []
+        n_feat = self.vm.getNameMetrics((name, _def_scope))
+                 
+        for candidate_name in unseen_candidates:
+             
+            cacheKey = (name, _def_scope, candidate_name)
+            if(cacheKey not in self.log_probs):
+                self.log_probs[cacheKey] = []
+            
+            if(cacheKey not in self.log_drops):
+                self.log_drops[cacheKey] = []
+             
+            draft_lines_str = self._insertNameInTempLines(candidate_name, 
+                                                           lines, 
+                                                           pairs)
+             
+            if self.debug_mode:
+                print '\n  candidate:', candidate_name
+        
+#                 print '\n   ^ draft lines -----'
+#                 for line in draft_lines_str:
+#                     print '    ', line
+#                 print
+                
+            translated_log_probs = self._lmQueryLines(draft_lines_str)
+                         
+            line_log_probs = []
+            for idx, lm_log_prob in translated_log_probs.iteritems():
+                drop = untranslated_log_probs[idx] - lm_log_prob
+                
+                #line_log_probs.append(drop)
+                self.log_drops[cacheKey].append(drop)
+                self.log_probs[cacheKey].append(lm_log_prob)
+                
+                if self.debug_mode:
+                    print '\t\t prob[%d] =' % idx, lm_log_prob, '\tdrop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
+            
+            #if not len(line_log_probs):
+            #    lm_log_prob = ENTROPY_ERR
+            #else:
+            #    lm_log_prob = min(line_log_probs)
+            
+            
+            s_feat = self.getEntropyStats((name, _def_scope), candidate_name) #(average log prob, average drop, min gain in log prob, max gain in log prob)
+            weight = self.calculateWeight(candidate_name, s_feat[1], s_feat[0], n_feat[2])
+            
+            log_probs.append((candidate_name, weight))
+            
+        return sorted(log_probs, key=lambda e:e[1])
+

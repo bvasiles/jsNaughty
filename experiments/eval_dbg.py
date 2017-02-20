@@ -421,7 +421,8 @@ def processFile(js_file_path):
                                                       a_name_positions,
                                                       a_use_scopes,
                                                       a_iBuilder,
-                                                      lm_path)
+                                                      lm_path,
+                                                      vm)
                     
                     
                     #After computeRenaming, we have both the entropies stored

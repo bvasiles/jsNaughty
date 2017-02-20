@@ -28,11 +28,13 @@ class ConsistencyStrategies:
     LMDROP = 'lmdrop'
     LEN = 'len'
     FREQLEN = 'freqlen'
+    LOGMODEL = "logmodel"
 
     def all(self):
         return [self.FREQLEN,
                 self.LM,
-                self.LMDROP]
+                self.LMDROP,
+                self.LOGMODEL]
         
 
 import xmlrpclib

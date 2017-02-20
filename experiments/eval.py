@@ -156,7 +156,7 @@ def processFile(l):
         
         with open(temp_files['n2p'], 'w') as f:
             f.write(n2p_text_beautified)
-         
+        
         try:
             n2p_lexer = WebLexer(n2p_text_beautified)
             n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
@@ -328,7 +328,8 @@ def processFile(l):
                                                       a_name_positions,
                                                       a_use_scopes,
                                                       a_iBuilder,
-                                                      lm_path)
+                                                      lm_path,
+                                                      vm)
                     
                     
                     #After computeRenaming, we have both the entropies stored
