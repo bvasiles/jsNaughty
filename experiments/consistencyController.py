@@ -32,7 +32,8 @@ class ConsistencyController:
                         name_positions,
                         use_scopes,
                         iBuilder=None,
-                        lm_path=None):
+                        lm_path=None,
+                        variable_metrics=None):
         
         if strategy == self.CS.LM:
             worker = LMAvgConsistencyResolver(self.debug_mode,
@@ -43,6 +44,9 @@ class ConsistencyController:
                                                lm_path)
             #Save this particular variant so we can recover entropy scores.
             self.suggestion_cache = worker
+        
+        elif strategy == self.CS.LOGMODEL:
+            worker = LogModelConsistencyResolver(variable_metrics, debug_mode, lm_path)
             
         elif strategy == self.CS.FREQLEN:
             worker = FreqLenConsistencyResolver(self.debug_mode)
