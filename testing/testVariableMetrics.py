@@ -57,7 +57,7 @@ class variableMetricsTest(unittest.TestCase):
             for var in vm.getVariables():
                 print(var)
                 print("Num Lines,Max Lines,Global Def,Global Usage,For,While,Literal Def,Literal Usage,Max Length Line,Ave Line Length")
-                print vm.getNameMetrics(var)
+                print vm._getNameMetrics(var)
             
             #Automated tests:
             csv_file = os.path.join(self.testDir.path, "test_file" + str(i) + ".csv")
