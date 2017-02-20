@@ -22,6 +22,7 @@ class RenamingStrategies:
     
         return [self.NONE, 
                 self.HASH_ONE]
+#         return [self.HASH_ONE]
     
 class ConsistencyStrategies:
     LM = 'lm'
@@ -88,6 +89,7 @@ class MosesProxy:
         return [(RS.NONE, self.proxies[RS.NONE])] + \
             [(r_strategy, self.proxies.get(r_strategy, self.proxies[RS.NONE])) 
                 for r_strategy in RS.all() if not r_strategy==RS.NONE]
+
 
 if __name__ == "__main__":
     for r_strategy, proxy in MosesProxy().getProxies():
