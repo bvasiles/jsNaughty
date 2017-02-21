@@ -104,7 +104,7 @@ output_path = Folder(sys.argv[2]).create()
 sample_size = int(sys.argv[3])
 num_threads = int(sys.argv[4])
 
-flog = 'log_trainingSample.csv'
+flog = 'log_renameAndUglify'
 
 in_log = set([])
 reader = UnicodeReader(open(os.path.join(files_root, flog), 'r'))
