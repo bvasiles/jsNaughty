@@ -8,6 +8,7 @@ Created on Dec 22, 2016
 from lmQuery import LMQuery
 import itertools
 import numpy as np
+from suggestionMetrics import hasCamelCase
 
 ENTROPY_ERR = -9999999999
 
@@ -734,12 +735,14 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         #Initialize the model constraints
         #Based on the log odds from the model on exact match (These will change as models change...)
         self.weights = {}
-        self.weights["name_length"] = 2.232032275 #logged
-        self.weights["ent_drop"] = 0.626775328
-        self.weights["ave_ent"] = 1.348069963 #logged
-        self.weights["ext_def"] = 1.187888546
+        self.weights["name_length"] = 7.649640521 #Length > 1
+        self.weights["ent_drop"] = 0.646315045
+        self.weights["ave_ent"] = 0.982524986
+        self.weights["ext_def"] = 1.152443174
+        #self.weights["camel_case"] = 0.836055625 #This seems odd?
+        self.weights["lines_suggested"] = 2.090300464
     
-    def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def):
+    def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def, lines_suggested):
         """
         Produce a weight for a suggestion determined by the
         logistic model.
@@ -753,23 +756,32 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         ave_entropy: The average entropy across the instances
         
         external_def: Is the name defined on a line where there is an unminified name (0 no, 1 yes)
-        
+       
+        lines_suggested: The count of lines this particular suggestion was made for. 
         Returns
         -------
         weight: a float giving this items weight for ranking
         """
-        name_length = np.log(len(suggestion) + .01)
+        name_length = len(suggestion) > 1
         #Default to just the name length and external_def if there are entropy issues.
         if(ave_entropy == ENTROPY_ERR or entropy_drop == ENTROPY_ERR):
-            ave_ent = 0.0
+            ave_entropy = 0.0
             entropy_drop = 0.0
-        else:
-            ave_ent = np.log(-ave_entropy + .01)
+
+        #Thresholding ... (using model cutoffs)
+        if(ave_entropy < -70.0):
+            ave_entropy = -70.0
+ 
+        if(lines_suggested > 10):
+            lines_suggested = 10
+
+        #camel_case = hasCamelCase(suggestion)
             
         return self.weights["name_length"] * name_length + \
                self.weights["ent_drop"] * entropy_drop + \
-               self.weights["ave_ent"]* ave_ent + \
-               self.weights["ext_def"] * external_def
+               self.weights["ave_ent"]* ave_entropy + \
+               self.weights["ext_def"] * external_def + \
+               self.weights["lines_suggested"] * lines_suggested
         
     
        
@@ -786,6 +798,8 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         length of suggested name.
         lm-drop
         average-lm
+        camel case
+        # lines suggested for
         
         
         Parameters
@@ -854,15 +868,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             draft_lines_str = self._insertNameInTempLines(candidate_name, 
                                                            lines, 
                                                            pairs)
-             
-            if self.debug_mode:
-                print '\n  candidate:', candidate_name
-        
-#                 print '\n   ^ draft lines -----'
-#                 for line in draft_lines_str:
-#                     print '    ', line
-#                 print
-                
+            
             translated_log_probs = self._lmQueryLines(draft_lines_str)
                          
             line_log_probs = []
@@ -873,18 +879,20 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
                 self.log_drops[cacheKey].append(drop)
                 self.log_probs[cacheKey].append(lm_log_prob)
                 
-                if self.debug_mode:
-                    print '\t\t prob[%d] =' % idx, lm_log_prob, '\tdrop[%d] =' % idx, untranslated_log_probs[idx] - lm_log_prob
-            
-            #if not len(line_log_probs):
-            #    lm_log_prob = ENTROPY_ERR
-            #else:
-            #    lm_log_prob = min(line_log_probs)
-            
-            
-            s_feat = self.getEntropyStats((name, _def_scope), candidate_name) #(average log prob, average drop, min gain in log prob, max gain in log prob)
-            weight = self.calculateWeight(candidate_name, s_feat[1], s_feat[0], n_feat[2])
-            
+            #(average log prob, average drop, min gain in log prob, max gain in log prob) 
+            s_feat = self.getEntropyStats((name, _def_scope), candidate_name)
+            lines_suggested = len(name_candidates[key][candidate_name])
+            weight = self.calculateWeight(candidate_name, s_feat[1], 
+                                          s_feat[0], n_feat[2], 
+                                          lines_suggested)
+            if self.debug_mode:
+                print('\n candidate:' + candidate_name)
+                print('average drop:' + str(s_feat[0]))
+                print('average log prob:' + str(s_feat[1]))
+                print('external definition:' + str(n_feat[2]))
+                print('lines suggested:' +  str(lines_suggested))
+                print('weight:' + str(weight) + '\n')
+
             log_probs.append((candidate_name, weight))
         #Here bigger weights are better
         return sorted(log_probs, key=lambda e:e[1], reverse=True)
