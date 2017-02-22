@@ -735,12 +735,10 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         #Initialize the model constraints
         #Based on the log odds from the model on exact match (These will change as models change...)
         self.weights = {}
-        self.weights["name_length"] = 7.649640521 #Length > 1
-        self.weights["ent_drop"] = 0.646315045
-        self.weights["ave_ent"] = 0.982524986
-        self.weights["ext_def"] = 1.152443174
-        #self.weights["camel_case"] = 0.836055625 #This seems odd?
-        self.weights["lines_suggested"] = 2.090300464
+        self.weights["name_length"] = 1.689885 #Length > 1
+        self.weights["ent_drop"] = -0.394647
+        self.weights["ave_ent"] = -0.010443
+        self.weights["lines_suggested"] = 2.107397 #log
     
     def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def, lines_suggested):
         """
@@ -775,15 +773,15 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         if(lines_suggested > 10):
             lines_suggested = 10
 
+        lines_suggested = np.log(lines_suggested + .01)
+
         #camel_case = hasCamelCase(suggestion)
             
         return self.weights["name_length"] * name_length + \
                self.weights["ent_drop"] * entropy_drop + \
                self.weights["ave_ent"]* ave_entropy + \
-               self.weights["ext_def"] * external_def + \
                self.weights["lines_suggested"] * lines_suggested
-        
-    
+
        
     def _rankUnseenCandidates(self,
                                key,
