@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 import multiprocessing
 from unicodeManager import UnicodeReader, UnicodeWriter 
-from tools import Lexer, IndexBuilder #, Aligner
+from tools import Lexer, IndexBuilder, Aligner, WebLexer, Beautifier
 import random
 from folderManager import Folder
 from pygments.token import Token, is_token_subtype
@@ -30,8 +30,29 @@ def processFile(js_file_path):
         if not len(set([len(tok1), len(tok2), len(tok5), len(tok6)])) == 1:
             return (js_file_path, None, 'Num tokens mismatch')
         
-#         # Align minified and clear files, in case the beautifier 
-#         # did something weird
+        clear = Beautifier()
+        # Align minified and clear files, in case the beautifier 
+        # did something weird
+        aligner = Aligner()
+        
+        (aligned1, aligned2) = aligner.web_align(tok1, tok2)
+        
+        (ok, beautified1, _err) = clear.web_run(aligned1)
+        tok11 = WebLexer(beautified1).tokenList
+        
+        (ok, beautified2, _err) = clear.web_run(aligned2)
+        tok22 = WebLexer(beautified2).tokenList
+        
+        (aligned5, aligned2) = aligner.web_align(tok5, tok2)
+        
+        (ok, beautified5, _err) = clear.web_run(aligned5)
+        tok55 = WebLexer(beautified5).tokenList
+        
+        (aligned6, aligned2) = aligner.web_align(tok6, tok2)
+        
+        (ok, beautified6, _err) = clear.web_run(aligned6)
+        tok66 = WebLexer(beautified6).tokenList
+            
 #         try:
 #             aligner = Aligner()
 #             # This is already the baseline corpus, no (smart) renaming yet
@@ -41,12 +62,12 @@ def processFile(js_file_path):
 #             return (js_file_path, None, 'Aligner fail')
         
         try:
-            iBuilder1 = IndexBuilder(tok1)
-            iBuilder2 = IndexBuilder(tok2)
+            iBuilder1 = IndexBuilder(tok11)
+            iBuilder2 = IndexBuilder(tok22)
 #             iBuilder3 = IndexBuilder(tok3)
 #             iBuilder4 = IndexBuilder(tok4)
-            iBuilder5 = IndexBuilder(tok5)
-            iBuilder6 = IndexBuilder(tok6)
+            iBuilder5 = IndexBuilder(tok55)
+            iBuilder6 = IndexBuilder(tok66)
         except:
             return (js_file_path, None, 'IndexBuilder fail')
 
