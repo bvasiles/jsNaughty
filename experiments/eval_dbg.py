@@ -624,7 +624,8 @@ if __name__=="__main__":
     RS = RenamingStrategies()
     
     proxies = MosesProxy().getProxies() 
-    
+    print("Proxies:")
+    print(proxies) 
     
 #     with open(testing_sample_path, 'r') as f:
     
