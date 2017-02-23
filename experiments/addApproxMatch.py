@@ -38,7 +38,7 @@ for row in reader:
         IDMap[IDKey] = rowID
     
     (case_insen, nonSpec, contains, abbrev) = suggestionApproximateMatch([suggestion], orig)
-    (m1, m2, m3, m4) = suggestionApproximateMatch([suggestion], js_nice_name)
+    (m1, m2, m3, m4) = suggestionApproximateMatch([js_nice_name], orig)
     any = case_insen or nonSpec or contains or abbrev
     n2p_any = m1 or m2 or m3 or m4
     writer.writerow(row + [n2p_any, any, case_insen, nonSpec, contains, abbrev, rowID])
