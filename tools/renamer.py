@@ -16,7 +16,8 @@ from config import RenamingStrategies
 from indexer import IndexBuilder
 from lexer import WebLexer
 from uglifyJS import Beautifier
-from scoper import WebScopeAnalyst 
+# from scoper import WebScopeAnalyst
+from scoperDefault import WebScopeAnalyst 
 import itertools
  
 

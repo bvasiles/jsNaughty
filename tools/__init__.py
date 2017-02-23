@@ -3,13 +3,14 @@ __all__ = ['acorn', 'indexer', 'jsNice', 'lmQuery', 'moses', \
            'miniChecker', 'lexer', 'aligner', 'dos2unix', \
            'postprocessor', 'normalizer', 'helpers', 'mosesParser', \
            'mosesOutputFormatter', 'renamer', 'summarizer', \
-           'consistency', 'config']
+           'consistency', 'config', 'scoperDefault']
 from tools.acorn import Acorn
 from tools.indexer import IndexBuilder
 from tools.jsNice import JSNice
 from tools.lmQuery import LMQuery
 from tools.moses import MosesDecoder, WebMosesDecoder
-from tools.scoper import ScopeAnalyst, WebScopeAnalyst
+# from tools.scoper import ScopeAnalyst, WebScopeAnalyst
+from tools.scoperDefault import ScopeAnalyst, WebScopeAnalyst
 from tools.uglifyJS import Uglifier, Beautifier
 from tools.unuglifyJS import UnuglifyJS
 from tools.preprocessor import Preprocessor, LMPreprocessor, \
