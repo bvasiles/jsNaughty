@@ -86,12 +86,7 @@ class MosesClient():
         #c_strategy = CS.LM
         c_strategy = CS.LOGMODEL
         
-        
-        #proxy = MosesProxy().proxies[r_strategy]
-        
         proxies = MosesProxy().web_proxies
-        
-        
         mosesParams = {}
 
         #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
@@ -105,7 +100,13 @@ class MosesClient():
         hash_name_map = {}
         #Minified Name -> jsnice name  (name, def_scope) -> (name, def_scope)
         jsnice_name_map = {}
-           
+        #Record of any errors we get in the js mixing.
+        #If this feature is enabled (to be added as a switch on the website)
+        #it should not crash the input if there is a failure.  If the query
+        #doesn't work for some reason, then we should just use the candidate
+        #names provided by moses.   
+        jsnice_errors = [] 
+        
         start = time.time()
         # Strip comments, replace literals, etc
         #try:
@@ -154,25 +155,30 @@ class MosesClient():
         ######################## 
         #  Nice2Predict start
         ########################
-
+        #Don't want a crashing failure for jsnice query.
         # BV: Next block left out until I figure out the pipe issue
         # BV: Update: I couldn't pipe input to N2P. TODO: FIX
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
         (ok, n2p_text, _err) = unuglifyJS.run(min_input_file)
         if not ok:
-            return (js_file_path, None, 'Nice2Predict fail')
+            jsnice_errors.append('Nice2Predict fail')
+            #return (js_file_path, None, 'Nice2Predict fail')
 
-        (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
-        if not ok:
-            return (js_file_path, None, 'Beautifier fail')
 
-        try:
-            n2p_lexer = WebLexer(n2p_text_beautified)
-            n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
-            n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
-        except:
-            return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+        if(jsnice_errors == []):
+            (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
+            if not ok:
+                jsnice_errors.append('Beautifier failed for JSNice.')
+                #return (js_file_path, None, 'Beautifier fail')
+    
+            try:
+                n2p_lexer = WebLexer(n2p_text_beautified)
+                n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
+                n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
+            except:
+                jsnice_errors.append("IndexBuilder or ScopeAnalysted failed for JSNice.")
+                #return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
 
   
         ######################## 
@@ -184,158 +190,42 @@ class MosesClient():
         try:
 #             scopeAnalyst = ScopeAnalyst(beautFile)
             scopeAnalyst = WebScopeAnalyst(beautified_text)
-        except:
+        except: 
 #             cleanup({"temp" : tempFile})
-            print(sa_error)
+            print(sa_error) 
             return(sa_error)
         
         (name_positions, position_names, use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
         
         
         #Map the jsnice names to the minified counterparts.
-        orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-        orderedVarsN2p = sorted(n2p_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-
-
-        if(len(orderedVarsNew) != len(orderedVarsN2p)):
-            return ("JsNice and New Name lists different length")
-
-
-        for i in range(0, len(orderedVarsNew)):
-            name_new = orderedVarsNew[i][0]
-            def_scope_new = scopeAnalyst.name2defScope[orderedVarsNew[i]]
-
-            name_n2p = orderedVarsN2p[i][0]
-            def_scope_n2p = scopeAnalyst.name2defScope[orderedVarsNew[i]]
-            jsnice_name_map[(name_new, def_scope_new)] = (name_n2p, def_scope_n2p)
+        if(jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
+            try:
+                orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+                orderedVarsN2p = sorted(n2p_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        
+        
+                if(len(orderedVarsNew) != len(orderedVarsN2p)):
+                    jsnice_errors.append("JSNice and minified name lists different lengths.")
+                    raise IndexError("Length Mismatch") #Probably better to have our own defined error type, but this will do for now
+                    #return ("JsNice and New Name lists different length")
+        
+        
+                for i in range(0, len(orderedVarsNew)):
+                    name_new = orderedVarsNew[i][0]
+                    def_scope_new = scopeAnalyst.name2defScope[orderedVarsNew[i]]
+        
+                    name_n2p = orderedVarsN2p[i][0]
+                    def_scope_n2p = scopeAnalyst.name2defScope[orderedVarsNew[i]]
+                    jsnice_name_map[(name_new, def_scope_new)] = (name_n2p, def_scope_n2p)
+            except:
+                jsnice_errors.append("JSNice to minified name map building failed.")
 
     
         (_name_positions, \
          position_names,
          _use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
         
-        
-
-# '''
-# From here on out, we need to process both the non_hash and the hash_names...
-# '''
-#         rn_start = time.time()
-#         #try:
-#         if True:
-#             #We need both the base_text and the hashed_text.
-#             preRen = PreRenamer()
-#             print("Tokens-------------------")
-#             print(iBuilder_ugly.tokens)
-#             print("Tokens-------------------")
-#             #We always need the non hashed names as a fallback.
-#             after_text = preRen.rename(RS.NONE, 
-#                                        iBuilder_ugly,
-#                                        scopeAnalyst)
-#             
-#             (ok, renamedText, _err) = clear.web_run(after_text)
-#             if not ok:
-#                 print(beaut_error)
-#                 return(beaut_error)
-#             
-#             
-#             a_lexer = WebLexer(renamedText)
-#             a_iBuilder = IndexBuilder(a_lexer.tokenList)
-#             a_scopeAnalyst = WebScopeAnalyst(renamedText)            
-#             
-#             if(r_strategy != RS.NONE):
-#                 after_text_hash = preRen.rename(r_strategy, 
-#                                                 iBuilder_ugly,
-#                                                 scopeAnalyst)
-#              
-#                 (ok, renamedTextHash, _err) = clear.web_run(after_text_hash)
-#                 if not ok:
-#                     print(beaut_error)
-#                     return(beaut_error)
-#                             
-#                 a_lexer_hash = WebLexer(renamedTextHash)
-#                 a_iBuilder_hash = IndexBuilder(a_lexer_hash.tokenList)
-#                 a_scopeAnalyst_hash = WebScopeAnalyst(renamedTextHash)
-# 
-#             
-# #        except:
-# #            print(rn_error)
-# #            return(rn_error)
-# 
-# #         with open("renameFile.txt", 'w') as renamingFile:
-# #             renamingFile.writelines(renamedText)
-#  
-#         end = time.time()
-#         rnTime = end-rn_start
-#         preprocessDuration = end - start
-#         
-#         m_start = time.time()
-#         
-# 
-#         translation = ""
-# 
-# 
-# #Part of the no_renaming fallback?        
-# #         orderedVarsMin = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-# #         orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-# # 
-# #         if(len(orderedVarsMin) != len(orderedVarsHash)):
-# #             return (js_file_path, None, "Hash and Min lists different length")
-# # 
-# #         for i in range(0, len(orderedVarsHash)):
-# #             name_hash = orderedVarsHash[i][0]
-# #             def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
-# # 
-# #             name_min = orderedVarsMin[i][0]
-# #             def_scope_min = scopeAnalyst.name2defScope[orderedVarsMin[i]]
-# #             hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
-# 
-#         # We can switch this back once we train models on a corpus with literals
-#         # lx = WebLexer(a_iBuilder.get_text())
-#         lx = WebLexer(a_iBuilder.get_text_wo_literals())
-# 
-#         # Translate renamed input
-#         md = WebMosesDecoder(proxy)
-#         (ok, translation, _err) = md.run(lx.collapsedText)
-#         if not ok:
-#             print(ms_error)
-#             return(ms_error)
-#         
-#         #Get the hash text too.
-#         if(r_strategy != RS.NONE):
-#             lx = WebLexer(a_iBuilder.get_text_wo_literals())
-#     
-#             # Translate renamed input
-#             md = WebMosesDecoder(proxy)
-#             (ok, translation, _err) = md.run(lx.collapsedText)
-#             if not ok:
-#                 print(ms_error)
-#                 return(ms_error)
-#         
-#         #Send to output:
-#         #cleanup([preproFile, beautFile, tempFile])
-#         
-#         m_end = time.time()
-#         m_time = m_end - m_start
-# 
-#         #Base_name is a problem to removing the temp files... (It references bogdan's original naming scheme)
-#         post_start = time.time()
-# 
-#         (a_name_positions, 
-#              a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
-#         
-#         if translation is not None:
-#             # Parse moses output
-#             mp = MosesParser()
-#             print(translation)
-#                 
-#             name_candidates = mp.parse(translation,
-#                                        a_iBuilder,
-#                                        a_position_names)#,
-#                                        #a_scopeAnalyst)
-# 
-# '''
-# Up to here, we can do no_renaming and hash_renaming in parallel?
-# '''
         #Note: we want to put these in parallel once we've tested the
         #serial version...
         
@@ -388,21 +278,24 @@ class MosesClient():
             print(hash_name_map)
 
             # **** BV: This might be all we need to combine Naughty & Nice 
-            name_candidates_copy = deepcopy(name_candidates)
-            for key, suggestions in name_candidates_copy.iteritems():
-                print("Key: " + str(key))
-                print("Suggestions: " + str(suggestions))
-                if r_strategy == RS.NONE:
-                    (name_n2p, def_scope_n2p) = jsnice_name_map[key]
-                else:
-                    (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
-
-
-                for name_translation, lines in suggestions.iteritems():
-                    name_candidates.setdefault(key, {})
-                    name_candidates[key].setdefault(name_n2p, set([]))
-                    name_candidates[key][name_n2p].update(lines)
-                
+            if(jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
+                try:
+                    name_candidates_copy = deepcopy(name_candidates)
+                    for key, suggestions in name_candidates_copy.iteritems():
+                        print("Key: " + str(key))
+                        print("Suggestions: " + str(suggestions))
+                        if r_strategy == RS.NONE:
+                            (name_n2p, def_scope_n2p) = jsnice_name_map[key]
+                        else:
+                            (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
+        
+        
+                        for name_translation, lines in suggestions.iteritems():
+                            name_candidates.setdefault(key, {})
+                            name_candidates[key].setdefault(name_n2p, set([]))
+                            name_candidates[key][name_n2p].update(lines)
+                except:
+                    jsnice_errors.append("Failure while adding jsnice names to candidate pool.")    
             cr = ConsistencyController(debug_mode=True)
                 
             # An identifier may have been translated inconsistently
@@ -442,10 +335,19 @@ class MosesClient():
             print("Renamed text")
             print(beautified_renamed_text)
             
-
+        #Time Calculations... (Will need to update for when it becomes parallel
         post_end = time.time()
         post_time = post_end - post_start
         
-        #Time Calculations... (Will need to update for when it becomes parallel
-        return("Preprocess Time: " + str(pre_time)  + "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + str(beautified_renamed_text))
+        
+        #Record any jsnice errors (but leave output blank if there are none).
+        jsnice_error_string = ""
+        if(jsnice_errors != []):
+            jsnice_error_string = "JSNice mixing attempt failed.  Reporting renaming with only our method. \n JSNice Errors : \n"
+            jsnice_errot_string += "\n".join(jsnice_errors) + "\n"
+            
+        return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
+               "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
+               "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + 
+               str(post_time) + "\n" + str(beautified_renamed_text))
       
