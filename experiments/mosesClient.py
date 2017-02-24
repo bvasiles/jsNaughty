@@ -86,11 +86,10 @@ class MosesClient():
         #c_strategy = CS.LM
         c_strategy = CS.LOGMODEL
         
-        proxy = MosesProxy().proxies[r_strategy]
         
-#         proxy = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40012/RPC2")
-#         proxy2 = xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40013/RPC2")
-#         proxies = [proxy, proxy2]
+        #proxy = MosesProxy().proxies[r_strategy]
+        
+        proxies = MosesProxy().web_proxies
         
         
         mosesParams = {}
@@ -107,8 +106,6 @@ class MosesClient():
         #Minified Name -> jsnice name  (name, def_scope) -> (name, def_scope)
         jsnice_name_map = {}
            
-        transFile = baseDir + str(transactionID) + "_trans.js"
-        
         start = time.time()
         # Strip comments, replace literals, etc
         #try:
@@ -136,7 +133,7 @@ class MosesClient():
         
         #Due to a bug? in the jsnice web service, we need to save the
         #input text as a file.
-        min_input_file = os.path.join(baseDir,"./tmp/", str(transactionID) + ".u.js")
+        min_input_file = os.path.join("./tmp/", str(transactionID) + ".u.js")
         with open(min_input_file, 'w') as f:
             f.write(beautified_text)
         
@@ -169,9 +166,6 @@ class MosesClient():
         (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
         if not ok:
             return (js_file_path, None, 'Beautifier fail')
-
-        with open(temp_files['n2p'], 'w') as f:
-            f.write(n2p_text_beautified)
 
         try:
             n2p_lexer = WebLexer(n2p_text_beautified)
@@ -208,6 +202,9 @@ class MosesClient():
 
 
         for i in range(0, len(orderedVarsNew)):
+            name_new = orderedVarsNew[i][0]
+            def_scope_new = scopeAnalyst.name2defScope[orderedVarsNew[i]]
+
             name_n2p = orderedVarsN2p[i][0]
             def_scope_n2p = scopeAnalyst.name2defScope[orderedVarsNew[i]]
             jsnice_name_map[(name_new, def_scope_new)] = (name_n2p, def_scope_n2p)
@@ -343,10 +340,10 @@ class MosesClient():
         #serial version...
         
         #Get moses output for no_renaming
-        (status, error_msg, translation_default, name_candidates_default, a_iBuilder_default, 
-            a_scopeAnalyst_default, a_name_positions_default, 
-            a_position_names_default, a_use_scopes_default, hash_name_map_default,
-            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+        (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
+            scopeAnalyst_default, name_positions_default, 
+            position_names_default, use_scopes_default, hash_name_map_default,
+            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start)
         
         if(not status):
             return(error_msg)
@@ -355,7 +352,7 @@ class MosesClient():
         (status, error_msg, translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
-            pre_time, rn_time, m_time, post_start) = getMosesTranslation(r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+            pre_time, rn_time, m_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start)
         
         if(not status):
             return(error_msg)
@@ -384,14 +381,22 @@ class MosesClient():
             print("Name_candidates")
             print(name_candidates) 
             
+            print("jsnice_name_map")
+            print(jsnice_name_map)
+
+            print("hash_name_map")
+            print(hash_name_map)
+
             # **** BV: This might be all we need to combine Naughty & Nice 
             name_candidates_copy = deepcopy(name_candidates)
             for key, suggestions in name_candidates_copy.iteritems():
-
+                print("Key: " + str(key))
+                print("Suggestions: " + str(suggestions))
                 if r_strategy == RS.NONE:
                     (name_n2p, def_scope_n2p) = jsnice_name_map[key]
                 else:
                     (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
+
 
                 for name_translation, lines in suggestions.iteritems():
                     name_candidates.setdefault(key, {})
@@ -435,12 +440,12 @@ class MosesClient():
                 print(beaut_error)
                 return(beaut_error)
             print("Renamed text")
-            print(renamed_text)
+            print(beautified_renamed_text)
             
 
         post_end = time.time()
         post_time = post_end - post_start
         
         #Time Calculations... (Will need to update for when it becomes parallel
-        return("Preprocess Time: " + str(pre_time)  + "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
+        return("Preprocess Time: " + str(pre_time)  + "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + str(beautified_renamed_text))
       

@@ -720,7 +720,6 @@ class LenConsistencyResolver(ConsistencyResolver):
 class LogModelConsistencyResolver(LMDropConsistencyResolver):
     
     def __init__(self, 
-             variable_metrics,
              hash_to_min,
              debug_mode,
              lm_path):
@@ -728,8 +727,6 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         LMDropConsistencyResolver.__init__(self, debug_mode, lm_path)
         
         #Pass in the name features so we can track
-        self.vm = variable_metrics
-        #print(self.vm)
         #We need to remember what the original minified names are so we can look them up in vm.
         self.hash_name_map = hash_to_min
         #Initialize the model constraints
@@ -740,7 +737,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
         self.weights["ave_ent"] = -0.010443
         self.weights["lines_suggested"] = 2.107397 #log
     
-    def calculateWeight(self, suggestion, entropy_drop, ave_entropy, external_def, lines_suggested):
+    def calculateWeight(self, suggestion, entropy_drop, ave_entropy, lines_suggested):
         """
         Produce a weight for a suggestion determined by the
         logistic model.
@@ -848,11 +845,6 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             print
     
         log_probs = []
-        if(self.hash_name_map != {}): #Get the minified name if we are using hashes.
-            min_name = self.hash_name_map[key]
-            n_feat = self.vm.getNameMetrics(min_name)
-        else:
-            n_feat = self.vm.getNameMetrics(key)
                  
         for candidate_name in unseen_candidates:
              
@@ -881,13 +873,11 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             s_feat = self.getEntropyStats((name, _def_scope), candidate_name)
             lines_suggested = len(name_candidates[key][candidate_name])
             weight = self.calculateWeight(candidate_name, s_feat[1], 
-                                          s_feat[0], n_feat[2], 
-                                          lines_suggested)
+                                          s_feat[0], lines_suggested)
             if self.debug_mode:
                 print('\n candidate:' + candidate_name)
                 print('average drop:' + str(s_feat[0]))
                 print('average log prob:' + str(s_feat[1]))
-                print('external definition:' + str(n_feat[2]))
                 print('lines suggested:' +  str(lines_suggested))
                 print('weight:' + str(weight) + '\n')
 

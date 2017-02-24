@@ -25,7 +25,7 @@ from tools.suggestionMetrics import *
 
 from folderManager import Folder
 
-def getMosesTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, start):
+def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, start):
     """
     A helper function so that we can run multiple different renaming
     strategies through moses in a more modular and hopefully parallelizable
@@ -35,6 +35,9 @@ def getMosesTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalys
     
     Parameters
     ----------
+    proxy: A pointer to which port the appropriate moses server is listening in on
+    for this particular renaming strategy.
+
     r_strategy: One of the renaming strategies from RenamingStrategies
     
     RS: A renaming strategies object.
@@ -87,7 +90,7 @@ def getMosesTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalys
     #We always need the non hashed names as a fallback.
     after_text = preRen.rename(r_strategy, 
                                iBuilder_ugly,
-                               scopeAnalyst)
+                               scopeAnalyst_ugly)
    
     (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
     if not ok:
@@ -103,10 +106,15 @@ def getMosesTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalys
        
     hash_name_map = {}
     
+    
     if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
-        orderedVarsMin = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        print("BUILDING HASH NAME MAP")
+
+        #Something below here is buggy...
+        orderedVarsMin = sorted(scopeAnalyst_ugly.name2defScope.keys(), key = lambda x: x[1])
         orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-     
+        #print("Min len: " + str(len(orderedVarsMin)))
+        #print("Hash len: " + str(len(orderedVarsHash))) 
         if(len(orderedVarsMin) != len(orderedVarsHash)):
             return(False, "Mismatch between minified and hashed names.", 
                    "", {}, a_iBuilder, 
@@ -115,13 +123,15 @@ def getMosesTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalys
                    0, 0, 0, 0)    
         
          
-            for i in range(0, len(orderedVarsHash)):
-                name_hash = orderedVarsHash[i][0]
-                def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
+        for i in range(0, len(orderedVarsHash)):
+            name_hash = orderedVarsHash[i][0]
+            def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
      
-                name_min = orderedVarsMin[i][0]
-                def_scope_min = scopeAnalyst.name2defScope[orderedVarsMin[i]]
-                hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
+            name_min = orderedVarsMin[i][0]
+            def_scope_min = scopeAnalyst_ugly.name2defScope[orderedVarsMin[i]]
+            hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
+
+    print("HASH NAME MAP LEN: " + str(len(hash_name_map)))
 
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())

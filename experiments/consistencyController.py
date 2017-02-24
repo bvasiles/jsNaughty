@@ -47,8 +47,7 @@ class ConsistencyController:
             self.suggestion_cache = worker
         
         elif strategy == self.CS.LOGMODEL:
-            worker = LogModelConsistencyResolver(variable_metrics,
-                                                 hash_to_min, 
+            worker = LogModelConsistencyResolver(hash_to_min, 
                                                  self.debug_mode,
                                                  lm_path)
             
