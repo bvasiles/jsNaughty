@@ -5,7 +5,7 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 path="${__dir}"
 script="${path}/lmServer.py"
 echo $script
-nohup $script > ${path}/lm.out 2> ${path}/lm.err &
+nohup sudo python $script > ${path}/lm.out 2> ${path}/lm.err&
 EXIT_CODE=$?
 ps -p $! > /dev/null
 if [ $? -eq 0 ]; then
