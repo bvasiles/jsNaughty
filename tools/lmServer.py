@@ -24,7 +24,7 @@ class MyApplication(web.application):
 
 app = MyApplication(urls, globals())
 
-class LMScore:
+class score:
 
     def get_scores(self, queries):
         return [lm.score(q) for q in queries]
