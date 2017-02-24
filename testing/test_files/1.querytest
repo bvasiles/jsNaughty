@@ -1,0 +1,34 @@
+this . x = x ;
+function _a0378db4 ( newX , _5fd2ed19 ) { 
+this . x = newX ; 
+function _a0378db4 ( e , _5fd2ed19 ) {
+this . x = e ; 
+function _a0378db4 ( blobInfos , _5fd2ed19 ) { 
+this . x = blobInfos ; 
+equals : function _59445d91 ( _0b9f8e3d , _b1232d11 ) {
+return _140bed17 ( this . x , _0b9f8e3d . x , _b1232d11 ) && _140bed17 ( this . y , _0b9f8e3d . y , _b1232d11 ) ; 
+equals : function _59445d91 ( _0b9f8e3d , b ) {
+return _140bed17 ( this . x , _0b9f8e3d . x , b ) && _140bed17 ( this . y , _0b9f8e3d . y , b ) ; 
+equals : function _59445d91 ( _0b9f8e3d , h ) { 
+return _140bed17 ( this . x , _0b9f8e3d . x , h ) && _140bed17 ( this . y , _0b9f8e3d . y , h ) ; 
+equals : function _59445d91 ( _0b9f8e3d , results ) {
+return _140bed17 ( this . x , _0b9f8e3d . x , results ) && _140bed17 ( this . y , _0b9f8e3d . y , results ) ;
+equals : function _59445d91 ( _0b9f8e3d , msg ) {
+return _140bed17 ( this . x , _0b9f8e3d . x , msg ) && _140bed17 ( this . y , _0b9f8e3d . y , msg ) ; 
+equals : function _59445d91 ( _0b9f8e3d , GRID_STEP ) { 
+return _140bed17 ( this . x , _0b9f8e3d . x , GRID_STEP ) && _140bed17 ( this . y , _0b9f8e3d . y , GRID_STEP ) ;
+equals : function _59445d91 ( _0b9f8e3d , y ) {
+return _140bed17 ( this . x , _0b9f8e3d . x , y ) && _140bed17 ( this . y , _0b9f8e3d . y , y ) ;
+var _6d079a2d = 10 ;
+var i = 10 ;
+var hitback_distance = 10 ;
+equals : function _59445d91 ( _0b9f8e3d , _b1232d11 ) {
+equals : function node ( _0b9f8e3d , _b1232d11 ) {
+equals : function cb ( _0b9f8e3d , _b1232d11 ) {
+equals : function equals ( _0b9f8e3d , _b1232d11 ) {
+for ( var _3bbcb306 in _5fd2ed19 ) _b0ea43ca [ _3bbcb306 ] = _5fd2ed19 [ _3bbcb306 ] ; 
+for ( var property in _5fd2ed19 ) _b0ea43ca [ property ] = _5fd2ed19 [ property ] ;
+for ( var prop in _5fd2ed19 ) _b0ea43ca [ prop ] = _5fd2ed19 [ prop ] ; 
+function _0fcbd5bc ( _a99f7b5c ) { 
+dotProduct : function onPing ( _a99f7b5c ) {
+dotProduct : function matrix ( _a99f7b5c ) { 

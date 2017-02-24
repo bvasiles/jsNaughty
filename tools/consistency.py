@@ -449,7 +449,9 @@ class LMConsistencyResolver(ConsistencyResolver):
         for idx, line in enumerate(draft_lines_str):
              
             (lm_ok, lm_log_prob, _lm_err) = \
-                self.lm_cache.setdefault(line, self.lm_query.run(line))
+                self.lm_cache.setdefault(line, self.lm_query.queryServer(line)) #faster
+                #self.lm_cache.setdefault(line, self.lm_query.run(line)) #slow
+                
              
             if not lm_ok:
                 lm_log_prob = ENTROPY_ERR

@@ -1,0 +1,1516 @@
+ createConvexPolygon : function ( _8a6b32c1 ) {
+ if ( _8a6b32c1 . length < 3 ) {
+ _fe8eefa5 . push ( _8a6b32c1 [ 0 ] ) ;
+ _fe8eefa5 . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( _8a6b32c1 [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < _8a6b32c1 . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( arr ) {
+ if ( arr . length < 3 ) {
+ _fe8eefa5 . push ( arr [ 0 ] ) ;
+ _fe8eefa5 . push ( arr [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( arr [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( arr [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , arr [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < arr . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( arr [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( code ) {
+ if ( code . length < 3 ) {
+ _fe8eefa5 . push ( code [ 0 ] ) ;
+ _fe8eefa5 . push ( code [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( code [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( code [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , code [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < code . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( code [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( callback ) {
+ if ( callback . length < 3 ) {
+ _fe8eefa5 . push ( callback [ 0 ] ) ;
+ _fe8eefa5 . push ( callback [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( callback [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( callback [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , callback [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < callback . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( callback [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( pointSet ) {
+ if ( pointSet . length < 3 ) {
+ _fe8eefa5 . push ( pointSet [ 0 ] ) ;
+ _fe8eefa5 . push ( pointSet [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( pointSet [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( pointSet [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , pointSet [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < pointSet . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( pointSet [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( b ) {
+ if ( b . length < 3 ) {
+ _fe8eefa5 . push ( b [ 0 ] ) ;
+ _fe8eefa5 . push ( b [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( b [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( b [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , b [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < b . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( b [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( result ) {
+ if ( result . length < 3 ) {
+ _fe8eefa5 . push ( result [ 0 ] ) ;
+ _fe8eefa5 . push ( result [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( result [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( result [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , result [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < result . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( result [ _73abc0b2 ] , _fe8eefa5 ) ;
+ createConvexPolygon : function ( data ) {
+ if ( data . length < 3 ) {
+ _fe8eefa5 . push ( data [ 0 ] ) ;
+ _fe8eefa5 . push ( data [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( data [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( data [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , data [ 2 ] ) ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < data . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( data [ _73abc0b2 ] , _fe8eefa5 ) ;
+ var _fe8eefa5 = [ ] ;
+ _fe8eefa5 . push ( _8a6b32c1 [ 0 ] ) ;
+ _fe8eefa5 . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ _fe8eefa5 . push ( _8a6b32c1 [ 2 ] ) ;
+ _fe8eefa5 . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , _fe8eefa5 ) ;
+ return _fe8eefa5 ;
+ var a = [ ] ;
+ a . push ( _8a6b32c1 [ 0 ] ) ;
+ a . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , a ) ;
+ a . push ( _8a6b32c1 [ 2 ] ) ;
+ a . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , a ) ;
+ return a ;
+ var diffs = [ ] ;
+ diffs . push ( _8a6b32c1 [ 0 ] ) ;
+ diffs . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , diffs ) ;
+ diffs . push ( _8a6b32c1 [ 2 ] ) ;
+ diffs . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , diffs ) ;
+ return diffs ;
+ var polygon = [ ] ;
+ polygon . push ( _8a6b32c1 [ 0 ] ) ;
+ polygon . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , polygon ) ;
+ polygon . push ( _8a6b32c1 [ 2 ] ) ;
+ polygon . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , polygon ) ;
+ return polygon ;
+ var removeQueue = [ ] ;
+ removeQueue . push ( _8a6b32c1 [ 0 ] ) ;
+ removeQueue . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , removeQueue ) ;
+ removeQueue . push ( _8a6b32c1 [ 2 ] ) ;
+ removeQueue . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , removeQueue ) ;
+ return removeQueue ;
+ var codeOptions = [ ] ;
+ codeOptions . push ( _8a6b32c1 [ 0 ] ) ;
+ codeOptions . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , codeOptions ) ;
+ codeOptions . push ( _8a6b32c1 [ 2 ] ) ;
+ codeOptions . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , codeOptions ) ;
+ return codeOptions ;
+ var childName = [ ] ;
+ childName . push ( _8a6b32c1 [ 0 ] ) ;
+ childName . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , childName ) ;
+ childName . push ( _8a6b32c1 [ 2 ] ) ;
+ childName . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , childName ) ;
+ return childName ;
+ var result = [ ] ;
+ result . push ( _8a6b32c1 [ 0 ] ) ;
+ result . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , result ) ;
+ result . push ( _8a6b32c1 [ 2 ] ) ;
+ result . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , result ) ;
+ return result ;
+ var d = [ ] ;
+ d . push ( _8a6b32c1 [ 0 ] ) ;
+ d . push ( _8a6b32c1 [ 1 ] ) ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , d ) ;
+ d . push ( _8a6b32c1 [ 2 ] ) ;
+ d . splice ( 1 , 0 , _8a6b32c1 [ 2 ] ) ;
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , d ) ;
+ return d ;
+ enlargeConvexPolygon : function ( _625741b6 , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ _418f0e7b . splice ( _13940651 , 1 ) ;
+ return _418f0e7b ;
+ enlargeConvexPolygon : function ( _625741b6 , a ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , a , 1 ) ;
+ a . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( a [ _3db21c2d [ _8d5f096e ] ] ) ;
+ a . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = a . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ a . splice ( _13940651 , 1 ) ;
+ return a ;
+ enlargeConvexPolygon : function ( _625741b6 , elements ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , elements , 1 ) ;
+ elements . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( elements [ _3db21c2d [ _8d5f096e ] ] ) ;
+ elements . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = elements . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ elements . splice ( _13940651 , 1 ) ;
+ return elements ;
+ enlargeConvexPolygon : function ( _625741b6 , polygon ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , polygon , 1 ) ;
+ polygon . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( polygon [ _3db21c2d [ _8d5f096e ] ] ) ;
+ polygon . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = polygon . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ polygon . splice ( _13940651 , 1 ) ;
+ return polygon ;
+ enlargeConvexPolygon : function ( _625741b6 , newLocation ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , newLocation , 1 ) ;
+ newLocation . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( newLocation [ _3db21c2d [ _8d5f096e ] ] ) ;
+ newLocation . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = newLocation . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ newLocation . splice ( _13940651 , 1 ) ;
+ return newLocation ;
+ enlargeConvexPolygon : function ( _625741b6 , y ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , y , 1 ) ;
+ y . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( y [ _3db21c2d [ _8d5f096e ] ] ) ;
+ y . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = y . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ y . splice ( _13940651 , 1 ) ;
+ return y ;
+ enlargeConvexPolygon : function ( _625741b6 , line ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , line , 1 ) ;
+ line . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _fe8eefa5 . push ( line [ _3db21c2d [ _8d5f096e ] ] ) ;
+ line . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _13940651 = line . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ line . splice ( _13940651 , 1 ) ;
+ return line ;
+ var _fe8eefa5 = [ ] ;
+ _fe8eefa5 . push ( _709a01b6 ) ;
+ if ( _fe8eefa5 . length && _cc0eba65 != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( _f016ce15 ) ;
+ return _fe8eefa5 ;
+ var a = [ ] ;
+ a . push ( _709a01b6 ) ;
+ if ( a . length && _cc0eba65 != - 1 ) {
+ while ( a [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = a . shift ( ) ;
+ a . push ( _f016ce15 ) ;
+ return a ;
+ var missing = [ ] ;
+ missing . push ( _709a01b6 ) ;
+ if ( missing . length && _cc0eba65 != - 1 ) {
+ while ( missing [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = missing . shift ( ) ;
+ missing . push ( _f016ce15 ) ;
+ return missing ;
+ var args = [ ] ;
+ args . push ( _709a01b6 ) ;
+ if ( args . length && _cc0eba65 != - 1 ) {
+ while ( args [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = args . shift ( ) ;
+ args . push ( _f016ce15 ) ;
+ return args ;
+ var queue = [ ] ;
+ queue . push ( _709a01b6 ) ;
+ if ( queue . length && _cc0eba65 != - 1 ) {
+ while ( queue [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = queue . shift ( ) ;
+ queue . push ( _f016ce15 ) ;
+ return queue ;
+ var callbacks = [ ] ;
+ callbacks . push ( _709a01b6 ) ;
+ if ( callbacks . length && _cc0eba65 != - 1 ) {
+ while ( callbacks [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = callbacks . shift ( ) ;
+ callbacks . push ( _f016ce15 ) ;
+ return callbacks ;
+ var parts = [ ] ;
+ parts . push ( _709a01b6 ) ;
+ if ( parts . length && _cc0eba65 != - 1 ) {
+ while ( parts [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = parts . shift ( ) ;
+ parts . push ( _f016ce15 ) ;
+ return parts ;
+ var plus = [ ] ;
+ plus . push ( _709a01b6 ) ;
+ if ( plus . length && _cc0eba65 != - 1 ) {
+ while ( plus [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = plus . shift ( ) ;
+ plus . push ( _f016ce15 ) ;
+ return plus ;
+ var result = [ ] ;
+ result . push ( _709a01b6 ) ;
+ if ( result . length && _cc0eba65 != - 1 ) {
+ while ( result [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = result . shift ( ) ;
+ result . push ( _f016ce15 ) ;
+ return result ;
+ var fi = [ ] ;
+ fi . push ( _709a01b6 ) ;
+ if ( fi . length && _cc0eba65 != - 1 ) {
+ while ( fi [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = fi . shift ( ) ;
+ fi . push ( _f016ce15 ) ;
+ return fi ;
+ var t = [ ] ;
+ t . push ( _709a01b6 ) ;
+ if ( t . length && _cc0eba65 != - 1 ) {
+ while ( t [ 0 ] != _cc0eba65 ) {
+ var _f016ce15 = t . shift ( ) ;
+ t . push ( _f016ce15 ) ;
+ return t ;
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! _3db21c2d . length ) {
+ if ( _3db21c2d . length == 1 ) {
+ var _13940651 = _3db21c2d [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < _3db21c2d . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var e = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! e . length ) {
+ if ( e . length == 1 ) {
+ var _13940651 = e [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < e . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ e [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( e [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var h = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! h . length ) {
+ if ( h . length == 1 ) {
+ var _13940651 = h [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < h . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ h [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( h [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var new_x = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! new_x . length ) {
+ if ( new_x . length == 1 ) {
+ var _13940651 = new_x [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < new_x . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ new_x [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( new_x [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var n = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! n . length ) {
+ if ( n . length == 1 ) {
+ var _13940651 = n [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < n . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ n [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( n [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var eles = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! eles . length ) {
+ if ( eles . length == 1 ) {
+ var _13940651 = eles [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < eles . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ eles [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( eles [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var definitionParts = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! definitionParts . length ) {
+ if ( definitionParts . length == 1 ) {
+ var _13940651 = definitionParts [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < definitionParts . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ definitionParts [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( definitionParts [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var stack = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! stack . length ) {
+ if ( stack . length == 1 ) {
+ var _13940651 = stack [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < stack . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ stack [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( stack [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var op = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ if ( ! op . length ) {
+ if ( op . length == 1 ) {
+ var _13940651 = op [ 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < op . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ op [ _8d5f096e ] ] ) ;
+ _418f0e7b . splice ( op [ 0 ] + 1 , 0 , _625741b6 ) ;
+ var _cc0eba65 = - 1 ;
+ if ( _cc0eba65 == - 1 ) {
+ _cc0eba65 = _709a01b6 ;
+ _cc0eba65 = - 1 ;
+ if ( _fe8eefa5 . length && _cc0eba65 != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != _cc0eba65 ) {
+ var zip_method = - 1 ;
+ if ( zip_method == - 1 ) {
+ zip_method = _709a01b6 ;
+ zip_method = - 1 ;
+ if ( _fe8eefa5 . length && zip_method != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != zip_method ) {
+ var undefined = - 1 ;
+ if ( undefined == - 1 ) {
+ undefined = _709a01b6 ;
+ undefined = - 1 ;
+ if ( _fe8eefa5 . length && undefined != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != undefined ) {
+ var index = - 1 ;
+ if ( index == - 1 ) {
+ index = _709a01b6 ;
+ index = - 1 ;
+ if ( _fe8eefa5 . length && index != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != index ) {
+ var i = - 1 ;
+ if ( i == - 1 ) {
+ i = _709a01b6 ;
+ i = - 1 ;
+ if ( _fe8eefa5 . length && i != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != i ) {
+ var n = - 1 ;
+ if ( n == - 1 ) {
+ n = _709a01b6 ;
+ n = - 1 ;
+ if ( _fe8eefa5 . length && n != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != n ) {
+ var minus = - 1 ;
+ if ( minus == - 1 ) {
+ minus = _709a01b6 ;
+ minus = - 1 ;
+ if ( _fe8eefa5 . length && minus != - 1 ) {
+ while ( _fe8eefa5 [ 0 ] != minus ) {
+ middleVector : function ( _98e3954c , _86c7f743 , _1a66d727 ) {
+ t . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( result , _86c7f743 , _1a66d727 ) {
+ t . push ( result [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( result [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( result [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( result [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( x , _86c7f743 , _1a66d727 ) {
+ t . push ( x [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( x [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( x [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( x [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( ob , _86c7f743 , _1a66d727 ) {
+ t . push ( ob [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( ob [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( ob [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( ob [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( fn , _86c7f743 , _1a66d727 ) {
+ t . push ( fn [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( fn [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( fn [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( fn [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( center , _86c7f743 , _1a66d727 ) {
+ t . push ( center [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( center [ 1 ] + _86c7f743 [ 1 ] ) ;
+ _fe8eefa5 . push ( center [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( center [ 1 ] + _1a66d727 [ 1 ] ) ;
+ for ( var _709a01b6 = 0 ; _709a01b6 < _e0b3b0f8 . length ; _709a01b6 ++ ) {
+ var s = _e0b3b0f8 [ _709a01b6 ] ;
+ var _0658751f = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ _cc0eba65 = _709a01b6 ;
+ _fe8eefa5 . push ( _709a01b6 ) ;
+ for ( var i = 0 ; i < _e0b3b0f8 . length ; i ++ ) {
+ var s = _e0b3b0f8 [ i ] ;
+ var _0658751f = _e0b3b0f8 [ i + 1 < _e0b3b0f8 . length ? i + 1 : 0 ] ;
+ _cc0eba65 = i ;
+ _fe8eefa5 . push ( i ) ;
+ for ( var j = 0 ; j < _e0b3b0f8 . length ; j ++ ) {
+ var s = _e0b3b0f8 [ j ] ;
+ var _0658751f = _e0b3b0f8 [ j + 1 < _e0b3b0f8 . length ? j + 1 : 0 ] ;
+ _cc0eba65 = j ;
+ _fe8eefa5 . push ( j ) ;
+ for ( var _ = 0 ; _ < _e0b3b0f8 . length ; _ ++ ) {
+ var s = _e0b3b0f8 [ _ ] ;
+ var _0658751f = _e0b3b0f8 [ _ + 1 < _e0b3b0f8 . length ? _ + 1 : 0 ] ;
+ _cc0eba65 = _ ;
+ _fe8eefa5 . push ( _ ) ;
+ for ( var clr = 0 ; clr < _e0b3b0f8 . length ; clr ++ ) {
+ var s = _e0b3b0f8 [ clr ] ;
+ var _0658751f = _e0b3b0f8 [ clr + 1 < _e0b3b0f8 . length ? clr + 1 : 0 ] ;
+ _cc0eba65 = clr ;
+ _fe8eefa5 . push ( clr ) ;
+ for ( var v = 0 ; v < _e0b3b0f8 . length ; v ++ ) {
+ var s = _e0b3b0f8 [ v ] ;
+ var _0658751f = _e0b3b0f8 [ v + 1 < _e0b3b0f8 . length ? v + 1 : 0 ] ;
+ _cc0eba65 = v ;
+ _fe8eefa5 . push ( v ) ;
+ var _fe8eefa5 = [ ] ;
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ var a = [ ] ;
+ a . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ a . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( a [ 0 ] - t [ 0 ] ) ;
+ v . push ( a [ 1 ] - t [ 1 ] ) ;
+ var C = [ ] ;
+ C . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ C . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( C [ 0 ] - t [ 0 ] ) ;
+ v . push ( C [ 1 ] - t [ 1 ] ) ;
+ var val = [ ] ;
+ val . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ val . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( val [ 0 ] - t [ 0 ] ) ;
+ v . push ( val [ 1 ] - t [ 1 ] ) ;
+ var i = [ ] ;
+ i . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ i . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( i [ 0 ] - t [ 0 ] ) ;
+ v . push ( i [ 1 ] - t [ 1 ] ) ;
+ var n = [ ] ;
+ n . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ n . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( n [ 0 ] - t [ 0 ] ) ;
+ v . push ( n [ 1 ] - t [ 1 ] ) ;
+ var result = [ ] ;
+ result . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ result . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( result [ 0 ] - t [ 0 ] ) ;
+ v . push ( result [ 1 ] - t [ 1 ] ) ;
+ var v = [ ] ;
+ v . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ v . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ v . push ( v [ 0 ] - t [ 0 ] ) ;
+ v . push ( v [ 1 ] - t [ 1 ] ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( a , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = a [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = a [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = a [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = a [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( point , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = point [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = point [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = point [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = point [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( ways , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = ways [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = ways [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = ways [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = ways [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _recycleBins , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = _recycleBins [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = _recycleBins [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = _recycleBins [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _recycleBins [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( attrPath , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = attrPath [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = attrPath [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = attrPath [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = attrPath [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( fn , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = fn [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = fn [ 1 ] - _24a8d785 [ 1 ] ;
+ var _d3f859a4 = fn [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = fn [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ pointVsAbscissa : function ( _bf1dd6fc , _45dc806c ) {
+ var _3baa6588 = _45dc806c [ 0 ] [ 0 ] ;
+ var _9a5f95dd = _45dc806c [ 0 ] [ 1 ] ;
+ var _cc468e3f = _45dc806c [ 1 ] [ 0 ] ;
+ var _6073d0b2 = _45dc806c [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , abscissa ) {
+ var _3baa6588 = abscissa [ 0 ] [ 0 ] ;
+ var _9a5f95dd = abscissa [ 0 ] [ 1 ] ;
+ var _cc468e3f = abscissa [ 1 ] [ 0 ] ;
+ var _6073d0b2 = abscissa [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , elEditor ) {
+ var _3baa6588 = elEditor [ 0 ] [ 0 ] ;
+ var _9a5f95dd = elEditor [ 0 ] [ 1 ] ;
+ var _cc468e3f = elEditor [ 1 ] [ 0 ] ;
+ var _6073d0b2 = elEditor [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , newLocation ) {
+ var _3baa6588 = newLocation [ 0 ] [ 0 ] ;
+ var _9a5f95dd = newLocation [ 0 ] [ 1 ] ;
+ var _cc468e3f = newLocation [ 1 ] [ 0 ] ;
+ var _6073d0b2 = newLocation [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , sm ) {
+ var _3baa6588 = sm [ 0 ] [ 0 ] ;
+ var _9a5f95dd = sm [ 0 ] [ 1 ] ;
+ var _cc468e3f = sm [ 1 ] [ 0 ] ;
+ var _6073d0b2 = sm [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , arrLitReqInfo ) {
+ var _3baa6588 = arrLitReqInfo [ 0 ] [ 0 ] ;
+ var _9a5f95dd = arrLitReqInfo [ 0 ] [ 1 ] ;
+ var _cc468e3f = arrLitReqInfo [ 1 ] [ 0 ] ;
+ var _6073d0b2 = arrLitReqInfo [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , colonies ) {
+ var _3baa6588 = colonies [ 0 ] [ 0 ] ;
+ var _9a5f95dd = colonies [ 0 ] [ 1 ] ;
+ var _cc468e3f = colonies [ 1 ] [ 0 ] ;
+ var _6073d0b2 = colonies [ 1 ] [ 1 ] ;
+ pointVsAbscissa : function ( _bf1dd6fc , data ) {
+ var _3baa6588 = data [ 0 ] [ 0 ] ;
+ var _9a5f95dd = data [ 0 ] [ 1 ] ;
+ var _cc468e3f = data [ 1 ] [ 0 ] ;
+ var _6073d0b2 = data [ 1 ] [ 1 ] ;
+ var t = [ ] ;
+ t . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ var c = [ ] ;
+ c . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ c . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - c [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - c [ 1 ] ) ;
+ var r = [ ] ;
+ r . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ r . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - r [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - r [ 1 ] ) ;
+ var partial = [ ] ;
+ partial . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ partial . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - partial [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - partial [ 1 ] ) ;
+ var t = [ ] ;
+ t . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ v . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ findCOG : function ( _442ac970 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < _442ac970 . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = _442ac970 [ _709a01b6 ] ;
+ var _0658751f = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( arr ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < arr . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = arr [ _709a01b6 ] ;
+ var _0658751f = arr [ _709a01b6 + 1 < arr . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( polygon ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < polygon . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = polygon [ _709a01b6 ] ;
+ var _0658751f = polygon [ _709a01b6 + 1 < polygon . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( standardParts ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < standardParts . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = standardParts [ _709a01b6 ] ;
+ var _0658751f = standardParts [ _709a01b6 + 1 < standardParts . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( callback ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < callback . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = callback [ _709a01b6 ] ;
+ var _0658751f = callback [ _709a01b6 + 1 < callback . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( other ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < other . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = other [ _709a01b6 ] ;
+ var _0658751f = other [ _709a01b6 + 1 < other . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( line ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < line . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = line [ _709a01b6 ] ;
+ var _0658751f = line [ _709a01b6 + 1 < line . length ? _709a01b6 + 1 : 0 ] ;
+ findCOG : function ( children ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < children . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = children [ _709a01b6 ] ;
+ var _0658751f = children [ _709a01b6 + 1 < children . length ? _709a01b6 + 1 : 0 ] ;
+ for ( var _8d5f096e = 1 ; _8d5f096e < _3db21c2d . length ; _8d5f096e ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < _fe8eefa5 . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ for ( var i = 1 ; i < _3db21c2d . length ; i ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ i ] ] ) ;
+ for ( var i = 0 ; i < _fe8eefa5 . length ; i ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ i ] ) ;
+ for ( var d = 1 ; d < _3db21c2d . length ; d ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ d ] ] ) ;
+ for ( var d = 0 ; d < _fe8eefa5 . length ; d ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ d ] ) ;
+ for ( var v = 1 ; v < _3db21c2d . length ; v ++ ) {
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ v ] ] ) ;
+ for ( var v = 0 ; v < _fe8eefa5 . length ; v ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ v ] ) ;
+ var _5d472074 = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ i += _5d472074 ;
+ var baseHostUrl = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * baseHostUrl ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * baseHostUrl ;
+ i += baseHostUrl ;
+ var rbs = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * rbs ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * rbs ;
+ i += rbs ;
+ var fontStretch = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * fontStretch ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * fontStretch ;
+ i += fontStretch ;
+ var l = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * l ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * l ;
+ i += l ;
+ enlargeConvexPolygon : function ( _625741b6 , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( _625741b6 , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , _625741b6 ) ;
+ enlargeConvexPolygon : function ( oldLocation , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( oldLocation , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , oldLocation ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , oldLocation ) ;
+ enlargeConvexPolygon : function ( point , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( point , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , point ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , point ) ;
+ enlargeConvexPolygon : function ( x , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( x , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , x ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , x ) ;
+ enlargeConvexPolygon : function ( val , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( val , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , val ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , val ) ;
+ enlargeConvexPolygon : function ( callback , _418f0e7b ) {
+ var _3db21c2d = OAT . Geometry . pointVsSet ( callback , _418f0e7b , 1 ) ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , callback ) ;
+ _418f0e7b . splice ( _3db21c2d [ 0 ] + 1 , 0 , callback ) ;
+ var _fe8eefa5 = [ ] ;
+ _fe8eefa5 . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < _fe8eefa5 . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ var C = [ ] ;
+ C . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < C . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( C [ _8d5f096e ] ) ;
+ var b = [ ] ;
+ b . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < b . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( b [ _8d5f096e ] ) ;
+ var n = [ ] ;
+ n . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < n . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( n [ _8d5f096e ] ) ;
+ var ranges = [ ] ;
+ ranges . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < ranges . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( ranges [ _8d5f096e ] ) ;
+ var parents = [ ] ;
+ parents . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < parents . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( parents [ _8d5f096e ] ) ;
+ var result = [ ] ;
+ result . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < result . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( result [ _8d5f096e ] ) ;
+ var attributes = [ ] ;
+ attributes . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < attributes . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( attributes [ _8d5f096e ] ) ;
+ var events = [ ] ;
+ events . push ( _418f0e7b [ _3db21c2d [ _8d5f096e ] ] ) ;
+ for ( var _8d5f096e = 0 ; _8d5f096e < events . length ; _8d5f096e ++ ) {
+ var _13940651 = _418f0e7b . indexOf ( events [ _8d5f096e ] ) ;
+ var _0658751f = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var a = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = a [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * a [ 1 ] ;
+ _6201af06 += ( a [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( a [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var c = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = c [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * c [ 1 ] ;
+ _6201af06 += ( c [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( c [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var j = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = j [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * j [ 1 ] ;
+ _6201af06 += ( j [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( j [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var toReplace = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = toReplace [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * toReplace [ 1 ] ;
+ _6201af06 += ( toReplace [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( toReplace [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var baseHostInfo = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ var _5d472074 = baseHostInfo [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * baseHostInfo [ 1 ] ;
+ _6201af06 += ( baseHostInfo [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( baseHostInfo [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var _6201af06 = 0 ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ _6201af06 /= i * 3 ;
+ return [ _6201af06 , s ] ;
+ var result7 = 0 ;
+ result7 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ result7 /= i * 3 ;
+ return [ result7 , s ] ;
+ var total = 0 ;
+ total += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ total /= i * 3 ;
+ return [ total , s ] ;
+ var v = 0 ;
+ v += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ v /= i * 3 ;
+ return [ v , s ] ;
+ var s = 0 ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ s /= i * 3 ;
+ return [ _6201af06 , s ] ;
+ var SIZE6 = 0 ;
+ SIZE6 += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ SIZE6 /= i * 3 ;
+ return [ _6201af06 , SIZE6 ] ;
+ var result8 = 0 ;
+ result8 += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ result8 /= i * 3 ;
+ return [ _6201af06 , result8 ] ;
+ var i = 0 ;
+ i += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ i /= i * 3 ;
+ return [ _6201af06 , i ] ;
+ var s = 0 ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ s /= i * 3 ;
+ return [ _6201af06 , s ] ;
+ var y = 0 ;
+ y += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ y /= i * 3 ;
+ return [ _6201af06 , y ] ;
+ var x = 0 ;
+ x += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ x /= i * 3 ;
+ return [ _6201af06 , x ] ;
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < _e0b3b0f8 . length ; _709a01b6 ++ ) {
+ var s = _e0b3b0f8 [ _709a01b6 ] ;
+ var _0658751f = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , A , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < A . length ; _709a01b6 ++ ) {
+ var s = A [ _709a01b6 ] ;
+ var _0658751f = A [ _709a01b6 + 1 < A . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , a , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < a . length ; _709a01b6 ++ ) {
+ var s = a [ _709a01b6 ] ;
+ var _0658751f = a [ _709a01b6 + 1 < a . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , tags , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < tags . length ; _709a01b6 ++ ) {
+ var s = tags [ _709a01b6 ] ;
+ var _0658751f = tags [ _709a01b6 + 1 < tags . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , fields , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < fields . length ; _709a01b6 ++ ) {
+ var s = fields [ _709a01b6 ] ;
+ var _0658751f = fields [ _709a01b6 + 1 < fields . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , coordinates , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < coordinates . length ; _709a01b6 ++ ) {
+ var s = coordinates [ _709a01b6 ] ;
+ var _0658751f = coordinates [ _709a01b6 + 1 < coordinates . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , pointSet , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < pointSet . length ; _709a01b6 ++ ) {
+ var s = pointSet [ _709a01b6 ] ;
+ var _0658751f = pointSet [ _709a01b6 + 1 < pointSet . length ? _709a01b6 + 1 : 0 ] ;
+ pointVsSet : function ( _1c2a8432 , data , _cccb1a71 ) {
+ for ( var _709a01b6 = 0 ; _709a01b6 < data . length ; _709a01b6 ++ ) {
+ var s = data [ _709a01b6 ] ;
+ var _0658751f = data [ _709a01b6 + 1 < data . length ? _709a01b6 + 1 : 0 ] ;
+ var _13940651 = _3db21c2d [ 0 ] ;
+ _418f0e7b . splice ( _13940651 + 1 , 0 , _625741b6 ) ;
+ var _13940651 = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ _418f0e7b . splice ( _13940651 , 1 ) ;
+ var combineable = _3db21c2d [ 0 ] ;
+ _418f0e7b . splice ( combineable + 1 , 0 , _625741b6 ) ;
+ var combineable = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ _418f0e7b . splice ( combineable , 1 ) ;
+ var index = _3db21c2d [ 0 ] ;
+ _418f0e7b . splice ( index + 1 , 0 , _625741b6 ) ;
+ var index = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ _418f0e7b . splice ( index , 1 ) ;
+ var idx = _3db21c2d [ 0 ] ;
+ _418f0e7b . splice ( idx + 1 , 0 , _625741b6 ) ;
+ var idx = _418f0e7b . indexOf ( _fe8eefa5 [ _8d5f096e ] ) ;
+ _418f0e7b . splice ( idx , 1 ) ;
+ var _967ed8ff = Math . sqrt ( _20003995 ) ;
+ if ( _967ed8ff > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var d = Math . sqrt ( _20003995 ) ;
+ if ( d > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * d / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = d ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / d ) : 0 ;
+ var F = Math . sqrt ( _20003995 ) ;
+ if ( F > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * F / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = F ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / F ) : 0 ;
+ var m = Math . sqrt ( _20003995 ) ;
+ if ( m > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * m / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = m ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / m ) : 0 ;
+ var l = Math . sqrt ( _20003995 ) ;
+ if ( l > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * l / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = l ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / l ) : 0 ;
+ var fontSize = Math . sqrt ( _20003995 ) ;
+ if ( fontSize > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * fontSize / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = fontSize ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / fontSize ) : 0 ;
+ var v = Math . sqrt ( _20003995 ) ;
+ if ( v > OAT . Geometry . sphericalData . R ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * v / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = v ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / v ) : 0 ;
+ var _967ed8ff = Math . sqrt ( _20003995 ) ;
+ if ( _967ed8ff > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var ratio = Math . sqrt ( _20003995 ) ;
+ if ( ratio > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( ratio / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = ratio ? _162100ce * ( OAT . Geometry . sphericalData . R / ratio ) : 0 ;
+ var d = Math . sqrt ( _20003995 ) ;
+ if ( d > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( d / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = d ? _162100ce * ( OAT . Geometry . sphericalData . R / d ) : 0 ;
+ var v = Math . sqrt ( _20003995 ) ;
+ if ( v > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( v / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = v ? _162100ce * ( OAT . Geometry . sphericalData . R / v ) : 0 ;
+ var fontSize = Math . sqrt ( _20003995 ) ;
+ if ( fontSize > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( fontSize / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = fontSize ? _162100ce * ( OAT . Geometry . sphericalData . R / fontSize ) : 0 ;
+ var diff = Math . sqrt ( _20003995 ) ;
+ if ( diff > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( diff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = diff ? _162100ce * ( OAT . Geometry . sphericalData . R / diff ) : 0 ;
+ var e = Math . sqrt ( _20003995 ) ;
+ if ( e > OAT . Geometry . sphericalData . r ) {
+ var _162100ce = Math . asin ( e / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = e ? _162100ce * ( OAT . Geometry . sphericalData . R / e ) : 0 ;
+ var _fe8eefa5 = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * _fe8eefa5 [ 1 ] - _fe8eefa5 [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + _fe8eefa5 [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + _fe8eefa5 [ 1 ] ) * _5d472074 ;
+ var b = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * b [ 1 ] - b [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + b [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + b [ 1 ] ) * _5d472074 ;
+ var img = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * img [ 1 ] - img [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + img [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + img [ 1 ] ) * _5d472074 ;
+ var pMatrix = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * pMatrix [ 1 ] - pMatrix [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + pMatrix [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + pMatrix [ 1 ] ) * _5d472074 ;
+ var factor = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * factor [ 1 ] - factor [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + factor [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + factor [ 1 ] ) * _5d472074 ;
+ var othValue = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * othValue [ 1 ] - othValue [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + othValue [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + othValue [ 1 ] ) * _5d472074 ;
+ var ro = _442ac970 [ _709a01b6 ] ;
+ var _5d472074 = _0658751f [ 0 ] * ro [ 1 ] - ro [ 0 ] * _0658751f [ 1 ] ;
+ _6201af06 += ( _0658751f [ 0 ] + ro [ 0 ] ) * _5d472074 ;
+ s += ( _0658751f [ 1 ] + ro [ 1 ] ) * _5d472074 ;
+ var v = [ ] ;
+ v . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ v [ 1 ] , - v [ 0 ] ] ;
+ var movedEls = [ ] ;
+ movedEls . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ movedEls . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ movedEls [ 1 ] , - movedEls [ 0 ] ] ;
+ var uv = [ ] ;
+ uv . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ uv . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ uv [ 1 ] , - uv [ 0 ] ] ;
+ var t = [ ] ;
+ t . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ t . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ t [ 1 ] , - t [ 0 ] ] ;
+ var dataArray = [ ] ;
+ dataArray . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ dataArray . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ dataArray [ 1 ] , - dataArray [ 0 ] ] ;
+ var v = [ ] ;
+ v . push ( _fe8eefa5 [ 0 ] - t [ 0 ] ) ;
+ v . push ( _fe8eefa5 [ 1 ] - t [ 1 ] ) ;
+ return [ v [ 1 ] , - v [ 0 ] ] ;
+ var i = 0 ;
+ i += _5d472074 ;
+ _6201af06 /= i * 3 ;
+ s /= i * 3 ;
+ var i = 0 ;
+ i += _5d472074 ;
+ _6201af06 /= i * 3 ;
+ s /= i * 3 ;
+ var pending = 0 ;
+ pending += _5d472074 ;
+ _6201af06 /= pending * 3 ;
+ s /= pending * 3 ;
+ var _1ab930aa = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ var vy = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + vy * vy ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + vy * _2dc62269 ;
+ var s = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + s * s ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + s * _2dc62269 ;
+ var posPerpAngle1 = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + posPerpAngle1 * posPerpAngle1 ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + posPerpAngle1 * _2dc62269 ;
+ var dy = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + dy * dy ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + dy * _2dc62269 ;
+ distance : function ( _eb354545 , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( a , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - a [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - a [ 1 ] ;
+ distance : function ( point1 , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - point1 [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - point1 [ 1 ] ;
+ distance : function ( b , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - b [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - b [ 1 ] ;
+ distance : function ( puntoLittle , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - puntoLittle [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - puntoLittle [ 1 ] ;
+ distance : function ( oldLocation , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - oldLocation [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - oldLocation [ 1 ] ;
+ var _419a46f4 = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ var longRange = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = longRange * longRange + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + longRange * _2dc62269 ;
+ var vx = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = vx * vx + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + vx * _2dc62269 ;
+ var cos = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = cos * cos + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + cos * _2dc62269 ;
+ var dx = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = dx * dx + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + dx * _2dc62269 ;
+ var _419a46f4 = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ var longRange = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = longRange * longRange + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + longRange * _0422b5e4 ;
+ var vx = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = vx * vx + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + vx * _0422b5e4 ;
+ var cos = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = cos * cos + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + cos * _0422b5e4 ;
+ var dx = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ var _20003995 = dx * dx + _1ab930aa * _1ab930aa ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + dx * _0422b5e4 ;
+ var _2dc62269 = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ var y = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * y ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * y ;
+ var r = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * r ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * r ;
+ var pageFontSize = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * pageFontSize ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * pageFontSize ;
+ var tX = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * tX ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * tX ;
+ var _1ab930aa = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ var vy = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + vy * vy ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + vy * _0422b5e4 ;
+ var s = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + s * s ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + s * _0422b5e4 ;
+ var posPerpAngle1 = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + posPerpAngle1 * posPerpAngle1 ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + posPerpAngle1 * _0422b5e4 ;
+ var dy = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ var _20003995 = _419a46f4 * _419a46f4 + dy * dy ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + dy * _0422b5e4 ;
+ for ( var _709a01b6 = 0 ; _709a01b6 < _442ac970 . length ; _709a01b6 ++ ) {
+ var _fe8eefa5 = _442ac970 [ _709a01b6 ] ;
+ var _0658751f = _442ac970 [ _709a01b6 + 1 < _442ac970 . length ? _709a01b6 + 1 : 0 ] ;
+ for ( var i = 0 ; i < _442ac970 . length ; i ++ ) {
+ var _fe8eefa5 = _442ac970 [ i ] ;
+ var _0658751f = _442ac970 [ i + 1 < _442ac970 . length ? i + 1 : 0 ] ;
+ for ( var j = 0 ; j < _442ac970 . length ; j ++ ) {
+ var _fe8eefa5 = _442ac970 [ j ] ;
+ var _0658751f = _442ac970 [ j + 1 < _442ac970 . length ? j + 1 : 0 ] ;
+ for ( var othIndex = 0 ; othIndex < _442ac970 . length ; othIndex ++ ) {
+ var _fe8eefa5 = _442ac970 [ othIndex ] ;
+ var _0658751f = _442ac970 [ othIndex + 1 < _442ac970 . length ? othIndex + 1 : 0 ] ;
+ for ( var partId = 0 ; partId < _442ac970 . length ; partId ++ ) {
+ var _fe8eefa5 = _442ac970 [ partId ] ;
+ var _0658751f = _442ac970 [ partId + 1 < _442ac970 . length ? partId + 1 : 0 ] ;
+ middleVector : function ( _98e3954c , _86c7f743 , _1a66d727 ) {
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + _1a66d727 [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + _1a66d727 [ 1 ] ) ;
+ middleVector : function ( _98e3954c , _86c7f743 , b ) {
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + b [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + b [ 1 ] ) ;
+ middleVector : function ( _98e3954c , _86c7f743 , params ) {
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + params [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + params [ 1 ] ) ;
+ middleVector : function ( _98e3954c , _86c7f743 , $depth ) {
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + $depth [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + $depth [ 1 ] ) ;
+ middleVector : function ( _98e3954c , _86c7f743 , size ) {
+ _fe8eefa5 . push ( _98e3954c [ 0 ] + size [ 0 ] ) ;
+ _fe8eefa5 . push ( _98e3954c [ 1 ] + size [ 1 ] ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , _b10dbb71 ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , distance ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + distance * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + distance * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , r ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + r * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + r * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , radius ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + radius * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + radius * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , $depth ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + $depth * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + $depth * Math . sin ( _1b3948df ) ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , offset ) {
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + offset * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + offset * Math . sin ( _1b3948df ) ;
+ var _1b3948df = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ var a = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( a ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( a ) ;
+ var new_angleb = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( new_angleb ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( new_angleb ) ;
+ var brng = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( brng ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( brng ) ;
+ var _ = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _ ) ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _ ) ;
+ var _0422b5e4 = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ var y = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * y ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * y ;
+ var r = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * r ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * r ;
+ var pageFontSize = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * pageFontSize ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * pageFontSize ;
+ var tX = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * tX ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * tX ;
+ movePoint : function ( _bd5c3c5c , _24a8d785 , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - _24a8d785 [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - _24a8d785 [ 1 ] ;
+ movePoint : function ( _bd5c3c5c , a , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - a [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - a [ 1 ] ;
+ movePoint : function ( _bd5c3c5c , b , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - b [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - b [ 1 ] ;
+ movePoint : function ( _bd5c3c5c , data , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - data [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - data [ 1 ] ;
+ movePoint : function ( _bd5c3c5c , center , _b10dbb71 ) {
+ var _6603c0fa = _bd5c3c5c [ 0 ] - center [ 0 ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - center [ 1 ] ;
+ distance : function ( _eb354545 , _6bc4d0ca ) {
+ var _6603c0fa = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( _eb354545 , puntoBig ) {
+ var _6603c0fa = puntoBig [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = puntoBig [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( _eb354545 , point2 ) {
+ var _6603c0fa = point2 [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = point2 [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( _eb354545 , b ) {
+ var _6603c0fa = b [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = b [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( _eb354545 , newLocation ) {
+ var _6603c0fa = newLocation [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = newLocation [ 1 ] - _eb354545 [ 1 ] ;
+ distance : function ( _eb354545 , indexData ) {
+ var _6603c0fa = indexData [ 0 ] - _eb354545 [ 0 ] ;
+ var _17856195 = indexData [ 1 ] - _eb354545 [ 1 ] ;
+ middleVector : function ( _98e3954c , _86c7f743 , _1a66d727 ) {
+ t . push ( _98e3954c [ 0 ] + _86c7f743 [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + _86c7f743 [ 1 ] ) ;
+ middleVector : function ( _98e3954c , y , _1a66d727 ) {
+ t . push ( _98e3954c [ 0 ] + y [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + y [ 1 ] ) ;
+ middleVector : function ( _98e3954c , e , _1a66d727 ) {
+ t . push ( _98e3954c [ 0 ] + e [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + e [ 1 ] ) ;
+ middleVector : function ( _98e3954c , data , _1a66d727 ) {
+ t . push ( _98e3954c [ 0 ] + data [ 0 ] ) ;
+ t . push ( _98e3954c [ 1 ] + data [ 1 ] ) ;
+ pointVsAbscissa : function ( _bf1dd6fc , _45dc806c ) {
+ var _bcfb0339 = _bf1dd6fc [ 0 ] ;
+ var _56324310 = _bf1dd6fc [ 1 ] ;
+ pointVsAbscissa : function ( ways , _45dc806c ) {
+ var _bcfb0339 = ways [ 0 ] ;
+ var _56324310 = ways [ 1 ] ;
+ pointVsAbscissa : function ( oldLocation , _45dc806c ) {
+ var _bcfb0339 = oldLocation [ 0 ] ;
+ var _56324310 = oldLocation [ 1 ] ;
+ pointVsAbscissa : function ( attrPath , _45dc806c ) {
+ var _bcfb0339 = attrPath [ 0 ] ;
+ var _56324310 = attrPath [ 1 ] ;
+ pointVsAbscissa : function ( e , _45dc806c ) {
+ var _bcfb0339 = e [ 0 ] ;
+ var _56324310 = e [ 1 ] ;
+ pointVsAbscissa : function ( point , _45dc806c ) {
+ var _bcfb0339 = point [ 0 ] ;
+ var _56324310 = point [ 1 ] ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( _20003995 ) ;
+ var det = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( det ) ;
+ var d2 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( d2 ) ;
+ var es = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( es ) ;
+ var dist = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( dist ) ;
+ var variance = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( variance ) ;
+ var _0658751f = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ var lastName = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , lastName ] ) ;
+ var ui = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , ui ] ) ;
+ var coordinateSet = _e0b3b0f8 [ _709a01b6 + 1 < _e0b3b0f8 . length ? _709a01b6 + 1 : 0 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , coordinateSet ] ) ;
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , _cccb1a71 ) {
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ pointVsSet : function ( item , _e0b3b0f8 , _cccb1a71 ) {
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( item , [ s , _0658751f ] ) ;
+ pointVsSet : function ( point , _e0b3b0f8 , _cccb1a71 ) {
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( point , [ s , _0658751f ] ) ;
+ pointVsSet : function ( fn , _e0b3b0f8 , _cccb1a71 ) {
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( fn , [ s , _0658751f ] ) ;
+ pointVsSet : function ( p , _e0b3b0f8 , _cccb1a71 ) {
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( p , [ s , _0658751f ] ) ;
+ var _20003995 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( _20003995 ) ;
+ var det = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( det ) ;
+ var d2 = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( d2 ) ;
+ var dist = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( dist ) ;
+ var variance = _419a46f4 * _419a46f4 + _1ab930aa * _1ab930aa ;
+ var _967ed8ff = Math . sqrt ( variance ) ;
+ var _56324310 = _bf1dd6fc [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var begin = _bf1dd6fc [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - begin ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * begin - _bcfb0339 * _6073d0b2 ;
+ var s = _bf1dd6fc [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - s ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * s - _bcfb0339 * _6073d0b2 ;
+ var survivor = _bf1dd6fc [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - survivor ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * survivor - _bcfb0339 * _6073d0b2 ;
+ var t = _bf1dd6fc [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - t ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * t - _bcfb0339 * _6073d0b2 ;
+ fromSpherical : function ( _8868a4b8 , _43a8d991 ) {
+ var _1ab930aa = _43a8d991 - OAT . Geometry . sphericalData . cy ;
+ fromSpherical : function ( _8868a4b8 , y ) {
+ var _1ab930aa = y - OAT . Geometry . sphericalData . cy ;
+ fromSpherical : function ( _8868a4b8 , y0 ) {
+ var _1ab930aa = y0 - OAT . Geometry . sphericalData . cy ;
+ fromSpherical : function ( _8868a4b8 , posAngle ) {
+ var _1ab930aa = posAngle - OAT . Geometry . sphericalData . cy ;
+ fromSpherical : function ( _8868a4b8 , newLocation ) {
+ var _1ab930aa = newLocation - OAT . Geometry . sphericalData . cy ;
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? _162100ce * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var in_height = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? in_height * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var attitude = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? attitude * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var radius = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? radius * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var coef = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var _2dc62269 = _967ed8ff ? coef * ( OAT . Geometry . sphericalData . R / _967ed8ff ) : 0 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ return [ _bc0e84b1 , _8da46f8f ] ;
+ var a = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ return [ a , _8da46f8f ] ;
+ var px = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ return [ px , _8da46f8f ] ;
+ var x1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ return [ x1 , _8da46f8f ] ;
+ var new_x = OAT . Geometry . sphericalData . cx + _419a46f4 * _0422b5e4 ;
+ return [ new_x , _8da46f8f ] ;
+ var _f016ce15 = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( _f016ce15 ) ;
+ var newAgent = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( newAgent ) ;
+ var part = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( part ) ;
+ var fn = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( fn ) ;
+ var p = _fe8eefa5 . shift ( ) ;
+ _fe8eefa5 . push ( p ) ;
+ var _cc468e3f = _45dc806c [ 1 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var y = _45dc806c [ 1 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - y ) + y * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var c = _45dc806c [ 1 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - c ) + c * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var sContactId = _45dc806c [ 1 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - sContactId ) + sContactId * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var n = _45dc806c [ 1 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - n ) + n * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var _bc0e84b1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ return [ _bc0e84b1 , _8da46f8f ] ;
+ var a = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ return [ a , _8da46f8f ] ;
+ var px = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ return [ px , _8da46f8f ] ;
+ var x1 = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ return [ x1 , _8da46f8f ] ;
+ var new_x = OAT . Geometry . sphericalData . cx + _419a46f4 * _2dc62269 ;
+ return [ new_x , _8da46f8f ] ;
+ var _17856195 = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ return Math . sqrt ( _6603c0fa * _6603c0fa + _17856195 * _17856195 ) ;
+ var y = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ return Math . sqrt ( _6603c0fa * _6603c0fa + y * y ) ;
+ var iSupplierIndex = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ return Math . sqrt ( _6603c0fa * _6603c0fa + iSupplierIndex * iSupplierIndex ) ;
+ var dy = _6bc4d0ca [ 1 ] - _eb354545 [ 1 ] ;
+ return Math . sqrt ( _6603c0fa * _6603c0fa + dy * dy ) ;
+ var _6603c0fa = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ return Math . sqrt ( _6603c0fa * _6603c0fa + _17856195 * _17856195 ) ;
+ var xDiff = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ return Math . sqrt ( xDiff * xDiff + _17856195 * _17856195 ) ;
+ var x = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ return Math . sqrt ( x * x + _17856195 * _17856195 ) ;
+ var dx = _6bc4d0ca [ 0 ] - _eb354545 [ 0 ] ;
+ return Math . sqrt ( dx * dx + _17856195 * _17856195 ) ;
+ fromSpherical : function ( _8868a4b8 , _43a8d991 ) {
+ var _419a46f4 = _8868a4b8 - OAT . Geometry . sphericalData . cx ;
+ fromSpherical : function ( opt_endLongitudeInRadians , _43a8d991 ) {
+ var _419a46f4 = opt_endLongitudeInRadians - OAT . Geometry . sphericalData . cx ;
+ fromSpherical : function ( x , _43a8d991 ) {
+ var _419a46f4 = x - OAT . Geometry . sphericalData . cx ;
+ fromSpherical : function ( x0 , _43a8d991 ) {
+ var _419a46f4 = x0 - OAT . Geometry . sphericalData . cx ;
+ fromSpherical : function ( oldLocation , _43a8d991 ) {
+ var _419a46f4 = oldLocation - OAT . Geometry . sphericalData . cx ;
+ var _b1414b96 = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ if ( _b1414b96 == - 1 ) {
+ var direction = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ if ( direction == - 1 ) {
+ var value = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ if ( value == - 1 ) {
+ var new_x = OAT . Geometry . pointVsAbscissa ( _8a6b32c1 [ 2 ] , _fe8eefa5 ) ;
+ if ( new_x == - 1 ) {
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? _3b3c2c7a * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var y = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? y * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var in_height = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? in_height * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var i = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? i * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var coef = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var _0422b5e4 = _967ed8ff ? coef * ( OAT . Geometry . sphericalData . r / _967ed8ff ) : 0 ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ return [ _bc0e84b1 , _8da46f8f ] ;
+ var y1 = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ return [ _bc0e84b1 , y1 ] ;
+ var c = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ return [ _bc0e84b1 , c ] ;
+ var py = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ return [ _bc0e84b1 , py ] ;
+ var new_y = OAT . Geometry . sphericalData . cy + _1ab930aa * _0422b5e4 ;
+ return [ _bc0e84b1 , new_y ] ;
+ var _8da46f8f = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ return [ _bc0e84b1 , _8da46f8f ] ;
+ var y1 = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ return [ _bc0e84b1 , y1 ] ;
+ var c = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ return [ _bc0e84b1 , c ] ;
+ var py = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ return [ _bc0e84b1 , py ] ;
+ var new_y = OAT . Geometry . sphericalData . cy + _1ab930aa * _2dc62269 ;
+ return [ _bc0e84b1 , new_y ] ;
+ var _6073d0b2 = _45dc806c [ 1 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var A = _45dc806c [ 1 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( A - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * A ;
+ var end = _45dc806c [ 1 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( end - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * end ;
+ var colony = _45dc806c [ 1 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( colony - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * colony ;
+ var val = _45dc806c [ 1 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( val - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * val ;
+ var _e1ee5c3e = Math . PI / 2 ;
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / _e1ee5c3e ;
+ var s = Math . PI / 2 ;
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / s ;
+ var snapAngleRad = Math . PI / 2 ;
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / snapAngleRad ;
+ var M_HALF_PI = Math . PI / 2 ;
+ var _162100ce = Math . asin ( _967ed8ff / OAT . Geometry . sphericalData . r ) / M_HALF_PI ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ if ( _b00db4d2 == _cccb1a71 ) {
+ var node1 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ if ( node1 == _cccb1a71 ) {
+ var s = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ if ( s == _cccb1a71 ) {
+ var c = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ if ( c == _cccb1a71 ) {
+ var ret = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ if ( ret == _cccb1a71 ) {
+ var _e1ee5c3e = Math . PI / 2 ;
+ var _3b3c2c7a = Math . sin ( _e1ee5c3e * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var snapAngleRad = Math . PI / 2 ;
+ var _3b3c2c7a = Math . sin ( snapAngleRad * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var t = Math . PI / 2 ;
+ var _3b3c2c7a = Math . sin ( t * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ var M_HALF_PI = Math . PI / 2 ;
+ var _3b3c2c7a = Math . sin ( M_HALF_PI * _967ed8ff / OAT . Geometry . sphericalData . R ) ;
+ toSpherical : function ( _6dce501b , _3775cac4 ) {
+ var _419a46f4 = _6dce501b - OAT . Geometry . sphericalData . cx ;
+ toSpherical : function ( opt_endLongitudeInRadians , _3775cac4 ) {
+ var _419a46f4 = opt_endLongitudeInRadians - OAT . Geometry . sphericalData . cx ;
+ toSpherical : function ( x , _3775cac4 ) {
+ var _419a46f4 = x - OAT . Geometry . sphericalData . cx ;
+ toSpherical : function ( x0 , _3775cac4 ) {
+ var _419a46f4 = x0 - OAT . Geometry . sphericalData . cx ;
+ toSpherical : function ( oldLocation , _3775cac4 ) {
+ var _419a46f4 = oldLocation - OAT . Geometry . sphericalData . cx ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ return _b94dd48c <= 0 ? - 1 : 1 ;
+ var i = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ return i <= 0 ? - 1 : 1 ;
+ var v2 = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ return v2 <= 0 ? - 1 : 1 ;
+ var result = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ return result <= 0 ? - 1 : 1 ;
+ var target = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ return target <= 0 ? - 1 : 1 ;
+ var _0d2aba1f = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ return [ _d3f859a4 , _0d2aba1f ] ;
+ var colNum = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ return [ _d3f859a4 , colNum ] ;
+ var btnDigLine = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ return [ _d3f859a4 , btnDigLine ] ;
+ var survivor = _bd5c3c5c [ 1 ] + _b10dbb71 * Math . sin ( _1b3948df ) ;
+ return [ _d3f859a4 , survivor ] ;
+ var _6603c0fa = _bd5c3c5c [ 0 ] - _24a8d785 [ 0 ] ;
+ var _1b3948df = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var x = _bd5c3c5c [ 0 ] - _24a8d785 [ 0 ] ;
+ var _1b3948df = Math . atan2 ( _17856195 , x ) ;
+ var _recycleBin = _bd5c3c5c [ 0 ] - _24a8d785 [ 0 ] ;
+ var _1b3948df = Math . atan2 ( _17856195 , _recycleBin ) ;
+ var s = _e0b3b0f8 [ _709a01b6 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ var s = _e0b3b0f8 [ _709a01b6 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ s , _0658751f ] ) ;
+ var C = _e0b3b0f8 [ _709a01b6 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ C , _0658751f ] ) ;
+ var tagName = _e0b3b0f8 [ _709a01b6 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ tagName , _0658751f ] ) ;
+ var event = _e0b3b0f8 [ _709a01b6 ] ;
+ var _b00db4d2 = OAT . Geometry . pointVsAbscissa ( _1c2a8432 , [ event , _0658751f ] ) ;
+ var _3baa6588 = _45dc806c [ 0 ] [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var v1 = _45dc806c [ 0 ] [ 0 ] ;
+ var _b94dd48c = v1 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var sStart = _45dc806c [ 0 ] [ 0 ] ;
+ var _b94dd48c = sStart * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var x = _45dc806c [ 0 ] [ 0 ] ;
+ var _b94dd48c = x * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ for ( var _73abc0b2 = 3 ; _73abc0b2 < _8a6b32c1 . length ; _73abc0b2 ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ _73abc0b2 ] , _fe8eefa5 ) ;
+ for ( var i = 3 ; i < _8a6b32c1 . length ; i ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ i ] , _fe8eefa5 ) ;
+ for ( var element = 3 ; element < _8a6b32c1 . length ; element ++ ) {
+ OAT . Geometry . enlargeConvexPolygon ( _8a6b32c1 [ element ] , _fe8eefa5 ) ;
+ var _bcfb0339 = _bf1dd6fc [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var a = _bf1dd6fc [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( a - _cc468e3f ) + _cc468e3f * _56324310 - a * _6073d0b2 ;
+ var r = _bf1dd6fc [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( r - _cc468e3f ) + _cc468e3f * _56324310 - r * _6073d0b2 ;
+ var b = _bf1dd6fc [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( b - _cc468e3f ) + _cc468e3f * _56324310 - b * _6073d0b2 ;
+ var childAttr = _bf1dd6fc [ 0 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( childAttr - _cc468e3f ) + _cc468e3f * _56324310 - childAttr * _6073d0b2 ;
+ toSpherical : function ( _6dce501b , _3775cac4 ) {
+ var _1ab930aa = _3775cac4 - OAT . Geometry . sphericalData . cy ;
+ toSpherical : function ( _6dce501b , y ) {
+ var _1ab930aa = y - OAT . Geometry . sphericalData . cy ;
+ toSpherical : function ( _6dce501b , y0 ) {
+ var _1ab930aa = y0 - OAT . Geometry . sphericalData . cy ;
+ toSpherical : function ( _6dce501b , posAngle ) {
+ var _1ab930aa = posAngle - OAT . Geometry . sphericalData . cy ;
+ toSpherical : function ( _6dce501b , newLocation ) {
+ var _1ab930aa = newLocation - OAT . Geometry . sphericalData . cy ;
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , _cccb1a71 ) {
+ if ( _b00db4d2 == _cccb1a71 ) {
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , node2 ) {
+ if ( _b00db4d2 == node2 ) {
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , list ) {
+ if ( _b00db4d2 == list ) {
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , $depth ) {
+ if ( _b00db4d2 == $depth ) {
+ pointVsSet : function ( _1c2a8432 , _e0b3b0f8 , sign ) {
+ if ( _b00db4d2 == sign ) {
+ var _9a5f95dd = _45dc806c [ 0 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + _9a5f95dd * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var y = _45dc806c [ 0 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + y * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var Sg = _45dc806c [ 0 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + Sg * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var dY = _45dc806c [ 0 ] [ 1 ] ;
+ var _b94dd48c = _3baa6588 * ( _6073d0b2 - _56324310 ) + dY * ( _bcfb0339 - _cc468e3f ) + _cc468e3f * _56324310 - _bcfb0339 * _6073d0b2 ;
+ var _d3f859a4 = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ return [ _d3f859a4 , _0d2aba1f ] ;
+ var btnDigPoint = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ return [ btnDigPoint , _0d2aba1f ] ;
+ var rowNum = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ return [ rowNum , _0d2aba1f ] ;
+ var childAttr = _bd5c3c5c [ 0 ] + _b10dbb71 * Math . cos ( _1b3948df ) ;
+ return [ childAttr , _0d2aba1f ] ;
+ var _17856195 = _bd5c3c5c [ 1 ] - _24a8d785 [ 1 ] ;
+ var _1b3948df = Math . atan2 ( _17856195 , _6603c0fa ) ;
+ var y = _bd5c3c5c [ 1 ] - _24a8d785 [ 1 ] ;
+ var _1b3948df = Math . atan2 ( y , _6603c0fa ) ;
+ var childAttr = _bd5c3c5c [ 1 ] - _24a8d785 [ 1 ] ;
+ var _1b3948df = Math . atan2 ( childAttr , _6603c0fa ) ;
+ var t , _8a08ae13 ;
+ var t , touch2 ;
+ var t , y5 ;
+ var t , n ;
+ var _d250d5f4 , e ;
+ var _d250d5f4 , RAM_SIZE ;
+ var _d250d5f4 , e ;
+ var _d250d5f4 , scrollHeight ;
+ var t , _8a08ae13 ;
+ var touch1 , _8a08ae13 ;
+ var meter , _8a08ae13 ;
+ var x5 , _8a08ae13 ;
+ var _d250d5f4 , e ;
+ var RAM_BASE , e ;
+ var report , e ;
+ var scrollWidth , e ;

@@ -435,7 +435,7 @@ class MosesClient():
             renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                  a_name_positions, 
                                                  renaming_map)
-            (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
+            (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
             if not ok:
                 print(beaut_error)
                 return(beaut_error)
