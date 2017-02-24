@@ -80,6 +80,29 @@ class Uglifier:
         lines = formatTokens(tokenList)
         
         return (uglifyjs_ok, formatLines(lines).encode('utf8'), err)
+    
+    
+    def web_run_end(self, inputText):
+        '''
+        Variant that inputs from stdin and outputs to stdout.  Avoid the
+        writing to file for more speed when running this as a web service.
+        '''
+        uglifyjs_ok = False
+        #print(inputText)
+        # Call uglifyjs
+        command = [self.path] + self.flags
+        proc = subprocess.Popen(command, stderr=PIPE, stdout=PIPE, stdin=PIPE)
+        #print(command)
+        try:
+            out, err = proc.communicate(input=inputText)
+        except:
+            out, err = proc.communicate(input=inputText.decode('utf8'))#.decode('unicode_escape'))
+        #out, err = proc.communicate(input=inputText.encode('utf16')) # JS is non-quite UTF-16 or UCS-02 (but either should be okay?)
+        
+        if not proc.returncode:
+            uglifyjs_ok = True
+            
+        return (uglifyjs_ok, out.encode('utf8'), err)
 
 
 
