@@ -5,24 +5,30 @@ Created on Aug 21, 2016
 '''
 import os
 import sys
+from copy import deepcopy
 import time
 import socket
 # import multiprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
-# import xmlrpclib
-# from tools import Preprocessor, WebPreprocessor, Postprocessor, Beautifier, Lexer, WebLexer, IndexBuilder, ScopeAnalyst, LMQuery
-# from renamingStrategies import renameUsingHashDefLine, Strategies, renameUsingScopeId, renameUsingHashAllPrec
-# from postprocessUtil import cleanup, processTranslationScoped, processTranslationUnscoped, processTranslationScopedServer
-
-from tools import IndexBuilder, Beautifier, prepHelpers, WebMosesDecoder, \
-                    WebScopeAnalyst, WebLMPreprocessor, WebLexer, \
-                    MosesParser, PreRenamer, \
-                    PostRenamer, RenamingStrategies, ConsistencyStrategies, \
-                    MosesProxy
+from unicodeManager import UnicodeReader, UnicodeWriter
+from tools import Uglifier, Beautifier
+from tools import UnuglifyJS
+from tools import Aligner, IndexBuilder, WebLexer
+from tools import PreRenamer, PostRenamer
+from tools import MosesProxy, WebMosesDecoder, MosesParser
+from tools import WebScopeAnalyst
+from tools import prepHelpers, WebLMPreprocessor
+from tools import RenamingStrategies, ConsistencyStrategies
+from tools.consistency import ENTROPY_ERR
+from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
+from renamingStrategyHelper import getMosesTranslation
+
+from folderManager import Folder
+
 
 prepro_error = "Preprocessor Failed"
 beaut_error = "Beautifier Failed"
@@ -32,80 +38,6 @@ ms_error = "Moses Server Step Failed"
 rn_error = "Renaming Failed"
 
 
-# def init():
-#     global server1
-#     global server2
-#     server1 = xmlrpclib.ServerProxy('http://godeep.cs.ucdavis.edu:40012/RPC2',)
-#     server2 = xmlrpclib.ServerProxy('http://godeep.cs.ucdavis.edu:40013/RPC2',)
-
-# def callMosesWrapper(tuple):
-#     '''
-#     Work-around for multiprocessing issues in python 2.
-#     Due to how multiprocess works, this can't be in a class without 
-#     a lot of additional tweaking.
-#     '''
-#     return callMoses(tuple[0], tuple[1])
-    
-# def convertToParams(line):
-#     '''
-#     Convert a string into the moses param object.
-#     '''
-#     newParams = {}
-#     newParams["text"] = line
-#     newParams["align"] = "true"
-#     newParams["report-all-factors"] = "true"
-#     return newParams
-
-
-# def callMosesAlt(mosesParams):
-#     pid = int(multiprocessing.current_process().ident)
-#     if(pid%2 == 0):
-#         results = server1.translate(mosesParams)
-#     else:
-#         results = server2.translate(mosesParams)
-#     rawText = Postprocessor(results["nbest"])
-#     translation = rawText.getProcessedOutput()
-#     return translation
-
-# def callMoses(mosesParams, proxy):
-#     results = proxy.translate(mosesParams)# __request("translate", mosesParams)
-#     rawText = Postprocessor(results["nbest"])
-#     translation = rawText.getProcessedOutput()
-#     return translation
-
-# def callRenamingFunction(type, scopeAnalyst, iBuilder_ugly, options):
-#     '''
-#     Select the renaming function to use in the preprocessing.  Options specifies
-#     the additional options if applicable.  If no options are provided and the function
-#     uses additional ones, some defaults are selected.
-#     '''
-#     #renameUsingScopeId (no options)
-#     #renameUsingHashAllPrec (debug option)
-#     #renameUsingHashDefLine (debug and two_lines option)
-#     if(type == Strategies.SCOPE_ID):
-#         return renameUsingScopeId(scopeAnalyst, iBuilder_ugly)
-#     elif(type == Strategies.HASH_ALL_PREC):
-#         if("debug" not in options):
-#             options["debug"] = False
-#         return renameUsingHashAllPrec(scopeAnalyst, iBuilder_ugly, options["debug"])
-#     else: #Hash Def Line is default strategy
-#         if("two_lines" not in options):
-#             options["twoLines"] = False
-#         if("debug" not in options):
-#             options["debug"] = False
-#         return renameUsingHashDefLine(scopeAnalyst, iBuilder_ugly, options["twoLines"], options["debug"])
-
-
-# def writeTmpLines(lines, 
-#                   out_file_path):
-#     
-#     js_tmp = open(out_file_path, 'w')
-#     js_tmp.write('\n'.join([' '.join([token for (_token_type, token) in line]) 
-#                             for line in lines]).encode('utf8'))
-#     js_tmp.write('\n')
-#     js_tmp.close()
-
-#2
 class MosesClient():
     
     def getValidationErrors(self):
@@ -151,7 +83,8 @@ class MosesClient():
         
         r_strategy = RS.HASH_ONE
         #c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
-        c_strategy = CS.LM
+        #c_strategy = CS.LM
+        c_strategy = CS.LOGMODEL
         
         proxy = MosesProxy().proxies[r_strategy]
         
@@ -161,21 +94,20 @@ class MosesClient():
         
         
         mosesParams = {}
-#         candidates = []
-#         baseDir = os.getcwd()
-#         base_name = "webTemp" + str(transactionID)
-#         tempFile = baseDir + str(transactionID) + "_temp.js"
+
         #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
         lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm"        
-        if socket.gethostname() == 'bogdan.mac':
-            lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
-        elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
-            lm_path = "/Users/caseycas/jsnaughty_lms/js970k.blm.lm"
-            
-#         preproFile = baseDir + str(transactionID) + "_prepro.js"
-#         beautFile = baseDir + str(transactionID) + "_beaut.js"
-#         tmpFile = baseDir + str(transactionID) + "_tmp.js"
-#         transFile = baseDir + str(transactionID) + "_trans.js"
+        #if socket.gethostname() == 'bogdan.mac':
+        #    lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
+        #elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
+        #    lm_path = "/Users/caseycas/jsnaughty_lms/js970k.blm.lm"
+        
+        #Hashed Name -> Minified Name (name, def_scope) -> (name, def_scope)
+        hash_name_map = {}
+        #Minified Name -> jsnice name  (name, def_scope) -> (name, def_scope)
+        jsnice_name_map = {}
+           
+        transFile = baseDir + str(transactionID) + "_trans.js"
         
         start = time.time()
         # Strip comments, replace literals, etc
@@ -186,23 +118,27 @@ class MosesClient():
             print("Prepro_text----------------------------------")
             print(prepro_text)
             print("Prepro_text----------------------------------")
-            #TODO replace with: prepro = WebPreprocessor(text)
-#             prepro.write_temp_file(preproFile)
+
 #        except:
 #             cleanup([preproFile])
 #            print(prepro_error)
 #            return(prepro_error)
             
         clear = Beautifier()
-        #TODO: Need a text version of beautifier to avoid the file read and write.
-        #(ok, beautText, err) = clear.webRun(preproText)
+
         (ok, beautified_text, _err) = clear.web_run(prepro_text)
-#         ok = clear.run(preproFile, beautFile)
+
         print(beautified_text)
         if(not ok):
 #             cleanup([preproFile, beautFile])
             print(beaut_error)
             return(beaut_error)
+        
+        #Due to a bug? in the jsnice web service, we need to save the
+        #input text as a file.
+        min_input_file = os.path.join(baseDir,"./tmp/", str(transactionID) + ".u.js")
+        with open(min_input_file, 'w') as f:
+            f.write(beautified_text)
         
         try:
 #             lex_ugly = Lexer(beautFile)
@@ -218,6 +154,36 @@ class MosesClient():
             
         #lex_ugly.write_temp_file(tempFile)
         
+        ######################## 
+        #  Nice2Predict start
+        ########################
+
+        # BV: Next block left out until I figure out the pipe issue
+        # BV: Update: I couldn't pipe input to N2P. TODO: FIX
+        # Run the JSNice from http://www.nice2predict.org
+        unuglifyJS = UnuglifyJS()
+        (ok, n2p_text, _err) = unuglifyJS.run(min_input_file)
+        if not ok:
+            return (js_file_path, None, 'Nice2Predict fail')
+
+        (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
+        if not ok:
+            return (js_file_path, None, 'Beautifier fail')
+
+        with open(temp_files['n2p'], 'w') as f:
+            f.write(n2p_text_beautified)
+
+        try:
+            n2p_lexer = WebLexer(n2p_text_beautified)
+            n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
+            n2p_scopeAnalyst = WebScopeAnalyst(n2p_text_beautified)
+        except:
+            return (js_file_path, None, 'IndexBuilder / ScopeAnalyst fail')
+
+  
+        ######################## 
+        #   Nice2Predict End
+        ########################
         
         #Do Scope related tasks
         #a raw text version
@@ -230,123 +196,186 @@ class MosesClient():
             return(sa_error)
         
         (name_positions, position_names, use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
+        
+        
+        #Map the jsnice names to the minified counterparts.
+        orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsN2p = sorted(n2p_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
 
-        #Do Rename related tasks
-        #Nov_29 Update:
-        #Needs to be written in a generic way
-        #What are the inputs and outputs that need to be captured so we can plug in any renaming function
-        #Input: scope analyst, iBuilder (text is contained w/in IBuilder), twoLines = T/F (how many lines of context), debug =T/F (convert the last two and potentially others in an options argument)
-        #Output: hashed snippet
-        
-#         options = {}
-#         options["twoLines"] = False
-#         options["debug"] = False
-#         renamedText = callRenamingFunction(Strategies.HASH_DEF_LINE, scopeAnalyst, iBuilder_ugly, options)
-        rn_start = time.time()
-        
-        #try:
-        if True:
-            # Rename input prior to translation
-            preRen = PreRenamer()
-            print("Tokens-------------------")
-            print(iBuilder_ugly.tokens)
-            print("Tokens-------------------")
-            after_text = preRen.rename(r_strategy, 
-                                      iBuilder_ugly,
-                                      scopeAnalyst)
-             
-            
-            (ok, renamedText, _err) = clear.web_run(after_text)
-            if not ok:
-                print(beaut_error)
-                return(beaut_error)
-            
-#             # Save renamed input to disk for future inspection
-#             with open(temp_files['%s' % (r_strategy)], 'w') as f:
-#                 f.write(renamedText)
-            
-            a_lexer = WebLexer(renamedText)
-            a_iBuilder = IndexBuilder(a_lexer.tokenList)
-            a_scopeAnalyst = WebScopeAnalyst(renamedText)
-            
-#        except:
-#            print(rn_error)
-#            return(rn_error)
 
-#         with open("renameFile.txt", 'w') as renamingFile:
-#             renamingFile.writelines(renamedText)
- 
-        end = time.time()
-        rnTime = end-rn_start
-        preprocessDuration = end - start
-        
-        m_start = time.time()
-        
-        #In our case, I don't think we need to actually do anything for no_renaming
-        #no_renaming = []
-        #for _line_idx, line in enumerate(iBuilder_ugly.tokens):
-        #    no_renaming.append(' '.join([t for (_tt,t) in line]) + "\n")
-        
-        #Hash_def_one_renaming
-        #beautText = renameUsingHashDefLine(scopeAnalyst, 
-        #                                               iBuilder_ugly, 
-        #                                               twoLines=False,
-        #                                                debug=False)
+        if(len(orderedVarsNew) != len(orderedVarsN2p)):
+            return ("JsNice and New Name lists different length")
 
-        # here you split the input into ten
-        # let input be the list of parts (iterator)
-        #print(lex_ugly.collapsedText)
-        #proxyMap = self.splitTexts(lex_ugly.collapsedText, proxies)
-        translation = ""
 
-        mosesParams["text"] = renamedText
-        #mosesParams["text"] = lex_ugly.collapsedText
-        mosesParams["align"] = "true"
-        mosesParams["report-all-factors"] = "true"
+        for i in range(0, len(orderedVarsNew)):
+            name_n2p = orderedVarsN2p[i][0]
+            def_scope_n2p = scopeAnalyst.name2defScope[orderedVarsNew[i]]
+            jsnice_name_map[(name_new, def_scope_new)] = (name_n2p, def_scope_n2p)
 
-        md = WebMosesDecoder(proxy)
-            
-        lx = WebLexer(a_iBuilder.get_text())
+    
+        (_name_positions, \
+         position_names,
+         _use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
         
-        try:
-            # Translate renamed input
-            (ok, translation, _err) = md.run(lx.collapsedText)
-#             results = proxy.translate(mosesParams)# __request("translate", mosesParams)
-#             print(results)
-#             rawText = Postprocessor(results["nbest"])
-#             translation = rawText.getProcessedOutput()
-        except:
-#             cleanup([preproFile, beautFile, tempFile])
-            print(ms_error)
-            return(ms_error)
         
-        #Send to output:
-        #cleanup([preproFile, beautFile, tempFile])
-        
-        m_end = time.time()
-        m_time = m_end - m_start
-        #Nov_29 Postprocessing steps:
-        #processTranslationScoped
-        #Inputs: raw Moses Output text, IBuilder, scopeAnalyst, language model path -> If moses gives back a list of n best options we could
-        #use Moses' top choice, or apply the lm a second time (Moses does this FOR EACH LINE).  Want to find best consistent combination of lines
-        #using each of the possible renamings of a variable.
-        #More Inputs: the text input into Moses (used to compare to the output after renaming), output_path -> where to save the file, base_name -> used to look up temp files.
-        
-        #Base_name is a problem to removing the temp files... (It references bogdan's original naming scheme)
-        post_start = time.time()
 
-        (a_name_positions, 
-             a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+# '''
+# From here on out, we need to process both the non_hash and the hash_names...
+# '''
+#         rn_start = time.time()
+#         #try:
+#         if True:
+#             #We need both the base_text and the hashed_text.
+#             preRen = PreRenamer()
+#             print("Tokens-------------------")
+#             print(iBuilder_ugly.tokens)
+#             print("Tokens-------------------")
+#             #We always need the non hashed names as a fallback.
+#             after_text = preRen.rename(RS.NONE, 
+#                                        iBuilder_ugly,
+#                                        scopeAnalyst)
+#             
+#             (ok, renamedText, _err) = clear.web_run(after_text)
+#             if not ok:
+#                 print(beaut_error)
+#                 return(beaut_error)
+#             
+#             
+#             a_lexer = WebLexer(renamedText)
+#             a_iBuilder = IndexBuilder(a_lexer.tokenList)
+#             a_scopeAnalyst = WebScopeAnalyst(renamedText)            
+#             
+#             if(r_strategy != RS.NONE):
+#                 after_text_hash = preRen.rename(r_strategy, 
+#                                                 iBuilder_ugly,
+#                                                 scopeAnalyst)
+#              
+#                 (ok, renamedTextHash, _err) = clear.web_run(after_text_hash)
+#                 if not ok:
+#                     print(beaut_error)
+#                     return(beaut_error)
+#                             
+#                 a_lexer_hash = WebLexer(renamedTextHash)
+#                 a_iBuilder_hash = IndexBuilder(a_lexer_hash.tokenList)
+#                 a_scopeAnalyst_hash = WebScopeAnalyst(renamedTextHash)
+# 
+#             
+# #        except:
+# #            print(rn_error)
+# #            return(rn_error)
+# 
+# #         with open("renameFile.txt", 'w') as renamingFile:
+# #             renamingFile.writelines(renamedText)
+#  
+#         end = time.time()
+#         rnTime = end-rn_start
+#         preprocessDuration = end - start
+#         
+#         m_start = time.time()
+#         
+# 
+#         translation = ""
+# 
+# 
+# #Part of the no_renaming fallback?        
+# #         orderedVarsMin = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+# #         orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+# # 
+# #         if(len(orderedVarsMin) != len(orderedVarsHash)):
+# #             return (js_file_path, None, "Hash and Min lists different length")
+# # 
+# #         for i in range(0, len(orderedVarsHash)):
+# #             name_hash = orderedVarsHash[i][0]
+# #             def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
+# # 
+# #             name_min = orderedVarsMin[i][0]
+# #             def_scope_min = scopeAnalyst.name2defScope[orderedVarsMin[i]]
+# #             hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
+# 
+#         # We can switch this back once we train models on a corpus with literals
+#         # lx = WebLexer(a_iBuilder.get_text())
+#         lx = WebLexer(a_iBuilder.get_text_wo_literals())
+# 
+#         # Translate renamed input
+#         md = WebMosesDecoder(proxy)
+#         (ok, translation, _err) = md.run(lx.collapsedText)
+#         if not ok:
+#             print(ms_error)
+#             return(ms_error)
+#         
+#         #Get the hash text too.
+#         if(r_strategy != RS.NONE):
+#             lx = WebLexer(a_iBuilder.get_text_wo_literals())
+#     
+#             # Translate renamed input
+#             md = WebMosesDecoder(proxy)
+#             (ok, translation, _err) = md.run(lx.collapsedText)
+#             if not ok:
+#                 print(ms_error)
+#                 return(ms_error)
+#         
+#         #Send to output:
+#         #cleanup([preproFile, beautFile, tempFile])
+#         
+#         m_end = time.time()
+#         m_time = m_end - m_start
+# 
+#         #Base_name is a problem to removing the temp files... (It references bogdan's original naming scheme)
+#         post_start = time.time()
+# 
+#         (a_name_positions, 
+#              a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
+#         
+#         if translation is not None:
+#             # Parse moses output
+#             mp = MosesParser()
+#             print(translation)
+#                 
+#             name_candidates = mp.parse(translation,
+#                                        a_iBuilder,
+#                                        a_position_names)#,
+#                                        #a_scopeAnalyst)
+# 
+# '''
+# Up to here, we can do no_renaming and hash_renaming in parallel?
+# '''
+        #Note: we want to put these in parallel once we've tested the
+        #serial version...
         
-        if translation is not None:
-            # Parse moses output
-            mp = MosesParser()
-            print(translation)
-                
-            name_candidates = mp.parse(translation,
-                                       a_iBuilder,
-                                       a_position_names)#,
-                                       #a_scopeAnalyst)
+        #Get moses output for no_renaming
+        (status, error_msg, translation_default, name_candidates_default, a_iBuilder_default, 
+            a_scopeAnalyst_default, a_name_positions_default, 
+            a_position_names_default, a_use_scopes_default, hash_name_map_default,
+            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+        
+        if(not status):
+            return(error_msg)
+        
+        #Get moses output for hash_renaming
+        (status, error_msg, translation, name_candidates, a_iBuilder, 
+            a_scopeAnalyst, a_name_positions, 
+            a_position_names, a_use_scopes, hash_name_map,
+            pre_time, rn_time, m_time, post_start) = getMosesTranslation(r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+        
+        if(not status):
+            return(error_msg)
+        
+        if translation is not None and translation_default is not None:                               
+
+            for key_default, suggestions in name_candidates_default.iteritems():
+#                         (name_default, def_scope_default) = key_default
+
+                pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
+                (lin, col) = iBuilder_default.revFlatMat[pos_default]
+                (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
+
+                (name, def_scope) = a_position_names[line_num][line_idx]
+                key = (name, def_scope)
+
+                for name_translation, lines in suggestions.iteritems():
+                        name_candidates.setdefault(key, {})
+                        name_candidates[key].setdefault(name_translation, set([]))
+                        name_candidates[key][name_translation].update(lines)
             # name_candidates is a dictionary of dictionaries: 
             # keys are (name, None) (if scopeAnalyst=None) or 
             # (name, def_scope) tuples (otherwise); 
@@ -354,9 +383,22 @@ class MosesClient():
             # of line numbers on which they appear.
             print("Name_candidates")
             print(name_candidates) 
+            
+            # **** BV: This might be all we need to combine Naughty & Nice 
+            name_candidates_copy = deepcopy(name_candidates)
+            for key, suggestions in name_candidates_copy.iteritems():
+
+                if r_strategy == RS.NONE:
+                    (name_n2p, def_scope_n2p) = jsnice_name_map[key]
+                else:
+                    (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
+
+                for name_translation, lines in suggestions.iteritems():
+                    name_candidates.setdefault(key, {})
+                    name_candidates[key].setdefault(name_n2p, set([]))
+                    name_candidates[key][name_n2p].update(lines)
                 
             cr = ConsistencyController(debug_mode=True)
-#             ts = TranslationSummarizer()
                 
             # An identifier may have been translated inconsistently
             # across different lines (Moses treats each line independently).
@@ -370,7 +412,7 @@ class MosesClient():
                                               a_name_positions,
                                               a_use_scopes,
                                               a_iBuilder,
-                                              lm_path)
+                                              lm_path, {}, hash_name_map)
             print("Temp renaming map")
             print(temp_renaming_map)
             # Fall back on original names in input, if 
@@ -388,62 +430,17 @@ class MosesClient():
             renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                  a_name_positions, 
                                                  renaming_map)
-            (ok, postProcessedText, _err) = clear.web_run(renamed_text)
+            (ok, beautified_renamed_text, _err) = clear.web_run(renamed_text)
             if not ok:
                 print(beaut_error)
                 return(beaut_error)
             print("Renamed text")
             print(renamed_text)
             
-#         nc = processTranslationScoped(translation, 
-#                                       iBuilder_ugly, 
-#                                       scopeAnalyst, 
-#                                       lm_path, 
-#                                       "renameFile.txt", 
-#                                       baseDir + "/jsnaughty_output", 
-#                                       base_name)
-        
-#         processed_translation = processTranslationScopedServer(translation, 
-#                                                               iBuilder_ugly, 
-#                                                               scopeAnalyst, 
-#                                                               lm_path)
-#         
-#         writeTmpLines(processed_translation, tmpFile)
-#         
-#         ok = clear.run(tmpFile, transFile)
-# 
-#         if(not ok):
-#             cleanup([preproFile, beautFile, tmpFile, transFile])
-#             print(beaut_error)
-#             return(beaut_error)
-        
-#         print("Output Dir ------------------------------------------------")
-#         print(baseDir + "/jsnaughty_output")
-#         #print(nc)
-# #         postProcessedText = open(baseDir + "/jsnaughty_output/webTemp0.txt.lm.js", 'r').readlines()
-#         postProcessedText = open(transFile, 'r').readlines()
-#         print(postProcessedText)
-        
+
         post_end = time.time()
         post_time = post_end - post_start
-        return("Preprocess Time: " + str(preprocessDuration)  + "\nRename Time (Subset of Preprocess): " + str(rnTime) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
-        #Use one of the scoping options
-        #None
-        #nc = processTranslationUnscoped(translation, iBuilder_ugly, 
-        #                                lm_path, tempFile,
-        #                                tempFile + ".out", str(transactionID))
         
-        #if nc:
-        #    candidates += nc
-        #print("Here!")
-        #print("Result: " + str(nc))
-        
-        #If candidates is empty, display the original text?
-            
-        #Scope
-        #nc = processTranslationScoped(translation, iBuilder_ugly, 
-        #                              scopeAnalyst, lm_path, temp_files['f2'],
-        #                               output_path, base_name)
-        #if nc:
-        #    candidates += nc
-    
+        #Time Calculations... (Will need to update for when it becomes parallel
+        return("Preprocess Time: " + str(pre_time)  + "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + str(post_time) + "\n" + "".join(postProcessedText))
+      
