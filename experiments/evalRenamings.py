@@ -11,6 +11,7 @@ from evalRenamingHelper import *
 try:
     csv_path = os.path.abspath(sys.argv[1])
     orig_dir = os.path.abspath(sys.argv[2])
+    output_file = os.path.abspath(sys.argv[3])
 except:
     print("usage: python evalRenamings.py csvpath originalFileDir output_file")
     quit()
@@ -56,12 +57,18 @@ with open(output_file, "w") as f:
     f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest;approx_correct\n")
     for file_name, var_list in fileKeys.iteritems():
         #process file
+        #if("4212471" not in file_name):
+        #    continue
         ib = processFile(os.path.join(orig_dir,file_name))
         ib_obs = processObsFile(os.path.join(orig_dir,file_name))
         #get name for line_index, token_id
         #print(ib)
         #print(ib_obs)
-        #print(ib.charPosition2Name)
+        #print(sorted([(key, value) for key, value in ib.charPosition2Name.iteritems()], key = lambda (x,y) : (x[0],x[1])))
+        #print(sorted([(key, value) for key, value in ib_obs.charPosition2Name.iteritems()], key = lambda (x,y) : (x[0],x[1])))
+        #print(var_list)
+        #print(len(ib.charPosition2Name))
+        #print(len(ib_obs.charPosition2Name))
         for next_var in var_list:
             #if(True):
             try:
@@ -86,7 +93,7 @@ with open(output_file, "w") as f:
                 #    quit()
                 #i += 1
                 f.write(";".join(newRow + [orig_name, obs_name,str(orig_name != obs_name),str(in_suggest),str(lc_suggest),str(nspec_suggest),str(contains_suggest),str(abbrev_suggest),str(approx_correct)]) + "\n")
-            except:
+            except: #This happends when there is an "undefined" in the original file, and lexer doesn't count it as a var, which mismatches when the minifier collapses it.
                 ignored.append(newRow)
         #break 
 
@@ -97,8 +104,8 @@ with open(output_file, "w") as f:
     #    f.write(";".join(nextRow + ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA" ]) + "\n")
 
     
-print(len(ignored))
-print(ignored)
+#print(len(ignored))
+#print(ignored)
 with open("ignored.csv", "w") as f:
     for row in ignored:
         f.write(";".join([r.encode("utf8") for r in row]) + "\n")
