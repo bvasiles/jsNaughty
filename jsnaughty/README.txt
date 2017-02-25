@@ -1,12 +1,12 @@
 Web framework for javascript deobfuscation tool.
-- While running, make sure the moses server pointed to by deobfuscate/experiments/mosesClient.py
+While running, make sure the moses server pointed to by deobfuscate/experiments/mosesClient.py
 	is running
 	- E.g. "/home/ccasal/mosesdecoder/bin/mosesserver -f /data/bogdanv/deobfuscator/experiments/corpora/corpus.concat/train.no_renaming/tuning/moses.ini -n-best-list - 10"
 	- You will want to background this with additional options (To be added), if you want the
 	server to run more robustly.
-- In addition, to use faster lm querying, you must launch the lm query server:
-- nohup tools/lmServer.py & (path from project root)
-
+In addition, to use faster lm querying, you must launch the lm query server:
+nohup python tools/lmServer.py & (path from project root)
+You can check if its running with the command curl http://0.0.0.0:9090/score
 
 - To run tests, run "python manage.py test deobfuscate"
 

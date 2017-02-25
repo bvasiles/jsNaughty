@@ -47,11 +47,11 @@ class LMQuery:
             lines = out.split('\n')
             logProb = float(lines[0].split(' ')[1])
             # oovProb = int(lines[0].split(' ')[-1])
-            print(" LM DEBUG LINE: " + line)
+#            print(" LM DEBUG LINE: " + line)
 
-            print("      LM Query: " + " ".join([self.query_path, 
-                                '-n', '-s', #'sentence', 
-                                self.lm_path]) + " " + line + ' ---> ' + str(logProb))
+#            print("      LM Query: " + " ".join([self.query_path, 
+#                                '-n', '-s', #'sentence', 
+#                                self.lm_path]) + " " + line + ' ---> ' + str(logProb))
             
         return (lm_ok, logProb, err)
 
@@ -60,15 +60,15 @@ class LMQuery:
         lm_ok = False
         logProb = None
 
-        if True:
-#        try:
+#        if True:
+        try:
             logText = requests.get("http://0.0.0.0:9090/score",{"q":text})
-            print(logText.text)
+#            print(logText.text)
             logProb = float(logText.text)
             # oovProb = int(lines[0].split(' ')[-1])
             #print(" LM DEBUG LINE: " + line)
-            print(" LM Query: "  + str(text) + ' ---> ' + str(logProb))
+#            print(" LM Query: "  + str(text) + ' ---> ' + str(logProb))
 
-            return (lm_ok, logProb, "LM QUERY OK")
-#        except:
-#            return (False, logProb, "LM QUERY FAILED " + line)
+            return (True, logProb, "LM QUERY OK")
+        except:
+            return (False, logProb, "LM QUERY FAILED")

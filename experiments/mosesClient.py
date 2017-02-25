@@ -161,6 +161,7 @@ class MosesClient():
         # Run the JSNice from http://www.nice2predict.org
         unuglifyJS = UnuglifyJS()
         (ok, n2p_text, _err) = unuglifyJS.run(min_input_file)
+        #ok = False #Failure test
         if not ok:
             jsnice_errors.append('Nice2Predict fail')
             #return (js_file_path, None, 'Nice2Predict fail')
@@ -343,8 +344,8 @@ class MosesClient():
         #Record any jsnice errors (but leave output blank if there are none).
         jsnice_error_string = ""
         if(jsnice_errors != []):
-            jsnice_error_string = "JSNice mixing attempt failed.  Reporting renaming with only our method. \n JSNice Errors : \n"
-            jsnice_errot_string += "\n".join(jsnice_errors) + "\n"
+            jsnice_error_string = "JSNice mixing attempt failed.  Reporting renaming with only our method. \nJSNice Errors : \n"
+            jsnice_error_string += "\n".join(jsnice_errors) + "\n"
             
         return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
                "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
