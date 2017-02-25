@@ -11,6 +11,7 @@ from evalRenamingHelper import *
 try:
     csv_path = os.path.abspath(sys.argv[1])
     orig_dir = os.path.abspath(sys.argv[2])
+    output_file = os.path.abspath(sys.argv[3])
 except:
     print("usage: python evalRenamings.py csvpath originalFileDir output_file")
     quit()
