@@ -71,4 +71,4 @@ class LMQuery:
 
             return (True, logProb, "LM QUERY OK")
         except:
-            return (False, logProb, "LM QUERY FAILED " + line)
+            return (False, logProb, "LM QUERY FAILED")
