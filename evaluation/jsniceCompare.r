@@ -21,4 +21,7 @@ comparisonTable(h_freq, jsnice)
 comparisonTable(h_lm, jsnice)
 comparisonTable(h_model, jsnice)
 
-
+#Bounds limits (oracle)
+h_oracle <- h_model
+h_oracle$exact_match <- h_oracle$in_suggest == "True"
+comparisonTable(h_oracle, jsnice)
