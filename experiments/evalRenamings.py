@@ -12,7 +12,7 @@ try:
     csv_path = os.path.abspath(sys.argv[1])
     orig_dir = os.path.abspath(sys.argv[2])
 except:
-    print("usage: python evalRenamings.py csvpath originalFileDir")
+    print("usage: python evalRenamings.py csvpath originalFileDir output_file")
     quit()
 
 
@@ -30,9 +30,9 @@ for row in reader:
     file_name = row[0]
     rename_strat = row[1]
     consistency_strat = row[2]
-    if(rename_strat == "n2p"): #skip jsnice lines
-        jsnice_rows.append(row)
-        continue
+    #if(rename_strat == "n2p"): #skip jsnice lines
+    #    jsnice_rows.append(row)
+    #    continue
     line_index = int(row[4])
     line_tok_id = int(row[5])
     is_global = row[6]
@@ -52,7 +52,7 @@ print("-------------------------------------")
 ignored = []
 newRow = []
 i = 0
-with open("compareOrigWithTool.csv", "w") as f:
+with open(output_file, "w") as f:
     f.write("filename;renaming_strat;consistency_strat;scope_id;line_index;token_line_id;is_global;choosen_renaming;suggestion_list;orig_name;obs_name;was_obs;in_suggest;lc_suggest;nspec_suggestion;contain_suggest;abbrev_suggest;approx_correct\n")
     for file_name, var_list in fileKeys.iteritems():
         #process file
@@ -70,10 +70,17 @@ with open("compareOrigWithTool.csv", "w") as f:
                 orig_name = getVarAt(next_var, ib)
                 obs_name = getVarAt(next_var, ib_obs)
                 newRow = renameMap[next_var]
-                in_suggest = suggestionExactMatch(newRow[8],orig_name)
-                (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = suggestionApproximateMatch(newRow[8].split(","),orig_name)
+                
+                if(newRow[1] != "n2p"):
+                    in_suggest = suggestionExactMatch(newRow[8],orig_name)
+                    (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = suggestionApproximateMatch(newRow[8].split(","),orig_name)
+                else:
+                    in_suggest = "NA"
+                    (lc_suggest, nspec_suggest, contains_suggest, abbrev_suggest) = ("NA", "NA", "NA", "NA")
+                
                 (a,b,c,d) = suggestionApproximateMatch([newRow[7]], orig_name)
                 approx_correct = a or b or c or d
+                
                 #print(newRow)
                 #if(newRow[2] !="freqlen"):
                 #    quit()
@@ -84,8 +91,10 @@ with open("compareOrigWithTool.csv", "w") as f:
         #break 
 
     #Add the jsnice rows back in (note, this means I need to add the orig_name and obs_name cols to these in R
-    for nextRow in jsnice_rows:
-        f.write(";".join(nextRow + ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA" ]) + "\n")
+    #for nextRow in jsnice_rows:
+    #    #Fill in the first three of these along with the final one.
+    #    #orig_name;obs_name;was_obs ---> approx_correct.
+    #    f.write(";".join(nextRow + ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA" ]) + "\n")
 
     
 print(len(ignored))
