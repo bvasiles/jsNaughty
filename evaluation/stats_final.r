@@ -13,7 +13,7 @@ library(car)
 library(reshape2)
 
 stats_nomix <- read.csv("~/jsnaughty/evaluation/stats_nomix.csv", sep=";")
-stats_mix <- read.csv("~/jsnaughty/evaluation/stats_nomix.csv", sep=";")
+stats_mix <- read.csv("~/jsnaughty/evaluation/stats_mix.csv", sep=";")
 
 #1)
 boxplot(cbind(stats_nomix[,c("hash_def_one_renaming_freqlen", "hash_def_one_renaming_lm", 
@@ -32,15 +32,17 @@ b_1 <- melt(subset1)
 b_1$Hashed <- b_1$variable == "Freq (Hash)" |  b_1$variable == "LM (Hash)"  |  b_1$variable == "Model (Hash)"
 c_plot <- ggplot(b_1, aes(x = variable, y = value, color = Hashed)) + geom_boxplot() + ggtitle("File level accuracy with and without hashes by selection technique") + xlab("Selection technique") + ylab(paste("% names recovered -", nrow(stats_nomix), "files"))
 ggsave(c_plot, file = "~/jsnaughty/evaluation/Plots/consistencyBoxplot.png")
+
 #2)
-subset2 <- cbind(stats_mix[,c("hash_def_one_renaming_logmodel")])/stats_mix[,c("num_loc_names")]
-colnames(subset2) <- c("Blended Model")
+subset2 <- cbind(stats_mix[,c("hash_def_one_renaming_logmodel", "n2p")])/stats_mix[,c("num_loc_names")]
+colnames(subset2) <- c("Blended Model", "JSNice")
 subset3 <- cbind(stats_nomix[,c("hash_def_one_renaming_logmodel", "n2p")])/stats_nomix[,c("num_loc_names")]
 colnames(subset3) <- c("Autonym", "JSNice")
-#This is buggy?
-subset2$file <- stats_mix$file
 subset3$file <- stats_nomix$file
-subset2 <- merge(subset1[,c("file", "Model (Hash)")], subset2, by = c("file"))
+
+subset2$file <- stats_mix$file
+subset2 <- cbind(subset2[,c("file","Blended Model")])
+subset2 <- merge(subset3, subset2, by = c("file"))
 
 b_2 <- melt(subset2)
 mix_plot <- ggplot(b_2, aes(variable, y = value, color = variable))+ geom_boxplot() + ggtitle("File level accuracy for JSnice, Autonym, and Blended techniques") + xlab("Renaming technique") + ylab(paste("% names recovered -", nrow(stats_nomix), "files"))
