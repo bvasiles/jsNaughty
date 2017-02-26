@@ -58,4 +58,4 @@ hex_plot <- ggplot(data=non_zero,aes(Autonym,JSNice))+
   geom_abline(slope = 1, size = 2)+
   ggtitle("Comparison of Autonym vs JSNice Accuracy")
 
-ggsave(hex_plot, file = "~/jsnaughty/evaluation/Plots/hex_comparison_plot.pdf")
+ggsave(hex_plot, file = "~/jsnaughty/evaluation/Plots/hexComparisonPlot.pdf")
