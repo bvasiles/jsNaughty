@@ -168,19 +168,23 @@ class PreRenamer:
     
     
     def __isValidContextToken(self, (token_type, token)):
+        if is_token_subtype(token_type, String) or \
+                is_token_subtype(token_type, Number):
+            return False
+        return True
+
         # Token.Name.* if not u'TOKEN_LITERAL_NUMBER' or u'TOKEN_LITERAL_STRING'
         # Token.Operator
         # Token.Punctuation
         # Token.Keyword.*
-        return True
-        if token != u'TOKEN_LITERAL_NUMBER' and \
-                token != u'TOKEN_LITERAL_STRING':
+#         if token != u'TOKEN_LITERAL_NUMBER' and \
+#                 token != u'TOKEN_LITERAL_STRING':
     #                  and \
     #                     (is_token_subtype(token_type, Token.Name) or \
     #                     is_token_subtype(token_type, Token.Punctuation) or \
     #                     is_token_subtype(token_type, Token.Operator)):
-            return True
-        return False
+#             return True
+#         return False
     
     
     def __generateScopeIds(self, num_scopes, except_ids):
@@ -410,6 +414,7 @@ class PreRenamer:
 #                         print("KEY ERROR! " + str(token_idx) + " -- " + str(token_type) + " -- " + str(token))
                         continue
                     
+#                     print token, token_type, self.__isValidContextToken((token_type, token))
                     if not self.__isValidContextToken((token_type, token)):
                         continue
                     
@@ -428,7 +433,14 @@ class PreRenamer:
                             
                             if scopeAnalyst.isGlobal.get((t, p), True) or \
                                     not is_token_subtype(tt, Token.Name):
-                                context_tokens.append(t)
+                                
+                                # BV: This is so that hashes match the training corpus
+                                if is_token_subtype(tt, String):
+                                    context_tokens.append('TOKEN_LITERAL_STRING')
+                                elif is_token_subtype(tt, Number):
+                                    context_tokens.append('TOKEN_LITERAL_NUMBER')
+                                else:
+                                    context_tokens.append(t)
                              
                             if t == token and p == pos and \
                                     not scopeAnalyst.isGlobal.get((t, p), True):
@@ -459,7 +471,9 @@ class PreRenamer:
         context = traversal(scopeAnalyst, iBuilder, context, passOne)
         
 #         print("context-------------------------------------")
-#         print(context)
+#         for (token, def_scope), context_tokens in context.iteritems():
+#             print token, def_scope[-50:]
+#             print '\t', context_tokens
         
         if twoLines:
             context = traversal(scopeAnalyst, iBuilder, context, passTwo)
