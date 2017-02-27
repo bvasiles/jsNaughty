@@ -26,8 +26,9 @@ class testAST(unittest.TestCase):
     
     def setUp(self):
         #self.testDir = Folder("./testing//test_files/")
-        loc = "/data/bogdanv/js_files"
+        loc = "/data/bogdanv/deobfuscator/experiments/results/final.sample.test.2k.v2.nonmix.merged/"
         self.fileList = ["226369","5162081","1720575","279541","4780702"]
+        self.fileList = [loc + item for item in self.fileList]
         self.ids = [".hash_def_one_renaming.logmodel", ".n2p"]
         print(self.fileList)
         
@@ -35,32 +36,25 @@ class testAST(unittest.TestCase):
         for f in self.fileList:
             print("---------------------------------- " + f + " ----------------------------------")
             orig = f + ".js"
-            orig_text = ""
             min = f + ".u.js"
-            min_text = ""
-            with open(orig, 'r') as input_file:
-                orig_text = input_file.readlines()
-            with open(min, 'r') as input_file:
-                min_text = input_file.readlines()
+            lo = Lexer(orig)
+            lm = Lexer(min)
             print("---------------------------------- original text ----------------------------------")
-            print(orig_text)
+            print(lo.programText)
             print("---------------------------------- minified text ----------------------------------")
-            print(min_text)
+            print(lm.programText)
             for id in self.ids:
                 to_read = f + id + ".js"
                 print("---------------------------------- " + to_read + " ----------------------------------")
-                text = ""
-                with open(to_read, 'r') as input_file:
-                    text = input_file.readlines()
+                lexed = Lexer(to_read)
                 print("---------------------------------- text ----------------------------------")
-                print(text)
-                lexed = Lexer(input_file)
+                print(lexed.programText)
                 print("---------------------------------- tokenlist ----------------------------------")
-                print(lexed.tokenlist)
-                ib = IndexBuilder(lexed.tokenlist)
+                print(lexed.tokenList)
+                ib = IndexBuilder(lexed.tokenList)
                 print("---------------------------------- IndexBuilder ----------------------------------")
                 print(ib)
-                sa = ScopeAnalyst(input_file)
+                sa = ScopeAnalyst(to_read)
                 print("---------------------------------- ScopeAnalyst ----------------------------------")
                 print(sa)
                 
