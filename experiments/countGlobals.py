@@ -24,16 +24,19 @@ import multiprocessing
 def processFile(l):
     base_name = l[0]
     js_file_path = l[1]
+    print(base_name)
+    print(js_file_path)
+    #if(True):
     try:
         lexed = Lexer(js_file_path)
         ib = IndexBuilder(lexed.tokenList)
         sa = ScopeAnalyst(js_file_path)
         #num globals = all in is_global == True + all unique names
         #in name2CharPositions not in is_global
-        base_global = set([name for name, value in sa.is_global.iteritems() if value == True])
+        base_global = set([name for name, value in sa.isGlobal.iteritems() if value == True])
         #Get all known names in the file.
-        known_names = set([name for name, value in sa.is_global.itemitems()])
-        for loc, name in ib.name2CharPositions.iteritems():
+        known_names = set([name for name, value in sa.isGlobal.iteritems()])
+        for name, loc in ib.name2CharPositions.iteritems():
             if(name not in known_names): #if never seen, its a global
                 base_global.add(name)
                 
@@ -48,21 +51,17 @@ num_threads = int(sys.argv[3])
 base_dir = Folder(input_dir)
 fileList = base_dir.baseFileNames("*.js")
 origList = [next for next in fileList if next.count(".") == 1]
-toProcess = [(nextFile, os.path.join(base_dir.path, nextFile)) for nextFile in self.fileList]
+toProcess = [(nextFile, os.path.join(base_dir.path, nextFile)) for nextFile in origList]
 
-
+#print(fileList)
 with open(output_csv, 'w') as g:
     pass
-
-CS = ConsistencyStrategies() 
-RS = RenamingStrategies()
-
-proxies = MosesProxy().getProxies() 
-
-
 pool = multiprocessing.Pool(processes=num_threads)
     
 for result in pool.imap_unordered(processFile, toProcess):
+
+#for file_pair in toProcess:
+#    result = processFile(file_pair)
     print(result[0])
     with open(output_csv, 'a') as g:
         writer = UnicodeWriter(g)
@@ -72,4 +71,4 @@ for result in pool.imap_unordered(processFile, toProcess):
         else:
             writer.writerow([result[0], "error"])
    
-    break
+#    break
