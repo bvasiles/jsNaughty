@@ -151,7 +151,7 @@ class MosesClient():
             return(ib_error)
             
         #lex_ugly.write_temp_file(tempFile)
-        
+        js_start = time.time()
         ######################## 
         #  Nice2Predict start
         ########################
@@ -185,7 +185,8 @@ class MosesClient():
         ######################## 
         #   Nice2Predict End
         ########################
-        
+        js_end = time.time()
+        js_dur = js_end - js_start
         #Do Scope related tasks
         #a raw text version
         try:
@@ -347,8 +348,11 @@ class MosesClient():
             jsnice_error_string = "JSNice mixing attempt failed.  Reporting renaming with only our method. \nJSNice Errors : \n"
             jsnice_error_string += "\n".join(jsnice_errors) + "\n"
             
-        return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
-               "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
-               "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + 
-               str(post_time) + "\n" + str(beautified_renamed_text))
+        #No performance comments.
+        return(str(beautified_renamed_text))
+
+        #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
+        #       "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
+        #       "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + 
+        #       str(post_time) + "\n" + str(beautified_renamed_text))
       

@@ -44,6 +44,11 @@ def get_js(request):
             rClient = MosesClient()
             #try:
             start = time.time()
+            #TODO: 0 must be replaced with a proper number (random? sequence? -> shouldn't overlap 
+            #for things near the same time...  But is it actually an issue?)
+            #Yes, used for the JSNICE temp file.  That will be overwritten on
+            #high loads before being called...  Talk to Bogdan about what is best solution.
+            #What else should we time -> JSNICE time + Hash time, I think.
             output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0) #Validate here.
             end = time.time()
             duration = end-start
@@ -56,7 +61,8 @@ def get_js(request):
                 return render(request, "deobfuscate/get_js.html", {'form': form})
             else:
                 # redirect to a new URL:
-                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
+                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80}))
+#                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
                 #return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
     # if a GET (or any other method) we'll create a blank form
     else:

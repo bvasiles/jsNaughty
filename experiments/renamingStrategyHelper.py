@@ -143,7 +143,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     rn_time = end-rn_start
     pre_time = end - start
     m_start = time.time()
-    
+    print("Invoking Moses.")
     # Translate renamed input
     md = WebMosesDecoder(proxy)
     (ok, translation, _err) = md.run(lx.collapsedText)

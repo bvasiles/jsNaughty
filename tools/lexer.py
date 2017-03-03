@@ -44,10 +44,10 @@ class Lexer:
         self.collapsedText = self.get_text_rep()
 
     def __init__(self, js_file_path):
-        programText = open(js_file_path, 'r').read()
+        self.programText = open(js_file_path, 'r').read()
         lexer = get_lexer_for_filename(js_file_path)
         
-        self.__tokenize(programText, lexer)
+        self.__tokenize(self.programText, lexer)
 
     def write_temp_file(self, out_file_path):
         lines = formatTokens(self.tokenList)
