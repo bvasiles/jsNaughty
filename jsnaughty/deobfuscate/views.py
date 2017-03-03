@@ -44,6 +44,11 @@ def get_js(request):
             rClient = MosesClient()
             #try:
             start = time.time()
+            #TODO: 0 must be replaced with a proper number (random? sequence? -> shouldn't overlap 
+            #for things near the same time...  But is it actually an issue?)
+            #Yes, used for the JSNICE temp file.  That will be overwritten on
+            #high loads before being called...  Talk to Bogdan about what is best solution.
+            #What else should we time -> JSNICE time + Hash time, I think.
             output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0) #Validate here.
             end = time.time()
             duration = end-start

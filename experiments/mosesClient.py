@@ -151,7 +151,7 @@ class MosesClient():
             return(ib_error)
             
         #lex_ugly.write_temp_file(tempFile)
-        
+        js_start = time.time()
         ######################## 
         #  Nice2Predict start
         ########################
@@ -185,7 +185,8 @@ class MosesClient():
         ######################## 
         #   Nice2Predict End
         ########################
-        
+        js_end = time.time()
+        js_dur = js_end - js_start
         #Do Scope related tasks
         #a raw text version
         try:
