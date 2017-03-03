@@ -56,7 +56,8 @@ def get_js(request):
                 return render(request, "deobfuscate/get_js.html", {'form': form})
             else:
                 # redirect to a new URL:
-                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
+                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80}))
+#                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
                 #return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
     # if a GET (or any other method) we'll create a blank form
     else:

@@ -347,8 +347,11 @@ class MosesClient():
             jsnice_error_string = "JSNice mixing attempt failed.  Reporting renaming with only our method. \nJSNice Errors : \n"
             jsnice_error_string += "\n".join(jsnice_errors) + "\n"
             
-        return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
-               "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
-               "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + 
-               str(post_time) + "\n" + str(beautified_renamed_text))
+        #No performance comments.
+        return(str(beautified_renamed_text))
+
+        #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
+        #       "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
+        #       "Moses Time: " + str(m_time) + "\n" + "Postprocess Time: " + 
+        #       str(post_time) + "\n" + str(beautified_renamed_text))
       
