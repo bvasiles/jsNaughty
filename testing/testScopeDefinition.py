@@ -155,7 +155,7 @@ class testAST(unittest.TestCase):
             ib = IndexBuilder(lexed.tokenList)        
             #print(ib)
             sa = ScopeAnalyst(self.fileList[i-1])
-            #print(sa)
+            print(sa)
             nameCount = {}
             #TODO: Grab only the non-globals to look at (get the start key and look it up)
             for variable in sa.nameDefScope2pos.keys():

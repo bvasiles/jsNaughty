@@ -49,7 +49,11 @@ def get_js(request):
             #Yes, used for the JSNICE temp file.  That will be overwritten on
             #high loads before being called...  Talk to Bogdan about what is best solution.
             #What else should we time -> JSNICE time + Hash time, I think.
-            output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0) #Validate here.
+            annotated_output = rClient.deobfuscateJS(form.cleaned_data['in_text'], 0, False) #Validate here.
+            #Annotated output includes performance metrics.  We'll control how they are output here.
+            #For now, just output deobsfucation + jsnice error string if necessary
+            output = annotated_output[1] + annotated_output[0]
+            
             end = time.time()
             duration = end-start
             if(output in rClient.getValidationErrors()):
