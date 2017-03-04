@@ -40,6 +40,9 @@ rn_error = "Renaming Failed"
 
 class MosesClient():
     
+    def __init__(self, tmp_dir):
+        self.tmpDir = tmp_dir
+    
     def getValidationErrors(self):
         return [prepro_error,beaut_error,ib_error,sa_error]
     
@@ -162,7 +165,7 @@ class MosesClient():
         
         #Due to a bug? in the jsnice web service, we need to save the
         #input text as a file.
-        min_input_file = os.path.join("./tmp/", str(transactionID) + ".u.js")
+        min_input_file = os.path.join(self.tmpDir, str(transactionID) + ".u.js")
         with open(min_input_file, 'w') as f:
             f.write(beautified_text)
         

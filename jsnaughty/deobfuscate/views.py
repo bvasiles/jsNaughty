@@ -41,7 +41,7 @@ def get_js(request):
             # process the data in form.cleaned_data as required
             #View testing.
             #return render(request, 'deobfuscate/get_js.html', Context({'form': form, 'out_text': "Pull the lever!"}))
-            rClient = MosesClient()
+            rClient = MosesClient("./tmp/")
             #try:
             start = time.time()
             #TODO: 0 must be replaced with a proper number (random? sequence? -> shouldn't overlap 
