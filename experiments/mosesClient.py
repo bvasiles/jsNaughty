@@ -264,7 +264,7 @@ class MosesClient():
         (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
             scopeAnalyst_default, name_positions_default, 
             position_names_default, use_scopes_default, hash_name_map_default,
-            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start, False)
         
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0))
@@ -273,7 +273,7 @@ class MosesClient():
         (status, error_msg, translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
-            pre_time, rn_time, m_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start)
+            pre_time, rn_time, m_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start, False)
         
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0))
@@ -329,7 +329,7 @@ class MosesClient():
                             name_candidates[key][name_n2p].update(lines)
                 except:
                     jsnice_errors.append("Failure while adding jsnice names to candidate pool.")    
-            cr = ConsistencyController(debug_mode=True)
+            cr = ConsistencyController(debug_mode=debug_output)
                 
             # An identifier may have been translated inconsistently
             # across different lines (Moses treats each line independently).

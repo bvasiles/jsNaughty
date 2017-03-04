@@ -25,7 +25,7 @@ from tools.suggestionMetrics import *
 
 from folderManager import Folder
 
-def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, start):
+def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, start, debug_mode = False):
     """
     A helper function so that we can run multiple different renaming
     strategies through moses in a more modular and hopefully parallelizable
@@ -51,6 +51,8 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
    
     start: The starting time for the preprocessing step.  Used for performance
     metrics.
+    
+    debug_mode: Print debug information? (True/False - defaults to False)
     
     Returns
     -------
@@ -84,9 +86,10 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
 
     #We need both the base_text and the hashed_text.
     preRen = PreRenamer()
-    print("Tokens-------------------")
-    print(iBuilder_ugly.tokens)
-    print("Tokens-------------------")
+    if(debug_mode):
+        print("Tokens-------------------")
+        print(iBuilder_ugly.tokens)
+        print("Tokens-------------------")
     #We always need the non hashed names as a fallback.
     after_text = preRen.rename(r_strategy, 
                                iBuilder_ugly,
@@ -108,7 +111,6 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     
     
     if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
-        print("BUILDING HASH NAME MAP")
 
         #Something below here is buggy...
         orderedVarsMin = sorted(scopeAnalyst_ugly.name2defScope.keys(), key = lambda x: x[1])
@@ -130,8 +132,9 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
             name_min = orderedVarsMin[i][0]
             def_scope_min = scopeAnalyst_ugly.name2defScope[orderedVarsMin[i]]
             hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
-
-    print("HASH NAME MAP LEN: " + str(len(hash_name_map)))
+            
+    if(debug_mode):
+        print("HASH NAME MAP LEN: " + str(len(hash_name_map)))
 
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())
@@ -143,7 +146,8 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     rn_time = end-rn_start
     pre_time = end - start
     m_start = time.time()
-    print("Invoking Moses.")
+    if(debug_mode):
+        print("Invoking Moses.")
     # Translate renamed input
     md = WebMosesDecoder(proxy)
     (ok, translation, _err) = md.run(lx.collapsedText)
@@ -166,7 +170,8 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     if translation is not None:
         # Parse moses output
         mp = MosesParser()
-        print(translation)
+        if(debug_mode):
+            print(translation)
             
         name_candidates = mp.parse(translation,
                                    a_iBuilder,
