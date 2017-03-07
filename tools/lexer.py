@@ -1,3 +1,4 @@
+import time
 from pygments import lex
 from pygments.token import Token
 from pygments.token import is_token_subtype 
@@ -65,10 +66,13 @@ class WebLexer(Lexer):
     '''
     
     def __init__(self, inputText):
+        start = time.time()
         programText = inputText
         lexer = get_lexer_for_filename("jsFile.js")
     
         self._Lexer__tokenize(programText, lexer)
+        end = time.time()
+        self.build_time = end - start
     
 
 

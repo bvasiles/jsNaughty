@@ -7,6 +7,7 @@ Created on Feb 23, 2017
 import json
 import re
 import subprocess
+import time
 PIPE = subprocess.PIPE
 
 
@@ -186,6 +187,22 @@ class ScopeAnalyst:
                     glb = self.__get_def_global(parent['thedef'])
                     self.isGlobal[(key, start)] = glb
                     
+                    
+                    print("----------------------------------------------------------------")
+                    #print("Path: " + str(pth))
+                    print("Key: " + str(key))
+                    print("Path: " + str(join_ref_key(pth)))
+                    #print("-------------")
+                    #print(pth[-2])
+                    print(pth[-3])
+                    #print("-------------")
+                    #1.if it contains references in this path, it can't be assigned to (key, def_scope)
+                    #2.if it contains orig, it is the definition.
+                    print(start)
+                    print("Def_scope:" + def_scope)
+                    print("Use_scope:" + use_scope)
+                    print("----------------------------------------------------------------")
+                    
                     # Keep track of each name's scopes to figure 
                     # out which names are overloaded
                     self.nameScopes.setdefault(key, set([]))
@@ -336,6 +353,7 @@ class ScopeAnalyst:
 class WebScopeAnalyst(ScopeAnalyst):
 
     def __init__(self, input_text, scoper_js_path=None):
+        start = time.time()
         if scoper_js_path is None:
             import os
             scoper_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'web_scoper'))
@@ -345,6 +363,8 @@ class WebScopeAnalyst(ScopeAnalyst):
         self.json_repr = self.__web_run(input_text, scoper_dir)
 
         self._ScopeAnalyst__init_ast()
+        end = time.time()
+        self.build_time = end - start
 
 
     def __web_run(self, input_text, scoper_dir):

@@ -1,9 +1,11 @@
+import time
 from pygments.token import Token, String, Number, is_token_subtype
 
 
 class IndexBuilder:
 
     def __init__(self, lexed_input):
+        start = time.time()
         # Build some helper data structures:
         #print(lexed_input)        
         # - bidimensional list of tokens
@@ -91,6 +93,9 @@ class IndexBuilder:
                 col_chr_idx += len(token)
             # The unidimensional index doesn't care about newlines
             flat_chr_idx += len(token)
+        
+        end = time.time()
+        self.build_time = end - start
 
             
     def get_text(self):

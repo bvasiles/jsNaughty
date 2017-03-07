@@ -53,7 +53,8 @@ class defobfuscate_tests(unittest.TestCase):
         with open("./testing/PerformanceMetrics" + str(id_start)  + ".csv", 'w') as output_csv:
             writer = csv.writer(output_csv, delimiter = ",")
             writer.writerow(["file","lines","minifiable_instances","jsnice_status",
-                             "preprocess_time","jsnice_time","renaming_time","moses_time","postprocessing_time"])
+                             "preprocess_time","jsnice_time","renaming_time","lex_time", 
+                             "builder_time", "scoper_time","moses_time","postprocessing_time"])
             for next_file in self.clearTextFiles:
                 if(i < id_start): # Skip until at start ID (used in failure cases)
                     i += 1
@@ -79,7 +80,7 @@ class defobfuscate_tests(unittest.TestCase):
                         restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
                 except:
                     minCount = 0
-                    result = [text, "other error.", 0, 0, 0, 0, 0]
+                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0]
                 i += 1
                 
                 #Write output to a separate file.

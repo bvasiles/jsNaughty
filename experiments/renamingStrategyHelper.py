@@ -77,8 +77,8 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     
     hash_name_map: a map from the hashed names to the original minified names 
     
-    pre_time, rn_time, m_time, post_start: The duration of the preprocessing,
-    renaming, and Moses translation steps, along with the start time for the
+    pre_time, rn_time, m_time, lex_time, post_start: The duration of the preprocessing,
+    renaming, Moses translation steps, and lexing steps along with the start time for the
     postprocessing of the Moses output. 
     """       
     rn_start = time.time()
@@ -100,7 +100,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                "", {}, None,
                None, {},
                {}, {}, {},
-               0, 0, 0, 0)
+               0, 0, 0, 0, 0)
    
     (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
     if not ok:
@@ -108,7 +108,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                "", {}, None, 
                None, {}, 
                {}, {}, {},
-               0, 0, 0, 0)
+               0, 0, 0, 0, 0)
             
     a_lexer = WebLexer(beautified_after_text)
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
@@ -129,7 +129,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                    "", {}, a_iBuilder, 
                    a_scopeAnalyst, {}, 
                    {}, {}, {},
-                   0, 0, 0, 0)    
+                   0, 0, 0, 0, 0)    
         
          
         for i in range(0, len(orderedVarsHash)):
@@ -163,7 +163,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                translation, {}, a_iBuilder, 
                a_scopeAnalyst, {}, 
                {}, {}, hash_name_map,
-               0, 0, 0, 0)
+               0, 0, 0, 0, 0)
     
     
     m_end = time.time()
@@ -184,7 +184,9 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                                    a_iBuilder,
                                    a_position_names)#,
                                    #a_scopeAnalyst)
+                                   
+    lex_time = lx.build_time + a_lexer.build_time
     return (True, "", translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
-            pre_time, rn_time, m_time, post_start)
+            pre_time, rn_time, m_time, lex_time, post_start)
