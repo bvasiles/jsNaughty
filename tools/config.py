@@ -51,8 +51,8 @@ class MosesProxy:
         #Todo: Bogdan -> I need your ini files for the experiment servers to be
         #added to this dictionary.
         #Note that these ini files MUST correspond with the order of ports in portLists
-        self.iniFiles = {"web" : ["bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.no_renaming/tuning/moses.lm2.ini",
-                                  "bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"]}
+        self.iniFiles = {"web" : ["/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.no_renaming/tuning/moses.lm2.ini",
+                                  "/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"]}
 
 # #         # Default, 300k corpus
 #         self.proxies = {

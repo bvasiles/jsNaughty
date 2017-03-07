@@ -264,7 +264,7 @@ class MosesClient():
         (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
             scopeAnalyst_default, name_positions_default, 
             position_names_default, use_scopes_default, hash_name_map_default,
-            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start, False)
+            pre_time_default, rn_time_default, m_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, start, debug_output)
         
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0))
@@ -273,7 +273,7 @@ class MosesClient():
         (status, error_msg, translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
-            pre_time, rn_time, m_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start, False)
+            pre_time, rn_time, m_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, start, debug_output)
         
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0))
@@ -338,13 +338,17 @@ class MosesClient():
             # Compute renaming map (x -> length, y -> width, ...)
             # Note that x,y here are names after renaming
             #Hash error is occuring in here.
-            (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
+            try:
+                (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
                                               name_candidates,
                                               a_name_positions,
                                               a_use_scopes,
                                               a_iBuilder,
                                               lm_path, {}, hash_name_map)
-            
+            except:
+                return("Compute renaming fail.", "", 0, 0, 0, 0, 0)
+
+
             if(debug_output):
                 print("Temp renaming map")
                 print(temp_renaming_map)

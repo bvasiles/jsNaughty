@@ -91,15 +91,22 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
         print(iBuilder_ugly.tokens)
         print("Tokens-------------------")
     #We always need the non hashed names as a fallback.
-    after_text = preRen.rename(r_strategy, 
-                               iBuilder_ugly,
-                               scopeAnalyst_ugly)
+    try:
+        after_text = preRen.rename(r_strategy, 
+                                   iBuilder_ugly,
+                                   scopeAnalyst_ugly)
+    except:
+        return(False, "Renaming failed for " + str(r_strategy),
+               "", {}, None,
+               None, {},
+               {}, {}, {},
+               0, 0, 0, 0)
    
     (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
     if not ok:
         return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
-               "", {}, a_iBuilder, 
-               a_scopeAnalyst, {}, 
+               "", {}, None, 
+               None, {}, 
                {}, {}, {},
                0, 0, 0, 0)
             

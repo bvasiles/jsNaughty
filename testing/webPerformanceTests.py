@@ -3,13 +3,15 @@ import sys
 import os
 import csv
 import ntpath
+import argparse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
-
+from tools import Lexer, ScopeAnalyst
 from folderManager.folder import Folder
 from unicodeManager import UnicodeReader, UnicodeWriter
 from experiments import MosesClient
 
+id_start = 0
 
 class defobfuscate_tests(unittest.TestCase):
     
@@ -47,25 +49,58 @@ class defobfuscate_tests(unittest.TestCase):
         times were for each into a csv style report.
         '''
         i = 0
-        with open("./testing/PerformanceMetrics.csv", 'w') as output_csv:
+        restart_attempt = False
+        with open("./testing/PerformanceMetrics" + str(id_start)  + ".csv", 'w') as output_csv:
             writer = csv.writer(output_csv, delimiter = ",")
+            writer.writerow(["file","lines","minifiable_instances","jsnice_status",
+                             "preprocess_time","jsnice_time","renaming_time","moses_time","postprocessing_time"])
             for next_file in self.clearTextFiles:
+                if(i < id_start): # Skip until at start ID (used in failure cases)
+                    i += 1
+                    continue
                 text = open(next_file, 'r').read()
-                lineCount = text.count("\n")
-                result = self.client.deobfuscateJS(text,i,False)
+                lineCount = text.count("\n") + 1
+                print(lineCount)
+                #if(lineCount > 700): #Bogdan didn't count these correctly? or was counting SLOC?
+                #    continue
+
+                try:
+                    sa = ScopeAnalyst(next_file)
+                    minCount = len(sa.name2defScope)
+                    result = self.client.deobfuscateJS(text,i,False)
+                    if("Moses server failed" in result[0]):
+                        #Skip and wait for revival scrip to restart the server?
+                        if(not restart_attempt):
+                            restart_attempt = True
+                            #Wait 10 minutes for restarting script to try to boot up servers again
+                            #Only do this once per server crash.
+                            time.sleep(10*60)
+                    else:
+                        restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
+                except:
+                    minCount = 0
+                    result = [text, "other error.", 0, 0, 0, 0, 0]
                 i += 1
                 
                 #Write output to a separate file.
-                output_file = str(self.getFileId(next_file)) + ".out.js"
+                file_id = str(self.getFileId(next_file))
+                output_file = file_id + ".out.js"
                 with open(os.path.join("./testing/performance_output/", output_file), "w") as f2:
                     f2.write(result[0])
                 #Write js_error + times to csv.
-                writer.writerow([lineCount] + list(result[1:]))
-                if(i > 5):
-                    break                
+                writer.writerow([file_id,lineCount, minCount] + list(result[1:]))
+                #if(i > 2):
+                #    break                
             
 
 
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-start",action="store", type=int, default = 0)
+    parser.add_argument("unittest_args", nargs="*")
+    args = parser.parse_args()
+    id_start = args.start
+
+    sys.argv[1:] = args.unittest_args
     unittest.main()
