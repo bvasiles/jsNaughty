@@ -4,6 +4,8 @@ import os
 import csv
 import ntpath
 import argparse
+#import cProfile
+from pstats import Stats
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 from tools import Lexer, ScopeAnalyst
@@ -31,6 +33,8 @@ class defobfuscate_tests(unittest.TestCase):
         return sorted(fileList, key = lambda(x) : int(x[:x.find(".")]))
     
     def setUp(self):
+        #self.pr = cProfile.Profile()
+        #self.pr.enable()
         self.testDir = Folder("/data/bogdanv/js_files/")
         self.id_list = []
         with open("./experiments/samples/stress.csv", 'r') as f:
@@ -45,15 +49,16 @@ class defobfuscate_tests(unittest.TestCase):
         
     def testMosesPerformance(self):
         '''
-        Run the deobfuscateJS method on each of our files and record what the 
+        Run the deobfuscateJS method on each of our files and recorib.py:1279(request)
+what the 
         times were for each into a csv style report.
         '''
         i = 0
         restart_attempt = False
         with open("./testing/PerformanceMetrics" + str(id_start)  + ".csv", 'w') as output_csv:
             writer = csv.writer(output_csv, delimiter = ",")
-            writer.writerow(["file","lines","minifiable_instances","jsnice_status",
-                             "preprocess_time","jsnice_time","renaming_time","lex_time", 
+            writer.writerow(["file","lines","minifiable_instances","local_name_count","jsnice_status",
+                             "preprocess_time","prepreprocessor_time","jsnice_time","renaming_time","lex_time", 
                              "builder_time", "scoper_time","moses_time","postprocessing_time"])
             for next_file in self.clearTextFiles:
                 if(i < id_start): # Skip until at start ID (used in failure cases)
@@ -62,12 +67,13 @@ class defobfuscate_tests(unittest.TestCase):
                 text = open(next_file, 'r').read()
                 lineCount = text.count("\n") + 1
                 print(lineCount)
-                #if(lineCount > 700): #Bogdan didn't count these correctly? or was counting SLOC?
+                #if(lineCount > 500): #Bogdan didn't count these correctly? or was counting SLOC?
                 #    continue
-
+                #if(True):
                 try:
                     sa = ScopeAnalyst(next_file)
                     minCount = len(sa.name2defScope)
+                    uniqueCount = len(sa.nameDefScope2pos)
                     result = self.client.deobfuscateJS(text,i,False)
                     if("Moses server failed" in result[0]):
                         #Skip and wait for revival scrip to restart the server?
@@ -80,7 +86,8 @@ class defobfuscate_tests(unittest.TestCase):
                         restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
                 except:
                     minCount = 0
-                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0]
+                    uniqueCount = 0
+                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 i += 1
                 
                 #Write output to a separate file.
@@ -89,11 +96,18 @@ class defobfuscate_tests(unittest.TestCase):
                 with open(os.path.join("./testing/performance_output/", output_file), "w") as f2:
                     f2.write(result[0])
                 #Write js_error + times to csv.
-                writer.writerow([file_id,lineCount, minCount] + list(result[1:]))
-                #if(i > 2):
+                writer.writerow([file_id,lineCount, minCount,uniqueCount] + list(result[1:]))
+                #if(i > id_start + 2):
                 #    break                
             
 
+#    def tearDown(self):
+#        """finish any test"""
+#        p = Stats (self.pr)
+#        p.strip_dirs()
+#        p.sort_stats ('cumtime')
+#        p.print_stats ()
+#        print "\n--->>>"
 
 
 if __name__=="__main__":

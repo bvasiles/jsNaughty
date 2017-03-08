@@ -188,20 +188,20 @@ class ScopeAnalyst:
                     self.isGlobal[(key, start)] = glb
                     
                     
-                    print("----------------------------------------------------------------")
+                    #print("----------------------------------------------------------------")
                     #print("Path: " + str(pth))
-                    print("Key: " + str(key))
-                    print("Path: " + str(join_ref_key(pth)))
+                    #print("Key: " + str(key))
+                    #print("Path: " + str(join_ref_key(pth)))
                     #print("-------------")
                     #print(pth[-2])
-                    print(pth[-3])
+                    #print(pth[-3])
                     #print("-------------")
                     #1.if it contains references in this path, it can't be assigned to (key, def_scope)
                     #2.if it contains orig, it is the definition.
-                    print(start)
-                    print("Def_scope:" + def_scope)
-                    print("Use_scope:" + use_scope)
-                    print("----------------------------------------------------------------")
+                    #print(start)
+                    #print("Def_scope:" + def_scope)
+                    #print("Use_scope:" + use_scope)
+                    #print("----------------------------------------------------------------")
                     
                     # Keep track of each name's scopes to figure 
                     # out which names are overloaded

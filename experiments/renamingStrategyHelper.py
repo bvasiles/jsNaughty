@@ -25,7 +25,7 @@ from tools.suggestionMetrics import *
 
 from folderManager import Folder
 
-def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, start, debug_mode = False):
+def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, debug_mode = False):
     """
     A helper function so that we can run multiple different renaming
     strategies through moses in a more modular and hopefully parallelizable
@@ -77,7 +77,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     
     hash_name_map: a map from the hashed names to the original minified names 
     
-    pre_time, rn_time, m_time, lex_time, post_start: The duration of the preprocessing,
+    rn_time, m_time, lex_time, post_start: The duration of the
     renaming, Moses translation steps, and lexing steps along with the start time for the
     postprocessing of the Moses output. 
     """       
@@ -100,7 +100,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                "", {}, None,
                None, {},
                {}, {}, {},
-               0, 0, 0, 0, 0)
+               0, 0, 0, 0)
    
     (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
     if not ok:
@@ -108,7 +108,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                "", {}, None, 
                None, {}, 
                {}, {}, {},
-               0, 0, 0, 0, 0)
+               0, 0, 0, 0)
             
     a_lexer = WebLexer(beautified_after_text)
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
@@ -129,7 +129,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                    "", {}, a_iBuilder, 
                    a_scopeAnalyst, {}, 
                    {}, {}, {},
-                   0, 0, 0, 0, 0)    
+                   0, 0, 0, 0)    
         
          
         for i in range(0, len(orderedVarsHash)):
@@ -151,7 +151,6 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     #phases 
     end = time.time()
     rn_time = end-rn_start
-    pre_time = end - start
     m_start = time.time()
     if(debug_mode):
         print("Invoking Moses.")
@@ -163,7 +162,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                translation, {}, a_iBuilder, 
                a_scopeAnalyst, {}, 
                {}, {}, hash_name_map,
-               0, 0, 0, 0, 0)
+               0, 0, 0, 0)
     
     
     m_end = time.time()
@@ -189,4 +188,4 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     return (True, "", translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
-            pre_time, rn_time, m_time, lex_time, post_start)
+            rn_time, m_time, lex_time, post_start)
