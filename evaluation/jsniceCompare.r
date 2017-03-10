@@ -2,7 +2,7 @@ library(sqldf)
 
 source("~/jsnaughty/evaluation/jsniceCompareHelper.r", encoding = 'UTF-8')
 
-compare_var <- read.csv("~/jsnaughty/evaluation/compare_var.csv", sep=";")
+compare_var <- read.csv("~/jsnaughty/evaluation/compare_var_final.csv", sep=";")
 View(compare_var)
 
 #Get the ones that were actually renamed

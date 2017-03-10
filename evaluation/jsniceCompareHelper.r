@@ -16,7 +16,7 @@ comparisonTable <- function(our_method, jsnice_method)
   mix_limit <- matrix(c(both_true, them_true, us_true, neither_true),2,2, byrow=TRUE)
   print(xtable(mix_limit))
   #Mcnemar's test
-  mcnemar.test(mix_limit)
+  print(mcnemar.test(mix_limit))
   #Effect Size? http://stats.stackexchange.com/questions/4219/effect-size-of-mcnemars-test
   #b/c
   print(them_true/us_true)

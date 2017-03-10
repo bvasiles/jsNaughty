@@ -78,8 +78,7 @@ class MosesClient():
             
 
     
-    #TODO: Double check what cleanup does..
-    def deobfuscateJS(self, obfuscatedCode, transactionID, debug_output):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -87,6 +86,8 @@ class MosesClient():
         Parameters
         ----------
         obfuscatedCode: The minified javascript text.
+        
+        use_mix: True/False -> should we invoke JSNice and throw the names into the language model mix?
         
         transactionID: an ID for storing temp files - used currently
         only to identify the input to JSNice.
@@ -196,15 +197,16 @@ class MosesClient():
         # BV: Next block left out until I figure out the pipe issue
         # BV: Update: I couldn't pipe input to N2P. TODO: FIX
         # Run the JSNice from http://www.nice2predict.org
-        unuglifyJS = UnuglifyJS()
-        (ok, n2p_text, _err) = unuglifyJS.run(min_input_file)
-        #ok = False #Failure test
-        if not ok:
-            jsnice_errors.append('Nice2Predict fail')
-            #return (js_file_path, None, 'Nice2Predict fail')
+        if(use_mix):
+            unuglifyJS = UnuglifyJS()
+            (ok, n2p_text, _err) = unuglifyJS.run(min_input_file)
+            #ok = False #Failure test
+            if not ok:
+                jsnice_errors.append('Nice2Predict fail')
+                #return (js_file_path, None, 'Nice2Predict fail')
 
 
-        if(jsnice_errors == []):
+        if(use_mix and jsnice_errors == []):
             (ok, n2p_text_beautified, _err) = clear.web_run(n2p_text)
             if not ok:
                 jsnice_errors.append('Beautifier failed for JSNice.')
@@ -236,7 +238,7 @@ class MosesClient():
         
         
         #Map the jsnice names to the minified counterparts.
-        if(jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
+        if(use_mix and jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
             try:
                 orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
                 orderedVarsN2p = sorted(n2p_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
@@ -319,7 +321,7 @@ class MosesClient():
                 print(hash_name_map)
 
             # **** BV: This might be all we need to combine Naughty & Nice 
-            if(jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
+            if(use_mix and jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
                 try:
                     name_candidates_copy = deepcopy(name_candidates)
                     for key, suggestions in name_candidates_copy.iteritems():
