@@ -49,7 +49,7 @@ def get_js(request):
             #Yes, used for the JSNICE temp file.  That will be overwritten on
             #high loads before being called...  Talk to Bogdan about what is best solution.
             #What else should we time -> JSNICE time + Hash time, I think.
-            if(form.cleaned_data['jsnice_mix'] == 'Y'):
+            if(form.cleaned_data['mix_jsnice'] == 'Y'):
                 mix = True
             else:
                 mix = False
