@@ -380,10 +380,10 @@ class ScopeAnalyst:
             if(global_check): #Skip globals
                 continue
 
-            print(name_pos)
-            print(iB.revTokMap)
-            print("----------")
-            print(iB.revFlatMat)
+            #print(name_pos)
+            #print(iB.revTokMap)
+            #print("----------")
+            #print(iB.revFlatMat)
             localLines.add(iB.revTokMap[iB.revFlatMat[name_pos]][0])
    
         return localLines

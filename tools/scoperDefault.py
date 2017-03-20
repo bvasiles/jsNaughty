@@ -323,10 +323,10 @@ class ScopeAnalyst:
         for name_pos, global_check in self.isGlobal.iteritems():
             if(global_check): #Skip globals
                 continue
-            print(name_pos)
-            print(iB.revTokMap)
-            print("----------")
-            print(iB.revFlatMat)
+            #print(name_pos)
+            #print(iB.revTokMap)
+            #print("----------")
+            #print(iB.revFlatMat)
             localLines.add(iB.revTokMap[iB.revFlatMat[name_pos[1]]][0])
         
         return localLines

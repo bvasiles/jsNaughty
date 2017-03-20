@@ -16,7 +16,8 @@ class MosesParser:
                      iBuilder,
                      position_names,
                      line_map):
-        
+
+#        print(line_map)        
 #         print '\nmoses output-----------------'    
         for line in moses_output.split('\n'):
 #             print line

@@ -149,7 +149,8 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
 
     line_subset = a_scopeAnalyst.getMinifiableLines(a_iBuilder)
     line_list = sorted(list(line_subset))
-    m_line = 1
+    line_map = {}
+    m_line = 0
     for next_line in line_list:
         line_map[m_line] = next_line 
         m_line += 1

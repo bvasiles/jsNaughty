@@ -68,7 +68,7 @@ base_url = args.base_url
     
 proxy = MosesProxy()
 moses_ports = proxy.portLists["web"]
-moses_inis = proxy.iniFiles["web"]
+moses_inis = proxy.iniFiles["web-pruned"]
 moses_url_dict = {}
 
 moses_commands = []
@@ -87,6 +87,11 @@ for i in range(0, len(moses_ports)):
                  + "--minlexr-memory -f " + str(ini_file)
                  + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
 
+#    moses_commands.append("nohup /home/ccasal/moses2/bin/moses2  --server --server-port " +
+#                 str(port_num) + " --server-log server" + str(port_num) + ".log --minphr-memory "
+#                 + "--minlexr-memory -f " + str(ini_file)
+#                 + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
+
 
 
 #Create a shell script to restart the servers.
@@ -94,6 +99,7 @@ for i in range(0, len(moses_ports)):
 #when they go down.
 with open(script_files[0], "w") as f:
     f.write("pkill mosesserver\n")
+    #f.write("pkill moses2\n")
     for command in moses_commands:
         f.write(command + "\n")
 

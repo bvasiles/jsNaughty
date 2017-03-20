@@ -74,7 +74,7 @@ what the
                     sa = ScopeAnalyst(next_file)
                     minCount = len(sa.name2defScope)
                     uniqueCount = len(sa.nameDefScope2pos)
-                    result = self.client.deobfuscateJS(text,i,False)
+                    result = self.client.deobfuscateJS(text,True,i,False)
                     if("Moses server failed" in result[0]):
                         #Skip and wait for revival scrip to restart the server?
                         if(not restart_attempt):
