@@ -193,6 +193,7 @@ class defobfuscate_tests(unittest.TestCase):
         self.assertTrue(lines[1] == "var <<var#=numeric.sum,=numeric.numberEquals;>> = numeric . sum , <<var=numeric.sum,#=numeric.numberEquals;>> = numeric . numberEquals ;")
         self.assertTrue(lines[3] == "function <<function#(,){>> ( <<function(#,){>> , <<function(,#){>> ) {")
         self.assertTrue(lines[4] == "this . x = <<function(#,){>> ;") #Why is x not transformed? Global, can't change...
+        #print(lines[7])
         self.assertTrue(lines[7] == "u ( <<function#(,){>> , {") #Why is u not transformed? -> Because u's hash <<function#(,){>> is ALREADY IN USE IN THE SAME SCOPE!!  (This is why u can be translated in 2-lines)
         self.assertTrue(lines[16] == "for ( var <<for(var#in)[]=[];>> in <<function(,#){>> ) <<function(#,){>> [ <<for(var#in)[]=[];>> ] = <<function(,#){>> [ <<for(var#in)[]=[];>> ] ;")
         self.assertTrue(lines[20] == "Vector2d : <<function#(,){>>")
@@ -213,7 +214,15 @@ class defobfuscate_tests(unittest.TestCase):
         
         self.assertTrue(True)
     
-    
+    def testMinifiableLines(self):
+        ib = IndexBuilder(self.clearLexed[0])
+        sa = ScopeAnalyst(self.clearTextFiles[0])
+        expected = set([0,1,2,3,4,5,7,8,9,11,12,15,16,17,20])
+        lines = sa.getMinifiableLines(ib)
+        print(lines)
+        print(expected)
+        self.assertTrue(lines == expected)
+               
     
       #Superceded by the scopeNameTest.py
 #     def testPostprocessing(self):

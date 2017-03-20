@@ -52,7 +52,9 @@ class MosesProxy:
         #added to this dictionary.
         #Note that these ini files MUST correspond with the order of ports in portLists
         self.iniFiles = {"web" : ["/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.no_renaming/tuning/moses.lm2.ini",
-                                  "/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"]}
+                                  "/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"],
+                         "web-pruned" : ["/home/ccasal/jsnaughty/phrase-tables/no_renaming/moses.lm2.ini",
+                                         "/home/ccasal/jsnaughty/phrase-tables/hash_def_one_renaming/moses.lm2.ini"]}
 
 # #         # Default, 300k corpus
 #         self.proxies = {

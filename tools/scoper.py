@@ -369,6 +369,17 @@ class ScopeAnalyst:
 
     def is_overloaded(self, v):
         return len(self.nameScopes.get(v, set([]))) > 1
+
+    def getMinifiableLines(self, iB):
+        """
+        Returns a set of line numbers that mark what lines hae variables
+        that can be minified.
+        """
+        localLines = set()
+        for name_pos, use_scope in self.name2useScope.iteritems():
+            localLines.add(iB.revFlatMat[name_pos[1]][0])
+   
+        return localLines
     
     def __str__(self):
         '''

@@ -121,7 +121,36 @@ class IndexBuilder:
             tokens.append(' '.join(x))
             
         return '\n'.join(tokens)
-            
+
+    def get_text_on_lines_wo_literals(self, lines):
+        """
+        Parameters:
+        -----------
+        lines - a set of line numbers of the text we wish to return 
+                (starting from 0)
+        Returns:
+        -------
+        A string resembling the stored code, but only from the lines listed.  
+        The other lines are omitted.
+        """
+        tokens = []
+
+        for _line_idx, line in enumerate(self.tokens):
+            x = []
+            if(_line_idx not in lines): 
+                #Skip the line if its not in our request list
+                continue
+            for (tt,t) in line:
+                if is_token_subtype(tt, String):
+                    x.append('TOKEN_LITERAL_STRING')
+                elif is_token_subtype(tt, Number):
+                    x.append('TOKEN_LITERAL_NUMBER')
+                else:
+                    x.append(t)
+
+            tokens.append(' '.join(x))
+
+        return '\n'.join(tokens)
 
     def __repr__(self):
         return "IndexBuilder()"
