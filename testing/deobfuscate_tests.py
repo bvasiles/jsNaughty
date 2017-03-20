@@ -215,13 +215,24 @@ class defobfuscate_tests(unittest.TestCase):
         self.assertTrue(True)
     
     def testMinifiableLines(self):
-        ib = IndexBuilder(self.clearLexed[0])
-        sa = ScopeAnalyst(self.clearTextFiles[0])
-        expected = set([0,1,2,3,4,5,7,8,9,11,12,15,16,17,20])
-        lines = sa.getMinifiableLines(ib)
-        print(lines)
-        print(expected)
-        self.assertTrue(lines == expected)
+        expected = {}
+        expected[0] = set([1,2,3,4,5,7,8,9,11,12,15,16,17,20])
+        expected[5] = set([8,9])
+
+        for i in [0,5]:
+            ib = IndexBuilder(self.clearLexed[i].tokenList)
+            sa = ScopeAnalyst(self.clearTextFiles[i])
+            
+            lines = sa.getMinifiableLines(ib)
+            print("i:" + str(i))
+            print(lines)
+            print(expected[i])
+            self.assertTrue(lines == expected[i])
+            text = ib.get_text_on_lines_wo_literals(lines)
+            print(text)
+            print(len(text.split("\n")))
+            print(len(expected[i]))
+            self.assertTrue(len(text.split("\n")) == len(expected[i]))
                
     
       #Superceded by the scopeNameTest.py

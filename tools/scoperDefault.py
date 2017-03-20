@@ -320,8 +320,14 @@ class ScopeAnalyst:
         that can be minified.
         """
         localLines = set()
-        for name_pos, use_scope in self.name2useScope.iteritems():
-            localLines.add(iB.revFlatMat[name_pos[1]][0])
+        for name_pos, global_check in self.isGlobal.iteritems():
+            if(global_check): #Skip globals
+                continue
+            print(name_pos)
+            print(iB.revTokMap)
+            print("----------")
+            print(iB.revFlatMat)
+            localLines.add(iB.revTokMap[iB.revFlatMat[name_pos[1]]][0])
         
         return localLines
 

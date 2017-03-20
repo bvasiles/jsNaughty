@@ -9,6 +9,66 @@ class MosesParser:
     
     def __init__(self):
         self.name_candidates = {}
+
+
+    def parse_subset(self, 
+                     moses_output, 
+                     iBuilder,
+                     position_names,
+                     line_map):
+        
+#         print '\nmoses output-----------------'    
+        for line in moses_output.split('\n'):
+#             print line
+        
+#             translations = {}
+            
+            parts = line.split('|||')
+            if not len(parts[0]):
+                continue
+    
+            # The index of the line in the input to which this
+            # translated line corresponds, starting at 0:
+            n = int(parts[0])
+            #This is the only? difference.  Remap to the correct line
+            #in the index builder when parsing the subset.
+            n = line_map[n]
+
+    
+            # The translation:
+            translation = parts[1].strip()
+            translation_parts = translation.split(' ')
+    
+            # Only keep translations that have exactly the same 
+            # number of tokens as the input
+            # If the translation has more tokens, copy the input
+            if len(translation_parts) != len(iBuilder.tokens[n]):
+                translation_parts = [token for (_token_type, token) \
+                                        in iBuilder.tokens[n]]
+                translation = ' '.join(translation_parts)
+           
+            # Which within-line indices have non-global var names? 
+            line_dict = position_names.get(n, {})
+
+            # For each variable name, record its candidate translation
+            # and on how many lines (among the -n-best-list) it appears on
+            for line_idx in line_dict.keys():
+                
+                # The original variable name
+                # line_dict returns (name, def_scope)
+                k = line_dict[line_idx] 
+                
+                
+                # The translated variable name
+                name_translation = translation_parts[line_idx]
+    
+                # Record the line number (we may give more weight
+                # to names that appear on many translation lines)
+                self.name_candidates.setdefault(k, {})
+                self.name_candidates[k].setdefault(name_translation, set([]))
+                self.name_candidates[k][name_translation].add(n)
+                    
+        return self.name_candidates
         
     
     def parse(self, 
