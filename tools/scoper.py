@@ -370,6 +370,16 @@ class ScopeAnalyst:
     def is_overloaded(self, v):
         return len(self.nameScopes.get(v, set([]))) > 1
 
+    def hasMinifiableVariables(self):
+        """
+        Returns true if there is are any local variables to renaming,
+        false otherwise.
+        """
+        if(len(self.isGlobal) == 0):
+            return False
+
+        return not reduce((lambda x, y: x and y), self.isGlobal.values())
+
     def getMinifiableLines(self, iB):
         """
         Returns a set of line numbers that mark what lines hae variables

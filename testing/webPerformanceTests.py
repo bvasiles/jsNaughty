@@ -36,6 +36,7 @@ class defobfuscate_tests(unittest.TestCase):
         #self.pr = cProfile.Profile()
         #self.pr.enable()
         self.testDir = Folder("/data/bogdanv/js_files/")
+        #self.testDir = Folder("/home/ccasal/jsnaughty/testing/test_files/")
         self.id_list = []
         with open("./experiments/samples/stress.csv", 'r') as f:
             for next_id in f:
@@ -61,9 +62,12 @@ what the
                              "preprocess_time","prepreprocessor_time","jsnice_time","renaming_time","lex_time", 
                              "builder_time", "scoper_time","moses_time","postprocessing_time"])
             for next_file in self.clearTextFiles:
+                print(next_file)
                 if(i < id_start): # Skip until at start ID (used in failure cases)
                     i += 1
                     continue
+                #if("240845" not in next_file):
+                #    continue
                 text = open(next_file, 'r').read()
                 lineCount = text.count("\n") + 1
                 print(lineCount)
@@ -72,9 +76,12 @@ what the
                 #if(True):
                 try:
                     sa = ScopeAnalyst(next_file)
-                    minCount = len(sa.name2defScope)
-                    uniqueCount = len(sa.nameDefScope2pos)
-                    result = self.client.deobfuscateJS(text,True,i,False)
+                    local = [n for n, isG in sa.isGlobal if isG == False]
+                    local_instances = [n for n, def_scope in sa.name2defScope if n in local]
+                    minCount = len(local_instances)
+                    uniqueCount = len(local)
+                    #result = self.client.deobfuscateJS(text,True,i,True) #Debug mode
+                    result = self.client.deobfuscateJS(text,True,i,False) #For timings
                     if("Moses server failed" in result[0]):
                         #Skip and wait for revival scrip to restart the server?
                         if(not restart_attempt):

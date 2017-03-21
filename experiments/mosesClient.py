@@ -187,7 +187,22 @@ class MosesClient():
         except:
 
             return((ib_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
-            
+
+
+        #Do Scope related tasks
+        #a raw text version
+        try:
+#             scopeAnalyst = ScopeAnalyst(beautFile)
+            scopeAnalyst = WebScopeAnalyst(beautified_text)
+        except:
+            return((sa_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+
+        #Cut short if no variables
+        if(not scopeAnalyst.hasMinifiableVariables()):
+            return((beautified_text, "No Minifiable Variables", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        else:
+            print("GLOBAL VAR MAP: " +  str(scopeAnalyst.isGlobal))    
+
         #lex_ugly.write_temp_file(tempFile)
         js_start = time.time()
         ######################## 
@@ -227,13 +242,7 @@ class MosesClient():
         js_end = time.time()
         js_time = js_end - js_start
         #Do Scope related tasks
-        #a raw text version
-        try:
-#             scopeAnalyst = ScopeAnalyst(beautFile)
-            scopeAnalyst = WebScopeAnalyst(beautified_text)
-        except: 
-            return((sa_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
-        
+ 
         (name_positions, position_names, use_scopes) = prepHelpers(iBuilder_ugly, scopeAnalyst)
         
         
@@ -274,7 +283,7 @@ class MosesClient():
             scopeAnalyst_default, name_positions_default, 
             position_names_default, use_scopes_default, hash_name_map_default,
             rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        
+        print("MOSES NO RENAMING: " + str(m_time_default))
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
         
@@ -283,7 +292,7 @@ class MosesClient():
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes, hash_name_map,
             rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        
+        print("MOSES HASH RENAMING: " + str(m_time))
         if(not status):
             return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
      
