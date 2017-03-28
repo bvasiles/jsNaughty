@@ -76,8 +76,9 @@ what the
                 #if(True):
                 try:
                     sa = ScopeAnalyst(next_file)
-                    local = [n for n, isG in sa.isGlobal if isG == False]
-                    local_instances = [n for n, def_scope in sa.name2defScope if n in local]
+                    
+                    local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
+                    local_instances = [n for n, def_scope in sa.name2defScope.iteritems() if n in local]
                     minCount = len(local_instances)
                     uniqueCount = len(local)
                     #result = self.client.deobfuscateJS(text,True,i,True) #Debug mode
