@@ -25,6 +25,78 @@ from tools.suggestionMetrics import *
 
 from folderManager import Folder
 
+SEGMENTED_TRANS_SIZE = 50
+
+
+def changeIndex(line, counter):
+    """
+    Change a moses output line of format <num> ||| to
+    <counter> |||
+    """
+    pieces = line.split("|||")
+    return str(counter) + "|||" + "|||".join(pieces[1:]) 
+
+def adjustCombinedMoses(combinedText):
+    """
+    Fix the line numbers of the moses text
+    Parameters:
+    ----------
+    combinedText - Moses output starting with <num> ||| where the numbers aren't 
+    counted correctly
+    Returns:
+    --------
+    combinedText - numbers in input are now 0, 1, 2, 3, 4, ...
+    """
+    counter = 0
+    newText = ""
+    for line in combinedText.split("\n"):
+        newText += changeIndex(line, counter) + "\n"
+
+    return newText
+
+def segmentedTranslation(lx, max_piece_size, proxy, debug_mode = False):
+    """
+    Run the moses translation in pieces of no more than max_piece_size.
+    This is intended for experiments in performance improvements.
+    Currently the implementation is serial, but is a candidate for parallelization
+    if we had a moses server swarm (or many threaded single moses server)
+    Parameters:
+    -----------
+    lx - a WebLexer object containing all the text to translate
+    max_piece_size - The maximum number of lines to ask moses to translate
+    In a single query
+    proxy - the moses proxy we are using for translation
+    debug_mode - True/False for printing some additional information
+    Returns:
+    --------
+    (ok,    - True False status if all queries completed succesfully
+    translation, - The translated text, if ok = True, original text otherwise
+    _err) - Any error messages if ok = False
+    """
+    #lx = WebLexer(a_iBuilder.get_text_on_lines_wo_literals(line_subset))
+    if(debug_mode):
+        print("Invoking Moses.")
+        print(lx.collapsedText)
+    
+    # Translate renamed input
+    md = WebMosesDecoder(proxy)    
+    
+    lines = lx.collapsedText.split("\n")
+    line_count = len(lines)
+    start = 0
+    translation = {}
+    #Possibly can be done in parallel
+    for start in range(0, line_count, max_piece_size):
+        next_piece = "\n".join(lines[start:start+max_piece_size])
+        (ok, translation[start], _err) = md.run(next_piece)
+            
+        if not ok:
+            return(ok, lx.collapsedText, _err)
+        
+    combined = reduce(lambda x, y: x+y, translation.values())
+
+    return(True, adjustCombinedMoses(combined), "")
+
 def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, debug_mode = False):
     """
     A helper function so that we can run multiple different renaming
@@ -161,12 +233,14 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     end = time.time()
     rn_time = end-rn_start
     m_start = time.time()
-    if(debug_mode):
-        print("Invoking Moses.")
-        print(lx.collapsedText)
+    
+    #if(debug_mode):
+    #    print("Invoking Moses.")
+    #    print(lx.collapsedText)
     # Translate renamed input
-    md = WebMosesDecoder(proxy)
-    (ok, translation, _err) = md.run(lx.collapsedText)
+    #md = WebMosesDecoder(proxy)
+    #(ok, translation, _err) = md.run(lx.collapsedText)
+    (ok, translation, _err) = segmentedTranslation(lx, SEGMENTED_TRANS_SIZE, proxy, debug_mode)
     if not ok:
         return(False, "Moses server failed for " + str(r_strategy), 
                translation, {}, a_iBuilder, 
