@@ -44,9 +44,10 @@ class ConsistencyStrategies:
 import xmlrpclib
 
 class MosesProxy:
+    nbestsize = 10
     def __init__(self):
         RS = RenamingStrategies()
-        
+         
         self.portLists = {"web" : [40021, 40022], "experiments": [40011,40012,40013,40014,40015]}
         #Todo: Bogdan -> I need your ini files for the experiment servers to be
         #added to this dictionary.

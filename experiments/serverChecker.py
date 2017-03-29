@@ -85,12 +85,12 @@ for i in range(0, len(moses_ports)):
     moses_commands.append("nohup /home/ccasal/moses_alt/bin/mosesserver --server-port " + 
                  str(port_num) + " --server-log server" + str(port_num) + ".log --minphr-memory "
                  + "--minlexr-memory -f " + str(ini_file)
-                 + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 1&")
+                 + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
 
 #    moses_commands.append("nohup /home/ccasal/moses2/bin/moses2  --server --server-port " +
-#                 str(port_num) + " --server-log server" + str(port_num) + ".log --minphr-memory "
-#                 + "--minlexr-memory -f " + str(ini_file)
-#                 + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
+#                str(port_num) + " --server-log server" + str(port_num) + ".log --minphr-memory "
+#                + "--minlexr-memory -f " + str(ini_file)
+#                + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
 
 
 
