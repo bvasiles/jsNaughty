@@ -75,8 +75,8 @@ what the
                 #if(lineCount > 500): #Bogdan didn't count these correctly? or was counting SLOC?
                 #    continue
                 for is_parallel in [True, False]:
-                    if(True):
-                    #try:
+                    #if(True):
+                    try:
                         sa = ScopeAnalyst(next_file)
                     
                         local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
@@ -96,10 +96,10 @@ what the
                                 time.sleep(10*60)
                         else:
                             restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
-                    #except:
-                    #    minCount = 0
-                    #    uniqueCount = 0
-                    #    result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+                    except:
+                        minCount = 0
+                        uniqueCount = 0
+                        result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
                 
                     #Write output to a separate file.
                     file_id = str(self.getFileId(next_file))
@@ -107,7 +107,7 @@ what the
                     with open(os.path.join("./testing/performance_output/", output_file), "w") as f2:
                         f2.write(result[0])
                     #Write js_error + times to csv.
-                    writer.writerow([file_id,is_parallel, lineCount, minCount,uniqueCount, result[1]] + list(result[2]))
+                    writer.writerow([file_id,is_parallel, lineCount, minCount,uniqueCount, result[1]] + list(result[2]) + [total_time])
 
                 i +=1
 
