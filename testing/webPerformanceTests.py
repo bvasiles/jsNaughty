@@ -4,6 +4,7 @@ import os
 import csv
 import ntpath
 import argparse
+import time
 #import cProfile
 from pstats import Stats
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -58,9 +59,9 @@ what the
         restart_attempt = False
         with open("./testing/PerformanceMetrics" + str(id_start)  + ".csv", 'w') as output_csv:
             writer = csv.writer(output_csv, delimiter = ",")
-            writer.writerow(["file","lines","minifiable_instances","local_name_count","jsnice_status",
+            writer.writerow(["file","is_parallel","lines","minifiable_instances","local_name_count","jsnice_status",
                              "preprocess_time","prepreprocessor_time","jsnice_time","renaming_time","lex_time", 
-                             "builder_time", "scoper_time","moses_time_serial","moses_rn_parallel","postprocessing_time"])
+                             "builder_time", "scoper_time","moses_time_serial","moses_rn_parallel","postprocessing_time","total_time"])
             for next_file in self.clearTextFiles:
                 print(next_file)
                 if(i < id_start): # Skip until at start ID (used in failure cases)
@@ -73,38 +74,43 @@ what the
                 print(lineCount)
                 #if(lineCount > 500): #Bogdan didn't count these correctly? or was counting SLOC?
                 #    continue
-                #if(True):
-                try:
-                    sa = ScopeAnalyst(next_file)
+                for is_parallel in [True, False]:
+                    if(True):
+                    #try:
+                        sa = ScopeAnalyst(next_file)
                     
-                    local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
-                    local_instances = [n for n, def_scope in sa.name2defScope.iteritems() if n in local]
-                    minCount = len(local_instances)
-                    uniqueCount = len(local)
-                    #result = self.client.deobfuscateJS(text,True,i,True) #Debug mode
-                    result = self.client.deobfuscateJS(text,True,i,False) #For timings
-                    if("Moses server failed" in result[0]):
-                        #Skip and wait for revival scrip to restart the server?
-                        if(not restart_attempt):
-                            restart_attempt = True
-                            #Wait 10 minutes for restarting script to try to boot up servers again
-                            #Only do this once per server crash.
-                            time.sleep(10*60)
-                    else:
-                        restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
-                except:
-                    minCount = 0
-                    uniqueCount = 0
-                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                i += 1
+                        local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
+                        local_instances = [n for n, def_scope in sa.name2defScope.iteritems() if n in local]
+                        minCount = len(local_instances)
+                        uniqueCount = len(local)
+                        start = time.time()
+                        #result = self.client.deobfuscateJS(text,True,i,True,is_parallel) #Debug mode
+                        result = self.client.deobfuscateJS(text,True,i,False,is_parallel) #For timings
+                        total_time = time.time() - start
+                        if("Moses server failed" in result[0]):
+                            #Skip and wait for revival scrip to restart the server?
+                            if(not restart_attempt):
+                                restart_attempt = True
+                                #Wait 10 minutes for restarting script to try to boot up servers again
+                                #Only do this once per server crash.
+                                time.sleep(10*60)
+                        else:
+                            restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
+                    #except:
+                    #    minCount = 0
+                    #    uniqueCount = 0
+                    #    result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
                 
-                #Write output to a separate file.
-                file_id = str(self.getFileId(next_file))
-                output_file = file_id + ".out.js"
-                with open(os.path.join("./testing/performance_output/", output_file), "w") as f2:
-                    f2.write(result[0])
-                #Write js_error + times to csv.
-                writer.writerow([file_id,lineCount, minCount,uniqueCount] + list(result[1:]))
+                    #Write output to a separate file.
+                    file_id = str(self.getFileId(next_file))
+                    output_file = file_id + str(is_parallel)  + ".out.js"
+                    with open(os.path.join("./testing/performance_output/", output_file), "w") as f2:
+                        f2.write(result[0])
+                    #Write js_error + times to csv.
+                    writer.writerow([file_id,is_parallel, lineCount, minCount,uniqueCount, result[1]] + list(result[2]))
+
+                i +=1
+
                 #if(i > id_start + 2):
                 #    break                
             

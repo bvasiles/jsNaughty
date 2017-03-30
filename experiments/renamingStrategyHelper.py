@@ -248,16 +248,16 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
 
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())
-    #lx = WebLexer(a_iBuilder.get_text_wo_literals())
+    lx = WebLexer(a_iBuilder.get_text_wo_literals())
 
-    line_subset = a_scopeAnalyst.getMinifiableLines(a_iBuilder)
-    line_list = sorted(list(line_subset))
-    line_map = {}
-    m_line = 0
-    for next_line in line_list:
-        line_map[m_line] = next_line 
-        m_line += 1
-    lx = WebLexer(a_iBuilder.get_text_on_lines_wo_literals(line_subset))
+    #line_subset = a_scopeAnalyst.getMinifiableLines(a_iBuilder)
+    #line_list = sorted(list(line_subset))
+    #line_map = {}
+    #m_line = 0
+    #for next_line in line_list:
+    #    line_map[m_line] = next_line 
+    #    m_line += 1
+    #lx = WebLexer(a_iBuilder.get_text_on_lines_wo_literals(line_subset))
     
     #Performance measures -> wrap up the preprocessing/ renaming
     #phases 
@@ -294,17 +294,17 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
         if(debug_mode):
             print(translation)
             
-        #name_candidates = mp.parse(translation,
-        #                           a_iBuilder,
-        #                           a_position_names)#,
+        name_candidates = mp.parse(translation,
+                                   a_iBuilder,
+                                   a_position_names)#,
                                    #a_scopeAnalyst)
 
         #A slightly modified version of parse to remap the moses
         #output lines to the correct original lines.
-        name_candidates = mp.parse_subset(translation,
-                                          a_iBuilder,
-                                          a_position_names,
-                                          line_map)
+        #name_candidates = mp.parse_subset(translation,
+        #                                  a_iBuilder,
+        #                                  a_position_names,
+        #                                  line_map)
                                    
     lex_time = lx.build_time + a_lexer.build_time
     return (True, "", translation, name_candidates, a_iBuilder, 

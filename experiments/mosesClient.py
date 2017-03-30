@@ -38,6 +38,7 @@ ib_error = "IndexBuilder Failed"
 sa_error = "ScopeAnalyst Failed"
 ms_error = "Moses Server Step Failed"
 rn_error = "Renaming Failed"
+TIMING_COUNT = 10
 
 
 class MosesClient():
@@ -80,7 +81,7 @@ class MosesClient():
             
 
     
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -95,13 +96,16 @@ class MosesClient():
         only to identify the input to JSNice.
         
         debug_output: should we print debugging output in this pass (TRUE/FALSE)
-         
+        
+        parallel: enable parallelization performance enhancements -> such as calling the
+        moses servers in parallel. 
         Returns
         -------
         A tuple:
             renamed_text - the renamed text
             jsnice_error - "" if no error, otherwise a message stating
                            where the jsnice mixing failed
+            Third element is a tuple of TIMING_COUNT performance times
             preprocess time - total time to preprocess before invoking
                             moses servers
             prepre time - how long does the first step of the preprocessor take?
@@ -112,6 +116,8 @@ class MosesClient():
             builder_time - how long did all the Index Builders take
             scoper_time - how long did all the scopeAnalysts take
             moses time - how long did the moses servers take
+            moses_rn_parallel - total time for the parallel moses and renaming
+            to complete
             postprocess time - how long did the consistency resolution and
                             language model queries take.
         """
@@ -158,7 +164,7 @@ class MosesClient():
                 print("Prepro_text----------------------------------")
 
         except:
-            return((prepro_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((prepro_error, "", (0,)*TIMING_COUNT))
  
         prepre_end = time.time()
         prepre_time = prepre_end - start           
@@ -170,7 +176,7 @@ class MosesClient():
             print(beautified_text)
             
         if(not ok):
-            return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((beaut_error, "", (0,)*TIMING_COUNT))
         
         #Due to a bug? in the jsnice web service, we need to save the
         #input text as a file.
@@ -188,7 +194,7 @@ class MosesClient():
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
         except:
 
-            return((ib_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((ib_error, "", (0,)*TIMING_COUNT))
 
 
         #Do Scope related tasks
@@ -197,11 +203,11 @@ class MosesClient():
 #             scopeAnalyst = ScopeAnalyst(beautFile)
             scopeAnalyst = WebScopeAnalyst(beautified_text)
         except:
-            return((sa_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((sa_error, "", (0,)*TIMING_COUNT))
 
         #Cut short if no variables
         if(not scopeAnalyst.hasMinifiableVariables()):
-            return((beautified_text, "No Minifiable Variables", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((beautified_text, "No Minifiable Variables", (0,)*TIMING_COUNT))
         elif(debug_output):
             print("GLOBAL VAR MAP: " +  str(scopeAnalyst.isGlobal))    
 
@@ -280,56 +286,61 @@ class MosesClient():
         #serial version...
         pre_outer_end = time.time()
         pre_time = pre_outer_end - start
-        #Get moses output for no_renaming
-#        (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
-#            scopeAnalyst_default, name_positions_default, 
-#            position_names_default, use_scopes_default, hash_name_map_default,
-#            rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        #print("MOSES NO RENAMING: " + str(m_time_default))
-#        if(not status):
-#            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        if(not parallel):
+            #Get moses output for no_renaming
+            (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
+             scopeAnalyst_default, name_positions_default, 
+             position_names_default, use_scopes_default, hash_name_map_default,
+             rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+            #print("MOSES NO RENAMING: " + str(m_time_default))
+            if(not status):
+                 return((error_msg, "", (0,)*TIMING_COUNT))
         
-        #Get moses output for hash_renaming
-#        (status, error_msg, translation, name_candidates, a_iBuilder, 
-#            a_scopeAnalyst, a_name_positions, 
-#            a_position_names, a_use_scopes, hash_name_map,
-#            rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        #print("MOSES HASH RENAMING: " + str(m_time))
-#        if(not status):
-#            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
-     
-        #Parallel version
-        none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        wrappers = [none_wrapper, hash_wrapper]
+            #Get moses output for hash_renaming
+            (status, error_msg, translation, name_candidates, a_iBuilder, 
+             a_scopeAnalyst, a_name_positions, 
+             a_position_names, a_use_scopes, hash_name_map,
+             rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+ 
+            #print("MOSES HASH RENAMING: " + str(m_time))
+            if(not status):
+                return((error_msg, "", (0,)*TIMING_COUNT))
+            m_parallel_time = 0
+        else: 
+            #Parallel version
+            none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+            hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+            wrappers = [none_wrapper, hash_wrapper]
     
-        pool = multiprocessing.Pool(processes = 2)
+            pool = multiprocessing.Pool(processes = 2)
 
-        m_parallel_start = time.time()
-        for result in pool.imap(getMosesTranslationParallel, wrappers):
-            if(result[0] == RS.NONE): #No renaming
-                (status, error_msg, translation_default, name_candidates_default, iBuilder_default,
-                 scopeAnalyst_default, name_positions_default,
-                 position_names_default, use_scopes_default, hash_name_map_default,
-                 rn_time_default, m_time_default, lex_time_default, post_start_default) = result[1]
+            m_parallel_start = time.time()
+            for result in pool.imap(getMosesTranslationParallel, wrappers):
+                if(result[0] == RS.NONE): #No renaming
+                    (status, error_msg, translation_default, name_candidates_default, iBuilder_default,
+                     scopeAnalyst_default, name_positions_default,
+                     position_names_default, use_scopes_default, hash_name_map_default,
+                     rn_time_default, m_time_default, lex_time_default, post_start_default) = result[1]
 
-                #print("MOSES NO RENAMING: " + str(m_time_default))
-                if(not status):
-                    return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-            else:
-                (status, error_msg, translation, name_candidates, a_iBuilder,
-                 a_scopeAnalyst, a_name_positions,
-                 a_position_names, a_use_scopes, hash_name_map,
-                 rn_time, m_time, lex_time, post_start) = result[1]
+                    #print("MOSES NO RENAMING: " + str(m_time_default))
+                    if(not status):
+                        return((error_msg, "", (0,)*TIMING_COUNT))
+                else:
+                    (status, error_msg, translation, name_candidates, a_iBuilder,
+                     a_scopeAnalyst, a_name_positions,
+                     a_position_names, a_use_scopes, hash_name_map,
+                     rn_time, m_time, lex_time, post_start) = result[1]
 
-                #print("MOSES HASH RENAMING: " + str(m_time))
-                if(not status):
-                    return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                    #print("MOSES HASH RENAMING: " + str(m_time))
+                    if(not status):
+                        return((error_msg, "", (0,)*TIMING_COUNT))
   
-        m_parallel_time = time.time() - m_parallel_start
+            m_parallel_time = time.time() - m_parallel_start
+        
         pre_time += rn_time_default + rn_time
-        print("Serial: " + str(m_time + m_time_default + rn_time + rn_time_default))
-        print("Parallel: " + str(m_parallel_time))
+        if(debug_output):
+            print("Serial: " + str(m_time + m_time_default + rn_time + rn_time_default))
+            print("Parallel: " + str(m_parallel_time))
         
         if translation is not None and translation_default is not None:                               
 
@@ -399,7 +410,7 @@ class MosesClient():
                                               a_iBuilder,
                                               lm_path, {}, hash_name_map)
             except:
-                return("Compute renaming fail.", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                return("Compute renaming fail.", "", (0,)*TIMING_COUNT)
 
 
             if(debug_output):
@@ -423,7 +434,7 @@ class MosesClient():
                                                  renaming_map)
             (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
             if not ok:
-                return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                return((beaut_error, "", (0,)*TIMING_COUNT))
             
             if(debug_output):
                 print("Renamed text")
@@ -455,7 +466,7 @@ class MosesClient():
         #New return: translation, jsnice_error, preprocess time, js_time, rename_time
         #m_time, post_time.
         return((str(beautified_renamed_text), jsnice_error_string, 
-                pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, m_parallel_time, post_time))
+                (pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, m_parallel_time, post_time)))
 
         #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
         #       "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
