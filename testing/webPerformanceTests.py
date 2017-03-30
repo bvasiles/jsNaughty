@@ -60,7 +60,7 @@ what the
             writer = csv.writer(output_csv, delimiter = ",")
             writer.writerow(["file","lines","minifiable_instances","local_name_count","jsnice_status",
                              "preprocess_time","prepreprocessor_time","jsnice_time","renaming_time","lex_time", 
-                             "builder_time", "scoper_time","moses_time","postprocessing_time"])
+                             "builder_time", "scoper_time","moses_time_serial","moses_rn_parallel","postprocessing_time"])
             for next_file in self.clearTextFiles:
                 print(next_file)
                 if(i < id_start): # Skip until at start ID (used in failure cases)
@@ -95,7 +95,7 @@ what the
                 except:
                     minCount = 0
                     uniqueCount = 0
-                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    result = [text, "other error.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 i += 1
                 
                 #Write output to a separate file.

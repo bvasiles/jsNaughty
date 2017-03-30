@@ -8,7 +8,9 @@ import sys
 from copy import deepcopy
 import time
 import socket
-# import multiprocessing
+import multiprocessing
+#from pathos.multiprocessing import ProcessingPool as Pool
+import itertools
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
@@ -25,7 +27,7 @@ from tools.consistency import ENTROPY_ERR
 from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
-from renamingStrategyHelper import getMosesTranslation
+from renamingStrategyHelper import *
 
 from folderManager import Folder
 
@@ -156,7 +158,7 @@ class MosesClient():
                 print("Prepro_text----------------------------------")
 
         except:
-            return((prepro_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((prepro_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
  
         prepre_end = time.time()
         prepre_time = prepre_end - start           
@@ -168,7 +170,7 @@ class MosesClient():
             print(beautified_text)
             
         if(not ok):
-            return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
         
         #Due to a bug? in the jsnice web service, we need to save the
         #input text as a file.
@@ -186,7 +188,7 @@ class MosesClient():
             iBuilder_ugly = IndexBuilder(lex_ugly.tokenList)
         except:
 
-            return((ib_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((ib_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
 
         #Do Scope related tasks
@@ -195,12 +197,12 @@ class MosesClient():
 #             scopeAnalyst = ScopeAnalyst(beautFile)
             scopeAnalyst = WebScopeAnalyst(beautified_text)
         except:
-            return((sa_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            return((sa_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
         #Cut short if no variables
         if(not scopeAnalyst.hasMinifiableVariables()):
-            return((beautified_text, "No Minifiable Variables", 0, 0, 0, 0, 0, 0, 0, 0, 0))
-        else:
+            return((beautified_text, "No Minifiable Variables", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        elif(debug_output):
             print("GLOBAL VAR MAP: " +  str(scopeAnalyst.isGlobal))    
 
         #lex_ugly.write_temp_file(tempFile)
@@ -279,25 +281,56 @@ class MosesClient():
         pre_outer_end = time.time()
         pre_time = pre_outer_end - start
         #Get moses output for no_renaming
-        (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
-            scopeAnalyst_default, name_positions_default, 
-            position_names_default, use_scopes_default, hash_name_map_default,
-            rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        print("MOSES NO RENAMING: " + str(m_time_default))
-        if(not status):
-            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+#        (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
+#            scopeAnalyst_default, name_positions_default, 
+#            position_names_default, use_scopes_default, hash_name_map_default,
+#            rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+        #print("MOSES NO RENAMING: " + str(m_time_default))
+#        if(not status):
+#            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
         
         #Get moses output for hash_renaming
-        (status, error_msg, translation, name_candidates, a_iBuilder, 
-            a_scopeAnalyst, a_name_positions, 
-            a_position_names, a_use_scopes, hash_name_map,
-            rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-        print("MOSES HASH RENAMING: " + str(m_time))
-        if(not status):
-            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+#        (status, error_msg, translation, name_candidates, a_iBuilder, 
+#            a_scopeAnalyst, a_name_positions, 
+#            a_position_names, a_use_scopes, hash_name_map,
+#            rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+        #print("MOSES HASH RENAMING: " + str(m_time))
+#        if(not status):
+#            return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
      
+        #Parallel version
+        none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+        hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+        wrappers = [none_wrapper, hash_wrapper]
+    
+        pool = multiprocessing.Pool(processes = 2)
+
+        m_parallel_start = time.time()
+        for result in pool.imap(getMosesTranslationParallel, wrappers):
+            if(result[0] == RS.NONE): #No renaming
+                (status, error_msg, translation_default, name_candidates_default, iBuilder_default,
+                 scopeAnalyst_default, name_positions_default,
+                 position_names_default, use_scopes_default, hash_name_map_default,
+                 rn_time_default, m_time_default, lex_time_default, post_start_default) = result[1]
+
+                #print("MOSES NO RENAMING: " + str(m_time_default))
+                if(not status):
+                    return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            else:
+                (status, error_msg, translation, name_candidates, a_iBuilder,
+                 a_scopeAnalyst, a_name_positions,
+                 a_position_names, a_use_scopes, hash_name_map,
+                 rn_time, m_time, lex_time, post_start) = result[1]
+
+                #print("MOSES HASH RENAMING: " + str(m_time))
+                if(not status):
+                    return((error_msg, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+  
+        m_parallel_time = time.time() - m_parallel_start
         pre_time += rn_time_default + rn_time
-                
+        print("Serial: " + str(m_time + m_time_default + rn_time + rn_time_default))
+        print("Parallel: " + str(m_parallel_time))
+        
         if translation is not None and translation_default is not None:                               
 
             for key_default, suggestions in name_candidates_default.iteritems():
@@ -366,7 +399,7 @@ class MosesClient():
                                               a_iBuilder,
                                               lm_path, {}, hash_name_map)
             except:
-                return("Compute renaming fail.", "", 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                return("Compute renaming fail.", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 
             if(debug_output):
@@ -390,7 +423,7 @@ class MosesClient():
                                                  renaming_map)
             (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
             if not ok:
-                return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                return((beaut_error, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
             
             if(debug_output):
                 print("Renamed text")
@@ -422,7 +455,7 @@ class MosesClient():
         #New return: translation, jsnice_error, preprocess time, js_time, rename_time
         #m_time, post_time.
         return((str(beautified_renamed_text), jsnice_error_string, 
-                pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, post_time))
+                pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, m_parallel_time, post_time))
 
         #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
         #       "\nRename Time (Subset of Preprocess): " + str(rn_time) + "\n" + 
