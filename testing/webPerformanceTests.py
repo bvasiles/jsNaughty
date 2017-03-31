@@ -36,8 +36,8 @@ class defobfuscate_tests(unittest.TestCase):
     def setUp(self):
         #self.pr = cProfile.Profile()
         #self.pr.enable()
-        self.testDir = Folder("/data/bogdanv/js_files/")
-        #self.testDir = Folder("/home/ccasal/jsnaughty/testing/test_files/")
+        #self.testDir = Folder("/data/bogdanv/js_files/")
+        self.testDir = Folder("./experiments/samples/stress_sample/")
         self.id_list = []
         with open("./experiments/samples/stress.csv", 'r') as f:
             for next_id in f:
@@ -99,7 +99,7 @@ what the
                     except:
                         minCount = 0
                         uniqueCount = 0
-                        result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+                        result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
                 
                     #Write output to a separate file.
                     file_id = str(self.getFileId(next_file))
