@@ -29,12 +29,6 @@ RUN apt-get install -q -y \
 	pkg-config \
         node-uglify
 
-#Install needed python libraries
-RUN pip2 install --upgrade pip
-RUN pip2 install numpy scipy pygments unidecode
-RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
-RUN easy_install web
-
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
 
@@ -62,8 +56,16 @@ WORKDIR /home/jsNaughty
 RUN mkdir phrase-tables
 COPY ~/jsnaughty/phrase-tables phrase-tables
 
-RUN nohup python experiments/
-RUN nohup python experiments/serverChecker.py &
+#Install needed python libraries
+RUN pip2 install --upgrade pip
+RUN pip2 install numpy scipy pygments unidecode
+RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
+RUN easy_install web
+
+
 
 #Run tests (Just do this interactively I guess)
+#RUN nohup python experiments/
+#RUN nohup python experiments/serverChecker.py &
 #RUN python ./testing/webPerformanceTests.py
+
