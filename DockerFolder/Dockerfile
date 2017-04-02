@@ -71,6 +71,9 @@ RUN pip2 install numpy scipy pygments unidecode requests
 RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
 RUN easy_install web.py
 
+#Extra install (move to start eventually
+RUN apt-get install -q -y vim nodejs
+
 RUN git pull
 
 ENTRYPOINT ["/bin/bash"]

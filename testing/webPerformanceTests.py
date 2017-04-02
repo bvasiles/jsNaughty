@@ -77,7 +77,7 @@ what the
                 #    continue
                 for is_parallel in [True, False]:
                     #if(True):
-                    try:
+                    #try:
                         sa = ScopeAnalyst(next_file)
                     
                         local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
@@ -97,10 +97,10 @@ what the
                                 time.sleep(10*60)
                         else:
                             restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
-                    except:
-                        minCount = 0
-                        uniqueCount = 0
-                        result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+                    #except:
+                    #    minCount = 0
+                    #    uniqueCount = 0
+                    #    result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
                 
                     #Write output to a separate file.
                     file_id = str(self.getFileId(next_file))
