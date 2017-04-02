@@ -81,7 +81,7 @@ class MosesClient():
             
 
     
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True, use_local=False):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -131,11 +131,16 @@ class MosesClient():
         #c_strategy = CS.LM
         c_strategy = CS.LOGMODEL
         
-        proxies = MosesProxy().web_proxies
+        if(use_local == False): 
+            proxies = MosesProxy().web_proxies
+        else:
+            proxies = MosesProxy().web_local
         mosesParams = {}
 
         #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm"
-        lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm"        
+        #lm_path = "/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm"        
+        lm_path = "./phrase-tables/langmodels/js.blm.lm"
+
         #if socket.gethostname() == 'bogdan.mac':
         #    lm_path = "/Users/bogdanv/workspace2/deobfuscator/data/lm/js.blm.lm"
         #elif socket.gethostname() == "Caseys-MacBook-Pro.local" or socket.gethostname() == "campus-019-136.ucdavis.edu":
@@ -308,8 +313,8 @@ class MosesClient():
             m_parallel_time = 0
         else: 
             #Parallel version
-            none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-            hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+            none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
+            hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
             wrappers = [none_wrapper, hash_wrapper]
     
             pool = multiprocessing.Pool(processes = 2)

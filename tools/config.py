@@ -100,9 +100,13 @@ class MosesProxy:
                         RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40022/RPC2"),
                         }
 
+        self.web_local = {
+                        RS.NONE:xmlrpclib.ServerProxy("http://localhost:40021/RPC2"),
+                        RS.HASH_ONE:xmlrpclib.ServerProxy("http://localhost:40022/RPC2"),
+                        }
 
 
-    def getProxies(self):
+    def getProxies(self): 
         RS = RenamingStrategies()
         
         return [(RS.NONE, self.proxies[RS.NONE])] + \
