@@ -27,8 +27,8 @@ RUN apt-get install -q -y \
 	build-essential \
 	git-core \
 	pkg-config \
-        node-uglify
-
+        node-uglify \
+        curl
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
 
@@ -63,7 +63,7 @@ COPY moses.hash_def.ini /home/jsnaughty/phrase-tables/hash_def_one_renaming/mose
 COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
 COPY nr-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table-pruned.minphr
 COPY hd-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table-pruned.minphr
-
+COPY startServers.sh /home/jsnaughty/startServers.sh
 
 #Install needed python libraries
 RUN pip2 install --upgrade pip
@@ -73,6 +73,9 @@ RUN easy_install web.py
 
 RUN git pull
 
+ENTRYPOINT ["/bin/bash"]
+
+#CMD bash
 #CMD nohup python ./tools/lmServer.py &
 #CMD nohup python ./experiments/serverChecker.py &
 

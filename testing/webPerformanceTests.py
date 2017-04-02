@@ -15,6 +15,7 @@ from unicodeManager import UnicodeReader, UnicodeWriter
 from experiments import MosesClient
 
 id_start = 0
+use_local = False
 
 class defobfuscate_tests(unittest.TestCase):
     
@@ -84,8 +85,8 @@ what the
                         minCount = len(local_instances)
                         uniqueCount = len(local)
                         start = time.time()
-                        #result = self.client.deobfuscateJS(text,True,i,True,is_parallel) #Debug mode
-                        result = self.client.deobfuscateJS(text,True,i,False,is_parallel) #For timings
+                        #result = self.client.deobfuscateJS(text,True,i,True,is_parallel,use_local) #Debug mode
+                        result = self.client.deobfuscateJS(text,True,i,False,is_parallel,use_local) #For timings
                         total_time = time.time() - start
                         if("Moses server failed" in result[0]):
                             #Skip and wait for revival scrip to restart the server?
@@ -127,9 +128,12 @@ what the
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-start",action="store", type=int, default = 0)
+    parser.add_argument("-local",action="store_true",
+                          help="Run with localhost servers (use in docker")
     parser.add_argument("unittest_args", nargs="*")
     args = parser.parse_args()
     id_start = args.start
+    use_local = args.local
 
     sys.argv[1:] = args.unittest_args
     unittest.main()
