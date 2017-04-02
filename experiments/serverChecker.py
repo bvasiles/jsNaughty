@@ -61,10 +61,13 @@ def checkMosesServers(urls):
 parser = argparse.ArgumentParser(description="Daemon to check if jsnaughty servers have gone down and restart them if so.") 
 parser.add_argument("-base_url",help = "The url base where the moses servers are being hosted.",
                     action="store", type=str, default = "http://godeep.cs.ucdavis.edu")
+parser.add_argument("-moses_dir", help = "The directory where moses is stored.",
+                    action="store", type=str, default = "/home/ccasal/moses_alt/bin/mosesserver")
+
 args = parser.parse_args()
 
 base_url = args.base_url
-
+moses_loc = args.moses_dir
     
 proxy = MosesProxy()
 moses_ports = proxy.portLists["web"]
@@ -82,7 +85,7 @@ for i in range(0, len(moses_ports)):
     ini_file = moses_inis[i]
     moses_url_dict[port_num] = base_url + ":" + str(port_num) + "/RPC2"
  
-    moses_commands.append("nohup /home/ccasal/moses_alt/bin/mosesserver --server-port " + 
+    moses_commands.append("nohup " + moses_loc + " --server-port " + 
                  str(port_num) + " --server-log server" + str(port_num) + ".log --minphr-memory "
                  + "--minlexr-memory -f " + str(ini_file)
                  + " -search-algorithm 1 -cube-pruning-pop-limit 2000 -s 2000 -n-best-list - 10&")
