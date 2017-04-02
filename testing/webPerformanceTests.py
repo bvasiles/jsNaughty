@@ -76,7 +76,7 @@ what the
                 #if(lineCount > 500): #Bogdan didn't count these correctly? or was counting SLOC?
                 #    continue
                 for is_parallel in [True, False]:
-                    #if(True):
+                    if(True):
                     #try:
                         sa = ScopeAnalyst(next_file)
                     
