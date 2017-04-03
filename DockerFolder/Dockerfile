@@ -27,7 +27,7 @@ RUN apt-get install -q -y \
 	build-essential \
 	git-core \
 	pkg-config \
-        node-uglify \
+#        node-uglify \
         curl
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
@@ -72,7 +72,10 @@ RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
 RUN easy_install web.py
 
 #Extra install (move to start eventually
-RUN apt-get install -q -y vim nodejs
+RUN apt-get install -q -y vim nodejs npm
+RUN cp /usr/bin/nodejs /usr/bin/node
+RUN npm install uglify-js -g
+RUN npm install unuglify-js -g
 
 RUN git pull
 
