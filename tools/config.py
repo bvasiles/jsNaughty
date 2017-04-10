@@ -49,13 +49,12 @@ class MosesProxy:
         RS = RenamingStrategies()
          
         self.portLists = {"web" : [40021, 40022], "experiments": [40011,40012,40013,40014,40015]}
-        #Todo: Bogdan -> I need your ini files for the experiment servers to be
-        #added to this dictionary.
         #Note that these ini files MUST correspond with the order of ports in portLists
+        #Changed the web-pruned ones to be relative paths so they'll work in the docker.
         self.iniFiles = {"web" : ["/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.no_renaming/tuning/moses.lm2.ini",
                                   "/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"],
-                         "web-pruned" : ["/home/ccasal/jsnaughty/phrase-tables/no_renaming/moses.lm2.ini",
-                                         "/home/ccasal/jsnaughty/phrase-tables/hash_def_one_renaming/moses.lm2.ini"]}
+                         "web-pruned" : ["./phrase-tables/no_renaming/moses.lm2.ini",
+                                         "./phrase-tables/hash_def_one_renaming/moses.lm2.ini"]}
 
 # #         # Default, 300k corpus
 #         self.proxies = {
@@ -101,9 +100,13 @@ class MosesProxy:
                         RS.HASH_ONE:xmlrpclib.ServerProxy("http://godeep.cs.ucdavis.edu:40022/RPC2"),
                         }
 
+        self.web_local = {
+                        RS.NONE:xmlrpclib.ServerProxy("http://localhost:40021/RPC2"),
+                        RS.HASH_ONE:xmlrpclib.ServerProxy("http://localhost:40022/RPC2"),
+                        }
 
 
-    def getProxies(self):
+    def getProxies(self): 
         RS = RenamingStrategies()
         
         return [(RS.NONE, self.proxies[RS.NONE])] + \

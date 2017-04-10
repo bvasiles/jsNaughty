@@ -117,9 +117,11 @@ def getMosesTranslationParallel(wrapper_obj):
      getMosesTranslation results) - see getMosesTranslation for output
     """
     (r_strategy, RS, a_beautifer, iBuilder_ugly, 
-     scopeAnalyst_ugly, debug_mode) = wrapper_obj
-    proxy = MosesProxy().web_proxies[r_strategy]
-
+     scopeAnalyst_ugly, debug_mode, use_local) = wrapper_obj
+    if(use_local == False):
+        proxy = MosesProxy().web_proxies[r_strategy]
+    else:
+        proxy = MosesProxy().web_local[r_strategy]
     #tmp = getMosesTranslation(proxy, r_strategy, RS,
     #                                       a_beautifer, iBuilder_ugly,
     #                                       scopeAnalyst_ugly, debug_mode)

@@ -15,6 +15,7 @@ from unicodeManager import UnicodeReader, UnicodeWriter
 from experiments import MosesClient
 
 id_start = 0
+use_local = False
 
 class defobfuscate_tests(unittest.TestCase):
     
@@ -36,8 +37,8 @@ class defobfuscate_tests(unittest.TestCase):
     def setUp(self):
         #self.pr = cProfile.Profile()
         #self.pr.enable()
-        self.testDir = Folder("/data/bogdanv/js_files/")
-        #self.testDir = Folder("/home/ccasal/jsnaughty/testing/test_files/")
+        #self.testDir = Folder("/data/bogdanv/js_files/")
+        self.testDir = Folder("./experiments/samples/stress_sample/")
         self.id_list = []
         with open("./experiments/samples/stress.csv", 'r') as f:
             for next_id in f:
@@ -75,8 +76,8 @@ what the
                 #if(lineCount > 500): #Bogdan didn't count these correctly? or was counting SLOC?
                 #    continue
                 for is_parallel in [True, False]:
-                    #if(True):
-                    try:
+                    if(True):
+                    #try:
                         sa = ScopeAnalyst(next_file)
                     
                         local = [n for n, isG in sa.isGlobal.iteritems() if isG == False]
@@ -84,8 +85,8 @@ what the
                         minCount = len(local_instances)
                         uniqueCount = len(local)
                         start = time.time()
-                        #result = self.client.deobfuscateJS(text,True,i,True,is_parallel) #Debug mode
-                        result = self.client.deobfuscateJS(text,True,i,False,is_parallel) #For timings
+                        #result = self.client.deobfuscateJS(text,True,i,True,is_parallel,use_local) #Debug mode
+                        result = self.client.deobfuscateJS(text,True,i,False,is_parallel,use_local) #For timings
                         total_time = time.time() - start
                         if("Moses server failed" in result[0]):
                             #Skip and wait for revival scrip to restart the server?
@@ -96,10 +97,10 @@ what the
                                 time.sleep(10*60)
                         else:
                             restart_attempt = False #Server is working, make sure we reset restarter flag if needed    
-                    except:
-                        minCount = 0
-                        uniqueCount = 0
-                        result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+                    #except:
+                    #    minCount = 0
+                    #    uniqueCount = 0
+                    #    result = [text, "other error.", (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
                 
                     #Write output to a separate file.
                     file_id = str(self.getFileId(next_file))
@@ -111,8 +112,8 @@ what the
 
                 i +=1
 
-                #if(i > id_start + 2):
-                #    break                
+                if(i > id_start + 2):
+                    break                
             
 
 #    def tearDown(self):
@@ -127,9 +128,12 @@ what the
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-start",action="store", type=int, default = 0)
+    parser.add_argument("-local",action="store_true",
+                          help="Run with localhost servers (use in docker")
     parser.add_argument("unittest_args", nargs="*")
     args = parser.parse_args()
     id_start = args.start
+    use_local = args.local
 
     sys.argv[1:] = args.unittest_args
     unittest.main()

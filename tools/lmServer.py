@@ -7,8 +7,8 @@ import json
 import os
 # dir = os.path.dirname(os.path.realpath(__file__))
 
-#lm_path = '/home/bogdan/deobfuscator/experiments/corpora/corpus.lm.970k/js.blm.lm'
-lm_path = '/data/bogdanv/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm'
+#lm_path = '/home/bogdan/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm'
+lm_path = './phrase-tables/langmodels/js.blm.lm'
 #lm_path = os.path.abspath(sys.argv[1])
 port = 9090
 
