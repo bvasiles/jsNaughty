@@ -11,52 +11,12 @@ import time
 import sys
 import os
 import subprocess
-import urllib
 import argparse
 PIPE = subprocess.PIPE
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
 from tools import MosesProxy
-
-def restartServers(script_files):
-    '''
-    Run a list of script files externally that will
-    restart the servers.
-    '''
-    status = True
-    
-    # invoke the list of files.
-    for script in script_files:
-        proc = subprocess.Popen(["sh", script], stderr=PIPE, stdout=PIPE)
-        _pc = proc.communicate()
-        status &= not proc.returncode
-
-    return status
-
-def checkMosesServers(urls):
-    '''
-    Given a list of URLs, check if they are available and returning 405 code.
-    Parameters:
-    urls -> a dictionary of port -> url for the port.
-    Returns:
-    status_dict -> a dictory or port -> status (S = Success, E = Error, F = Wrong code)
-    '''
-    status_dict = {}
-    for port, next_url in urls.iteritems():
-        print(next_url)
-        if(not next_url.startswith("http://")):
-            next_url = "http://" + next_url
-#        if(True):
-        try:
-            code = urllib.urlopen(next_url).getcode()
-            if(code == 405):
-                status_dict[port] = "S"
-            else:
-                status_dict[port] = "F"
-        except:
-            status_dict[port] = "E"
-    return(status_dict)
-
+from serverManagementFunctions import *
 
 parser = argparse.ArgumentParser(description="Daemon to check if jsnaughty servers have gone down and restart them if so.") 
 parser.add_argument("-base_url",help = "The url base where the moses servers are being hosted.",

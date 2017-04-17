@@ -13,7 +13,7 @@ import os
 import argparse
 import ntpath
 from  mosesClient import MosesClient
-from serverChecker import checkMosesServers
+from serverManagementFunctions import *
 from __builtin__ import str
 import subprocess
 PIPE = subprocess.PIPE
