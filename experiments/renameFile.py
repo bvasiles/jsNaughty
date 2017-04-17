@@ -10,6 +10,7 @@ names (and prints both to standard out)
 """
 import sys
 import os
+import time
 import argparse
 import ntpath
 from  mosesClient import MosesClient
@@ -25,12 +26,19 @@ from folderManager import Folder
 from tools import Uglifier
 
 
-checkTime = 30 #Look every 20 seconds..
+checkTime = 15 #Look every 15 seconds...
 
 def startServers():
-    proc = subprocess.Popen(["sh", "/home/jsnaughty/startServers.sh"], stderr=PIPE, stdout=PIPE)
-    _pc = proc.communicate()
-    return proc.returncode
+    os.system("sh /home/jsnaughty/startServers.sh")
+    #f = open("server.log", 'w')
+    #print("A")
+    #proc = subprocess.Popen(["sh", "/home/jsnaughty/startServers.sh"], stderr=f, stdout=f)
+    #print("B")
+    #_pc = proc.communicate()
+    #print("C") 
+    #f.close()
+    #print("D")
+    return True
 
 def processFile(input, output, args):
     #Read in file
@@ -95,33 +103,28 @@ moses_url_dict = {}
 moses_url_dict[40021] = "http://localhost:40021/RPC2"
 moses_url_dict[40022] = "http://localhost:40022/RPC2"
 
-#Make sure the servers are up and running.
+mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
+#Do a simple kill and restart for the moment (can change to something more selective later).
+if(args.debug):
+    print(mosesStatus)
+for port, status in mosesStatus.iteritems():
+    if(status == "E" or status == "F"):
+        startServers()
+
 while(True):
-    if(args.debug):
-         print("Trying to start servers...")
+    time.sleep(checkTime)
     mosesFail = False
-    #Ping moses Servers
     mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
     #Do a simple kill and restart for the moment (can change to something more selective later).
-    if(debug):
+    if(args.debug):
         print(mosesStatus)
     for port, status in mosesStatus.iteritems():
         if(status == "E" or status == "F"):
             mosesFail = True
-            break
-        
-    if(args.debug):
-        print(mosesFail)
-#    break
-    if(mosesFail):
-        startServers()
-    else: #Start renaming now that the servers are online.
-        if(args.debug):
-            print("Servers are online.")
-        break
-    #Wait for awhile
-    time.sleep(checkTime)
 
+    if(not mosesFail): #Stop checking once the servers are online.
+        print("Servers are online.")
+        break
 
 if(args.batch):
         inputFolder = Folder(os.path.abspath(args.input))
@@ -134,4 +137,3 @@ if(args.batch):
             processFile(next_file, output_file ,args)
 else:
     processFile(args.input, args.output, args)
-
