@@ -13,13 +13,24 @@ import os
 import argparse
 import ntpath
 from  mosesClient import MosesClient
+from serverChecker import checkMosesServers
 from __builtin__ import str
+import subprocess
+PIPE = subprocess.PIPE
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
 from unicodeManager import UnicodeReader, UnicodeWriter
 from folderManager import Folder
 from tools import Uglifier
+
+
+checkTime = 30 #Look every 20 seconds..
+
+def startServers():
+    proc = subprocess.Popen(["sh", "/home/jsnaughty/startServers.sh"], stderr=PIPE, stdout=PIPE)
+    _pc = proc.communicate()
+    return proc.returncode
 
 def processFile(input, output, args):
     #Read in file
@@ -80,6 +91,36 @@ parser.add_argument("--debug", help = "Run in debug mode, printing out "+
 args = parser.parse_args()
 
 client = MosesClient("/home/jsnaughty/")
+moses_url_dict = {}
+moses_url_dict[40021] = "http://localhost:40021/RPC2"
+moses_url_dict[40022] = "http://localhost:40022/RPC2"
+
+#Make sure the servers are up and running.
+while(True):
+    if(args.debug):
+         print("Trying to start servers...")
+    mosesFail = False
+    #Ping moses Servers
+    mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
+    #Do a simple kill and restart for the moment (can change to something more selective later).
+    if(debug):
+        print(mosesStatus)
+    for port, status in mosesStatus.iteritems():
+        if(status == "E" or status == "F"):
+            mosesFail = True
+            break
+        
+    if(args.debug):
+        print(mosesFail)
+#    break
+    if(mosesFail):
+        startServers()
+    else: #Start renaming now that the servers are online.
+        if(args.debug):
+            print("Servers are online.")
+        break
+    #Wait for awhile
+    time.sleep(checkTime)
 
 
 if(args.batch):
