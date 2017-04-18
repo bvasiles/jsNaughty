@@ -1,7 +1,6 @@
-To run the performance tests in a controlled environment:
-1) Install docker and docker-compose
-2) In this folder run "docker-compose build"
-3) Start a shell in the image with "docker run -it jsnaughty-moses"
-4) Inside the shell, run "sh startServers.sh" and wait a few minutes for the
-moses servers to start.
-5) Run the tests with "python testing/webPerformanceTests.py -local"
+To rename files:
+1) Install docker
+2) Run "docker pull caseycas/jsnaughty-moses"
+3) Run "docker run -it caseycas/jsnaughty-moses"
+4) Use the script "experiment/renameFile.py"
+	- The "-h" option will explain the options.

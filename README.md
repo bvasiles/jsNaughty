@@ -17,18 +17,14 @@ and get the unobfuscated javascript in return.  The website is not currently onl
 in the middle of moving to a more permanent host, but a link will be included here shortly.
 
 Alternatively, we have provided a docker to handle installing necessary packages and moses.
-The docker currently starts a bash shell with an environment able to run the main function
-used in the website "deobfuscateJS".  This function is located in experiments/mosesClient.py, 
-and details about its input and output can be found in the comments.  The subdirectory 
-"DockerFolder" contains the Dockerfile and running instructions are in its README file.  The 
-functionality of the Dockerfile will be expanded to also have a simpler mode that imitates the 
-website, allowing the passing of just a obfuscated file as an input and returning a 
-deobsfuscated file.
+The docker currently starts a bash shell with an environment able to run the scripts used in the 
+website along with a simple helper script (experiments/renameFile.py) to allow you to run the 
+renamer on a single Javascript file or on a batch.  To use this environment, pull the image
+"caseycas/jsnaughty-moses" from dockerhub.  Additional details on running the sample script
+in the docker are located in the README in the "DockerFolder" directory.
 
-Currently the DockerFile requires additional data (the phrase tables, .ini files, and language 
-models), which are too large to host on GitHub.  These are not yet publically available, but
-can be provided on request.  Eventually, these will be available and automatically downloaded
-by an updated DockerFile.
+Currently, building from the DockerFile requires additional data (the phrase tables, .ini files, and language models), which are too large to host on GitHub.  These are provided in the docker 
+image, but you will need to extract them if you wish to rebuild the image yourself.
 
 # Components 
 
