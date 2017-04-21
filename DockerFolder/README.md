@@ -1,11 +1,11 @@
-#Basic Usage
+# Basic Usage
 1) Install docker
 2) Run "docker pull caseycas/jsnaughty-moses"
 3) Run "docker run -it caseycas/jsnaughty-moses"
 4) Use the script "python experiments/renameFile.py"
 	- The "-h" option will explain the options.
 
-#Included Data and Expected Run Times
+# Included Data and Expected Run Times
 We have included 200 javascript files in the docker under the directory
 "experiments/samples/stress_sample/".  These are not yet minified, so you must
 use the --minify-first with the script to minify and get the renamed version of
@@ -31,6 +31,6 @@ Additionally, when first starting the renameFile.py script, it will start the
 moses and language servers.  These may take a minute to load the phrase tables
 and language models.  Subsequent runs should be much faster.
 
-#Adding your own Javascript Files to the Docker
+# Adding your own Javascript Files to the Docker
 
 Instructions incoming
