@@ -16,10 +16,10 @@ component of uglifyjs), and based on our performance analysis on our machine
 (can be run in the docker with "python testing/webPerformanceTests.py -local")
 we obtained the following total renaming times (in seconds) on the 200 files:
 
-`
+```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   2.220   4.999   6.942   9.332  10.750  55.720 
-`
+```
 
 However, we've observed that Moses can be quite memory intensive (the docker 
 itself is 8 GB), so if you're trying to run it on a laptop, or if you have many
