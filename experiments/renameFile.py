@@ -48,6 +48,14 @@ def processFile(input, output, args):
     if(args.minify_first):
         minifier = Uglifier()
         (ok, text, msg) = minifier.web_run(text)
+        if(output.endswith(".out.js")):
+            min_file = output[:7] + ".min.js"
+        elif(output.endswith(".js")):
+            min_file = output[:3] + ".min.js"
+        else:
+            min_file = output + ".min.js"
+        
+        open(min_file, 'w').write(text) 
         if(args.debug):
             print("------------------------Minified File-------------------------")
             print(text)
@@ -72,7 +80,7 @@ parser = argparse.ArgumentParser(description="A simple helper script to run " +
 
 parser.add_argument("input",help = "Path to the file you would like to " +
                     " recover the names for. In batch modew this is a " +
-                    "directory", action="store", type=str)
+                    "directory.", action="store", type=str)
 parser.add_argument("output", help = "Path to the output file where the "+
                     "renamed file is stored. In batch mode this is a " + 
                     "directory.", action = "store", type = str)
@@ -90,7 +98,10 @@ parser.add_argument("--mix", help = "Optional argument designating that " +
 parser.add_argument("--minify-first", help = "Optional argument " +
                     "designating that the input file is not minified. "+
                     "The tool will first run uglifyJS on the file, and then " +
-                    "recover names.", action = "store_true")
+                    "recover names. If this option is enabled, then also " +
+                    "save a version of the minified file with a \'.min.js\' "+
+                    "externsion.  In batch mode, we save a minified file for "+
+                    "each input file.", action = "store_true")
 parser.add_argument("--debug", help = "Run in debug mode, printing out "+
                     "intermediate information.  Also prints the minified "+
                     "file to standard out if the \'--minify-first\' flag " +
