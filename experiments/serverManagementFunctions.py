@@ -18,7 +18,7 @@ def restartServers(script_files):
 
     return status
 
-def checkMosesServers(urls):
+def checkMosesServers(urls, debug = False):
     '''
     Given a list of URLs, check if they are available and returning 405 code.
     Parameters:
@@ -28,7 +28,8 @@ def checkMosesServers(urls):
     '''
     status_dict = {}
     for port, next_url in urls.iteritems():
-        print(next_url)
+        if(debug==True):
+            print(next_url)
         if(not next_url.startswith("http://")):
             next_url = "http://" + next_url
 #        if(True):

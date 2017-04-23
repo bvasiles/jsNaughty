@@ -458,13 +458,21 @@ class MosesClient():
         
         
         #Tally up the build times for the lexers, indexbuilders and scopers.
-        
+        if(not use_mix):
+            n2pLexTime = 0
+            n2pBuildTime = 0
+            n2pSATime = 0
+        else:
+            n2pLexTime = n2p_lexer.build_time
+            n2pBuildTime = n2p_iBuilder.build_time
+            n2pSATime =  n2p_scopeAnalyst.build_time
+
         #Lexers
-        lex_total_time = lex_time + lex_time_default + lex_ugly.build_time + n2p_lexer.build_time
+        lex_total_time = lex_time + lex_time_default + lex_ugly.build_time + n2pLexTime
         #IndexBuilders
-        builder_time = iBuilder_ugly.build_time + n2p_iBuilder.build_time + a_iBuilder.build_time + iBuilder_default.build_time
+        builder_time = iBuilder_ugly.build_time + n2pBuildTime + a_iBuilder.build_time + iBuilder_default.build_time
         #scopers
-        scoper_time = n2p_scopeAnalyst.build_time + scopeAnalyst.build_time + scopeAnalyst_default.build_time + a_scopeAnalyst.build_time
+        scoper_time = n2pSATime + scopeAnalyst.build_time + scopeAnalyst_default.build_time + a_scopeAnalyst.build_time
         
         #Change the presentation of this to return performance information
         #and error codes as separate elements in a tuple
