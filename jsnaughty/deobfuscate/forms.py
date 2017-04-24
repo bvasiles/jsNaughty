@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import MaxLengthValidator
 #from django.utils.safestring import mark_safe
 #from crispy_forms.helper import FormHelper
 #from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
@@ -12,7 +13,7 @@ from django import forms
 class JSForm(forms.Form):
     #in_text = forms.Textarea(label = "Obfuscated Text")
     #in_text = forms.CharField(widget=forms.Textarea)
-    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea'}), initial = "Enter your Javascript Here.", label = "")
+    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea', 'placeholder' : 'Enter your Javascript Here.'}), label = "", validators=[MaxLengthValidator(10000)])
     mix_jsnice = forms.ChoiceField(widget=forms.RadioSelect, label = "JSNice Mixing", choices =(('Y', 'Enable (Best Results)'), ('N', 'Disable')), initial='Y')
     #mix_jsnice = forms.ChoiceField(widget=forms.RadioSelect(renderer=HorizontalRadioRenderer), label = "JSNice Mixing", choices =(('Y', 'Enable (Best Results)'), ('N', 'Disable')), initial='Y')
 
