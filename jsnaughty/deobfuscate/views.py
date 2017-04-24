@@ -1,4 +1,5 @@
 import time
+from random import randint
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -10,6 +11,7 @@ from .models import PlaceHolderModel
 #from deobfuscate.internal_test import MockClient
 from deobfuscate.experiments import MosesClient
 
+
 # Create your views here.
 class IndexView(generic.ListView):
     #Display an about and link the actual text?
@@ -17,6 +19,9 @@ class IndexView(generic.ListView):
     #context_object_name = 'javascript_deofuscation'
     def get_queryset(self):
         return JSForm()
+    
+def phraseTables(request):
+    return render(request, "deobfuscate/downloads.html")
     
 def about(request):
     #output = "Behold, The Deobfuscated Javascript!"
@@ -53,7 +58,10 @@ def get_js(request):
                 mix = True
             else:
                 mix = False
-            annotated_output = rClient.deobfuscateJS(form.cleaned_data['in_text'], mix, 0, False) #Validate here.
+            
+            #Pick a number to give an id for where we are saving the JSNICE temp file if necessary
+            transaction_id = randint(1, 1000000000)
+            annotated_output = rClient.deobfuscateJS(form.cleaned_data['in_text'], mix, transaction_id, False) #Validate here.
             #Annotated output includes performance metrics.  We'll control how they are output here.
             #For now, just output deobsfucation + jsnice error string if necessary
             output = annotated_output[1] + annotated_output[0]
