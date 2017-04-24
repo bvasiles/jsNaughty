@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 
-RUN apt-get update
+RUN apt-get update --fix-missing
+
 RUN apt-get install -q -y \
 	unzip \
 	make \
@@ -28,7 +29,8 @@ RUN apt-get install -q -y \
 	git-core \
 	pkg-config \
 #        node-uglify \
-        curl
+        curl \
+        vim
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
 
@@ -79,7 +81,6 @@ COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
 COPY nr-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table-pruned.minphr
 COPY hd-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table-pruned.minphr
 COPY startServers.sh /home/jsnaughty/startServers.sh
-
 
 ENTRYPOINT ["/bin/bash"]
 
