@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 
-RUN apt-get update
+RUN apt-get update --fix-missing
+
 RUN apt-get install -q -y \
 	unzip \
 	make \
@@ -28,7 +29,8 @@ RUN apt-get install -q -y \
 	git-core \
 	pkg-config \
 #        node-uglify \
-        curl
+        curl \
+        vim
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
 
@@ -72,12 +74,14 @@ RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
 RUN easy_install web.py
 
 #Extra install (move to start eventually
-RUN apt-get install -q -y vim nodejs npm
+RUN apt-get install -q -y nodejs npm
 RUN cp /usr/bin/nodejs /usr/bin/node
 RUN npm install uglify-js -g
 RUN npm install unuglify-js -g
 
-RUN git pull
+#RUN git pull
+
+#RUN sh startServers.sh &
 
 ENTRYPOINT ["/bin/bash"]
 
