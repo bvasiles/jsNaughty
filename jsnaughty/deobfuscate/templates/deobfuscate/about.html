@@ -1,6 +1,30 @@
 {% extends "deobfuscate/new_base.html" %}
 {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+<h1>About JSNaughty</h1>
 <p>
-JS Naughty About page stub.
+JSNaughty is a tool for recovering names from obfuscated Javascript files.  It is based on 
+framing the deobfuscation problem as a language translation problem - we translate the 
+obfuscated names to meaningful names using the context in which variables are defined.
 </p>
+<p>
+To do this, the tool makes uses of the <a href="http://www.statmt.org/moses/">Moses</a> 
+statistical machine translation framework to perform the translation, along with some pre 
+and post processing to handle differences between code and natural language - such as code's 
+requirement for consistency within scope.
+</p>
+<p>
+The source code for the tool can be found at on our GitHub page <a href="https://github.com/bvasiles/jsNaughty">here</a>.  In addition to the website, a more flexible environment to run
+the tool can be found on <a href"https://hub.docker.com/r/caseycas/jsnaughty-moses/">DockerHub</a>, with addition instructions on running the docker container and the tool inside in the README file <a href="https://github.com/bvasiles/jsNaughty/tree/master/DockerFolder">here</a>.
+</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 {% endblock %}
