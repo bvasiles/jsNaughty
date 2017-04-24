@@ -33,4 +33,51 @@ and language models.  Subsequent runs should be much faster.
 
 # Adding your own Javascript Files to the Docker
 
-Instructions incoming
+To move file into the docker, first start up the docker with the command:
+
+`
+docker run -it caseycas/jsnaughty-moses
+`
+
+Then, on your host machine, run "docker ps".  This will list the currently
+running docker containers and will look something like this:
+
+```
+CONTAINER ID        IMAGE                      COMMAND             CREATED             STATUS              PORTS               NAMES
+45e85f1b3131        caseycas/jsnaughty-moses   "/bin/bash"         43 seconds ago      Up 42 seconds                           condescending_hawking
+...
+```
+
+To copy whatever file or directory you wish to test into the docker use:
+
+```
+docker cp <path_on_host> <container_name>:<path_on_docker>
+```
+
+So, if we wanted to copy some file "test.js" in our current directory to the
+beginning working directory of the docker with the name "condescending_hawking",
+we would run:
+
+```
+docker cp test.js condescending_hawking:/home/jsnaughty/test.js
+```
+
+#Building the Docker from scratch (Advanced)
+If you have copies of the phrase tables and language models in the 
+"DockerFolder" directory, you can rebuild the docker file.  If you don't have
+these files, you can copy them from a running version of the docker, similar to
+the procedure described in the previous section (make sure to replace the name
+of the container with yours):
+
+```
+docker cp condescending_hawking:/home/jsnaughty/phrase-tables/hash_def_one_renaming/* ./
+docker cp condescending_hawking:/home/jsnaughty/phrase-tables/no_renaming/* ./
+docker cp condescending_hawking:/home/jsnaughty/phrase-tables/langmodels/* ./
+```
+
+Then, if you have docker-compose installed in addition to docker, you can build
+the image with "docker-compose build".
+
+As a note, the success of this build depends on many different packages, so it
+is possible for it to fail if any packages are missing.  It is preferred to 
+simply use the image pulled from DockerHub.
