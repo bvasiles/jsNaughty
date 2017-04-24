@@ -62,7 +62,7 @@ we would run:
 docker cp test.js condescending_hawking:/home/jsnaughty/test.js
 ```
 
-#Building the Docker from scratch (Advanced)
+# Building the Docker from scratch (Advanced)
 If you have copies of the phrase tables and language models in the 
 "DockerFolder" directory, you can rebuild the docker file.  If you don't have
 these files, you can copy them from a running version of the docker, similar to
