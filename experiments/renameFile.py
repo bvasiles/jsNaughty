@@ -49,9 +49,9 @@ def processFile(input, output, args):
         minifier = Uglifier()
         (ok, text, msg) = minifier.web_run(text)
         if(output.endswith(".out.js")):
-            min_file = output[:7] + ".min.js"
+            min_file = output[:-7] + ".min.js"
         elif(output.endswith(".js")):
-            min_file = output[:3] + ".min.js"
+            min_file = output[:-3] + ".min.js"
         else:
             min_file = output + ".min.js"
         
@@ -116,35 +116,44 @@ moses_url_dict[40022] = "http://localhost:40022/RPC2"
 
 mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
 #Do a simple kill and restart for the moment (can change to something more selective later).
+print("Checking if servers online.  If they are offline, it may take a minute")
+print("for the phrase tables to load.")
 if(args.debug):
     print(mosesStatus)
+
+startup = False
 for port, status in mosesStatus.iteritems():
     if(status == "E" or status == "F"):
         startServers()
+        startup = True
 
-while(True):
-    time.sleep(checkTime)
-    mosesFail = False
-    mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
-    #Do a simple kill and restart for the moment (can change to something more selective later).
-    if(args.debug):
-        print(mosesStatus)
-    for port, status in mosesStatus.iteritems():
-        if(status == "E" or status == "F"):
-            mosesFail = True
+if(startup):
+    while(True):
+        time.sleep(checkTime)
+        mosesFail = False
+        mosesStatus = checkMosesServers(moses_url_dict) #Eventually turn into list of failed servers
+        #Do a simple kill and restart for the moment (can change to something more selective later).
+        if(args.debug):
+            print(mosesStatus)
+        for port, status in mosesStatus.iteritems():
+            if(status == "E" or status == "F"):
+                mosesFail = True
 
-    if(not mosesFail): #Stop checking once the servers are online.
-        print("Servers are online.")
-        break
+        if(not mosesFail): #Stop checking once the servers are online.
+            break
+
+print("Servers are online.")
 
 if(args.batch):
         inputFolder = Folder(os.path.abspath(args.input))
         fileList = inputFolder.fullFileNames("*.js", recursive=False)  
         for next_file in fileList:
+            print("Renaming " + str(next_file))
             base_file = ntpath.basename(next_file)
             output_file = \
                 os.path.join(args.output,
                     base_file[:base_file.rfind(".")] + ".out.js")
             processFile(next_file, output_file ,args)
 else:
+    print("Renaming " + str(args.input))
     processFile(args.input, args.output, args)

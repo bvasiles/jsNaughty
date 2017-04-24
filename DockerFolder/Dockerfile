@@ -49,9 +49,24 @@ RUN ./bjam -q --with-cmph=./opt --with-xmlrpc-c=./opt --with-mm --max-kenlm-orde
 
 WORKDIR /home
 
+#Install needed python libraries
+RUN pip2 install --upgrade pip
+RUN pip2 install numpy scipy pygments unidecode requests
+RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
+RUN easy_install web.py
+
+#Extra install (move to start eventually
+RUN apt-get install -q -y vim nodejs npm
+RUN cp /usr/bin/nodejs /usr/bin/node
+RUN npm install uglify-js -g
+RUN npm install unuglify-js -g
+
 RUN git clone https://github.com/bvasiles/jsNaughty.git jsnaughty
 
+
 WORKDIR /home/jsnaughty
+
+RUN git pull
 
 #TODO: Need to store this somewhere for people to download.
 #Paths in the .ini files are relative to where the moses command is run from.
@@ -67,30 +82,6 @@ COPY nr-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/no_renaming/phr
 COPY hd-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table-pruned.minphr
 COPY startServers.sh /home/jsnaughty/startServers.sh
 
-#Install needed python libraries
-RUN pip2 install --upgrade pip
-RUN pip2 install numpy scipy pygments unidecode requests
-RUN pip2 install https://github.com/kpu/kenlm/archive/master.zip
-RUN easy_install web.py
-
-#Extra install (move to start eventually
-RUN apt-get install -q -y nodejs npm
-RUN cp /usr/bin/nodejs /usr/bin/node
-RUN npm install uglify-js -g
-RUN npm install unuglify-js -g
-
-#RUN git pull
-
-#RUN sh startServers.sh &
-
 ENTRYPOINT ["/bin/bash"]
 
-#CMD bash
-#CMD nohup python ./tools/lmServer.py &
-#CMD nohup python ./experiments/serverChecker.py &
-
-#Run tests (Just do this interactively I guess)
-#RUN nohup python experiments/
-#RUN nohup python experiments/serverChecker.py &
-#RUN python ./testing/webPerformanceTests.py
 
