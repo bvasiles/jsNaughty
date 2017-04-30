@@ -67,7 +67,7 @@ class Uglifier:
         try:
             out, err = proc.communicate(input=inputText)
         except:
-            out, err = proc.communicate(input=inputText.decode('utf8'))#.decode('unicode_escape'))
+            out, err = proc.communicate(input=inputText.encode('utf8'))#.decode('unicode_escape'))
         #out, err = proc.communicate(input=inputText.encode('utf16')) # JS is non-quite UTF-16 or UCS-02 (but either should be okay?)
         
         if not proc.returncode:
@@ -96,13 +96,13 @@ class Uglifier:
         try:
             out, err = proc.communicate(input=inputText)
         except:
-            out, err = proc.communicate(input=inputText.decode('utf8'))#.decode('unicode_escape'))
+            out, err = proc.communicate(input=inputText.encode('utf8'))#.decode('unicode_escape'))
         #out, err = proc.communicate(input=inputText.encode('utf16')) # JS is non-quite UTF-16 or UCS-02 (but either should be okay?)
         
         if not proc.returncode:
             uglifyjs_ok = True
             
-        return (uglifyjs_ok, out.encode('utf8'), err)
+        return (uglifyjs_ok, out, err)
 
 
 
