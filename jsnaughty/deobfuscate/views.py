@@ -6,11 +6,11 @@ from django.urls import reverse
 from django.views import generic
 from django.template import Context
 
-from .forms import JSForm, ServerErrorForm, LastJSInvalidForm
+from .forms import JSForm, JSMinForm, ServerErrorForm, LastJSInvalidForm
 from .models import PlaceHolderModel
 #from deobfuscate.internal_test import MockClient
 from deobfuscate.experiments import MosesClient
-
+from deobfuscate.tools import Uglifier
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -30,7 +30,28 @@ def about(request):
 def team(request):
     #output = "Behold, The Deobfuscated Javascript!"
     return render(request, 'deobfuscate/team.html')
-     
+
+def minify(request):
+    if request.method == 'POST':
+        print("Minifying")
+        # create a form instance and populate it with data from the request:
+        form = JSMinForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            normal_text = form.cleaned_data['in_text']
+            uglify = Uglifier(flags=["-m"])
+            if(True):
+            #try:
+                (ok, minified, msg) = uglify.web_run_end(normal_text)
+                print(minified)
+                return render(request, 'deobfuscate/minify.html', {'form': form,'out_text': minified, 'height' : minified.count("\n") + 1, 'width' : 80})
+
+            #except:
+            #    return render(request, "deobfuscate/minify.html", {'form': form, 'out_text': "", 'height' : 8})
+    else:
+        form = JSMinForm()
+    
+    return render(request, "deobfuscate/minify.html", {'form': form, 'out_text': "", 'height' : 8})     
     
 def results(request, output):
     #output = "Behold, The Deobfuscated Javascript!"
@@ -77,11 +98,12 @@ def get_js(request):
                 return render(request, "deobfuscate/get_js.html", {'form': form})
             else:
                 # redirect to a new URL:
-                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80}))
+                #Context is giving an error for some reason.
+                return render(request, 'deobfuscate/get_js.html', {'form': form,'out_text': output, 'height' : output.count("\n") + 1, 'width' : 80})
 #                return render(request, 'deobfuscate/get_js.html', Context({'form': form,'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
                 #return render(request, 'deobfuscate/results.html', Context({'out_text': "Total Process Time: " + str(duration) + "\n" + output, 'height' : output.count("\n") + 1, 'width' : 80}))
     # if a GET (or any other method) we'll create a blank form
     else:
         form = JSForm()
     #Replace with the form again.
-    return render(request, "deobfuscate/get_js.html", Context({'form': form, 'out_text': "", 'height' : 8}))
+    return render(request, "deobfuscate/get_js.html", {'form': form, 'out_text': "", 'height' : 8})

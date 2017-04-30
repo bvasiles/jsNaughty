@@ -26,6 +26,9 @@ class JSForm(forms.Form):
 #        )
 #        super(JSForm, self).__init__(*args, **kwargs)
 
+class JSMinForm(forms.Form):
+    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea', 'placeholder' : 'Enter your Javascript Here.'}), label = "", validators=[MaxLengthValidator(10000)])
+
 
 class LastJSInvalidForm(forms.Form):
     '''

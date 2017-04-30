@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^team/$', views.team, name='team'),
     url(r'^results/$', views.results, name='results'),
     url(r'^get_js/$', views.get_js, name='get_js'),
+    url(r'minify/$', views.minify, name='minify'),
 ]
