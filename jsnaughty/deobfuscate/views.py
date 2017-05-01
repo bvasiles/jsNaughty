@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views import generic
 from django.template import Context
 
-from .forms import JSForm, JSMinForm, ServerErrorForm, LastJSInvalidForm
+from .forms import JSForm, JSMinForm, JSMinErrorForm, ServerErrorForm, LastJSInvalidForm
 from .models import PlaceHolderModel
 #from deobfuscate.internal_test import MockClient
 from deobfuscate.experiments import MosesClient
@@ -40,14 +40,22 @@ def minify(request):
         if form.is_valid():
             normal_text = form.cleaned_data['in_text']
             uglify = Uglifier(flags=["-m"])
-            if(True):
-            #try:
+            #if(True):
+            try:
                 (ok, minified, msg) = uglify.web_run_end(normal_text)
-                print(minified)
+                #print(minified)
+                if(minified == ""):
+                    raise ValueError
                 return render(request, 'deobfuscate/minify.html', {'form': form,'out_text': minified, 'height' : minified.count("\n") + 1, 'width' : 80})
 
-            #except:
-            #    return render(request, "deobfuscate/minify.html", {'form': form, 'out_text': "", 'height' : 8})
+            except:
+                print("Min fail.")
+                form = JSMinErrorForm()
+                return render(request, "deobfuscate/minify.html", {'form': form, 'out_text': "", 'height' : 8})
+        else:
+            print("Min valid fail.")
+            form = JSMinErrorForm()
+            return render(request, "deobfuscate/minify.html", {'form': form, 'out_text': "", 'height' : 8})
     else:
         form = JSMinForm()
     
