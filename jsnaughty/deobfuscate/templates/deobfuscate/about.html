@@ -17,8 +17,23 @@ requirement for consistency within scope.
 </p>
 <p>
 The source code for the tool can be found at on our GitHub page <a href="https://github.com/bvasiles/jsNaughty">here</a>.  In addition to the website, a more flexible environment to run
-the tool can be found on <a href="https://hub.docker.com/r/caseycas/jsnaughty-moses/">DockerHub</a>, with addition instructions on running the docker container and the tool inside in the README file <a href="https://github.com/bvasiles/jsNaughty/tree/master/DockerFolder">here</a>.
+the tool can be found on <a href="https://hub.docker.com/r/caseycas/jsnaughty-moses/">DockerHub</a>, with addition instructions on running the docker container and the tool inside are 
+in the README file <a href="https://github.com/bvasiles/jsNaughty/tree/master/DockerFolder">here</a>.
 </p>
+<h2>Using this website:</h2>
+<p>
+The <a href="{% url 'deobfuscate:get_js' %}">Home</a> page allows the recovering of obfuscated names from the UglifyJS obfuscation tool.  You can paste the Javascript obfuscated with this tool in the left text
+box (replacing the example), and the tool will produced renamed (and indented if needed) Javascript.  If you included the JSNice mixing option then the tool combines the names suggested by Moses with names
+suggested by JSNice.  Our experiements show this is the most effective option.  You can disable including the JSNice names by turning it off, or follow the link to try the renaming with just the JSNice tools.
+</p>
+<p>
+Also, since our tool was designed to recover code minified by UglifyJS, we have included a web front end to minify Javascript with this tool <a href="{% url 'deobfuscate:minify' %}">here.</a>
+</p>
+<p>
+Finally, due to space and time performance concerns, both the website and the docker use <a href="http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5">pruned phrase tables.</a> In the paper, we used the full phrase
+tables.  Experiments using the same test set from our paper show that the pruned phrase table leads to slightly worse accuracy, but that the mixing option remains the most effective model.
+</p>
+
     </div>
   </div>
 </div>

@@ -10,11 +10,18 @@ from django.core.validators import MaxLengthValidator
 #    def render(self):
 #        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
+EXAMPLES = (
+    ("EX1", 'Example 1'),
+)
+
+EX_TEXT = open("deobfuscate/web_examples/paper_ex.min.js", 'r').read()
+
 class JSForm(forms.Form):
     #in_text = forms.Textarea(label = "Obfuscated Text")
     #in_text = forms.CharField(widget=forms.Textarea)
-    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea', 'placeholder' : 'Enter your Javascript Here.'}), label = "", validators=[MaxLengthValidator(10000)])
-    mix_jsnice = forms.ChoiceField(widget=forms.RadioSelect, label = "JSNice Mixing", choices =(('Y', 'Enable (Best Results)'), ('N', 'Disable')), initial='Y')
+    in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea'}), initial=EX_TEXT, label = "", validators=[MaxLengthValidator(10000)])
+    #in_text = forms.CharField(widget=forms.Textarea(attrs={'class' : 'inline-txtarea', 'placeholder' : 'Enter your Javascript Here.'}), label = "", validators=[MaxLengthValidator(10000)])
+    mix_jsnice = forms.ChoiceField(widget=forms.RadioSelect, label = "<a href=\"http://jsnice.org\">JSNice Mixing</a>", choices =(('Y', 'Enable (Best Results)'), ('N', 'Disable')), initial='Y')
     #mix_jsnice = forms.ChoiceField(widget=forms.RadioSelect(renderer=HorizontalRadioRenderer), label = "JSNice Mixing", choices =(('Y', 'Enable (Best Results)'), ('N', 'Disable')), initial='Y')
 
 #    def __init__(self, *args, **kwargs):
