@@ -206,18 +206,19 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                None, {},
                {}, {}, {},
                0, 0, 0, 0)
-   
-    (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
-    if not ok:
-        return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
-               "", {}, None, 
-               None, {}, 
-               {}, {}, {},
-               0, 0, 0, 0)
-            
-    a_lexer = WebLexer(beautified_after_text)
+  
+    #(ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
+    #if not ok:
+    #    return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
+    #           "", {}, None, 
+    #           None, {}, 
+    #           {}, {}, {},
+    #           0, 0, 0, 0)
+    a_lexer = WebLexer(after_text)        
+    #a_lexer = WebLexer(beautified_after_text)
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
-    a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
+    a_scopeAnalyst = WebScopeAnalyst(after_text)
+    #a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
        
     hash_name_map = {}
     
@@ -266,7 +267,6 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     end = time.time()
     rn_time = end-rn_start
     m_start = time.time()
-    
     #if(debug_mode):
     #    print("Invoking Moses.")
     #    print(lx.collapsedText)
