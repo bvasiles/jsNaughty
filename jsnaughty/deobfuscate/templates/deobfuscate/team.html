@@ -1,6 +1,38 @@
 {% extends "deobfuscate/new_base.html" %}
+{% load staticfiles %}
+
 {% block content %}
-<p>
-JS Naughty Team page stub.
-</p>
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <p>JSNaughty is being created and maintained by:</p>
+
+<div><img src = "{% static 'deobfuscate/img/bogdan.jpg' %}" style="float:left;margin-right:20px" /></div>
+<div style="vertical-align: middle;">
+<a href="http://bvasiles.github.io">Bogdan Vasilescu</a>, 
+Assistant Professor at <a href="http://www.cmu.edu">Carnegie Mellon University</a>
+</div>
+<div style="clear:left"><br /></div>
+	    
+<div><img src= "{% static 'deobfuscate/img/casey.jpg' %}" style="float:left;margin-right:20px" /></div>
+<div style="vertical-align: middle;">
+<a href="http://caseycas.github.io">Casey Casalnuovo</a>, 
+Graduate Student at <a href="http://www.ucdavis.edu">UC Davis</a>
+</div>
+<div style="clear:left"><br /></div>
+
+<div><img src= "{% static 'deobfuscate/img/prem.jpg' %}" style="float:left;margin-right:20px" /></div>
+<div style="vertical-align: middle;">
+<a href="http://web.cs.ucdavis.edu/~devanbu/">Prem Devanbu</a>, 
+Professor at <a href="http://www.ucdavis.edu">UC Davis</a>
+</div>
+<div style="clear:left"><br /></div>
+
+
+<h4 id="acknowledgment">Acknowledgments</h4>
+<p>We gratefully acknowledge support from NSF <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1414172&HistoricalAwards=false">1414172</a>,  SHF: Large: Collaborative Research: Exploiting the Naturalness of Software.</p>
+
+    </div>
+  </div>
+</div>
 {% endblock %}

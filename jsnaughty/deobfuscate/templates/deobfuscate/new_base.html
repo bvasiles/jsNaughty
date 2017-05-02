@@ -13,11 +13,12 @@
     <title>JSNaughty - Deobfuscator for Javascript</title>
 
     <!-- Bootstrap Core CSS -->
+
     <link href="{% static 'deobfuscate/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">   
 
 
-    <!-- Theme CSS -->
-    <link href="{% static 'deobfuscate/css/clean-blog.min.css' %}" rel="stylesheet"> 
+    <!-- Theme CSS (Store as min) -->
+    <link href="{% static 'deobfuscate/css/clean-blog.css' %}" rel="stylesheet"> 
 
     <!-- Custom Fonts -->
     <link href="{% static 'deobfuscate/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
@@ -56,10 +57,14 @@
                      <a href="{% url 'deobfuscate:get_js' %}">Home</a>
                     </li>
                     <li>
+                    <a href="{% url 'deobfuscate:minify' %}">Minify</a>
+                    </li>
+                    <li>
                      <a href="{% url 'deobfuscate:team' %}">Team</a>
                     </li>
                     <li>
                     <a href="{% url 'deobfuscate:about' %}">About</a>
+                    </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -69,7 +74,7 @@
 
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url({% static 'deobfuscate/img/about-bg.jpg' %})">
+    <header class="intro-header" style="background-image: url({% static 'deobfuscate/img/topbar.jpg' %})">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -99,22 +104,6 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <ul class="list-inline text-center">
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
                         <li>
                             <a href="https://github.com/bvasiles/jsNaughty">
                                 <span class="fa-stack fa-lg">

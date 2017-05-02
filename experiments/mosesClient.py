@@ -81,7 +81,7 @@ class MosesClient():
             
 
     
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True, use_local=False):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True, use_local=True):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
