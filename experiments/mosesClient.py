@@ -355,7 +355,17 @@ class MosesClient():
                 pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
                 (lin, col) = iBuilder_default.revFlatMat[pos_default]
                 (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
-
+                with open("debug.txt", 'w') as f:
+                    f.write("--------------------------------------------------------------\n")
+                    f.write(str(line_num))
+                    f.write("\n")
+                    f.write(str(line_idx))
+                    f.write("\n")
+                    f.write(str(a_position_names))
+                    f.write("\n")
+                    f.write(str(scopeAnalyst_default))
+                    f.write("\n")
+                    f.write(str(iBuilder_default))
                 (name, def_scope) = a_position_names[line_num][line_idx]
                 key = (name, def_scope)
 
