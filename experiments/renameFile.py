@@ -46,14 +46,20 @@ def processFile(input, output, args):
     
     #Minify if necessary
     if(args.minify_first):
-        minifier = Uglifier()
-        (ok, text, msg) = minifier.web_run(text)
-        if(output.endswith(".out.js")):
-            min_file = output[:-7] + ".min.js"
-        elif(output.endswith(".js")):
-            min_file = output[:-3] + ".min.js"
-        else:
-            min_file = output + ".min.js"
+        try:
+            minifier = Uglifier()
+            (ok, text, msg) = minifier.web_run(text)
+            if(output.endswith(".out.js")):
+                min_file = output[:-7] + ".min.js"
+            elif(output.endswith(".js")):
+                min_file = output[:-3] + ".min.js"
+            else:
+                min_file = output + ".min.js"
+        except:
+            print("UglifyJS cannot minify your file.  Does it have syntax errors?")
+            if(args.batch):
+                print("Skipping " + str(input))
+            return
         
         open(min_file, 'w').write(text) 
         if(args.debug):
@@ -61,13 +67,15 @@ def processFile(input, output, args):
             print(text)
             print("--------------------------------------------------------------")
         if(not ok):
-            print("Uglifiy failed to minify " + args.input_file)
-            print("Message:")
+            print("UglifyJS failed to minify " + input)
+            print("This is likely due to syntax errors in the Javascript input.")
+            print("UglifyJS message:") 
             print(msg)
-            quit() #TODO change to continue for batch files.
+            if(args.batch):
+                print("Skipping " + str(input))
+            return  
     
-    
-    result = client.deobfuscateJS(text,args.mix,0,args.debug,True,True)
+    result = client.deobfuscateJS(text,args.mix,0,args.debug,False,True)
 
     #Save to output file
     with open(output, 'w') as f:

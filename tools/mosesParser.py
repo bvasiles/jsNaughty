@@ -18,7 +18,7 @@ class MosesParser:
                      line_map):
 
 #        print(line_map)        
-#         print '\nmoses output-----------------'    
+#         print '\nmoses output-1----------------'    
         for line in moses_output.split('\n'):
 #             print line
         
@@ -39,7 +39,7 @@ class MosesParser:
             # The translation:
             translation = parts[1].strip()
             translation_parts = translation.split(' ')
-    
+
             # Only keep translations that have exactly the same 
             # number of tokens as the input
             # If the translation has more tokens, copy the input
@@ -96,7 +96,7 @@ class MosesParser:
             # The translation:
             translation = parts[1].strip()
             translation_parts = translation.split(' ')
-    
+
             # Only keep translations that have exactly the same 
             # number of tokens as the input
             # If the translation has more tokens, copy the input

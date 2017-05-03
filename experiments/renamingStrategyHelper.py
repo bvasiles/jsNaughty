@@ -88,6 +88,8 @@ def segmentedTranslation(lx, max_piece_size, proxy, debug_mode = False):
     md = WebMosesDecoder(proxy)    
     
     lines = lx.collapsedText.split("\n")
+    if(lines[-1] == u''): #Remove final newline if necessary
+        lines = lines[:-1]
     line_count = len(lines)
     start = 0
     translation = []
