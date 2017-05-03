@@ -14,7 +14,7 @@ import socket
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
-from tools import IndexBuilder, WebLexer
+from tools import Aligner, IndexBuilder, WebLexer
 from tools import PreRenamer
 from tools import MosesProxy, WebMosesDecoder, MosesParser
 from tools import WebScopeAnalyst
@@ -90,17 +90,22 @@ def segmentedTranslation(lx, max_piece_size, proxy, debug_mode = False):
     lines = lx.collapsedText.split("\n")
     line_count = len(lines)
     start = 0
-    translation = {}
+    translation = []
     #Possibly can be done in parallel
     for start in range(0, line_count, max_piece_size):
         next_piece = "\n".join(lines[start:start+max_piece_size])
-        (ok, translation[start], _err) = md.run(next_piece)
+        (ok, next_translation, _err) = md.run(next_piece)
+        translation.append((start, next_translation))
             
         if not ok:
             return(ok, lx.collapsedText, _err)
-        
-    combined = reduce(lambda x, y: x+y, translation.values())
-
+   
+    #Order guarantee in case of further parallelization 
+    translation = sorted(translation, key= lambda t: t[0])
+    combined = reduce(lambda x, y: x+ "\n" +y, [nt[1] for nt in translation])
+    #print("---------------Combined---------------")
+    #print(combined)
+    #print("---------------Combined---------------")
     return(True, adjustCombinedMoses(combined, MosesProxy.nbestsize), "")
 
 def testFunc(r_strategy):
@@ -207,20 +212,39 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                {}, {}, {},
                0, 0, 0, 0)
   
-    #(ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
-    #if not ok:
-    #    return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
-    #           "", {}, None, 
-    #           None, {}, 
-    #           {}, {}, {},
-    #           0, 0, 0, 0)
-    a_lexer = WebLexer(after_text)        
-    #a_lexer = WebLexer(beautified_after_text)
+    (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
+    if not ok:
+        return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
+               "", {}, None, 
+               None, {}, 
+               {}, {}, {},
+               0, 0, 0, 0)
+ 
+    # Align hashed and non hashed  files, in case the beautifier 
+    # line wrapped the extended lines.
+    try:
+        aligner = Aligner()
+        (aligned_after, aligned_before) = aligner.web_align(WebLexer(beautified_after_text).tokenList,
+                                                                 WebLexer(iBuilder_ugly.get_text()).tokenList)
+    except:
+        return(False, "Aligner failed on the renamed text for " + str(r_strategy),
+               "", {}, None,
+               None, {},
+               {}, {}, {},
+               0, 0, 0, 0)
+
+    
+
+    #print("--------Aligned After-------")
+    #print(aligned_after)
+    #print("----------------------------")
+
+    a_lexer = WebLexer(aligned_after)
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
-    a_scopeAnalyst = WebScopeAnalyst(after_text)
-    #a_scopeAnalyst = WebScopeAnalyst(beautified_after_text)
+    a_scopeAnalyst = WebScopeAnalyst(aligned_after)
        
     hash_name_map = {}
+        
     
     
     if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
@@ -252,7 +276,11 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())
     lx = WebLexer(a_iBuilder.get_text_wo_literals())
-
+    #print("-----------------Moses In ----------------------")
+    #print(lx)
+    #print("------------------------------------------------")
+    #print(a_iBuilder.charPosition2Name)
+    #print("------------------------------------------------")
     #line_subset = a_scopeAnalyst.getMinifiableLines(a_iBuilder)
     #line_list = sorted(list(line_subset))
     #line_map = {}
@@ -300,7 +328,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
                                    a_iBuilder,
                                    a_position_names)#,
                                    #a_scopeAnalyst)
-
+        
         #A slightly modified version of parse to remap the moses
         #output lines to the correct original lines.
         #name_candidates = mp.parse_subset(translation,

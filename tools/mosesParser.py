@@ -80,7 +80,8 @@ class MosesParser:
         
 #         print '\nmoses output-----------------'    
         for line in moses_output.split('\n'):
-#             print line
+             
+#            print "Parsing: " + line
         
 #             translations = {}
             
@@ -133,7 +134,7 @@ class MosesParser:
                 
                 # The translated variable name
                 name_translation = translation_parts[line_idx]
-    
+                #print("Index: " + str(line_idx) + " Translation: " + name_translation) 
                 # Record the line number (we may give more weight
                 # to names that appear on many translation lines)
                 self.name_candidates.setdefault(k, {})

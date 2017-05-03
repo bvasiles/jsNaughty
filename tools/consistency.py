@@ -254,7 +254,7 @@ class BasicConsistencyResolver:
             
             use_scopes = all_use_scopes[key]
             (name, def_scope) = key
-            
+            #if(True):
             if self.debug_mode:
                 print '\nLM-ing', name, '...', num_lines
                 print 'candidates:', suggestions

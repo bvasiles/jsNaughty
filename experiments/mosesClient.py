@@ -239,7 +239,11 @@ class MosesClient():
             if not ok:
                 jsnice_errors.append('Beautifier failed for JSNice.')
                 #return (js_file_path, None, 'Beautifier fail')
-    
+        
+            if(debug_output):
+                print("JSNice Text")
+                print(n2p_text_beautified)     
+ 
             try:
                 n2p_lexer = WebLexer(n2p_text_beautified)
                 n2p_iBuilder = IndexBuilder(n2p_lexer.tokenList)
@@ -355,17 +359,6 @@ class MosesClient():
                 pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
                 (lin, col) = iBuilder_default.revFlatMat[pos_default]
                 (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
-                with open("debug.txt", 'w') as f:
-                    f.write("--------------------------------------------------------------\n")
-                    f.write(str(line_num))
-                    f.write("\n")
-                    f.write(str(line_idx))
-                    f.write("\n")
-                    f.write(str(a_position_names))
-                    f.write("\n")
-                    f.write(str(scopeAnalyst_default))
-                    f.write("\n")
-                    f.write(str(iBuilder_default))
                 (name, def_scope) = a_position_names[line_num][line_idx]
                 key = (name, def_scope)
 
@@ -378,6 +371,7 @@ class MosesClient():
             # (name, def_scope) tuples (otherwise); 
             # values are suggested translations with the sets 
             # of line numbers on which they appear.
+            #if(True):
             if(debug_output):
                 print("Name_candidates")
                 print(name_candidates) 
@@ -447,7 +441,15 @@ class MosesClient():
             renamed_text = postRen.applyRenaming(a_iBuilder, 
                                                  a_name_positions, 
                                                  renaming_map)
+
             (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
+            #print(name_candidates)
+            #print("--------------")
+            #print(renamed_text)
+            #print("--------------")
+            #print(beautified_renamed_text)
+            #print("--------------")
+            #print(" ".join(jsnice_errors)) 
             if not ok:
                 return((beaut_error, "", (0,)*TIMING_COUNT))
             
