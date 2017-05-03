@@ -72,7 +72,7 @@ class Uglifier:
         
         if not proc.returncode:
             uglifyjs_ok = True
-    
+   
         lexer = get_lexer_for_filename("jsFile.js")
         tokenList = list(lex(replaceSciNotNum(out), lexer))
         # Replace .1 by 0.1

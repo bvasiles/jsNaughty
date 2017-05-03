@@ -178,6 +178,7 @@ class MosesClient():
         (ok, beautified_text, _err) = clear.web_run(prepro_text)
 
         if(debug_output):
+            print("Beautified Text")
             print(beautified_text)
             
         if(not ok):

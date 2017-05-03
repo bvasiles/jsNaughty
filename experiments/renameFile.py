@@ -161,7 +161,10 @@ if(args.batch):
             output_file = \
                 os.path.join(args.output,
                     base_file[:base_file.rfind(".")] + ".out.js")
-            processFile(next_file, output_file ,args)
+            try:
+                processFile(next_file, output_file ,args)
+            except:
+                print("Renaming of " +  str(next_file) + " failed.")
 else:
     print("Renaming " + str(args.input))
     processFile(args.input, args.output, args)

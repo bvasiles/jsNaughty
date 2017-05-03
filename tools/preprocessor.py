@@ -182,7 +182,7 @@ class LMPreprocessor:
 #         print(self.tokenList)
         
         #Remove unicode escape characters
-        self.tokenList = handleUnicodeEscape(self.tokenList, Token.Literal)
+#        self.tokenList = handleUnicodeEscape(self.tokenList, Token.Literal)
 #         print(self.tokenList)
 
 
