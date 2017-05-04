@@ -25,14 +25,14 @@ component of uglifyjs), and based on our running them on our current server
 we obtained the following total renaming times (in seconds) on the 200 files:
 
 ```
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   Min.  1st Qu.  Median  Mean   3rd Qu.  Max. 
   1.911   5.945   9.000  12.550  13.820  82.810
 ```
 
 With the pruned phrase tables, the times we recorded were:
 
 ```
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   Min.  1st Qu.  Median  Mean   3rd Qu.  Max.
   1.988   5.694   7.863  10.080  10.890  61.470
 ```
 
