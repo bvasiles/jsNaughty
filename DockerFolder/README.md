@@ -11,24 +11,43 @@ We have included 200 javascript files in the docker under the directory
 use the --minify-first with the script to minify and get the renamed version of
 the file.
 
+To run all of these through the renamer, you can input the following commands
+in the docker (from the /home/jsnaughty folder you start in):
+
+```
+mkdir stress_sample_out
+python experiments/renameFile.py experiments/samples/stress_sample stress_sample_out --minify-first --mix --batch 
+```
+
 These files are between 10 and 500 lines (once reformated by the beautifier 
-component of uglifyjs), and based on our performance analysis on our machine
-(can be run in the docker with "python testing/webPerformanceTests.py -local")
+component of uglifyjs), and based on our running them on our current server
+(can be run with "python testing/webPerformanceTests.py -local")
 we obtained the following total renaming times (in seconds) on the 200 files:
 
 ```
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  2.220   4.999   6.942   9.332  10.750  55.720 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.911   5.945   9.000  12.550  13.820  82.810
 ```
 
-However, we've observed that Moses can be quite memory intensive (the docker 
-itself is 8 GB), so if you're trying to run it on a laptop, or if you have many
-other processes running on your machine the times may be much slower.
-If you are concerned about memory usage, use the website interface instead at 
-<URL NOT YET AVAILABLE>.
+With the pruned phrase tables, the times we recorded were:
+
+```
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.988   5.694   7.863  10.080  10.890  61.470
+```
+
+Unfortunately, the pruned phrase tables come with a slight hit to accuracy,
+so we are currently using the full tables to be consistent with results
+reported in our paper.
+
+
+As Moses can be quite memory intensive (the docker 
+itself is several GB), without a machine with sufficient memory (such as a 
+laptop or personal Desktop), you may get much slower times.
+If you are concerned about memory usage, please use the  website interface [here](http://jsnaughty.org).
 
 Additionally, when first starting the renameFile.py script, it will start the
-moses and language servers.  These may take a minute to load the phrase tables
+moses and language servers.  These may take a few minutes to load the phrase tables
 and language models.  Subsequent runs should be much faster.
 
 # Adding your own Javascript Files to the Docker
