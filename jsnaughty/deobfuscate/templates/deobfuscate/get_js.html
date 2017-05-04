@@ -3,8 +3,8 @@
 {% block content %}
 
 <!-- <div class="inline-div"> -->
-<div class=col-md-6">
-<h2> Input Minified Javascript Here: </h2>
+<div class="col-md-6">
+<h2> Input Minified Javascript: </h2>
 <form action="{% url 'deobfuscate:get_js'  %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
