@@ -1,5 +1,3 @@
-#!/usr/bin/env js
-
 var build_path = function(src, dest) {
   var next_x = src[0],
       next_y = src[1],
