@@ -10,20 +10,21 @@ handle code specific considerations.
 
 # Using the tool
 
-We are planning on providing at least two methods to use jsNaughty.  One, there will be
-a web interface where you can input obfuscated javascript (currently we have only focused on 
-recovering obfuscated names from the [uglifyjs](https://www.npmjs.com/package/uglifyjs) tool) 
-and get the unobfuscated javascript in return.  The website is not currently online as we are 
-in the middle of moving to a more permanent host, but a link will be included here shortly.
+We currently provide two methods to use jsNaughty.  First, you can try the tool at our
+[website](http://jsnaughty.org).  You can input minified javascript (currently we have only focused on 
+recovering obfuscated names from the popular [uglifyjs](https://www.npmjs.com/package/uglifyjs) tool) 
+and get the renamed and reformatted javascript in return.  The website also provides a minification
+tab so you can minify Javascript with uglifyjs without having to install it on your own machine.
 
 Alternatively, we have provided a docker to handle installing necessary packages and moses.
-The docker currently starts a bash shell with an environment able to run the scripts used in the 
-website along with a simple helper script (experiments/renameFile.py) to allow you to run the 
+The docker starts a bash shell with an environment able to run the scripts used in the 
+website along with a helper script (experiments/renameFile.py) to allow you to run the 
 renamer on a single Javascript file or on a batch.  To use this environment, pull the image
-"caseycas/jsnaughty-moses" from dockerhub.  Additional details on running the sample script
-in the docker are located in the README in the "DockerFolder" directory.
+"caseycas/jsnaughty-moses" from dockerhub.  Detailed instructions on using the docker and
+the sample script located in the README [here](https://github.com/bvasiles/jsNaughty/tree/master/DockerFolder).
 
-Currently, building from the DockerFile requires additional data (the phrase tables, .ini files, and language models), which are too large to host on GitHub.  These are provided in the docker 
+Currently, building from the DockerFile requires additional data (the phrase tables and 
+language models), which are too large to host on GitHub.  These are provided in the docker 
 image, but you will need to extract them if you wish to rebuild the image yourself.
 
 # Components 
@@ -31,7 +32,7 @@ image, but you will need to extract them if you wish to rebuild the image yourse
 jsNaughty depends on several components to run the deobfuscation process.  The main service
 relies on three servers - two instances of mosesserver and one instance on lmServer. 
 
-The mosesserver is part of Moses smt and is used to provide the initial translation suggestions
+The mosesserver is part of Moses and is used to provide the initial translation suggestions
 after preprocessing.  One server is used with the hashing option, and one with the original obfuscated names.  
 
 The lmServer is used to resolve inconsistencies between translations of a variable used on 
@@ -45,17 +46,18 @@ the definitions of how to contect to each server.
 Also, during experiments, we found jsNaughty performed similarily in quality to [JSNice](
 jsnice.org), but that the recovering names covered very different sets of names.  We found 
 combining them created a tool more effect than either.  This option is built into both the 
-website and programmatic path (via calling deobfuscateJS in experiments/mosesClient.py).  
+website and script included in the Docker.  
+
 However, it is dependant on JSNice's web service being available.  If this step fails, instead
 the tool will fall back on just using our translation framework to generate names.
 
 # Phrase-table pruning
 
-One of the biggest slow-downs for translation is the size of the phrase table.  The phrase table 
+One source of slow-downs during translation is the size of the phrase table.  The phrase table 
 size can be reduced via pruning; the translations with the least support can be removed, 
 drastically reducing the table size while hopefully not affecting translation quality (see http:/
 /www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5).  We are still investigating how much the 
-pruning affects our accuracy.
+pruning affects our accuracy - the Docker and website are using the full phrase tables.
 
 However if you have an uncompressed phrase table and associated corpora, you can run reduce the 
 table size in the following manner (on Linux):
