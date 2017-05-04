@@ -34,6 +34,9 @@ RUN apt-get install -q -y \
 RUN git clone https://github.com/moses-smt/mosesdecoder.git /home/mosesdecoder
 WORKDIR /home/mosesdecoder
 
+#Checkout the version of moses we used originally...
+#RUN git checkout 6b745e5960eb559465c3154956686cb696483147
+
 RUN make -f contrib/Makefiles/install-dependencies.gmake
 
 #Try skipping this whole thing for now.
@@ -78,8 +81,14 @@ RUN mkdir -p /home/jsnaughty/phrase-tables/langmodels/
 COPY moses.no_renaming.ini /home/jsnaughty/phrase-tables/no_renaming/moses.lm2.ini
 COPY moses.hash_def.ini /home/jsnaughty/phrase-tables/hash_def_one_renaming/moses.lm2.ini
 COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
-COPY nr-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table-pruned.minphr
-COPY hd-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table-pruned.minphr
+
+#Swapping out the pruned tables for the full.  They're a bit faster, but come with a slight accuracy
+#hit.  We'll keep the original tables for replication purposes.
+#COPY nr-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table-pruned.minphr
+#COPY hd-phrase-table-pruned.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table-pruned.minphr
+
+COPY nr-phrase-table.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table.minphr
+COPY hd-phrase-table.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table.minphr
 COPY startServers.sh /home/jsnaughty/startServers.sh
 
 ENTRYPOINT ["/bin/bash"]
