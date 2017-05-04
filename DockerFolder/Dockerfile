@@ -78,9 +78,6 @@ RUN mkdir -p /home/jsnaughty/phrase-tables/hash_def_one_renaming/
 RUN mkdir -p /home/jsnaughty/phrase-tables/langmodels/
 
 #For copy to work, the files must be in the build context (i.e. can't use .. or absolute paths)
-COPY moses.no_renaming.ini /home/jsnaughty/phrase-tables/no_renaming/moses.lm2.ini
-COPY moses.hash_def.ini /home/jsnaughty/phrase-tables/hash_def_one_renaming/moses.lm2.ini
-COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
 
 #Swapping out the pruned tables for the full.  They're a bit faster, but come with a slight accuracy
 #hit.  We'll keep the original tables for replication purposes.
@@ -89,6 +86,10 @@ COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
 
 COPY nr-phrase-table.minphr /home/jsnaughty/phrase-tables/no_renaming/phrase-table.minphr
 COPY hd-phrase-table.minphr /home/jsnaughty/phrase-tables/hash_def_one_renaming/phrase-table.minphr
+
+COPY js.blm.lm /home/jsnaughty/phrase-tables/langmodels/js.blm.lm
+COPY moses.no_renaming.ini /home/jsnaughty/phrase-tables/no_renaming/moses.lm2.ini
+COPY moses.hash_def.ini /home/jsnaughty/phrase-tables/hash_def_one_renaming/moses.lm2.ini
 COPY startServers.sh /home/jsnaughty/startServers.sh
 
 ENTRYPOINT ["/bin/bash"]
