@@ -62,9 +62,9 @@ pruning affects our accuracy - the Docker and website are using the full phrase 
 However if you have an uncompressed phrase table and associated corpora, you can run reduce the 
 table size in the following manner (on Linux):
 
-`
+```
 <moses-phrase-filter-path>/Bin/Linux/Index/IndexSA.O32 corpus.clear
 <moses-phrase-filter-path>/Bin/Linux/Index/IndexSA.O32 corpus.ugly
 nohup cat phrase-table | <moses-path>/contrib/sigtest-filter/filter-pt -e corpus.clear -f corpus.ugly -l a+e -n 30 > phrase-table.pruned &
 <moses-path>/bin/processPhraseTableMin -no-alignment-info -encoding None -in phrase-table.pruned -nscores 4 -out phrase-table-pruned.minphr
-`
+```
