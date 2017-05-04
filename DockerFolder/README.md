@@ -5,6 +5,23 @@
 4) Use the script "python experiments/renameFile.py"
 	- The "-h" option will explain the options.
 
+# Replicating the Case Study
+
+To replicate the example shown in Figure 6 of our paper in the docker, you can
+use the following commands:
+
+```
+python experiments/renameFile.py case_study/case_study.min.js case_study/case_study.no_mix.js 
+python experiments/renameFile.py case_study/case_study.min.js case_study/case_study.mix.js --mix
+unuglify case_study/case_study.min.js --rename > case_study/case_study.jsnice.js
+```
+
+The first produces output equivalent to our best method individual method (labelled hash in Figure 6),
+the second is the combined names of JSNice and our tool, and the final command produces just the JSNice output.
+As a note, the JSNice command line tool and website have been observed to return different
+renamings.  All of our results are based on the command line tool, and you should use
+this tool instead of the website if you wish to replicate the results.
+
 # Included Data and Expected Run Times
 We have included 200 javascript files in the docker under the directory
 "experiments/samples/stress_sample/".  These are not yet minified, so you must
