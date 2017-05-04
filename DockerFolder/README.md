@@ -13,7 +13,7 @@ use the following commands:
 ```
 python experiments/renameFile.py case_study/case_study.min.js case_study/case_study.no_mix.js 
 python experiments/renameFile.py case_study/case_study.min.js case_study/case_study.mix.js --mix
-unuglify case_study/case_study.min.js --rename > case_study/case_study.jsnice.js
+unuglifyjs case_study/case_study.min.js --rename > case_study/case_study.jsnice.js
 ```
 
 The first produces output equivalent to our best method individual method (labelled hash in Figure 6),
