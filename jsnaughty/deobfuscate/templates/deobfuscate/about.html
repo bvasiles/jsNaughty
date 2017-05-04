@@ -29,10 +29,6 @@ suggested by JSNice.  Our experiements show this is the most effective option.  
 <p>
 Also, since our tool was designed to recover code minified by UglifyJS, we have included a web front end to minify Javascript with this tool <a href="{% url 'deobfuscate:minify' %}">here.</a>
 </p>
-<p>
-Finally, due to space and time performance concerns, both the website and the docker use <a href="http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5">pruned phrase tables.</a> In the paper, we used the full phrase
-tables.  Experiments using the same test set from our paper show that the pruned phrase table leads to slightly worse accuracy, but that the mixing option remains the most effective model.
-</p>
 
     </div>
   </div>

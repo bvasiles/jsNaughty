@@ -3,8 +3,8 @@
 {% block content %}
 
 <!-- <div class="inline-div"> -->
-<div class="col-md-6">
-<h2> Input Javascript here: </h2>
+<div class=col-md-6">
+<h2> Input Minified Javascript Here: </h2>
 <form action="{% url 'deobfuscate:get_js'  %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
@@ -14,7 +14,7 @@
 
 
 <div class="col-md-6">
-<h2>The Deobfuscated Javascript: </h2>
+<h2>The Renamed Javascript: </h2>
 <textarea class="inline-txtarea textarea form-control" cols="40" id="id_in_text" name="in_text" rows="10">
 {{ out_text }}
 </textarea>
