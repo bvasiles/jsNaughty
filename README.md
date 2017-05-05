@@ -55,8 +55,8 @@ the tool will fall back on just using our translation framework to generate name
 
 One source of slow-downs during translation is the size of the phrase table.  The phrase table 
 size can be reduced via pruning; the translations with the least support can be removed, 
-drastically reducing the table size while hopefully not affecting translation quality (see http:/
-/www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5).  We are still investigating how much the 
+drastically reducing the table size while hopefully not affecting translation quality (see 
+http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5).  We are still investigating how much the 
 pruning affects our accuracy - the Docker and website are using the full phrase tables.
 
 However if you have an uncompressed phrase table and associated corpora, you can run reduce the 
