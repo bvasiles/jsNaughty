@@ -4,8 +4,8 @@ jsNaughty is a tool for recovering names from obfuscated Javascript files.  It i
 framing the deobfuscation problem as a language translation problem - we translate the 
 obfuscated names to meaningful names using the context in which variables are defined.
 
-To do this, the tool makes uses of the [Moses statistical machine translation framework](http://
-www.statmt.org/moses/) to perform the translation, along with some pre and post processing to
+To do this, the tool makes uses of the [Moses statistical machine translation framework](http://www.statmt.org/moses/) 
+to perform the translation, along with some pre and post processing to
 handle code specific considerations.
 
 # Using the tool
