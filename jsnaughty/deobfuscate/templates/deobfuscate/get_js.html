@@ -8,7 +8,8 @@
 <form action="{% url 'deobfuscate:get_js'  %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input class = 'btn-primary pull-right' type="submit" value="Submit" />
+    <input class = 'btn-primary pull-left' type="submit" value="Submit" />
+&nbsp&nbsp<a href="https://github.com/bvasiles/jsNaughty/tree/master/DockerFolder#included-data-and-expected-run-times" style="display: inline;">Note: Processing may take a few seconds, please wait.</a>
 </form>
 </div>
 
