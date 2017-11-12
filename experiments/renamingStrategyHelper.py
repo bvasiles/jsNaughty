@@ -160,9 +160,6 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     iBuilder_ugly: Index Builder for the minified file.
    
     scopeAnalyst_ugly: Scope Analyst for the minified file.
-   
-    start: The starting time for the preprocessing step.  Used for performance
-    metrics.
     
     debug_mode: Print debug information? (True/False - defaults to False)
     
@@ -185,7 +182,7 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     
     a_iBuilder,a_scopeAnalyst: Index Builder and Scope Analyst for this renaming
     
-    a_name_positions, a_posistion_names, a_use_scopes: Addition tracking info
+    a_name_positions, a_posistion_names, a_use_scopes: Additional tracking info
     
     hash_name_map: a map from the hashed names to the original minified names 
     
