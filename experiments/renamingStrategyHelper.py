@@ -278,9 +278,11 @@ def getMosesTranslation(proxy, r_strategy, RS, a_beautifier, iBuilder_ugly, scop
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())
     lx = WebLexer(a_iBuilder.get_text_wo_literals())
-    #print("-----------------Moses In ----------------------")
-    #print(lx)
-    #print("------------------------------------------------")
+    if(debug_mode):
+        print("-----------------Moses In ----------------------")
+        print(lx.collapsedText)
+        print("------------------------------------------------")
+        quit()
     #print(a_iBuilder.charPosition2Name)
     #print("------------------------------------------------")
     #line_subset = a_scopeAnalyst.getMinifiableLines(a_iBuilder)
