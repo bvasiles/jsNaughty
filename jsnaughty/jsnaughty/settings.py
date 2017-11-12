@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+#from django.conf.global_settings import SECURE_SSL_REDIRECT,\
+#    SECURE_BROWSER_XSS_FILTER, SECURE_CONTENT_TYPE_NOSNIFF
+from django.conf.global_settings import SECURE_BROWSER_XSS_FILTER,\
+    SECURE_CONTENT_TYPE_NOSNIFF
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +25,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@na*j+u7(#m79i97hmp&0&^k9$(^i5!p7&xs4$8)5yzc=&a5@8'
+#NEVER COMMIT THIS FILE!!!
+with open('etc/secret_key.txt') as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['godeep.cs.ucdavis.edu', 'tardigrade.andrew.cmu.edu']
 
 
 # Application definition
@@ -38,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #Third Party Apps
-    'crispy_forms'
+    #Third Party apps
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +122,15 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+#Security deployment settings
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+#SECURE_SSL_REDIRECT = True #This option causes the SSL error problem
+#SESSION_COOKIE_SECURE = True # Set only when https implemented
+#CSRF_COOKIE_SECURE = True # Set only when https implemented.
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
 
 
 # Static files (CSS, JavaScript, Images)

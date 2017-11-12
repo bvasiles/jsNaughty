@@ -32,7 +32,7 @@ with open('etc/secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['godeep.cs.ucdavis.edu']
+ALLOWED_HOSTS = ['godeep.cs.ucdavis.edu', 'tardigrade.andrew.cmu.edu']
 
 
 # Application definition
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #Third Party apps
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +138,5 @@ X_FRAME_OPTIONS = 'DENY'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -4,8 +4,8 @@ jsNaughty is a tool for recovering names from obfuscated Javascript files.  It i
 framing the deobfuscation problem as a language translation problem - we translate the 
 obfuscated names to meaningful names using the context in which variables are defined.
 
-To do this, the tool makes uses of the [Moses statistical machine translation framework](http://
-www.statmt.org/moses/) to perform the translation, along with some pre and post processing to
+To do this, the tool makes uses of the [Moses statistical machine translation framework](http://www.statmt.org/moses/) 
+to perform the translation, along with some pre and post processing to
 handle code specific considerations.
 
 # Using the tool
@@ -55,8 +55,8 @@ the tool will fall back on just using our translation framework to generate name
 
 One source of slow-downs during translation is the size of the phrase table.  The phrase table 
 size can be reduced via pruning; the translations with the least support can be removed, 
-drastically reducing the table size while hopefully not affecting translation quality (see http:/
-/www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5).  We are still investigating how much the 
+drastically reducing the table size while hopefully not affecting translation quality (see 
+http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc5).  We are still investigating how much the 
 pruning affects our accuracy - the Docker and website are using the full phrase tables.
 
 However if you have an uncompressed phrase table and associated corpora, you can run reduce the 
