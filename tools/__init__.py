@@ -3,10 +3,12 @@ __all__ = ['acorn', 'indexer', 'jsNice', 'lmQuery', 'moses', \
            'miniChecker', 'lexer', 'aligner', 'dos2unix', \
            'postprocessor', 'normalizer', 'helpers', 'mosesParser', \
            'mosesOutputFormatter', 'renamer', 'summarizer', \
-           'consistency', 'config', 'scoperDefault']
+           'consistency', 'config', 'scoperDefault', 'seqTag', 'neuralSeqParser']
 from tools.acorn import Acorn
 from tools.indexer import IndexBuilder
 from tools.jsNice import JSNice
+from tools.seqTag import SeqTag
+from tools.neuralSeqParser import NeuralSequenceParser
 from tools.lmQuery import LMQuery
 from tools.moses import MosesDecoder, WebMosesDecoder
 # from tools.scoper import ScopeAnalyst, WebScopeAnalyst

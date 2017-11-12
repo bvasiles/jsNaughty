@@ -11,6 +11,7 @@ import socket
 import multiprocessing
 #from pathos.multiprocessing import ProcessingPool as Pool
 import itertools
+from enum import Enum
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
                 
@@ -23,6 +24,7 @@ from tools import MosesProxy, WebMosesDecoder, MosesParser
 from tools import WebScopeAnalyst
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
+from tools import SeqTag
 from tools.consistency import ENTROPY_ERR
 from tools.suggestionMetrics import *
 
@@ -39,6 +41,11 @@ sa_error = "ScopeAnalyst Failed"
 ms_error = "Moses Server Step Failed"
 rn_error = "Renaming Failed"
 TIMING_COUNT = 10
+
+class TransType(Enum):
+    JSNAUGHTY = 0
+    NEURAL_SEQ_TAG = 1
+    BOTH = 2
 
 
 class MosesClient():
@@ -81,7 +88,7 @@ class MosesClient():
             
 
     
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, debug_output=False, parallel=True, use_local=True):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -95,6 +102,9 @@ class MosesClient():
         transactionID: an ID for storing temp files - used currently
         only to identify the input to JSNice.
         
+        neural_flag: An enumerated type indicating if we are using the original JSNaughty method,
+        the new neural sequence tagging method, or combining the two of them.
+
         debug_output: should we print debugging output in this pass (TRUE/FALSE)
         
         parallel: enable parallelization performance enhancements -> such as calling the
@@ -296,56 +306,63 @@ class MosesClient():
         #serial version...
         pre_outer_end = time.time()
         pre_time = pre_outer_end - start
-        if(not parallel):
-            #Get moses output for no_renaming
-            (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
-             scopeAnalyst_default, name_positions_default, 
-             position_names_default, use_scopes_default, hash_name_map_default,
-             rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
-            #print("MOSES NO RENAMING: " + str(m_time_default))
-            if(not status):
-                 return((error_msg, "", (0,)*TIMING_COUNT))
+        if(neural_flag == NEURAL_SEQ_TAG or neural_flag == BOTH):
+            (status, error_msg, translation_neural, name_candidates_neural, iBuilder_neural,
+                scopeAnalyst_neural, name_positions_neural,
+                position_names_neural, use_scopes_neural,
+                rn_time_neural, post_start) = getNeuralSequenceTranslation(clear, iBuilder_ugly, scopeAnalyst, debug_output)
+
+        if(neural_flag == JSNAUGHTY or neural_flag == BOTH):
+            if(not parallel):
+                #Get moses output for no_renaming
+                (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
+                 scopeAnalyst_default, name_positions_default, 
+                 position_names_default, use_scopes_default, hash_name_map_default,
+                 rn_time_default, m_time_default, lex_time_default, post_start_default) = getMosesTranslation(proxies[RS.NONE], RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+                #print("MOSES NO RENAMING: " + str(m_time_default))
+                if(not status):
+                     return((error_msg, "", (0,)*TIMING_COUNT))
+            
+                #Get moses output for hash_renaming
+                (status, error_msg, translation, name_candidates, a_iBuilder, 
+                 a_scopeAnalyst, a_name_positions, 
+                 a_position_names, a_use_scopes, hash_name_map,
+                 rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
+     
+                #print("MOSES HASH RENAMING: " + str(m_time))
+                if(not status):
+                    return((error_msg, "", (0,)*TIMING_COUNT))
+                m_parallel_time = 0
+            else: 
+                #Parallel version
+                none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
+                hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
+                wrappers = [none_wrapper, hash_wrapper]
         
-            #Get moses output for hash_renaming
-            (status, error_msg, translation, name_candidates, a_iBuilder, 
-             a_scopeAnalyst, a_name_positions, 
-             a_position_names, a_use_scopes, hash_name_map,
-             rn_time, m_time, lex_time, post_start) = getMosesTranslation(proxies[r_strategy], r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output)
- 
-            #print("MOSES HASH RENAMING: " + str(m_time))
-            if(not status):
-                return((error_msg, "", (0,)*TIMING_COUNT))
-            m_parallel_time = 0
-        else: 
-            #Parallel version
-            none_wrapper = (RS.NONE, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
-            hash_wrapper = (r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, use_local)
-            wrappers = [none_wrapper, hash_wrapper]
-    
-            pool = multiprocessing.Pool(processes = 2)
+                pool = multiprocessing.Pool(processes = 2)
 
-            m_parallel_start = time.time()
-            for result in pool.imap(getMosesTranslationParallel, wrappers):
-                if(result[0] == RS.NONE): #No renaming
-                    (status, error_msg, translation_default, name_candidates_default, iBuilder_default,
-                     scopeAnalyst_default, name_positions_default,
-                     position_names_default, use_scopes_default, hash_name_map_default,
-                     rn_time_default, m_time_default, lex_time_default, post_start_default) = result[1]
+                m_parallel_start = time.time()
+                for result in pool.imap(getMosesTranslationParallel, wrappers):
+                    if(result[0] == RS.NONE): #No renaming
+                        (status, error_msg, translation_default, name_candidates_default, iBuilder_default,
+                         scopeAnalyst_default, name_positions_default,
+                         position_names_default, use_scopes_default, hash_name_map_default,
+                         rn_time_default, m_time_default, lex_time_default, post_start_default) = result[1]
 
-                    #print("MOSES NO RENAMING: " + str(m_time_default))
-                    if(not status):
-                        return((error_msg, "", (0,)*TIMING_COUNT))
-                else:
-                    (status, error_msg, translation, name_candidates, a_iBuilder,
-                     a_scopeAnalyst, a_name_positions,
-                     a_position_names, a_use_scopes, hash_name_map,
-                     rn_time, m_time, lex_time, post_start) = result[1]
+                        #print("MOSES NO RENAMING: " + str(m_time_default))
+                        if(not status):
+                            return((error_msg, "", (0,)*TIMING_COUNT))
+                    else:
+                        (status, error_msg, translation, name_candidates, a_iBuilder,
+                         a_scopeAnalyst, a_name_positions,
+                         a_position_names, a_use_scopes, hash_name_map,
+                         rn_time, m_time, lex_time, post_start) = result[1]
 
-                    #print("MOSES HASH RENAMING: " + str(m_time))
-                    if(not status):
-                        return((error_msg, "", (0,)*TIMING_COUNT))
-  
-            m_parallel_time = time.time() - m_parallel_start
+                        #print("MOSES HASH RENAMING: " + str(m_time))
+                        if(not status):
+                            return((error_msg, "", (0,)*TIMING_COUNT))
+      
+                m_parallel_time = time.time() - m_parallel_start
         
         pre_time += rn_time_default + rn_time
         if(debug_output):
