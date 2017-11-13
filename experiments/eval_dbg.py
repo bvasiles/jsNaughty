@@ -231,8 +231,8 @@ def processFile(js_file_path):
         except:
             return (js_file_path, None, 'ScopeAnalyst clear fail')
         
-        if(not check(iBuilder_clear, scopeAnalyst_clear, n2p_iBuilder, n2p_scopeAnalyst)):
-            return (js_file_path, None, 'JsNice restructured file. Skipping..')
+        #if(not check(iBuilder_clear, scopeAnalyst_clear, n2p_iBuilder, n2p_scopeAnalyst)):
+        #    return (js_file_path, None, 'JsNice restructured file. Skipping..')
         
         #Map the original names to the minified counterparts and minified ones to jsnice renamings
         orderedVarsNew = sorted(scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])

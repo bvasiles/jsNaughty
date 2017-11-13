@@ -20,6 +20,8 @@ suffixes = [f[7:-3] for f in corpus_files]
 
 lengths = []
 
+print(corpus_files)
+
 for idx, suffix in enumerate(suffixes):
     
     variant = "train." + suffix
@@ -65,6 +67,8 @@ for idx, suffix in enumerate(suffixes):
         
         lengths.append(len(simplified))
         f.writelines(simplified)
+
+print(lengths)
         
 assert len(set(lengths)) == 1
 

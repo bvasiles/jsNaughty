@@ -29,7 +29,7 @@ from tools import Uglifier
 checkTime = 15 #Look every 15 seconds...
 
 def startServers():
-    os.system("sh /home/jsnaughty/startServers.sh")
+    os.system("sh /home/ccasal/jsnaughty/startServers.sh")
     #f = open("server.log", 'w')
     #print("A")
     #proc = subprocess.Popen(["sh", "/home/jsnaughty/startServers.sh"], stderr=f, stdout=f)
@@ -117,7 +117,7 @@ parser.add_argument("--debug", help = "Run in debug mode, printing out "+
 
 args = parser.parse_args()
 
-client = MosesClient("/home/jsnaughty/")
+client = MosesClient("/home/ccasal/jsnaughty/")
 moses_url_dict = {}
 moses_url_dict[40021] = "http://localhost:40021/RPC2"
 moses_url_dict[40022] = "http://localhost:40022/RPC2"

@@ -337,15 +337,16 @@ def processFile(l):
                                 name_candidates[key][name_translation].update(lines)
 
                 
-                # **** BV: This might be all we need to combine Naughty & Nice 
-                name_candidates_copy = deepcopy(name_candidates)
-                for key, suggestions in name_candidates_copy.iteritems():
-                    (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map[key]]
-                    
-                    for name_translation, lines in suggestions.iteritems():
-                        name_candidates.setdefault(key, {})
-                        name_candidates[key].setdefault(name_n2p, set([]))
-                        name_candidates[key][name_n2p].update(lines)
+#                # **** BV: This might be all we need to combine Naughty & Nice 
+#                name_candidates_copy = deepcopy(name_candidates)
+#                for key, suggestions in name_candidates_copy.iteritems():
+#                    (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map[key]]
+#
+#                    
+#                    for name_translation, lines in suggestions.iteritems():
+#                        name_candidates.setdefault(key, {})
+#                        name_candidates[key].setdefault(name_n2p, set([]))
+#                        name_candidates[key][name_n2p].update(lines)
                         
                                 
                 cc = ConsistencyController(debug_mode=False)

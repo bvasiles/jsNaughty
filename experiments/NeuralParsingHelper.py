@@ -12,6 +12,8 @@ from tools import SeqTag
 from tools import WebScopeAnalyst
 from tools import prepHelpers, WebLMPreprocessor
 from tools.suggestionMetrics import *
+from tools import RenamingStrategies
+from tools import NeuralSequenceParser
 
 from folderManager import Folder
 
@@ -62,6 +64,8 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
          
 
     #We need both the base_text and the hashed_text.
+    RS = RenamingStrategies()
+    r_strategy = RS.NONE
     preRen = PreRenamer()
     if(debug_mode):
         print("Tokens-------------------")
@@ -110,14 +114,24 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     # lx = WebLexer(a_iBuilder.get_text())
     lx = WebLexer(a_iBuilder.get_text_wo_literals())
     
+    if(debug_mode):
+        print("-----------Input---------")
+        print(lx.collapsedText)
+
     #Performance measures -> wrap up the preprocessing/ renaming
     #phases 
     end = time.time()
     rn_time = end-rn_start
 
-
+    #Until we know how this works, let's use a mock version.
     nst = SeqTag()
-    (ok, translation, _err) = nst.web_runCLI(lx)
+    #(ok, translation, _err) = nst.web_runCLI(lx)
+    #Mock assumes using test file 1.
+    (ok, translation, _err) = nst.mock_run()
+
+    if(debug_mode):
+        print("--------Output---------")
+        print(translation)
 
     if not ok:
         return(False, "Neural Sequence Translation Failed " + str(r_strategy), 
@@ -133,23 +147,13 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
          a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
     
     if translation is not None:
-        # Parse Neural output
-        mp = MosesParser()
-        if(debug_mode):
-            print(translation)
+        # Parse Neural output        
+        nsp = NeuralSequenceParser()
             
-        name_candidates = mp.parse(translation,
+        name_candidates = nsp.parse(translation,
                                    a_iBuilder,
-                                   a_position_names)#,
-                                   #a_scopeAnalyst)
-        
-        #A slightly modified version of parse to remap the moses
-        #output lines to the correct original lines.
-        #name_candidates = mp.parse_subset(translation,
-        #                                  a_iBuilder,
-        #                                  a_position_names,
-        #                                  line_map)
-                                   
+                                   a_position_names)                           
+
     return (True, "", translation, name_candidates, a_iBuilder, 
             a_scopeAnalyst, a_name_positions, 
             a_position_names, a_use_scopes,

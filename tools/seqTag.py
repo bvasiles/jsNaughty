@@ -53,4 +53,8 @@ class SeqTag:
                     f.write(out)
     
         return (success_flag, out, err)
-        
+       
+
+    def mock_run(self): 
+        sample_out = open("testing/neural_test_files/sample_out1.js", 'r').readlines()
+        return (True, sample_out, "")

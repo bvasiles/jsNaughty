@@ -30,6 +30,7 @@ from tools.suggestionMetrics import *
 
 from consistencyController import ConsistencyController
 from renamingStrategyHelper import *
+from NeuralParsingHelper import *
 
 from folderManager import Folder
 
@@ -88,7 +89,7 @@ class MosesClient():
             
 
     
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -306,13 +307,13 @@ class MosesClient():
         #serial version...
         pre_outer_end = time.time()
         pre_time = pre_outer_end - start
-        if(neural_flag == NEURAL_SEQ_TAG or neural_flag == BOTH):
+        if(neural_flag == TransType.NEURAL_SEQ_TAG or neural_flag == TransType.BOTH):
             (status, error_msg, translation_neural, name_candidates_neural, iBuilder_neural,
                 scopeAnalyst_neural, name_positions_neural,
                 position_names_neural, use_scopes_neural,
                 rn_time_neural, post_start) = getNeuralSequenceTranslation(clear, iBuilder_ugly, scopeAnalyst, debug_output)
 
-        if(neural_flag == JSNAUGHTY or neural_flag == BOTH):
+        if(neural_flag == TransType.JSNAUGHTY or neural_flag == TransType.BOTH):
             if(not parallel):
                 #Get moses output for no_renaming
                 (status, error_msg, translation_default, name_candidates_default, iBuilder_default, 
