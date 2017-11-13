@@ -85,10 +85,7 @@ class MosesClient():
                 i = 0
                 
         return splitMap
-                    
-            
-
-    
+                       
     def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
         """
         Take a string representing minified javascript code and attempt to
@@ -307,6 +304,16 @@ class MosesClient():
         #serial version...
         pre_outer_end = time.time()
         pre_time = pre_outer_end - start
+
+        #Give these defaults just to keep the timing code from causing a crash.
+        rn_time_neural = 0
+        post_start = 0
+        rn_time_default = 0 
+        m_time_deafault = 0
+        m_time = 0
+        lex_time_default = 0
+        lex_time = 0
+
         if(neural_flag == TransType.NEURAL_SEQ_TAG or neural_flag == TransType.BOTH):
             (status, error_msg, translation_neural, name_candidates_neural, iBuilder_neural,
                 scopeAnalyst_neural, name_positions_neural,
@@ -370,111 +377,151 @@ class MosesClient():
             print("Serial: " + str(m_time + m_time_default + rn_time + rn_time_default))
             print("Parallel: " + str(m_parallel_time))
         
-        if translation is not None and translation_default is not None:                               
+        #(This is a target for refactoring)
+        #------------------ Mix candidate names from different models -----------------
+        successful_base = False
+        if(neural_flag == TransType.JSNAUGHTY or neural_flag == TransType.BOTH):
+            if translation is not None and translation_default is not None:                               
+                #Append the default name_candidates onto the existing ones.
+                for key_default, suggestions in name_candidates_default.iteritems():
+    #                         (name_default, def_scope_default) = key_default
 
-            for key_default, suggestions in name_candidates_default.iteritems():
-#                         (name_default, def_scope_default) = key_default
+                    pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
+                    (lin, col) = iBuilder_default.revFlatMat[pos_default]
+                    (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
+                    (name, def_scope) = a_position_names[line_num][line_idx]
+                    key = (name, def_scope)
 
-                pos_default = scopeAnalyst_default.nameDefScope2pos[key_default]
-                (lin, col) = iBuilder_default.revFlatMat[pos_default]
-                (line_num, line_idx) = iBuilder_default.revTokMap[(lin, col)]
-                (name, def_scope) = a_position_names[line_num][line_idx]
-                key = (name, def_scope)
-
-                for name_translation, lines in suggestions.iteritems():
-                        name_candidates.setdefault(key, {})
-                        name_candidates[key].setdefault(name_translation, set([]))
-                        name_candidates[key][name_translation].update(lines)
-            # name_candidates is a dictionary of dictionaries: 
-            # keys are (name, None) (if scopeAnalyst=None) or 
-            # (name, def_scope) tuples (otherwise); 
-            # values are suggested translations with the sets 
-            # of line numbers on which they appear.
-            #if(True):
-            if(debug_output):
-                print("Name_candidates")
-                print(name_candidates) 
-                
-                print("jsnice_name_map")
-                print(jsnice_name_map)
-    
-                print("hash_name_map")
-                print(hash_name_map)
-
-            # **** BV: This might be all we need to combine Naughty & Nice 
-            if(use_mix and jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
-                try:
-                    name_candidates_copy = deepcopy(name_candidates)
-                    for key, suggestions in name_candidates_copy.iteritems():
-                        if(debug_output):
-                            print("Key: " + str(key))
-                            print("Suggestions: " + str(suggestions))
-                        if r_strategy == RS.NONE:
-                            (name_n2p, def_scope_n2p) = jsnice_name_map[key]
-                        else:
-                            (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
-        
-        
-                        for name_translation, lines in suggestions.iteritems():
+                    for name_translation, lines in suggestions.iteritems():
                             name_candidates.setdefault(key, {})
-                            name_candidates[key].setdefault(name_n2p, set([]))
-                            name_candidates[key][name_n2p].update(lines)
-                except:
-                    jsnice_errors.append("Failure while adding jsnice names to candidate pool.")    
-            cr = ConsistencyController(debug_mode=debug_output)
+                            name_candidates[key].setdefault(name_translation, set([]))
+                            name_candidates[key][name_translation].update(lines)
                 
-            # An identifier may have been translated inconsistently
-            # across different lines (Moses treats each line independently).
-            # Try different strategies to resolve inconsistencies, if any
+                if(neural_flag = TransType.JSNAUGHTY):
+                    successful_base = True
+
+        #Handle the neural cases.
+        if(neural_flag == TransType.NEURAL_SEQ_TAG):
+            #If we are just using the neural case, copy the candidates to the base set of names.
+            if translation_neural is not None: 
+                name_candidates = name_candidates_neural
+                successful_base = True
+        elif(neural_flag == TransType.BOTH):
+            #If we are using the ensemble method, we append the neural suggestions to the candidate list.
+            if translation_neural is not None:                               
+
+                for key_neural, suggestions in name_candidates_neural.iteritems():
+    #                         (name_default, def_scope_default) = key_default
+
+                    pos_neural = scopeAnalyst_default.nameDefScope2pos[key_neural]
+                    (lin, col) = iBuilder_neural.revFlatMat[pos_neural]
+                    (line_num, line_idx) = iBuilder_neural.revTokMap[(lin, col)]
+                    (name, def_scope) = a_position_names[line_num][line_idx]
+                    key = (name, def_scope)
+
+                    for name_translation, lines in suggestions.iteritems():
+                            name_candidates.setdefault(key, {})
+                            name_candidates[key].setdefault(name_translation, set([]))
+                            name_candidates[key][name_translation].update(lines)
+
+                successful_base = True
+
+        # name_candidates is a dictionary of dictionaries: 
+        # keys are (name, None) (if scopeAnalyst=None) or 
+        # (name, def_scope) tuples (otherwise); 
+        # values are suggested translations with the sets 
+        # of line numbers on which they appear.
+        #if(True):
+        if(debug_output):
+            print("Name_candidates")
+            print(name_candidates) 
             
-            # Compute renaming map (x -> length, y -> width, ...)
-            # Note that x,y here are names after renaming
-            #Hash error is occuring in here.
+            print("jsnice_name_map")
+            print(jsnice_name_map)
+
+            print("hash_name_map")
+            print(hash_name_map)
+
+
+
+        # **** BV: This might be all we need to combine Naughty & Nice 
+        if(successful_base and use_mix and jsnice_errors == []): #only attempt if we are error free for jsnice up to this point.
             try:
-                (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
-                                              name_candidates,
-                                              a_name_positions,
-                                              a_use_scopes,
-                                              a_iBuilder,
-                                              lm_path, {}, hash_name_map)
+                name_candidates_copy = deepcopy(name_candidates)
+                for key, suggestions in name_candidates_copy.iteritems():
+                    if(debug_output):
+                        print("Key: " + str(key))
+                        print("Suggestions: " + str(suggestions))
+                    if r_strategy == RS.NONE:
+                        (name_n2p, def_scope_n2p) = jsnice_name_map[key]
+                    else:
+                        (name_n2p, def_scope_n2p) = jsnice_name_map[hash_name_map.get(key, key)]
+    
+    
+                    for name_translation, lines in suggestions.iteritems():
+                        name_candidates.setdefault(key, {})
+                        name_candidates[key].setdefault(name_n2p, set([]))
+                        name_candidates[key][name_n2p].update(lines)
             except:
-                return("Compute renaming fail.", "", (0,)*TIMING_COUNT)
+                jsnice_errors.append("Failure while adding jsnice names to candidate pool.")      
+
+        #------------------ End of mixing of candidate names -----------------
 
 
-            if(debug_output):
-                print("Temp renaming map")
-                print(temp_renaming_map)
-            # Fall back on original names in input, if 
-            # no translation was suggested
-            postRen = PostRenamer()
-            renaming_map = postRen.updateRenamingMap(a_name_positions, 
-                                                     position_names,
-                                                     a_use_scopes, 
-                                                     temp_renaming_map, 
-                                                     seen,
-                                                     r_strategy)
-            if(debug_output):
-                print("Renaming Map")
-                print(renaming_map)
-            # Apply renaming map and save output for future inspection
-            renamed_text = postRen.applyRenaming(a_iBuilder, 
-                                                 a_name_positions, 
-                                                 renaming_map)
-
-            (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
-            #print(name_candidates)
-            #print("--------------")
-            #print(renamed_text)
-            #print("--------------")
-            #print(beautified_renamed_text)
-            #print("--------------")
-            #print(" ".join(jsnice_errors)) 
-            if not ok:
-                return((beaut_error, "", (0,)*TIMING_COUNT))
+        cr = ConsistencyController(debug_mode=debug_output)
             
-            if(debug_output):
-                print("Renamed text")
-                print(beautified_renamed_text)
+        # An identifier may have been translated inconsistently
+        # across different lines (Moses treats each line independently).
+        # Try different strategies to resolve inconsistencies, if any
+        
+        # Compute renaming map (x -> length, y -> width, ...)
+        # Note that x,y here are names after renaming
+        #Hash error is occuring in here.
+        try:
+            (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
+                                          name_candidates,
+                                          a_name_positions,
+                                          a_use_scopes,
+                                          a_iBuilder,
+                                          lm_path, {}, hash_name_map)
+        except:
+            return("Compute renaming fail.", "", (0,)*TIMING_COUNT)
+
+
+        if(debug_output):
+            print("Temp renaming map")
+            print(temp_renaming_map)
+        # Fall back on original names in input, if 
+        # no translation was suggested
+        postRen = PostRenamer()
+        renaming_map = postRen.updateRenamingMap(a_name_positions, 
+                                                 position_names,
+                                                 a_use_scopes, 
+                                                 temp_renaming_map, 
+                                                 seen,
+                                                 r_strategy)
+        if(debug_output):
+            print("Renaming Map")
+            print(renaming_map)
+        # Apply renaming map and save output for future inspection
+        renamed_text = postRen.applyRenaming(a_iBuilder, 
+                                             a_name_positions, 
+                                             renaming_map)
+
+        (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
+        #print(name_candidates)
+        #print("--------------")
+        #print(renamed_text)
+        #print("--------------")
+        #print(beautified_renamed_text)
+        #print("--------------")
+        #print(" ".join(jsnice_errors)) 
+        if not ok:
+            return((beaut_error, "", (0,)*TIMING_COUNT))
+        
+        if(debug_output):
+            print("Renamed text")
+            print(beautified_renamed_text)
             
         #Time Calculations... (Will need to update for when it becomes parallel
         post_end = time.time()
