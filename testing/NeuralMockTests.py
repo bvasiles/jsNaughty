@@ -28,8 +28,6 @@ class defobfuscate_tests(unittest.TestCase):
         '''
         text = open(source_file, 'r').read()
         result = self.client.deobfuscateJS(text,False,12345,TransType.NEURAL_SEQ_TAG,True,False,True) #For timings
-        
-            
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
