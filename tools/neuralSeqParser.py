@@ -64,7 +64,7 @@ class NeuralSequenceParser:
             
             #    # Which within-line indices have non-global var names? 
             #     print("------------------------")
-            #     line_dict = position_names.get(line_num, {})
+            line_dict = position_names.get(line_num, {})
             #     print("line_dict:")
             #     print(line_dict) 
             #     print("line_translation:")
