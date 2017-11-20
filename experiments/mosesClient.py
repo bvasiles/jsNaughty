@@ -22,6 +22,7 @@ from tools import Aligner, IndexBuilder, WebLexer
 from tools import PreRenamer, PostRenamer
 from tools import MosesProxy, WebMosesDecoder, MosesParser
 from tools import WebScopeAnalyst
+from tools import TranslationSummarizer
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
 from tools import SeqTag
@@ -86,7 +87,7 @@ class MosesClient():
                 
         return splitMap
                        
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True, test_output = False):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -107,6 +108,12 @@ class MosesClient():
         
         parallel: enable parallelization performance enhancements -> such as calling the
         moses servers in parallel. 
+
+        use_local: Connect to localhost servers if true, otherwise go with the main server.
+
+        test_output: Save information to the candidates.csv file so we can reconstruct the accuracy
+        tests like we did on the original test set in eval.py
+
         Returns
         -------
         A tuple:
@@ -533,7 +540,18 @@ class MosesClient():
         #Time Calculations... (Will need to update for when it becomes parallel
         post_end = time.time()
         post_time = post_end - post_start
-        
+       
+
+        #Record the choosen candidate for this suggestion if test_output enabled
+        test_candidates = {}
+        if(test_output):
+            ts = TranslationSummarizer()
+            ensemble_strategy = str(neural_flag) + "_" + str(use_mix) #replacing r_strategy
+            test_candidates = [[ensemble_strategy] + [c_strategy] + x 
+                               for x in ts.compute_summary_scoped(renaming_map,
+                                                                  name_candidates,
+                                                                  a_iBuilder,
+                                                                  a_scopeAnalyst)] 
         
         #Record any jsnice errors (but leave output blank if there are none).
         jsnice_error_string = ""
@@ -564,7 +582,7 @@ class MosesClient():
         #and error codes as separate elements in a tuple
         #New return: translation, jsnice_error, preprocess time, js_time, rename_time
         #m_time, post_time.
-        return((str(beautified_renamed_text), jsnice_error_string, 
+        return((str(beautified_renamed_text), jsnice_error_string, test_candidates,
                 (pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, m_parallel_time, post_time)))
 
         #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
