@@ -125,13 +125,21 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
 
     #Until we know how this works, let's use a mock version.
     nst = SeqTag()
-    #(ok, translation, _err) = nst.web_runCLI(lx)
+    #(ok, translation, _err) = nst.web_runCLI(lx.collapsedText)
+    (ok, translation, _err) = nst.queryServer(lx.collapsedText)
     #Mock assumes using test file 1.
-    (ok, translation, _err) = nst.mock_run()
+    (ok, mock_translation, _err) = nst.mock_run()
 
     if(debug_mode):
         print("--------Output---------")
-        print(translation)
+        print(ok)
+        print(_err)
+        print(translation[0:10])
+        print("-------Mock Translation-------")
+        print(mock_translation[0:10])
+        print(len(mock_translation))
+        print(len(translation))
+        #quit()
 
     if not ok:
         return(False, "Neural Sequence Translation Failed " + str(r_strategy), 

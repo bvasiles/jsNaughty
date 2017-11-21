@@ -27,9 +27,9 @@ class defobfuscate_tests(unittest.TestCase):
         Run an get the result on a file.
         '''
         text = open(source_file, 'r').read()
-        result = self.client.deobfuscateJS(text,False,12345,TransType.NEURAL_SEQ_TAG,True,False,True) #For timings
-        
-            
+        result = self.client.deobfuscateJS(text,False,12345,TransType.NEURAL_SEQ_TAG,True,False,True,True)
+        print("RESULT")
+        print(result)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()

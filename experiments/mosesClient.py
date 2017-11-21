@@ -22,6 +22,7 @@ from tools import Aligner, IndexBuilder, WebLexer
 from tools import PreRenamer, PostRenamer
 from tools import MosesProxy, WebMosesDecoder, MosesParser
 from tools import WebScopeAnalyst
+from tools import TranslationSummarizer
 from tools import prepHelpers, WebLMPreprocessor
 from tools import RenamingStrategies, ConsistencyStrategies
 from tools import SeqTag
@@ -86,7 +87,7 @@ class MosesClient():
                 
         return splitMap
                        
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True, test_output = False):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -107,6 +108,12 @@ class MosesClient():
         
         parallel: enable parallelization performance enhancements -> such as calling the
         moses servers in parallel. 
+
+        use_local: Connect to localhost servers if true, otherwise go with the main server.
+
+        test_output: Save information to the candidates.csv file so we can reconstruct the accuracy
+        tests like we did on the original test set in eval.py
+
         Returns
         -------
         A tuple:
@@ -306,11 +313,13 @@ class MosesClient():
         pre_time = pre_outer_end - start
 
         #Give these defaults just to keep the timing code from causing a crash.
+        rn_time = 0
         rn_time_neural = 0
         post_start = 0
         rn_time_default = 0 
-        m_time_deafault = 0
+        m_time_default = 0
         m_time = 0
+        m_parallel_time = 0
         lex_time_default = 0
         lex_time = 0
 
@@ -397,7 +406,7 @@ class MosesClient():
                             name_candidates[key].setdefault(name_translation, set([]))
                             name_candidates[key][name_translation].update(lines)
                 
-                if(neural_flag = TransType.JSNAUGHTY):
+                if(neural_flag == TransType.JSNAUGHTY):
                     successful_base = True
 
         #Handle the neural cases.
@@ -405,6 +414,11 @@ class MosesClient():
             #If we are just using the neural case, copy the candidates to the base set of names.
             if translation_neural is not None: 
                 name_candidates = name_candidates_neural
+                a_iBuilder = iBuilder_neural
+                a_scopeAnalyst = scopeAnalyst_neural
+                a_name_positions = name_positions_neural
+                a_position_names = position_names_neural 
+                a_use_scopes = use_scopes_neural
                 successful_base = True
         elif(neural_flag == TransType.BOTH):
             #If we are using the ensemble method, we append the neural suggestions to the candidate list.
@@ -476,16 +490,16 @@ class MosesClient():
         
         # Compute renaming map (x -> length, y -> width, ...)
         # Note that x,y here are names after renaming
-        #Hash error is occuring in here.
-        try:
+        if(True):
+        #try:
             (temp_renaming_map,seen) = cr.computeRenaming(c_strategy,
                                           name_candidates,
                                           a_name_positions,
                                           a_use_scopes,
                                           a_iBuilder,
                                           lm_path, {}, hash_name_map)
-        except:
-            return("Compute renaming fail.", "", (0,)*TIMING_COUNT)
+        #except:
+        #    return("Compute renaming fail.", "", (0,)*TIMING_COUNT)
 
 
         if(debug_output):
@@ -526,7 +540,18 @@ class MosesClient():
         #Time Calculations... (Will need to update for when it becomes parallel
         post_end = time.time()
         post_time = post_end - post_start
-        
+       
+
+        #Record the choosen candidate for this suggestion if test_output enabled
+        test_candidates = {}
+        if(test_output):
+            ts = TranslationSummarizer()
+            ensemble_strategy = str(neural_flag) + "_" + str(use_mix) #replacing r_strategy
+            test_candidates = [[ensemble_strategy] + [c_strategy] + x 
+                               for x in ts.compute_summary_scoped(renaming_map,
+                                                                  name_candidates,
+                                                                  a_iBuilder,
+                                                                  a_scopeAnalyst)] 
         
         #Record any jsnice errors (but leave output blank if there are none).
         jsnice_error_string = ""
@@ -548,15 +573,16 @@ class MosesClient():
         #Lexers
         lex_total_time = lex_time + lex_time_default + lex_ugly.build_time + n2pLexTime
         #IndexBuilders
-        builder_time = iBuilder_ugly.build_time + n2pBuildTime + a_iBuilder.build_time + iBuilder_default.build_time
+        #builder_time = iBuilder_ugly.build_time + n2pBuildTime + a_iBuilder.build_time + iBuilder_default.build_time
+        builder_time = -1
         #scopers
-        scoper_time = n2pSATime + scopeAnalyst.build_time + scopeAnalyst_default.build_time + a_scopeAnalyst.build_time
-        
+        #scoper_time = n2pSATime + scopeAnalyst.build_time + scopeAnalyst_default.build_time + a_scopeAnalyst.build_time
+        scoper_time = -1
         #Change the presentation of this to return performance information
         #and error codes as separate elements in a tuple
         #New return: translation, jsnice_error, preprocess time, js_time, rename_time
         #m_time, post_time.
-        return((str(beautified_renamed_text), jsnice_error_string, 
+        return((str(beautified_renamed_text), jsnice_error_string, test_candidates,
                 (pre_time, prepre_time,  js_time, rn_time + rn_time_default, lex_total_time, builder_time, scoper_time, m_time+m_time_default, m_parallel_time, post_time)))
 
         #return(jsnice_error_string + "Preprocess Time: " + str(pre_time)  + 
