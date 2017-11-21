@@ -67,7 +67,7 @@ class SeqTag:
             f.write(text)
 #        if True:
         try:
-            logText = requests.get("http://0.0.0.0:9091/evaluate",{"q":tmp_file})
+            logText = requests.get("http://0.0.0.0:9093/evaluate",{"q":tmp_file})
 
             return (True, logText.text.split(" "), "LM QUERY OK")
         except:

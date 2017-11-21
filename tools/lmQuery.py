@@ -62,7 +62,7 @@ class LMQuery:
 
 #        if True:
         try:
-            logText = requests.get("http://0.0.0.0:9090/score",{"q":text})
+            logText = requests.get("http://0.0.0.0:9093/score",{"q":text})
 #            print(logText.text)
             logProb = float(logText.text)
             # oovProb = int(lines[0].split(' ')[-1])

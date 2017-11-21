@@ -10,7 +10,7 @@ import os
 #lm_path = '/home/bogdan/deobfuscator/experiments/corpora/corpus.lm.500k/js.blm.lm'
 lm_path = './phrase-tables/langmodels/js.blm.lm'
 #lm_path = os.path.abspath(sys.argv[1])
-port = 9090
+port = 9093
 
 sys.stderr.write("Loading language model from %s..." % lm_path)
 lm = kenlm.LanguageModel(lm_path)
