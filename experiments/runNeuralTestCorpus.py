@@ -1,3 +1,10 @@
+import sys
+import os
+import argparse
+import csv
+import ntpath
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                             os.path.pardir)))
 from tools import Lexer, ScopeAnalyst
 from folderManager.folder import Folder
 from unicodeManager import UnicodeReader, UnicodeWriter
