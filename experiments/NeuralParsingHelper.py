@@ -18,9 +18,9 @@ from tools import NeuralSequenceParser
 
 from folderManager import Folder
 
-droppedLines = True
+dropLines = True
 
-def removeUnchangedLines(fullText, scopeAnalyst_text, iB_text):
+def removeUnchangedLines(fullText, sa_text, ib_text):
     """
     Given a text about to be preprocessed and a scope analyzer for
     that text, find which lines have no minifiable identifiers and
@@ -30,9 +30,9 @@ def removeUnchangedLines(fullText, scopeAnalyst_text, iB_text):
     fullText: the full preprocessed text about to be submitted to
     the neural translation engine.
 
-    scopeAnalyst_text: a scopeAnalyzer for that text
+    sa_text: a scopeAnalyzer for that text
 
-    iB_text: an indexBuilder for the text
+    ib_text: an indexBuilder for the text
 
     Returns:
     (filteredText, lineDropMap) - A tuple:
@@ -44,26 +44,36 @@ def removeUnchangedLines(fullText, scopeAnalyst_text, iB_text):
     """
     #1) Get line #s with minifiable variables
     lineDropMap = OrderedDict()
-    local = [n for n, isG in sa.isGlobal.iteritems() if isG == False] # minifiable names (name, flatID -> true)
-    #ib.revFlatMap flat id -> line, col
-    changedLines = set([ib.revFlatMap[pos] for (n, pos) in local])
+    local = [n for n, isG in sa_text.isGlobal.iteritems() if isG == False] # minifiable names (name, flatID -> true)
+    print(local)
+    #print("------IndexBuilder------")
+    #print(ib_text)
+    changedLines = set()
+    #ib.revFlatMat flat id -> line, col
+    for name, pos in local:
+        positions = ib_text.name2CharPositions[name]
+        for l_id, c_id in positions:
+            changedLines.add(l_id)
+
+    print("----ChangedLines----")
+    print(changedLines)
     lines = fullText.split("\n")
     filteredText = ""
     i = 0
     startTok = 0
     for l in lines:
-        #2) Get Start of line index for this line
-        startTok += l.split() #add count of tokens on the line
-        if(l in changeLines):
-            filteredText += l
+        if(i in changedLines):
+            filteredText += l + "\n"
         else:
             lineDropMap[startTok] = l
 
+        #2) Get Start of line index for this line
+        startTok += len(l.split()) #add count of tokens on the line
         i += 1
 
     return (filteredText, lineDropMap)
 
-def reconstructOutput(translationOutput, lineDropMap):
+def reconstructOutput(t_out, lineDropMap):
     """
     Given the list of tokens from the output, insert
     the correct number of SAME tokens for all the lines
@@ -71,7 +81,7 @@ def reconstructOutput(translationOutput, lineDropMap):
 
     Parameters:
     -----------
-    translationOutput - The output of the neural model (if calling this function
+    t_out - The output of the neural model (if calling this function
     make sure the model is of the nosame variant)
 
     lineDropMap - A map of int (the starting index of a line) to the line
@@ -85,9 +95,9 @@ def reconstructOutput(translationOutput, lineDropMap):
 
     for lineStartId, tokens in lineDropMap.iteritems():
         sameInsert = ["SAME"] * len(tokens.split())
-        translationOutput = translationOutput[:lineStartId] + sameInsert + translationOuput[lineStartId:]
+        t_out = t_out[:lineStartId] + sameInsert + t_out[lineStartId:]
 
-    return translationOutput
+    return t_out
 
 
 def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, debug_mode = False):
@@ -206,6 +216,7 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
             print(filteredText)
             print("-----Line Drop Map-----")
             print(ldm)
+            #quit()
         (ok, translation, _err) = nst.queryServer(filteredText)
         translation = reconstructOutput(translation, ldm)
     else:
@@ -220,10 +231,11 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
         print("--------Output---------")
         print(ok)
         print(_err)
-        print(translation[0:10])
-        print("-------Mock Translation-------")
-        print(mock_translation[0:10])
-        print(len(mock_translation))
+        print(translation)
+        #print("-------Mock Translation-------")
+        #print(mock_translation[0:10])
+        #print(len(mock_translation))
+        print(len(lx.collapsedText.split()))
         print(len(translation))
         #quit()
 
