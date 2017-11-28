@@ -36,6 +36,7 @@ def extName(mix, method):
        raise TypeError("%s is not a valid TransType" % (str(method)))
 
    if(mix):
+       print("MIX2:" + str(mix))
        short += "_mix"
 
    return short
@@ -74,8 +75,9 @@ with open(os.path.join(output_path, flog), 'w') as g, \
     pass
 
 test_files = source_folder.fullFileNames("*.u.js", recursive=False)
-ensemble = [TransType.NEURAL_SEQ_TAG]#, TransType.Both]
-use_mix = [False]#, True]
+ensemble = [TransType.NEURAL_SEQ_TAG]#, TransType.BOTH]
+#ensemble = [TransType.BOTH]
+use_mix = [False, True]
 i = 0
 restart_attempt = False #Add in later when doing jsnaughty mixes
 
@@ -84,15 +86,20 @@ for nextFile in test_files:
         i += 1
         continue
     js_text = open(nextFile, 'r').read()
+    fileLogName = ntpath.basename(nextFile).replace(".u.", ".")
     
     #Loop over ensemble methods?
     for method in ensemble:
         for mix in use_mix:
-            print("Processing %s Ensemble %s Mix %s" % (nextFile, method, mix))
+            if(mix != False):
+                continue
+
+            print("Processing %s Ensemble %s Mix %s" % (fileLogName, method, mix))
             
             try:
-                result = client.deobfuscateJS(js_text,mix,i,method,True,True,True,True) #Debug Version
-                #result = client.deobfuscateJS(js_text,mix,i,method,False,True,True,True)
+                #print("MIX:" + str(mix))
+                #result = client.deobfuscateJS(js_text,mix,0,method,True,True,True,True) #Debug Version
+                result = client.deobfuscateJS(js_text,mix,0,method,False,True,True,True)
                 print(result)
             except Exception, e:
                 print("Deobfuscate crashed.")
@@ -112,14 +119,18 @@ for nextFile in test_files:
                     output_file = file_id + "." + shortName  + ".js"
                     with open(os.path.join(output_path, output_file), 'w') as f:
                         f.write(translation)
-                    writer.writerow([nextFile, "OK"])
+                    writer.writerow([fileLogName, "OK"])
                     
                     for r in candidates:
-                        row = [nextFile] + [str(x).replace("\"","") for x in r]
+                        #Point the candidate to the correct original file?
+                        row = [fileLogName] + [str(x).replace("\"","") for x in r]
                         row[1] = shortName
                         cw.writerow(row)
                 else:
-                    writer.writerow([nextFile, result[0]])
+                    writer.writerow([fileLogName, result[0]])
 
 
     i +=1
+
+#Remove temp file.
+os.remove(os.path.join(output_path, "0.u.js"))

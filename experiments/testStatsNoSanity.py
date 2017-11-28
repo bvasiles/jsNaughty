@@ -76,6 +76,8 @@ strategies = set([])
 sanity = {}
 reader = UnicodeReader(open(sanity_path))
 for row in reader:
+    #print(row)
+    #print(row[1] == 'OK')
     if row[1] == 'OK':
         sanity[row[0]] = True
     else:
@@ -134,6 +136,7 @@ for row in reader:
         #                                               alternatives) )
     
     else:
+        print(file_name)
         ignored.add(file_name)
     
     
