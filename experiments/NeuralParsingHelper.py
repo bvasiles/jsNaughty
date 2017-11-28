@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import socket
+from collections import OrderedDict
 # import multiprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                              os.path.pardir)))
@@ -16,6 +17,78 @@ from tools import RenamingStrategies
 from tools import NeuralSequenceParser
 
 from folderManager import Folder
+
+droppedLines = True
+
+def removeUnchangedLines(fullText, scopeAnalyst_text, iB_text):
+    """
+    Given a text about to be preprocessed and a scope analyzer for
+    that text, find which lines have no minifiable identifiers and
+    remove them.
+    Parameters
+    ----------
+    fullText: the full preprocessed text about to be submitted to
+    the neural translation engine.
+
+    scopeAnalyst_text: a scopeAnalyzer for that text
+
+    iB_text: an indexBuilder for the text
+
+    Returns:
+    (filteredText, lineDropMap) - A tuple:
+    filteredText - the text with all lines without minifiable identifiers
+    removed.
+
+    lineDropMap - An OrderedDict of int (the starting index of a line) to the line
+    that was dropped.
+    """
+    #1) Get line #s with minifiable variables
+    lineDropMap = OrderedDict()
+    local = [n for n, isG in sa.isGlobal.iteritems() if isG == False] # minifiable names (name, flatID -> true)
+    #ib.revFlatMap flat id -> line, col
+    changedLines = set([ib.revFlatMap[pos] for (n, pos) in local])
+    lines = fullText.split("\n")
+    filteredText = ""
+    i = 0
+    startTok = 0
+    for l in lines:
+        #2) Get Start of line index for this line
+        startTok += l.split() #add count of tokens on the line
+        if(l in changeLines):
+            filteredText += l
+        else:
+            lineDropMap[startTok] = l
+
+        i += 1
+
+    return (filteredText, lineDropMap)
+
+def reconstructOutput(translationOutput, lineDropMap):
+    """
+    Given the list of tokens from the output, insert
+    the correct number of SAME tokens for all the lines
+    removed in preprocessing as specified by the lineDropMap
+
+    Parameters:
+    -----------
+    translationOutput - The output of the neural model (if calling this function
+    make sure the model is of the nosame variant)
+
+    lineDropMap - A map of int (the starting index of a line) to the line
+    that was dropped.
+
+    Returns:
+    --------
+    fullTranslation - a list of string tokens with SAME inserted in
+    the correct positions.
+    """
+
+    for lineStartId, tokens in lineDropMap.iteritems():
+        sameInsert = ["SAME"] * len(tokens.split())
+        translationOutput = translationOutput[:lineStartId] + sameInsert + translationOuput[lineStartId:]
+
+    return translationOutput
+
 
 def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, debug_mode = False):
     """
@@ -123,12 +196,25 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     end = time.time()
     rn_time = end-rn_start
 
-    #Until we know how this works, let's use a mock version.
     nst = SeqTag()
-    #(ok, translation, _err) = nst.web_runCLI(lx.collapsedText)
-    (ok, translation, _err) = nst.queryServer(lx.collapsedText)
-    #Mock assumes using test file 1.
-    (ok, mock_translation, _err) = nst.mock_run()
+
+    #For the case
+    if(dropLines):
+        (filteredText, ldm) = removeUnchangedLines(lx.collapsedText, a_scopeAnalyst, a_iBuilder)
+        if(debug_mode):
+            print("-----FilteredText-----")
+            print(filteredText)
+            print("-----Line Drop Map-----")
+            print(ldm)
+        (ok, translation, _err) = nst.queryServer(filteredText)
+        translation = reconstructOutput(translation, ldm)
+    else:
+        #Until we know how this works, let's use a mock version.
+        #(ok, translation, _err) = nst.web_runCLI(lx.collapsedText)
+        (ok, translation, _err) = nst.queryServer(lx.collapsedText)
+        #Mock assumes using test file 1.
+        #(ok, mock_translation, _err) = nst.mock_run()
+
 
     if(debug_mode):
         print("--------Output---------")
@@ -157,7 +243,7 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     if translation is not None:
         # Parse Neural output        
         nsp = NeuralSequenceParser()
-            
+
         name_candidates = nsp.parse(translation,
                                    a_iBuilder,
                                    a_position_names)                           
