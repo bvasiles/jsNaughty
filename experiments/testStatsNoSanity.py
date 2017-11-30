@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 from unicodeManager import UnicodeReader, UnicodeWriter
 import multiprocessing
 from tools import ScopeAnalyst, Lexer, IndexBuilder
+from evalRenamingHelper import suggestionApproximateMatch
                     
 
 def processFile(l):
@@ -192,14 +193,21 @@ writer.writerow(['file', 'num_names', 'num_glb_names', 'num_loc_names'] +
                 [n2s[i].replace('.','_')+'_glb' 
                 for i in range(len(strategies))] +
                 [n2s[i].replace('.','_')+'_maybe' 
-                for i in range(len(strategies))])
+                for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_approx' 
+                for i in range(len(strategies))] +
+                [n2s[i].replace('.','_')+'_approx_maybe' 
+                for i in range(len(strategies))]) 
+
 
 for file_name in orig.iterkeys():
     row = [file_name]
     counts_loc = [0]*len(strategies)
     counts_glb = [0]*len(strategies)
     counts = [0]*len(strategies)
+    approx_counts = [0]*len(strategies)
     alt_counts = [0]*len(strategies)
+    approx_alt_counts = [0]*len(strategies)
     
     num_names = 0
     num_glb_names = 0
@@ -250,6 +258,10 @@ for file_name in orig.iterkeys():
                         
                             if not glb:
                                 counts_loc[s2n[strategy]] += 1
+                                #Is a name approximately like this translation the one choosen?
+                                (a1, a2, a3, a4) = suggestionApproximateMatch([translated_name], name)
+                                if(a1 or a2 or a3 or a4):
+                                    approx_counts[s2n[strategy]] += 1
                             else:
                                 counts_glb[s2n[strategy]] += 1
                                 
@@ -259,6 +271,10 @@ for file_name in orig.iterkeys():
                             if not glb:
                                 if name in alternatives.split(','):
                                     alt_counts[s2n[strategy]] += 1
+                                #Is a name approximately like the real one suggested at all?
+                                (a1, a2, a3, a4) = suggestionApproximateMatch(alternatives, name)
+                                if(a1 or a2 or a3 or a4):
+                                    approx_alt_counts[s2n[strategy]] += 1
                         except:
                             pass
         
@@ -278,6 +294,8 @@ for file_name in orig.iterkeys():
         row += counts
         row += counts_glb
         row += alt_counts
+        row += approx_counts
+        row += approx_alt_counts
         writer.writerow(row)
 
 
