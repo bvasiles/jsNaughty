@@ -54,7 +54,11 @@ class MosesProxy:
         self.iniFiles = {"web" : ["/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.no_renaming/tuning/moses.lm2.ini",
                                   "/data/bogdanv/deobfuscator/experiments/corpora/newcorpus.300k/train.hash_def_one_renaming/tuning/moses.lm2.ini"],
                          "web-pruned" : ["./phrase-tables/no_renaming/moses.lm2.ini",
-                                         "./phrase-tables/hash_def_one_renaming/moses.lm2.ini"]}
+                                         "./phrase-tables/hash_def_one_renaming/moses.lm2.ini"],
+                         "one-percent" : ["./data/moses_onepercent_rep_no_renaming/tuning/moses.lm.ini",
+                                         "./data/moses_onepercent_rep/tuning/moses.lm.ini"],
+                         "five-percent" : ["./data/moses_fivepercent_rep_no_renaming/tuning/moses.lm.ini",
+                                         "./data/moses_fivepercent_rep/tuning/moses.lm.ini"]}
 
 # #         # Default, 300k corpus
 #         self.proxies = {

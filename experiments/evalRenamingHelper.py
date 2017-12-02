@@ -82,6 +82,8 @@ def suggestionApproximateMatch(suggestion_list, word):
     3) 1) + 2) + exact containment (a suggestion contains the word/ word contains the suggestion   
     4) abbreviations - after 1) + 2) -> does either a word in the suggestion list/orig word contain the characters of the other
     '''
+    #print(word)
+    #print(suggestion_list)
     word_lower = word.lower()
     word_nspec = word_lower.replace("$","").replace("_","")
 

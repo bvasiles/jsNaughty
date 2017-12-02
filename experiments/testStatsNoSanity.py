@@ -272,7 +272,7 @@ for file_name in orig.iterkeys():
                                 if name in alternatives.split(','):
                                     alt_counts[s2n[strategy]] += 1
                                 #Is a name approximately like the real one suggested at all?
-                                (a1, a2, a3, a4) = suggestionApproximateMatch(alternatives, name)
+                                (a1, a2, a3, a4) = suggestionApproximateMatch(alternatives.split(','), name)
                                 if(a1 or a2 or a3 or a4):
                                     approx_alt_counts[s2n[strategy]] += 1
                         except:

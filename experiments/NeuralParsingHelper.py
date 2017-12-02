@@ -231,6 +231,7 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
         print("--------Output---------")
         print(ok)
         print(_err)
+        print("Translation!!!!")
         print(translation)
         #print("-------Mock Translation-------")
         #print(mock_translation[0:10])
