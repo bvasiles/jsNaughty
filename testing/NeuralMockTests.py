@@ -26,6 +26,7 @@ class defobfuscate_tests(unittest.TestCase):
         '''
         Run an get the result on a file.
         '''
+    	source_file = "testing/test_files/test_file1.obs.js"
         text = open(source_file, 'r').read()
         result = self.client.deobfuscateJS(text,False,12345,TransType.NEURAL_SEQ_TAG,True,False,True,True)
         print("RESULT")
