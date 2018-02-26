@@ -4,9 +4,9 @@ import time
 import socket
 from collections import OrderedDict
 # import multiprocessing
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
-                
+
 from tools import Aligner, IndexBuilder, WebLexer
 from tools import PreRenamer
 from tools import SeqTag
@@ -107,44 +107,44 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     manner.  It performs hashing/no hashing preparation of the file for
     the renaming strategy specified by r_stategy, and then calls the
     appropriate moses_server.
-    
+
     Parameters
-    ----------   
-    a_beautifier: a beautify object to make sure the renamed text is 
+    ----------
+    a_beautifier: a beautify object to make sure the renamed text is
     cleanly formatted.
-   
+
     iBuilder_ugly: Index Builder for the minified file.
-   
+
     scopeAnalyst_ugly: Scope Analyst for the minified file.
-    
+
     debug_mode: Print debug information? (True/False - defaults to False)
-    
+
     Returns
     -------
-    (status, error, translation, name_candidates, 
-            a_iBuilder, a_scopeAnalyst, a_name_positions, 
+    (status, error, translation, name_candidates,
+            a_iBuilder, a_scopeAnalyst, a_name_positions,
             a_position_names, a_use_scopes,
             rn_time, post_start)
-    
+
     status: Did this complete without error?  If False, then the rest of the output
     besides error will be empty/null.
-    
+
     error: What is the reason for the failure?  If status is True (successful
     completion) this is "".
-    
+
     translation: The raw Moses output
-    
+
     name_candidates: The set of Moses suggestions for this renaming
-    
+
     a_iBuilder,a_scopeAnalyst: Index Builder and Scope Analyst for this renaming
-    
+
     a_name_positions, a_posistion_names, a_use_scopes: Additional tracking info
-    
+
     rn_time, post_start: The duration of the
-    renaming and the start time for the postprocessing steps. 
-    """       
+    renaming and the start time for the postprocessing steps.
+    """
     rn_start = time.time()
-         
+
 
     #We need both the base_text and the hashed_text.
     RS = RenamingStrategies()
@@ -156,25 +156,25 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
         print("Tokens-------------------")
     #We always need the non hashed names as a fallback.
     try:
-        after_text = preRen.rename(r_strategy, 
+        after_text = preRen.rename(r_strategy,
                                    iBuilder_ugly,
                                    scopeAnalyst_ugly)
     except:
         return(False, "Renaming failed for " + str(r_strategy),
-               "", {}, None, 
-               None, {}, 
+               "", {}, None,
+               None, {},
                {}, {},
                0, 0)
-  
+
     (ok, beautified_after_text, _err) = a_beautifier.web_run(after_text)
     if not ok:
-        return(False, "Beautifier failed on the renamed text for " + str(r_strategy), 
-               "", {}, None, 
-               None, {}, 
+        return(False, "Beautifier failed on the renamed text for " + str(r_strategy),
+               "", {}, None,
+               None, {},
                {}, {},
                0, 0)
- 
-    # Align hashed and non hashed  files, in case the beautifier 
+
+    # Align hashed and non hashed  files, in case the beautifier
     # line wrapped the extended lines.
     try:
         aligner = Aligner()
@@ -182,12 +182,12 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
                                                                  WebLexer(iBuilder_ugly.get_text()).tokenList)
     except:
         return(False, "Aligner failed on the renamed text for " + str(r_strategy),
-               "", {}, None, 
-               None, {}, 
+               "", {}, None,
+               None, {},
                {}, {},
                0, 0)
 
-    
+
     a_lexer = WebLexer(aligned_after)
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
     a_scopeAnalyst = WebScopeAnalyst(aligned_after)
@@ -196,13 +196,13 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     # We can switch this back once we train models on a corpus with literals
     # lx = WebLexer(a_iBuilder.get_text())
     lx = WebLexer(a_iBuilder.get_text_wo_literals())
-    
+
     if(debug_mode):
         print("-----------Input---------")
         print(lx.collapsedText)
 
     #Performance measures -> wrap up the preprocessing/ renaming
-    #phases 
+    #phases
     end = time.time()
     rn_time = end-rn_start
 
@@ -217,9 +217,16 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
             print("-----Line Drop Map-----")
             print(ldm)
             #quit()
+        print("Neil: filteredtext")
+        print(filteredText)
         (ok, translation, _err) = nst.queryServer(filteredText)
+
         translation = reconstructOutput(translation, ldm)
+        print("Neil: translation")
+        print(translation)
     else:
+        print("Neil: lx.collapsedtext")
+        print(lx.collapsedText)
         #Until we know how this works, let's use a mock version.
         #(ok, translation, _err) = nst.web_runCLI(lx.collapsedText)
         (ok, translation, _err) = nst.queryServer(lx.collapsedText)
@@ -241,27 +248,27 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
         #quit()
 
     if not ok:
-        return(False, "Neural Sequence Translation Failed " + str(r_strategy), 
-               translation, {}, a_iBuilder, 
-               a_scopeAnalyst, {}, 
+        return(False, "Neural Sequence Translation Failed " + str(r_strategy),
+               translation, {}, a_iBuilder,
+               a_scopeAnalyst, {},
                {}, {},
                0, 0)
-    
-    
+
+
     post_start = time.time()
-    
-    (a_name_positions, 
+
+    (a_name_positions,
          a_position_names, a_use_scopes) = prepHelpers(a_iBuilder, a_scopeAnalyst)
-    
+
     if translation is not None:
-        # Parse Neural output        
+        # Parse Neural output
         nsp = NeuralSequenceParser()
 
         name_candidates = nsp.parse(translation,
                                    a_iBuilder,
-                                   a_position_names)                           
+                                   a_position_names)
 
-    return (True, "", translation, name_candidates, a_iBuilder, 
-            a_scopeAnalyst, a_name_positions, 
+    return (True, "", translation, name_candidates, a_iBuilder,
+            a_scopeAnalyst, a_name_positions,
             a_position_names, a_use_scopes,
             rn_time, post_start)

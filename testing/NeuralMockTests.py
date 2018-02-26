@@ -7,7 +7,7 @@ import argparse
 import time
 #import cProfile
 from pstats import Stats
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 from tools import Lexer, ScopeAnalyst
 from folderManager.folder import Folder
@@ -21,13 +21,14 @@ class defobfuscate_tests(unittest.TestCase):
 
     def setUp(self):
         self.client = MosesClient("./testing/performance_output/")
-          
+
     def testOutput(self):
         '''
         Run an get the result on a file.
         '''
     	source_file = "testing/test_files/test_file1.obs.js"
         text = open(source_file, 'r').read()
+        print(text)
         result = self.client.deobfuscateJS(text,False,12345,TransType.NEURAL_SEQ_TAG,True,False,True,True)
         print("RESULT")
         print(result)
