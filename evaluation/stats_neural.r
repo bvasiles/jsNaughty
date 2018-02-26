@@ -43,7 +43,7 @@ stats_nomix <- read.csv("~/jsnaughty/evaluation/stats_nomix_final.csv", sep=";")
 #stats_neural <- read.csv("~/jsnaughty/evaluation/neural_stats.csv", sep=";")
 #stats_neural <- read.csv("~/jsnaughty/evaluation/neural_stats_fix.csv", sep=";")
 #TODO: the approx isn't working for the individual words (need to rerun the scripts.)
-stats_neural <- read.csv("~/jsnaughty/evaluation/neural_stats_fix_approx.csv", sep=";")
+stats_neural <- read.csv("~/jsnaughty/evaluation/neural_stats_jsnaughty_test_set.csv", sep=";")
 
 stats_neural_ks <- read.csv("~/jsnaughty/evaluation/neural_stats_ks_approx.csv", sep=";")
 
@@ -124,18 +124,18 @@ subset2 <- merge(subset2, subsetN5, by = c("file"))
 # subsetN_nozero <- subsetN[subsetN$`Neural Drop Lines` != 0.0,]
 # summary(subsetN$`Neural Drop Lines`)
 # summary(subsetN_nozero$`Neural Drop Lines`)
-# 
+#
 # #What cases do we do better on, if any? (Never, basically)
 # subset2$NBM <- subset2$JSNaughty < subset2$`Neural Drop Lines`
 # subset2$NEM <- subset2$JSNaughty == subset2$`Neural Drop Lines`
 # subset2$NB <- subset2$Autonym < subset2$`Neural Drop Lines`
 # subset2$NE <- subset2$Autonym == subset2$`Neural Drop Lines`
-# 
+#
 # table(subset2$NB)
 # table(subset2$NE)
 # table(subset2$NBM)
 # table(subset2$NEM)
-# 
+#
 # matched <- subset2[(subset2$NBM | subset2$NB) & subset2$`Neural Drop Lines` != 0,]
 # matched <- sqldf("SELECT matched.*, stats_mix.num_loc_names FROM matched INNER JOIN stats_mix ON matched.file = stats_mix.file ORDER BY stats_mix.num_loc_names DESC")
 # #Examples (Candidate for example path):
@@ -148,19 +148,19 @@ plot_data1 <- subset2[,c("Autonym", "JSNice", "JSNaughty", "Neural (1%)", "Neura
 colnames(plot_data1) <- c("Autonym", "JSNice", "JSNaughty", "Neural (1%)", "Neural (5%)")
 
 pd1 <- melt(plot_data1)
-mix_plot <- ggplot(pd1, aes(variable, y = value))+ 
-  geom_boxplot(aes(fill = variable)) +  
-  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+mix_plot <- ggplot(pd1, aes(variable, y = value))+
+  geom_boxplot(aes(fill = variable)) +
+  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
         axis.title = element_text(size=20),
         axis.text.y = element_text(size=20),
         axis.title = element_text(size=20),
         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
         panel.background = element_rect(fill = "white"),
-        legend.position="none") +  
+        legend.position="none") +
   scale_fill_manual(values = c(	"#afd8b9","#ccbadd","#269441", "#99c2ff","#003380")) +
-  #scale_fill_brewer(palette="Greens") + 
-  #ggtitle("File level accuracy for JSnice, Autonym, and JSNaughty") + 
-  xlab("Renaming technique") + 
+  #scale_fill_brewer(palette="Greens") +
+  #ggtitle("File level accuracy for JSnice, Autonym, and JSNaughty") +
+  xlab("Renaming technique") +
   ylab(paste("% names recovered -", nrow(pd1), "files"))
 mix_plot
 ggsave(mix_plot, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot1.png", height= 7.07, width = 9.36, units = "in")
@@ -189,89 +189,89 @@ combinedSize$neural5_suggestion <- stats_neural_5_percent[,c("nst_logmodel_maybe
 combinedSize$neural5_suggestion_approx <- stats_neural_5_percent[,c("nst_logmodel_approx_maybe")]/stats_neural_5_percent[,c("num_loc_names")]
 
 #2) Neural 1% and 5% vs Moses 1% and 5% Local Only + Exact
-plot_data2<- combinedSize[,c("moses1_exact", "neural1_exact", "moses5_exact", "neural5_exact")] 
+plot_data2<- combinedSize[,c("moses1_exact", "neural1_exact", "moses5_exact", "neural5_exact")]
 colnames(plot_data2) <- c("Autonym (1%)", "Neural (1%)", "Autonym (5%)", "Neural (5%)")
 
 
 pd2 <- melt(plot_data2)
-mix_plot2 <- ggplot(pd2, aes(variable, y = value))+ 
-  geom_boxplot(aes(fill = variable)) +  
-  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+mix_plot2 <- ggplot(pd2, aes(variable, y = value))+
+  geom_boxplot(aes(fill = variable)) +
+  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
         axis.title = element_text(size=20),
         axis.text.y = element_text(size=20),
         axis.title = element_text(size=20),
         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
         panel.background = element_rect(fill = "white"),
-        legend.position="none") +  
+        legend.position="none") +
   scale_fill_manual(values = c(	"#afd8b9","#ccbadd","#269441", "#99c2ff")) +
-  #scale_fill_brewer(palette="Greens") + 
-  ggtitle("File level accuracy for Autonym and Neural Exact Matching") + 
-  xlab("Renaming technique") + 
+  #scale_fill_brewer(palette="Greens") +
+  ggtitle("File level accuracy for Autonym and Neural Exact Matching") +
+  xlab("Renaming technique") +
   ylab(paste("% names recovered -", nrow(pd2), "files"))
 mix_plot2
 ggsave(mix_plot2, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot2.png", height= 7.07, width = 9.36, units = "in")
 
 #3) Same as 2, but use approximate
-plot_data3<- combinedSize[,c("moses1_approx", "neural1_approx", "moses5_approx", "neural5_approx")] 
+plot_data3<- combinedSize[,c("moses1_approx", "neural1_approx", "moses5_approx", "neural5_approx")]
 colnames(plot_data3) <- c("Autonym (1%)", "Neural (1%)", "Autonym (5%)", "Neural (5%)")
 
 pd3 <- melt(plot_data3)
-mix_plot3 <- ggplot(pd3, aes(variable, y = value))+ 
-  geom_boxplot(aes(fill = variable)) +  
-  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+mix_plot3 <- ggplot(pd3, aes(variable, y = value))+
+  geom_boxplot(aes(fill = variable)) +
+  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
         axis.title = element_text(size=20),
         axis.text.y = element_text(size=20),
         axis.title = element_text(size=20),
         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
         panel.background = element_rect(fill = "white"),
-        legend.position="none") +  
+        legend.position="none") +
   scale_fill_manual(values = c(	"#afd8b9","#ccbadd","#269441", "#99c2ff")) +
-  #scale_fill_brewer(palette="Greens") + 
-  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") + 
-  xlab("Renaming technique") + 
+  #scale_fill_brewer(palette="Greens") +
+  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") +
+  xlab("Renaming technique") +
   ylab(paste("% names recovered -", nrow(pd3), "files"))
 mix_plot3
 ggsave(mix_plot3, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot3.png", height= 7.07, width = 9.36, units = "in")
 
 #4 + 5) Is it in the suggestion list (exact vs approximate 1% and 5% moses)
-plot_data4<- combinedSize[,c("moses1_suggestion", "neural1_suggestion", "moses5_suggestion", "neural5_suggestion")] 
+plot_data4<- combinedSize[,c("moses1_suggestion", "neural1_suggestion", "moses5_suggestion", "neural5_suggestion")]
 colnames(plot_data4) <- c("Autonym (1%)", "Neural (1%)", "Autonym (5%)", "Neural (5%)")
 
 pd4 <- melt(plot_data4)
-mix_plot4 <- ggplot(pd4, aes(variable, y = value))+ 
-  geom_boxplot(aes(fill = variable)) +  
-  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+mix_plot4 <- ggplot(pd4, aes(variable, y = value))+
+  geom_boxplot(aes(fill = variable)) +
+  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
         axis.title = element_text(size=20),
         axis.text.y = element_text(size=20),
         axis.title = element_text(size=20),
         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
         panel.background = element_rect(fill = "white"),
-        legend.position="none") +  
+        legend.position="none") +
   scale_fill_manual(values = c(	"#afd8b9","#ccbadd","#269441", "#99c2ff")) +
-  #scale_fill_brewer(palette="Greens") + 
-  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") + 
-  xlab("Renaming technique") + 
+  #scale_fill_brewer(palette="Greens") +
+  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") +
+  xlab("Renaming technique") +
   ylab(paste("% names recovered -", nrow(pd4), "files"))
 mix_plot4
 ggsave(mix_plot4, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot4.png", height= 7.07, width = 9.36, units = "in")
 
-plot_data5<- combinedSize[,c("moses1_suggestion_approx", "neural1_suggestion_approx", "moses5_suggestion_approx", "neural5_suggestion_approx")] 
+plot_data5<- combinedSize[,c("moses1_suggestion_approx", "neural1_suggestion_approx", "moses5_suggestion_approx", "neural5_suggestion_approx")]
 colnames(plot_data5) <- c("Autonym (1%)", "Neural (1%)", "Autonym (5%)", "Neural (5%)")
 
 pd5 <- melt(plot_data5)
-mix_plot5 <- ggplot(pd5, aes(variable, y = value))+ 
-  geom_boxplot(aes(fill = variable)) +  
-  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+mix_plot5 <- ggplot(pd5, aes(variable, y = value))+
+  geom_boxplot(aes(fill = variable)) +
+  theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
         axis.title = element_text(size=20),
         axis.text.y = element_text(size=20),
         axis.title = element_text(size=20),
         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
         panel.background = element_rect(fill = "white"),
-        legend.position="none") +  
+        legend.position="none") +
   scale_fill_manual(values = c(	"#afd8b9","#ccbadd","#269441", "#99c2ff")) +
-  #scale_fill_brewer(palette="Greens") + 
-  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") + 
-  xlab("Renaming technique") + 
+  #scale_fill_brewer(palette="Greens") +
+  ggtitle("File level accuracy for Autonym and Neural Approximate Matching") +
+  xlab("Renaming technique") +
   ylab(paste("% names recovered -", nrow(pd5), "files"))
 mix_plot5
 ggsave(mix_plot5, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot5.png", height= 7.07, width = 9.36, units = "in")
@@ -292,19 +292,19 @@ ggsave(mix_plot5, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot5.png", heig
 # table(stats_neural_lm$nst_lm/stats_neural_lm$num_loc_names != 0) #These are worse than the others.  And maybe answers this question (Its not the consistency resolution alg, the exact names just aren't being matched.)
 # summary(stats_neural_freq$nst_freqlen/stats_neural_freq$num_loc_names)
 # table(stats_neural_freq$nst_freqlen/stats_neural_freq$num_loc_names != 0)
-# 
+#
 # summary(stats_neural_lm$nst_lm_approx/stats_neural_lm$num_loc_names)
 # table(stats_neural_lm$nst_lm_approx/stats_neural_lm$num_loc_names != 0) #These are worse than the others.  And maybe answers this question (Its not the consistency resolution alg, the exact names just aren't being matched.)
 # summary(stats_neural_freq$nst_freqlen_approx/stats_neural_freq$num_loc_names)
 # table(stats_neural_freq$nst_freqlen_approx/stats_neural_freq$num_loc_names != 0)
 # #ks is short for keep same (i.e. keep all the lines, including the ones with no change.)
 # stats_neural_ks <- read.csv("~/jsnaughty/evaluation/neural_stats_ks_approx.csv", sep=";")
-# 
+#
 # summary(stats_neural$nst_logmodel/stats_neural$num_loc_names)
 # summary(stats_neural_ks$nst_logmodel/stats_neural_ks$num_loc_names)
 # wilcox.test(stats_neural$nst_logmodel/stats_neural$num_loc_names, stats_neural_ks$nst_logmodel/stats_neural_ks$num_loc_names)
 # cohensD(stats_neural$nst_logmodel/stats_neural$num_loc_names, stats_neural_ks$nst_logmodel/stats_neural_ks$num_loc_names)
-# 
+#
 # #Oh, basically it doesn't work at all. Like 19 examples on the better one that recover A name.
 # z <- stats_neural[stats_neural$nst_logmodel != 0,]
 # z_ks <- stats_neural_ks[stats_neural_ks$nst_logmodel != 0,]
@@ -312,7 +312,7 @@ ggsave(mix_plot5, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot5.png", heig
 # summary(z_ks$nst_logmodel/z_ks$num_loc_names)
 # wilcox.test(z$nst_logmodel/z$num_loc_names, z_ks$nst_logmodel/z_ks$num_loc_names)
 # cohensD(z$nst_logmodel/z$num_loc_names, z_ks$nst_logmodel/z_ks$num_loc_names)
-# 
+#
 # #Let's see how many are approximately matching or approximately matching in the suggestion list
 # summary(stats_neural_approx$nst_logmodel_approx/stats_neural_approx$num_loc_names)
 # summary(stats_neural_approx$nst_logmodel_approx_maybe/stats_neural_approx$num_loc_names)
@@ -328,31 +328,31 @@ ggsave(mix_plot5, file = "~/jsnaughty/evaluation/Plots/neuralBoxplot5.png", heig
 # subset2M <- as.data.frame(subset2M)
 # colnames(subset2M) <- c("JSNaughty")
 # subset2M$file <- as.factor(stats_mix$file)
-# 
-# 
+#
+#
 # subsetNM <- cbind(stats_neural[,c("nst_logmodel_maybe")])/stats_neural[,c("num_loc_names")]
 # colnames(subsetNM) <- c("Neural")
 # subsetNM <- as.data.frame(subsetNM)
 # subsetNM$file <- as.factor(stats_neural$file)
 # subset2M <- merge(subset2M, subsetNM, by = c("file"))
-# 
+#
 # subset2M <- subset2M[,c("JSNaughty", "Neural")]
 # colnames(subset2M) <- c("JSNaughty", "Neural")
-# 
+#
 # maybe <- melt(subset2M)
-# mix_plot3 <- ggplot(maybe, aes(variable, y = value))+ 
-#   geom_boxplot(aes(fill = variable)) +  
-#   theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1), 
+# mix_plot3 <- ggplot(maybe, aes(variable, y = value))+
+#   geom_boxplot(aes(fill = variable)) +
+#   theme(axis.text.x = element_text(size=20, angle = 45, hjust = 1),
 #         axis.title = element_text(size=20),
 #         axis.text.y = element_text(size=20),
 #         axis.title = element_text(size=20),
 #         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
 #         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +  
+#         legend.position="none") +
 #   scale_fill_manual(values = c("#afd8b9","#ccbadd","#269441","#99c2ff", "#003380")) +
-#   #scale_fill_brewer(palette="Greens") + 
-#   #ggtitle("File level accuracy for JSNaughty and Neural Approximate") + 
-#   xlab("Renaming technique") + 
+#   #scale_fill_brewer(palette="Greens") +
+#   #ggtitle("File level accuracy for JSNaughty and Neural Approximate") +
+#   xlab("Renaming technique") +
 #   ylab(paste("% local names recovered -", nrow(subset2), "files"))
 # mix_plot3
 # ggsave(mix_plot3, file = "~/jsnaughty/evaluation/Plots/neuralBoxplotLocalMaybe.pdf", height= 7.07, width = 9.36, units = "in")
