@@ -3,7 +3,7 @@ import os
 import argparse
 import csv
 import ntpath
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 from tools import Lexer, ScopeAnalyst
 from folderManager.folder import Folder
@@ -50,8 +50,8 @@ parser.add_argument("-s", "--source_path",action="store", type=str,
     help="The source directory where the files are stored.")
 parser.add_argument("-o", "--output_path",action="store", type=str,
     help="Where to put the output files.")
-parser.add_argument("-start",action="store", type=int, default = 0, 
-    help="A starting index for which file to process next " + 
+parser.add_argument("-start",action="store", type=int, default = 0,
+    help="A starting index for which file to process next " +
     "(i.e. start at kth file in list).  Used for restarting after crash.")
 parser.add_argument("-stop", action="store", type=int, default =2150,
     help = "Stopping index for doing a subset of the test.")
@@ -90,8 +90,8 @@ test_files = sorted(test_files)
 #quit()
 #ensemble = [TransType.NEURAL_SEQ_TAG]#, TransType.BOTH]
 #ensemble = [TransType.BOTH]
-ensemble = [TransType.JSNAUGHTY]
-use_mix = [False, True]
+ensemble = [TransType.NEURAL_SEQ_TAG]
+use_mix = [False]
 i = 0
 restart_attempt = False #Add in later when doing jsnaughty mixes
 
@@ -110,7 +110,7 @@ for nextFile in test_files:
     js_text = nf.read()
     nf.close()
     fileLogName = ntpath.basename(nextFile).replace(".u.", ".")
-    
+
     #Loop over ensemble methods?
     for method in ensemble:
         for mix in use_mix:
@@ -118,7 +118,7 @@ for nextFile in test_files:
                 continue
 
             print("Processing %s Ensemble %s Mix %s" % (fileLogName, method, mix))
-            
+
             try:
                 #print("MIX:" + str(mix))
                 #result = client.deobfuscateJS(js_text,mix,0,method,True,True,True,True) #Debug Version
@@ -127,18 +127,18 @@ for nextFile in test_files:
             except Exception, e:
                 print("Deobfuscate crashed.")
                 result = ["DeobfuscateJS failed: " + str(e)]
-        
+
             with open(os.path.join(output_path, flog), 'a') as g, \
                         open(os.path.join(output_path, c_path), 'a') as c:
                 writer = UnicodeWriter(g)
                 cw = UnicodeWriter(c)
-                
+
                 try:
                     if not result[0].endswith("Failed"):
                         print(result)
                         print(len(result))
                         translation, js_err, candidates, performance = result #This is regularly crashing?
-                    
+
                         #Create the translated file...
                         file_id = str(getFileId(nextFile))
                         shortName = extName(mix, method)
@@ -146,7 +146,7 @@ for nextFile in test_files:
                         with open(os.path.join(output_path, output_file), 'w') as f:
                             f.write(translation)
                         writer.writerow([fileLogName, "OK"])
-                    
+
                         for r in candidates:
                             #Point the candidate to the correct original file?
                             row = [fileLogName] + [str(x).replace("\"","") for x in r]
