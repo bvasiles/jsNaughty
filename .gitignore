@@ -9,3 +9,4 @@ experiments/test_corpus.lm
 jsnaughty/jsnaughty/jsnaughty/*settings*
 tmp.js
 test.out
+phrase-tables/
