@@ -7,3 +7,5 @@ experiments/corpora
 experiments/test_corpus.lm
 .DS_Store
 jsnaughty/jsnaughty/jsnaughty/*settings*
+tmp.js
+test.out
