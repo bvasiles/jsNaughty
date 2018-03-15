@@ -217,16 +217,10 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
             print("-----Line Drop Map-----")
             print(ldm)
             #quit()
-        print("Neil: filteredtext")
-        print(filteredText)
         (ok, translation, _err) = nst.queryServer(filteredText)
 
         translation = reconstructOutput(translation, ldm)
-        print("Neil: translation")
-        print(translation)
     else:
-        print("Neil: lx.collapsedtext")
-        print(lx.collapsedText)
         #Until we know how this works, let's use a mock version.
         #(ok, translation, _err) = nst.web_runCLI(lx.collapsedText)
         (ok, translation, _err) = nst.queryServer(lx.collapsedText)
