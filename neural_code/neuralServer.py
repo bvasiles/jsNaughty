@@ -10,14 +10,14 @@ from evaluate import web_setUp
 from evaluate import web_predict
 
 lm_path = './langmodels/js.blm.lm'
-port = 9093
+port = 9092
 
 sys.stderr.write("Loading language model from %s..." % lm_path)
 lm = kenlm.LanguageModel(lm_path)
 sys.stderr.write("Done.\n")
 urls = ('/evaluate', 'evaluate', '/score', 'score')
 
-model = web_setUp()
+# model = web_setUp()
 
 class MyApplication(web.application): 
     def run(self, port=8080, *middleware): 

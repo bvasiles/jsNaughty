@@ -89,6 +89,8 @@ class BasicConsistencyResolver:
         # correspondence is (0, 3), (1, 5), (3, 8)
         pairs = []
         
+
+        # Neil this is probably where to extract original sentences.
         # Within-line indices where (name, def_scope) appears
         for draft_line_num, line_num in enumerate(sorted(line_nums)):
             pairs.extend([(draft_line_num, l_idx) 
@@ -429,7 +431,7 @@ class LMConsistencyResolver(ConsistencyResolver):
         
         
     def _lmQueryLines(self,
-                       draft_lines_str):
+                       draft_lines_str, lines=None):
         """
         Helper: Pass a list of line strings through language model, return
             log probabilities for each line.
@@ -444,19 +446,32 @@ class LMConsistencyResolver(ConsistencyResolver):
         line_log_probs: dict; each key is a line index; values are log 
             probabilities for those lines
         """
-        
+        print("Querying lines! Neil")
         line_log_probs = {}
-        for idx, line in enumerate(draft_lines_str):
-             
-            (lm_ok, lm_log_prob, _lm_err) = \
-                self.lm_cache.setdefault(line, self.lm_query.queryServer(line)) #faster
-                #self.lm_cache.setdefault(line, self.lm_query.run(line)) #slow
-                
-             
-            if not lm_ok:
-                lm_log_prob = ENTROPY_ERR
-             
-            line_log_probs[idx] = lm_log_prob
+        if lines != None:
+            print("Utilizing lines Neil")
+            print(draft_lines_str)
+            print(lines)
+            draft_lines_batch = '\n'.join(list(map(lambda x: str(x[0]) + ' ||| ' + x[1], enumerate(draft_lines_str))))
+            lines_batch = '\n'.join(list(map(lambda x: str(x[0]) + ' ||| ' + ' '.join(x[1]), enumerate(lines))))
+            lm_ok, lm_log_prob_list, _lm_err = self.lm_query.queryServer(draft_lines_batch, lines_batch)
+            assert(len(draft_lines_str) == len(lines))
+            assert(len(draft_lines_str) == len(lm_log_prob_list))
+            for idx, line in enumerate(draft_lines_str):
+                self.lm_cache.setdefault(line, lm_log_prob_list[idx])
+                line_log_probs[idx] = lm_log_prob_list[idx]
+        else:
+            for idx, line in enumerate(draft_lines_str):
+                 
+                (lm_ok, lm_log_prob, _lm_err) = \
+                    self.lm_cache.setdefault(line, self.lm_query.queryServer(line)) #faster
+                    #self.lm_cache.setdefault(line, self.lm_query.run(line)) #slow
+                    
+                 
+                if not lm_ok:
+                    lm_log_prob = ENTROPY_ERR
+                 
+                line_log_probs[idx] = lm_log_prob
          
         return line_log_probs
                 
@@ -671,7 +686,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
 #                     print '    ', line
 #                 print
                 
-            translated_log_probs = self._lmQueryLines(draft_lines_str)
+            translated_log_probs = self._lmQueryLines(draft_lines_str, lines)
                          
             line_log_probs = []
             for idx, lm_log_prob in translated_log_probs.iteritems():
@@ -837,7 +852,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
                                                  iBuilder)
         
         draft_lines_str = self._insertNameInTempLines(name, lines, pairs)
-        untranslated_log_probs = self._lmQueryLines(draft_lines_str)
+        untranslated_log_probs = self._lmQueryLines(draft_lines_str, lines)
          
         if self.debug_mode:
             print '\n  minified:', name
@@ -861,7 +876,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
                                                            lines, 
                                                            pairs)
             
-            translated_log_probs = self._lmQueryLines(draft_lines_str)
+            translated_log_probs = self._lmQueryLines(draft_lines_str, lines)
                          
             line_log_probs = []
             for idx, lm_log_prob in translated_log_probs.iteritems():

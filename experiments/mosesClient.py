@@ -525,8 +525,6 @@ class MosesClient():
         (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
         #print(name_candidates)
         #print("--------------")
-        print("Neil: renamed_text")
-        print(renamed_text)
         #print("--------------")
         #print(beautified_renamed_text)
         #print("--------------")

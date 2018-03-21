@@ -56,15 +56,22 @@ class LMQuery:
         return (lm_ok, logProb, err)
 
 
-    def queryServer(self, text):
+    def queryServer(self, text, source=None):
         lm_ok = False
         logProb = None
-
+        print("This is text")
+        print(text)
+        print("This is source")
+        print(source)
 #        if True:
         try:
-            logText = requests.get("http://0.0.0.0:9093/score",{"q":text})
-#            print(logText.text)
-            logProb = float(logText.text)
+            logText = requests.post("http://0.0.0.0:9093/score",{"q":text, "s": "" if source == None else source})
+            print("Neil received logText")
+            print(logText.text)
+            if source == None:
+                logProb = float(logText.text)
+            else:
+                logProb = list(map(float, logText.text.split(',')))
             # oovProb = int(lines[0].split(' ')[-1])
             #print(" LM DEBUG LINE: " + line)
 #            print(" LM Query: "  + str(text) + ' ---> ' + str(logProb))

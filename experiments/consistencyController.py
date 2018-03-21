@@ -35,7 +35,6 @@ class ConsistencyController:
                         lm_path=None,
                         variable_metrics=None,
                         hash_to_min = None):
-  
         if strategy == self.CS.LM:
             worker = LMAvgConsistencyResolver(self.debug_mode,
                                               lm_path)

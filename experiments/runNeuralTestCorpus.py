@@ -126,6 +126,7 @@ for nextFile in test_files:
                 print(result)
             except Exception, e:
                 print("Deobfuscate crashed.")
+                print(e)
                 result = ["DeobfuscateJS failed: " + str(e)]
 
             with open(os.path.join(output_path, flog), 'a') as g, \
