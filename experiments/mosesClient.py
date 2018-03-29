@@ -87,7 +87,8 @@ class MosesClient():
 
         return splitMap
 
-    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, debug_output=False, parallel=True, use_local=True, test_output = False):
+    def deobfuscateJS(self, obfuscatedCode, use_mix, transactionID, neural_flag = TransType.JSNAUGHTY, 
+        debug_output=False, parallel=True, use_local=True, test_output = False):
         """
         Take a string representing minified javascript code and attempt to
         translate it into a version with better renamings.
@@ -137,6 +138,16 @@ class MosesClient():
                             language model queries take.
         """
 
+        INVALID_JS_NAMES = set([',', '.', '(', ')', '{', '}', '[', ']', 'abstract', 
+            'arguments', 'await', 'boolean', 'break', 'byte', 'case', 'catch', 
+            'char', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 
+            'do', 'double', 'else', 'enum', 'eval', 'export', 'extends', 'false', 
+            'final', 'finally', 'float', 'for', 'function', 'goto', 'if', 'implements', 
+            'import', 'in', 'infinity', 'instanceof', 'int', 'interface', 'let', 'long', 'NaN', 'native', 
+            'new', 'null', 'package', 'private', 'protected', 'public', 'return', 
+            'short', 'static', 'super', 'switch', 'synchronized', 'this', 'throw', 
+            'throws', 'transient', 'true', 'try', 'typeof', 'undefined', 'var', 'void', 'volatile', 
+            'while', 'with', 'yield'])
 
         RS = RenamingStrategies()
         CS = ConsistencyStrategies()
@@ -327,7 +338,7 @@ class MosesClient():
             (status, error_msg, translation_neural, name_candidates_neural, iBuilder_neural,
                 scopeAnalyst_neural, name_positions_neural,
                 position_names_neural, use_scopes_neural,
-                rn_time_neural, post_start) = getNeuralSequenceTranslation(clear, iBuilder_ugly, scopeAnalyst, debug_output)
+                rn_time_neural, post_start) = getNeuralSequenceTranslation(r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, INVALID_JS_NAMES)
 
         if(neural_flag == TransType.JSNAUGHTY or neural_flag == TransType.BOTH):
             if(not parallel):

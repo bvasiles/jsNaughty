@@ -3,6 +3,9 @@ from pygments.token import Token, String, Number, is_token_subtype
 
 
 class IndexBuilder:
+    STR_LIT_REPL = 'TOKEN_LITERAL_STRING'
+    NUM_REPL = 'TOKEN_LITERAL_NUMBER'
+
 
     def __init__(self, lexed_input):
         start = time.time()
@@ -112,9 +115,9 @@ class IndexBuilder:
             x = []
             for (tt,t) in line:
                 if is_token_subtype(tt, String):
-                    x.append('TOKEN_LITERAL_STRING')
+                    x.append(self.STR_LIT_REPL)
                 elif is_token_subtype(tt, Number):
-                    x.append('TOKEN_LITERAL_NUMBER')
+                    x.append(self.NUM_REPL)
                 else:
                     x.append(t)
 
@@ -142,15 +145,25 @@ class IndexBuilder:
                 continue
             for (tt,t) in line:
                 if is_token_subtype(tt, String):
-                    x.append('TOKEN_LITERAL_STRING')
+                    x.append(self.STR_LIT_REPL)
                 elif is_token_subtype(tt, Number):
-                    x.append('TOKEN_LITERAL_NUMBER')
+                    x.append(self.NUM_REPL)
                 else:
                     x.append(t)
 
             tokens.append(' '.join(x))
 
         return '\n'.join(tokens)
+
+    def get_token_wo_literal(self, token):
+        (tt, t) = token
+        if is_token_subtype(tt, String):
+            return self.STR_LIT_REPL
+        elif is_token_subtype(tt, Number):
+            return self.NUM_REPL
+        else:
+            return t
+
 
     def __repr__(self):
         return "IndexBuilder()"

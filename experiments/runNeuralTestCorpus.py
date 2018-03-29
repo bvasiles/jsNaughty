@@ -117,7 +117,7 @@ for nextFile in test_files:
             if(mix != False):
                 continue
 
-            print("Processing %s Ensemble %s Mix %s" % (fileLogName, method, mix))
+            print("Processing %s ID %d Ensemble %s Mix %s" % (fileLogName, i,  method, mix))
 
             try:
                 #print("MIX:" + str(mix))

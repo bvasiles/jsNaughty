@@ -59,15 +59,9 @@ class LMQuery:
     def queryServer(self, text, source=None):
         lm_ok = False
         logProb = None
-        print("This is text")
-        print(text)
-        print("This is source")
-        print(source)
-#        if True:
+        # if True:
         try:
             logText = requests.post("http://0.0.0.0:9093/score",{"q":text, "s": "" if source == None else source})
-            print("Neil received logText")
-            print(logText.text)
             if source == None:
                 logProb = float(logText.text)
             else:

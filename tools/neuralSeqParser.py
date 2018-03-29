@@ -37,7 +37,8 @@ class NeuralSequenceParser:
     def parse(self, 
               neural_output, 
               iBuilder,
-              position_names):#,
+              position_names,
+              invalid_candidates=set()):#,
 #               scopeAnalyst=None):
        
         #print("Parsing - index Builder")
@@ -88,14 +89,18 @@ class NeuralSequenceParser:
                 
                 # The translated variable name
                 name_translation = translation_parts[line_idx]
-                if(name_translation == "SAME"):
-                    name_translation = k[0]
-                #print("Index: " + str(line_idx) + " Translation: " + name_translation) 
-                # Record the line number (we may give more weight
-                # to names that appear on many translation lines)
-                self.name_candidates.setdefault(k, {})
-                self.name_candidates[k].setdefault(name_translation, set([]))
-                self.name_candidates[k][name_translation].add(line_num)
+
+                if name_translation in invalid_candidates:
+                    print("[NX] Discovered invalid variable translation: " + str(name_translation))
+                else:
+                    if(name_translation == "SAME"):
+                        name_translation = k[0]
+                    #print("Index: " + str(line_idx) + " Translation: " + name_translation) 
+                    # Record the line number (we may give more weight
+                    # to names that appear on many translation lines)
+                    self.name_candidates.setdefault(k, {})
+                    self.name_candidates[k].setdefault(name_translation, set([]))
+                    self.name_candidates[k][name_translation].add(line_num)
 #                 self.name_candidates[k].setdefault(use_scope, {})
 #                 self.name_candidates[k][use_scope].setdefault(name_translation, set([]))
 #                 self.name_candidates[k][use_scope][name_translation].add(n)

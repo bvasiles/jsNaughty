@@ -9,6 +9,7 @@ from lmQuery import LMQuery
 import itertools
 import numpy as np
 from suggestionMetrics import hasCamelCase
+import copy
 
 ENTROPY_ERR = -9999999999
 
@@ -58,7 +59,7 @@ class BasicConsistencyResolver:
 
     def _extractTempLines(self,
                            name_positions_key,
-                           iBuilder):
+                           iBuilder, get_indices=True):
         """
         Helper: Returns input lines where a certain name appears 
         
@@ -88,18 +89,22 @@ class BasicConsistencyResolver:
         # x appeared on lines 3, 5, 8 in the original input, the 
         # correspondence is (0, 3), (1, 5), (3, 8)
         pairs = []
+
+        lines_indices = []
         
 
-        # Neil this is probably where to extract original sentences.
         # Within-line indices where (name, def_scope) appears
         for draft_line_num, line_num in enumerate(sorted(line_nums)):
             pairs.extend([(draft_line_num, l_idx) 
                           for (l_num, l_idx) in name_positions_key 
                           if l_num == line_num])
-            
-            lines.append([token for (_token_type, token) 
+            if get_indices:
+                lines.append([iBuilder.get_token_wo_literal(t_pair) for t_pair 
                               in iBuilder.tokens[line_num]])
-        
+            else:
+                lines.append([token for (_token_type, token) 
+                              in iBuilder.tokens[line_num]])
+
         return (lines, pairs)
     
 
@@ -446,17 +451,16 @@ class LMConsistencyResolver(ConsistencyResolver):
         line_log_probs: dict; each key is a line index; values are log 
             probabilities for those lines
         """
-        print("Querying lines! Neil")
         line_log_probs = {}
         if lines != None:
-            print("Utilizing lines Neil")
-            print(draft_lines_str)
-            print(lines)
+
+
             draft_lines_batch = '\n'.join(list(map(lambda x: str(x[0]) + ' ||| ' + x[1], enumerate(draft_lines_str))))
             lines_batch = '\n'.join(list(map(lambda x: str(x[0]) + ' ||| ' + ' '.join(x[1]), enumerate(lines))))
+            
             lm_ok, lm_log_prob_list, _lm_err = self.lm_query.queryServer(draft_lines_batch, lines_batch)
-            assert(len(draft_lines_str) == len(lines))
-            assert(len(draft_lines_str) == len(lm_log_prob_list))
+            
+
             for idx, line in enumerate(draft_lines_str):
                 self.lm_cache.setdefault(line, lm_log_prob_list[idx])
                 line_log_probs[idx] = lm_log_prob_list[idx]
@@ -686,7 +690,7 @@ class LMDropConsistencyResolver(LMConsistencyResolver):
 #                     print '    ', line
 #                 print
                 
-            translated_log_probs = self._lmQueryLines(draft_lines_str, lines)
+            translated_log_probs = self._lmQueryLines(draft_lines_str)#, lines)
                          
             line_log_probs = []
             for idx, lm_log_prob in translated_log_probs.iteritems():
@@ -802,7 +806,8 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
                                unseen_candidates,
                                name_candidates,
                                name_positions,
-                               iBuilder):
+                               iBuilder,
+                               use_prepro=True):
         """
         Ranks candidate name translations by weights determined by the
         logistic model.
@@ -844,15 +849,16 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
             the first element being the most desirable. 
         """
         
-        
         (name, _def_scope) = key
         
-        # Lines where (name, def_scope) appears
+        # Lines where (name, def_scope) appears    
         (lines, pairs) = self._extractTempLines(name_positions[key], 
                                                  iBuilder)
+        original_lines = [list(x) for x in lines]
         
         draft_lines_str = self._insertNameInTempLines(name, lines, pairs)
-        untranslated_log_probs = self._lmQueryLines(draft_lines_str, lines)
+                
+        untranslated_log_probs = self._lmQueryLines(draft_lines_str, original_lines)
          
         if self.debug_mode:
             print '\n  minified:', name
@@ -876,7 +882,7 @@ class LogModelConsistencyResolver(LMDropConsistencyResolver):
                                                            lines, 
                                                            pairs)
             
-            translated_log_probs = self._lmQueryLines(draft_lines_str, lines)
+            translated_log_probs = self._lmQueryLines(draft_lines_str, original_lines)
                          
             line_log_probs = []
             for idx, lm_log_prob in translated_log_probs.iteritems():
