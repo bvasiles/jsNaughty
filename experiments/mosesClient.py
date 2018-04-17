@@ -7,6 +7,7 @@ import os
 import sys
 from copy import deepcopy
 import time
+import re
 import socket
 import multiprocessing
 #from pathos.multiprocessing import ProcessingPool as Pool
@@ -43,6 +44,18 @@ sa_error = "ScopeAnalyst Failed"
 ms_error = "Moses Server Step Failed"
 rn_error = "Renaming Failed"
 TIMING_COUNT = 10
+KEYWORD_VARS = ['arguments', 'undefined', 'NaN']
+INVALID_JS_NAMES = set(['abstract', 'await', 'boolean', 'break', 'byte', 'case', 'catch', 
+    'char', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 
+    'do', 'double', 'else', 'enum', 'eval', 'export', 'extends', 'false', 
+    'final', 'finally', 'float', 'for', 'function', 'goto', 'if', 'implements', 
+    'import', 'in', 'infinity', 'instanceof', 'int', 'interface', 'let', 'long', 'native', 
+    'new', 'null', 'package', 'private', 'protected', 'public', 'return', 
+    'short', 'static', 'super', 'switch', 'synchronized', 'this', 'throw', 
+    'throws', 'transient', 'true', 'try', 'typeof', 'var', 'void', 'volatile', 
+    'while', 'with', 'yield'] + KEYWORD_VARS)
+INVALID_JS_PATTERN = re.compile('^[^a-zA-Z_$]|[^\\w$]')
+
 
 class TransType(Enum):
     JSNAUGHTY = 0
@@ -137,22 +150,15 @@ class MosesClient():
             postprocess time - how long did the consistency resolution and
                             language model queries take.
         """
-
-        INVALID_JS_NAMES = set([',', '.', '(', ')', '{', '}', '[', ']', 'abstract', 
-            'arguments', 'await', 'boolean', 'break', 'byte', 'case', 'catch', 
-            'char', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 
-            'do', 'double', 'else', 'enum', 'eval', 'export', 'extends', 'false', 
-            'final', 'finally', 'float', 'for', 'function', 'goto', 'if', 'implements', 
-            'import', 'in', 'infinity', 'instanceof', 'int', 'interface', 'let', 'long', 'NaN', 'native', 
-            'new', 'null', 'package', 'private', 'protected', 'public', 'return', 
-            'short', 'static', 'super', 'switch', 'synchronized', 'this', 'throw', 
-            'throws', 'transient', 'true', 'try', 'typeof', 'undefined', 'var', 'void', 'volatile', 
-            'while', 'with', 'yield'])
-
+        
+        
+        INVALID_PREDICATE = lambda x: INVALID_JS_PATTERN.match(x)
+        KEYWORD_PREDICATE = lambda x: x in INVALID_JS_NAMES
+        
         RS = RenamingStrategies()
         CS = ConsistencyStrategies()
 
-        r_strategy = RS.HASH_ONE
+        r_strategy = RS.NONE# RS.HASH_ONE
         #c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
         #c_strategy = CS.LM
         c_strategy = CS.LOGMODEL
@@ -337,8 +343,8 @@ class MosesClient():
         if(neural_flag == TransType.NEURAL_SEQ_TAG or neural_flag == TransType.BOTH):
             (status, error_msg, translation_neural, name_candidates_neural, iBuilder_neural,
                 scopeAnalyst_neural, name_positions_neural,
-                position_names_neural, use_scopes_neural,
-                rn_time_neural, post_start) = getNeuralSequenceTranslation(r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, INVALID_JS_NAMES)
+                position_names_neural, use_scopes_neural, hash_name_map,
+                rn_time_neural, post_start) = getNeuralSequenceTranslation(r_strategy, RS, clear, iBuilder_ugly, scopeAnalyst, debug_output, INVALID_PREDICATE, KEYWORD_PREDICATE)
 
         if(neural_flag == TransType.JSNAUGHTY or neural_flag == TransType.BOTH):
             if(not parallel):
@@ -532,6 +538,9 @@ class MosesClient():
         renamed_text = postRen.applyRenaming(a_iBuilder,
                                              a_name_positions,
                                              renaming_map)
+
+        print(renaming_map)
+        print(renamed_text)
 
         (ok, beautified_renamed_text, _err) = clear.web_run_end(renamed_text)
         #print(name_candidates)

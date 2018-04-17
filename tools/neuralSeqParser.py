@@ -38,7 +38,7 @@ class NeuralSequenceParser:
               neural_output, 
               iBuilder,
               position_names,
-              invalid_candidates=set()):#,
+              is_invalid=(lambda x: False), is_keyword=(lambda x: False)):#,
 #               scopeAnalyst=None):
        
         #print("Parsing - index Builder")
@@ -90,10 +90,9 @@ class NeuralSequenceParser:
                 # The translated variable name
                 name_translation = translation_parts[line_idx]
 
-                if name_translation in invalid_candidates:
-                    print("[NX] Discovered invalid variable translation: " + str(name_translation))
-                else:
-                    if(name_translation == "SAME"):
+                # print(name_translation, line_dict[line_idx][0])
+                if not is_invalid(name_translation):
+                    if(is_keyword(k[0]) or is_keyword(name_translation) or name_translation == "SAME"):
                         name_translation = k[0]
                     #print("Index: " + str(line_idx) + " Translation: " + name_translation) 
                     # Record the line number (we may give more weight
@@ -104,7 +103,9 @@ class NeuralSequenceParser:
 #                 self.name_candidates[k].setdefault(use_scope, {})
 #                 self.name_candidates[k][use_scope].setdefault(name_translation, set([]))
 #                 self.name_candidates[k][use_scope][name_translation].add(n)
-            
+                else:
+                    print("[NX] Discovered invalid variable translation: " + str(name_translation))
+                
 
 
         return self.name_candidates

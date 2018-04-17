@@ -100,7 +100,9 @@ def reconstructOutput(t_out, lineDropMap):
     return t_out
 
 
-def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly, debug_mode = False, invalid_candidates=set()):
+def getNeuralSequenceTranslation(r_strategy, RS, a_beautifier, iBuilder_ugly, 
+    scopeAnalyst_ugly, debug_mode = False, invalid_pred=lambda x: False,
+    keyword_pred=lambda x: False):
     """
     A helper function so that we can run multiple different renaming
     strategies through moses in a more modular and hopefully parallelizable
@@ -147,8 +149,8 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
 
 
     #We need both the base_text and the hashed_text.
-    RS = RenamingStrategies()
-    r_strategy = RS.NONE
+    # RS = RenamingStrategies()
+    #r_strategy = RS.NONE
     preRen = PreRenamer()
     if(debug_mode):
         print("Tokens-------------------")
@@ -192,28 +194,31 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
     a_iBuilder = IndexBuilder(a_lexer.tokenList)
     a_scopeAnalyst = WebScopeAnalyst(aligned_after)
 
-    # if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
+    hash_name_map = {}
 
-    #     #Something below here is buggy...
-    #     orderedVarsMin = sorted(scopeAnalyst_ugly.name2defScope.keys(), key = lambda x: x[1])
-    #     orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
-    #     #print("Min len: " + str(len(orderedVarsMin)))
-    #     #print("Hash len: " + str(len(orderedVarsHash))) 
-    #     if(len(orderedVarsMin) != len(orderedVarsHash)):
-    #         return(False, "Mismatch between minified and hashed names.", 
-    #                "", {}, a_iBuilder, 
-    #                a_scopeAnalyst, {}, 
-    #                {}, {}, {},
-    #                0, 0, 0, 0)    
+
+    if(r_strategy == RS.HASH_ONE or r_strategy == RS.HASH_TWO):
+
+        #Something below here is buggy...
+        orderedVarsMin = sorted(scopeAnalyst_ugly.name2defScope.keys(), key = lambda x: x[1])
+        orderedVarsHash = sorted(a_scopeAnalyst.name2defScope.keys(), key = lambda x: x[1])
+        #print("Min len: " + str(len(orderedVarsMin)))
+        #print("Hash len: " + str(len(orderedVarsHash))) 
+        if(len(orderedVarsMin) != len(orderedVarsHash)):
+            return(False, "Mismatch between minified and hashed names.", 
+                   "", {}, a_iBuilder, 
+                   a_scopeAnalyst, {}, 
+                   {}, {}, {},
+                   0, 0, 0, 0)    
         
          
-    #     for i in range(0, len(orderedVarsHash)):
-    #         name_hash = orderedVarsHash[i][0]
-    #         def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
+        for i in range(0, len(orderedVarsHash)):
+            name_hash = orderedVarsHash[i][0]
+            def_scope_hash = a_scopeAnalyst.name2defScope[orderedVarsHash[i]]
      
-    #         name_min = orderedVarsMin[i][0]
-    #         def_scope_min = scopeAnalyst_ugly.name2defScope[orderedVarsMin[i]]
-    #         hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
+            name_min = orderedVarsMin[i][0]
+            def_scope_min = scopeAnalyst_ugly.name2defScope[orderedVarsMin[i]]
+            hash_name_map[(name_hash, def_scope_hash)] = (name_min, def_scope_min)
             
     if(debug_mode):
         print("HASH NAME MAP LEN: " + str(len(hash_name_map)))
@@ -285,10 +290,11 @@ def getNeuralSequenceTranslation(a_beautifier, iBuilder_ugly, scopeAnalyst_ugly,
         name_candidates = nsp.parse(translation,
                                    a_iBuilder,
                                    a_position_names,
-                                   invalid_candidates)
+                                   invalid_pred,
+                                   keyword_pred)
 
 
     return (True, "", translation, name_candidates, a_iBuilder,
             a_scopeAnalyst, a_name_positions,
-            a_position_names, a_use_scopes,
+            a_position_names, a_use_scopes, hash_name_map,
             rn_time, post_start)
