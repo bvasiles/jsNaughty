@@ -62,6 +62,8 @@ class NeuralSequenceParser:
                 translation_parts = [token for (_token_type, token) \
                                         in iBuilder.tokens[line_num]]
                 translation = ' '.join(translation_parts)
+
+            print(translation_parts)
             
             #    # Which within-line indices have non-global var names? 
             #     print("------------------------")

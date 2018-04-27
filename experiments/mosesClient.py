@@ -158,7 +158,7 @@ class MosesClient():
         RS = RenamingStrategies()
         CS = ConsistencyStrategies()
 
-        r_strategy = RS.NONE# RS.HASH_ONE
+        r_strategy = RS.HASH_ONE
         #c_strategy = CS.FREQLEN # or CS.LM? (CS.LM requires a language model + a querylm from moses)
         #c_strategy = CS.LM
         c_strategy = CS.LOGMODEL
